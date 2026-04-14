@@ -1,0 +1,44 @@
+.mcv-chart-wrapper {
+  display: block;
+  position: relative;
+  width: 100%;
+  // margin: 0 10px;
+}
+
+.mcv-chart-header {
+  position: sticky;
+  position: -webkit-sticky;
+
+  top: 0;
+  z-index: 100;
+  padding: 3px 15px;
+  margin-bottom: 10px;
+  background-color: $gray-300;
+
+  .mcv-chart-header-filters {
+    display: flex;
+    align-items: center;
+    //   justify-content: space-between;
+
+    &>* {
+      margin: 0 5px;
+    }
+
+    .mat-mdc-form-field {
+      width: 100%;
+      margin-bottom: 0;
+    }
+  }
+}
+
+@media only screen and (max-width: 768px) {
+
+  .mcv-chart-header {
+    position: relative;
+
+    .mcv-chart-header-filters {
+      display: block;
+    }
+  }
+
+}

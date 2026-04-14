@@ -1,0 +1,82 @@
+@import 'variables';
+@import 'theme';
+
+.user-permissions {
+    .buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.3rem;
+    }
+
+    .username-actions {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .permission-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        .permission-group-header {
+            padding: 0.3rem;
+            background-color: $gray-200;
+
+            .permission-group-title {
+                font-weight: 600;
+            }
+        }
+
+        .permission-list {
+            list-style: none;
+            margin: 0;
+            padding: 0.3rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+
+
+            &>li {
+                padding: 0.3rem;
+                border: 1px solid $gray-300;
+                border-radius: $border-radius;
+                cursor: pointer;
+                // min-width: 49%;
+
+                &.active,
+                &.selected {
+                    border: 3px solid mat-color($mcv-accent, 500);
+                }
+
+                &:hover {
+                    background-color: $gray-200;
+                    color: $black;
+                }
+
+                .permission {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.3rem;
+                }
+            }
+        }
+    }
+}
+
+
+@media screen and (max-width: 768px) {
+    .user-permissions {
+
+        .username-actions {
+            flex-wrap: wrap;
+        }
+
+        .permission-group {
+
+            .permission-list {
+                flex-direction: column;
+                flex-wrap: nowrap;
+            }
+        }
+    }
+}

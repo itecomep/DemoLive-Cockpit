@@ -1,0 +1,18 @@
+<div class="mat-dialog-header mcv-dialog-header">
+  <div>
+    <h5 class="font-focused">ACTIVITY</h5>
+  </div>
+  <button mat-icon-button aria-label="close" (click)="onClose()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+<mat-dialog-content>
+  <div class="activity-table-container">
+    <app-analytical-table 
+      [data]="activityChanges" 
+      [columns]="tableColumns"
+      [enableFilters]="true"
+      stateKey="activity-dialog-table">
+    </app-analytical-table>
+  </div>
+</mat-dialog-content>

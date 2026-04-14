@@ -1,0 +1,29 @@
+<ul class="agile-list">
+  <li *ngFor="let item of dataList; let i = index;" [routerLinkActive]="['active']"
+    [ngClass]="{'highlight-red': isDelayed(item),'highlight-yellow': isForDelay(item)}">
+
+    <img src="{{ item.assignee.photoUrl || 'assets/images/user.png' }}" [matTooltip]="item.assignee.name || ''"
+    class="user-thumbnail float-left mr-2" (click)="openPhotoDialog(item.assignee); $event.stopPropagation()" style="cursor: pointer;" />
+
+    <a [routerLink]="[pagedListConfig.route,item.id]">
+      <app-todo-list-item [item]="item" [index]="i" [showAll]="pagedListConfig.showAll"></app-todo-list-item>
+    </a>
+  </li>
+
+  <li *ngIf="!isLoading && dataList.length == 0">
+    <div class="row">
+      <div class="col-12">
+        <span>No items found</span>
+      </div>
+    </div>
+  </li>
+
+  <li *ngIf="!isLoading && totalRecordsCount > 0 && pagedListConfig.pageSize + 1 < totalPages"
+    (click)="loadMoreRecords()" class="text-center">
+    <div class="row">
+      <div class="col-12">
+        <span style="cursor:pointer;">Show More</span>
+      </div>
+    </div>
+  </li>
+</ul>

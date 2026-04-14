@@ -1,0 +1,30 @@
+<ul class="contact-notes">
+  <li *ngIf="!isReadOnly && isPermissionEdit">
+    <div class="new-card">
+      <form [formGroup]="form" autocomplete="off">
+
+        <div class="row m-0">
+          <mat-form-field appearance="outline" class="col-md-12">
+            <mat-label>Notes</mat-label>
+            <textarea aria-label="notes" matInput formControlName="notes" cdkTextareaAutosize
+              #autosize="cdkTextareaAutosize" placeholder="Enter Notes/Comments here" rows="3"></textarea>
+            <mat-error>{{ getErrorMessage(f['notes'])}}</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="d-flex align-items-center justify-content-end p-2">
+          <button mat-raised-button color="accent" aria-label="Add" (click)="onCreate()">Add</button>
+        </div>
+
+      </form>
+    </div>
+  </li>
+  <li *ngFor="let item of notes; let i=index">
+    <div class="d-flex justify-content-between">
+      <div>
+        <h6 class="font-focused">{{item.created | date:'dd MMM y HH:mm'}} | {{item.createdBy}}</h6>
+        <p>{{item.notes}}</p>
+      </div>
+    </div>
+  </li>
+
+</ul>

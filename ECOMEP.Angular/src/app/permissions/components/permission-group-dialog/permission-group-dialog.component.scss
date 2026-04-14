@@ -1,0 +1,161 @@
+@import "variables";
+@import "theme";
+
+.group-dialog-header-actions{
+  display: flex;
+  align-items:center ;
+
+}
+.panel-box {
+  background: white;
+  border-radius: 4px;
+  box-shadow: $box-shadow;
+  margin: 0.5rem;
+}
+
+.columns-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  // gap: 0.5rem;
+  margin: 0.5rem;
+  height: calc(100vh - 150px);
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+  overflow: hidden;
+
+  h6 {
+    margin: 0 0 0.5rem 0;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+}
+
+.group-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.group-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3rem;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  cursor: pointer;
+  line-height: 1.5rem;
+  margin-bottom: 0.3rem;
+  background: transparent;
+  
+  &:hover {
+    background: #f8f9fa;
+  }
+  &.selected {
+    background-color: #def;
+  }
+}
+
+.group-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin-left: auto;
+}
+
+mat-dialog-content {
+  overflow: hidden !important;
+}
+
+.empty-message {
+  padding: 1rem;
+  text-align: center;
+  color: #999;
+  font-size: 0.875rem;
+}
+
+.contact-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.contact-photo {
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
+}
+
+.team-contact-list-item {
+  display: flex;
+}
+
+.list-item-details {
+  flex-grow: 1;
+  flex-shrink: 1;
+  display: flex;
+  gap: 0.3rem;
+  align-items: flex-start;
+
+  img.contact-icon {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+}
+
+.list-item-actions {
+  flex-grow: 0;
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.3rem;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 0.3rem;
+    margin-bottom: 0.3rem;
+  }
+}
+
+.flex-grow-1 {
+  flex-grow: 1;
+}
+
+.font-focused {
+  font-weight: 500;
+}
+
+.delete-btn {
+  mat-icon {
+    color: $red;
+  }
+}
+
+.column-header {
+  background: mat-color($mcv-primary, 500);
+  color: white;
+  padding: 0.75rem 1rem;
+  margin: -0.5rem -0.5rem 0.5rem -0.5rem;
+  border-radius: 4px 4px 0 0;
+  
+  h6 {
+    margin: 0;
+    font-weight: 500;
+    color: white;
+  }
+}

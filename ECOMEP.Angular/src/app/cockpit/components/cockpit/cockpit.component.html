@@ -1,0 +1,148 @@
+<app-footer></app-footer>
+<div class="container-fluid">
+  <app-cockpit-active-task></app-cockpit-active-task>
+  <div class="row">
+    <div class="col-md-4">
+      <mat-expansion-panel class="cockpit-panel" [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title> My Tasks <span class="text-muted ml-1"> {{myTaskListCount}}</span></mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="cockpit-expansion-panel-search-container">
+          <mat-form-field appearance="outline">
+            <input matInput type="text" placeholder="Search for..." [formControl]="myTaskSearch">
+            <button matSuffix mat-icon-button aria-label="Clear" (click)="clearMyTaskSearch()">
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Entity Type</mat-label>
+            <mat-select [formControl]="myTaskEntityFilter" multiple placeholder="EntityType">
+              <mat-option *ngFor=" let item of entityOptions" [value]="item">{{item}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <!-- <form class="form-inline" novalidate autocomplete="off"> -->
+          <!-- </form> -->
+
+          <button mat-raised-button (click)="onToggleMyTaskShowToday()" *ngIf="!myTaskShowToday" matTooltip="Show All"
+            aria-label="Show All">
+            Today
+          </button>
+          <button mat-raised-button color="primary" (click)="onToggleMyTaskShowToday()" *ngIf=" myTaskShowToday"
+            matTooltip="Show All" aria-label="Show All">
+            Today
+          </button>
+        </div>
+
+        <app-cockpit-task-paged-list [config]="myTaskPagedListConfig" [openAsDialog]="true" [showTaskStatus]="true"
+          (taskClick)="openTaskDialog($event)" (listLoad)="onMyTasksListLoad($event)">
+        </app-cockpit-task-paged-list>
+        <!-- <app-wf-task-paged-list [config]="myTaskPagedListConfig" [openAsDialog]="true"
+          (taskClick)="openTaskDialog($event)" (listLoad)="onMyTasksListLoad($event)">
+        </app-wf-task-paged-list> -->
+      </mat-expansion-panel>
+    </div>
+
+    <div class="col-md-4">
+      <mat-expansion-panel class="cockpit-panel" [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Tasks Assigned by Me <span class="text-muted ml-1"> {{assignedTaskListCount}}</span>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="cockpit-expansion-panel-search-container">
+          <!-- <form class="form-inline" novalidate autocomplete="off"> -->
+          <mat-form-field appearance="outline">
+            <input matInput type="text" placeholder="Search for..." [formControl]="assignedTaskSearch">
+            <button matSuffix mat-icon-button aria-label="Clear" (click)="clearAssignedTaskSearch()">
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Entity Type</mat-label>
+            <mat-select [formControl]="taskAssignedEntityFilter" multiple placeholder="EntityType">
+              <mat-option *ngFor=" let item of entityOptions" [value]="item">{{item}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <!-- </form> -->
+
+          <button mat-raised-button (click)="onToggleAssignedTaskShowToday()" *ngIf="!assignedTaskShowToday"
+            matTooltip="Show All" aria-label="Show All">
+            Today
+          </button>
+          <button mat-raised-button color="primary" (click)="onToggleAssignedTaskShowToday()"
+            *ngIf=" assignedTaskShowToday" matTooltip="Show All" aria-label="Show All">
+            Today
+          </button>
+        </div>
+
+        <!-- <app-wf-task-paged-list [config]="assignedTaskPagedListConfig" [openAsDialog]="true"
+          (taskClick)="openTaskDialog($event)" (listLoad)="onAssignedTasksListLoad($event)">
+        </app-wf-task-paged-list> -->
+        <app-cockpit-task-paged-list [config]="assignedTaskPagedListConfig" [openAsDialog]="true"
+          [showTaskStatus]="true" (taskClick)="openTaskDialog($event)" (listLoad)="onAssignedTasksListLoad($event)">
+        </app-cockpit-task-paged-list>
+      </mat-expansion-panel>
+    </div>
+
+    <div class="col-md-4">
+      <mat-expansion-panel class="cockpit-panel" [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>My Pending Agendas<span class="text-muted ml-1"></span>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-cockpit-meeting-agendas [config]="myMeetingAgendasPagedListConfig"></app-cockpit-meeting-agendas>
+      </mat-expansion-panel>
+    </div>
+
+    <div class="col-md-4">
+      <mat-expansion-panel class="cockpit-panel" [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title> My Activity </mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-cockpit-activity> </app-cockpit-activity>
+      </mat-expansion-panel>
+    </div>
+
+    <!-- <div class="col-md-4" *ngIf="isPermissionTeamTasks">
+      <mat-expansion-panel class="cockpit-panel" [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title> All Office Tasks <span class="text-muted ml-1">
+              {{teamTaskListCount}}</span></mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="cockpit-expansion-panel-search-container">
+          <form class="form-inline" #f="ngForm" (ngSubmit)="searchTeamTaskPagedList()" novalidate autocomplete="off">
+            <input class="form-control mr-2 " name="search" [(ngModel)]="teamTaskPagedListConfig.searchKey"
+              placeholder="Search for..." aria-label="Search">
+          </form>
+
+          <button mat-raised-button (click)="onToggleTeamTaskShowToday()" *ngIf="!teamTaskShowToday"
+            matTooltip="Show All" aria-label="Show All">
+            Today
+          </button>
+          <button mat-raised-button color="primary" (click)="onToggleTeamTaskShowToday()" *ngIf=" teamTaskShowToday"
+            matTooltip="Show All" aria-label="Show All">
+            Today
+          </button>
+        </div>
+
+        <app-wf-task-paged-list [config]="teamTaskPagedListConfig" [openAsDialog]="true"
+          (taskClick)="openTaskDialog($event)" (listLoad)="onTeamTasksListLoad($event)">
+        </app-wf-task-paged-list>
+      </mat-expansion-panel>
+    </div> -->
+
+    <div class="col-md-4" *ngIf="isPermissionTeamTasks">
+      <mat-expansion-panel class="cockpit-panel" [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title> All Office Activity </mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-cockpit-activity [showAll]="isPermissionTeamTasks">
+        </app-cockpit-activity>
+      </mat-expansion-panel>
+    </div>
+  </div>
+</div>

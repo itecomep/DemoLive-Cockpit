@@ -1,0 +1,18 @@
+
+<div class="sidenav" [class.sidenav-active]="isSidenavOpen" (click)="onSidenavClick($event)">
+    <div class="filter-header">
+      <h4 class="font-focused">Filters</h4>
+      <div class="icons d-flex align-items-center justify-content-between">
+        <button mat-icon-button (click)="onRefreshFilters()" matTooltip="Refresh"
+        aria-label="Refresh"><mat-icon>refresh</mat-icon></button>
+        <mat-icon (click)="closeSidenav()">close</mat-icon>
+      </div>
+ 
+    </div>
+    <div class="filter-body">
+      <ng-content></ng-content>
+    </div>
+  </div>
+  
+  <!-- Overlay to close sidenav when clicked outside -->
+  <!-- <div class="sidenav-overlay" *ngIf="isSidenavOpen" (click)="closeSidenav()"></div> -->

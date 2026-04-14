@@ -1,0 +1,128 @@
+@import 'variables';
+@import 'theme';
+
+mat-dialog-content {
+    width: 70vw !important;
+}
+
+.mat-dialog-header {
+    background-color: mat-color($mcv-primary, 500);
+    color: $white;
+}
+
+table {
+    width: 100%;
+    border: 1px solid $gray-300;
+    border-collapse: collapse;
+
+    thead {
+        position: sticky;
+        position: -webkit-sticky;
+        z-index: 99;
+        position: -webkit-sticky;
+        top: 0;
+
+        tr {
+
+            th {
+                white-space: pre-wrap;
+                border: 1px solid $gray-300;
+                padding: 0.3rem;
+                text-align: center;
+                top: -1px;
+                background-color: $gray-500;
+                color: $white;
+            }
+        }
+    }
+
+    tbody {
+        tr {
+            &:hover {
+                background-color: $gray-200;
+            }
+
+            td {
+                white-space: pre-wrap;
+                border: 1px solid $gray-300;
+                padding: 0.3rem;
+                text-align: center;
+
+                .cell-content {
+                    display: flex;
+                    align-items: center;
+
+
+                    .cell-action,
+                    .cell-input,
+                    .cell-value {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        // text-align: right;
+                        max-width: 100%;
+                        margin: 0;
+                        border: none;
+                        padding: 0.3rem;
+
+                        &.text-left {
+                            justify-content: flex-start;
+                        }
+
+                        &.text-right {
+                            justify-content: flex-end;
+                        }
+
+                        mat-icon {
+                            // font-size: 1rem;
+                            // font-weight: 600;
+                            display: flex;
+                            align-items: center;
+                            justify-content: flex-start;
+                        }
+                    }
+
+                    .cell-input,
+                    .cell-value {
+                        flex-grow: 1;
+                        flex-shrink: 1;
+                    }
+
+                    .cell-value,
+                    .cell-action {
+                        cursor: pointer;
+                    }
+
+                    .cell-action {
+                        flex-grow: 0;
+                        flex-shrink: 0;
+                        display: flex;
+                        align-items: center;
+                        justify-content: flex-end;
+                        cursor: pointer;
+                    }
+
+                    .cell-input {
+                        form {
+                            flex-grow: 1;
+                            flex-shrink: 1;
+
+                            &>* {
+                                border: none;
+                                padding: 0;
+                                width: 100%;
+                                text-align: center;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media only screen and (max-width:768px) {
+    mat-dialog-content {
+        width: 100% !important;
+    }
+}

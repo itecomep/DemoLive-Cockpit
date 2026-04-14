@@ -1,0 +1,162 @@
+<form [formGroup]="form" autocomplete="off">
+
+
+    <!-- Appointment Type Row-->
+    <div class="row m-0">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <mat-radio-group formControlName="typeFlag" class="justify-content-start">
+                        <mat-radio-button *ngFor="let type of typeOptions" [value]="type.value">
+                            {{ type.title }}
+                        </mat-radio-button>
+                    </mat-radio-group>
+                    <mat-error>{{ getErrorMessage(f.typeFlag) }}</mat-error>
+                </div>
+                <div class="d-flex align-items-center justify-content-end">
+                    <button mat-icon-button matTooltip="Save" aria-label="Save" (click)="onSubmit()"
+                        [disabled]="!isPermissionEdit">
+                        <mat-icon>done</mat-icon>
+                    </button>
+                    <button mat-icon-button matTooltip="Delete" aria-label="Delete" (click)="onDelete()"
+                        [disabled]="!isPermissionDelete">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <mat-form-field appearance="outline" class="col-md-6">
+            <mat-label>Status</mat-label>
+            <mat-select formControlName="statusFlag">
+                <mat-option *ngFor="let status of statusOptions" [value]="status.value">
+                    {{ status.title }}
+                </mat-option>
+            </mat-select>
+            <mat-error>{{ getErrorMessage(f.statusFlag) }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-md-6">
+            <mat-label>Company</mat-label>
+            <mat-select formControlName="companyID">
+                <mat-option *ngFor="let company of companyOptions" [value]="company.id">
+                    {{ company.initials }} | {{ company.title }}
+                </mat-option>
+            </mat-select>
+            <mat-error>{{ getErrorMessage(f.companyID) }}</mat-error>
+        </mat-form-field>
+        <!--Company ends-->
+
+        <!-- Designation-->
+        <mat-form-field appearance="outline" class="col-md-6">
+            <mat-label>Designation</mat-label>
+            <input placeholder="Designation" aria-label="Designation" matInput formControlName="designation" />
+            <mat-error>{{ getErrorMessage(f.designation) }}</mat-error>
+        </mat-form-field>
+        <!-- Primary task ends-->
+
+        <mat-form-field appearance="outline" class="col-md-6">
+            <mat-label>Employee Code</mat-label>
+            <input placeholder="Employee Code" aria-label="Employee Code" matInput formControlName="employeeCode" />
+            <mat-error>{{ getErrorMessage(f.employeeCode) }}</mat-error>
+        </mat-form-field>
+
+        <!-- Joining Date-->
+        <mat-form-field appearance="outline" class="col-md-4">
+            <mat-label>Joining Date</mat-label>
+            <input matInput formControlName="joiningDate" [matDatepicker]="joiningDatePicker"
+                placeholder="Select Date" />
+            <mat-error>{{ getErrorMessage(f.joiningDate) }}</mat-error>
+            <mat-datepicker-toggle matSuffix [for]="joiningDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker [touchUi]="isMobileView" #joiningDatePicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-md-4">
+            <mat-label>Resignation Date</mat-label>
+            <input matInput formControlName="resignationDate" [matDatepicker]="resignationDatePicker"
+                placeholder="Select Date" />
+            <mat-error>{{ getErrorMessage(f.resignationDate) }}</mat-error>
+            <mat-datepicker-toggle matSuffix [for]="resignationDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker [touchUi]="isMobileView" #resignationDatePicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-md-4">
+            <mat-label>Location</mat-label>
+            <input placeholder="Location" aria-label="Location" matInput formControlName="location" />
+            <mat-error>{{ getErrorMessage(f.location) }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-md-12">
+            <mat-label>Reporting To</mat-label>
+            <mat-select formControlName="managerContact" placeholder="Search Contact" #singleSelect>
+                <mat-option>
+                    <ngx-mat-select-search [formControl]="clientContactFC" placeholderLabel="Search here"
+                        noEntriesFoundLabel="No matching value found"></ngx-mat-select-search>
+                </mat-option>
+                <mat-option *ngFor="let option of filteredManagerContacts$ | async" [value]="option">
+                    {{option?.name}}
+                </mat-option>
+            </mat-select>
+            <mat-error>{{getErrorMessage(f.managerContact)}}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-md-12"
+            *ngIf="f['statusFlag'].value === TEAM_APPOINTMENT_STATUS_LEFT_WIHOUT_INFORMING">
+            <mat-label>Comment</mat-label>
+            <textarea placeholder="Comment" aria-label="Comment" matInput formControlName="description" cdkTextareaAutosize
+                #autosize="cdkTextareaAutosize"></textarea>
+            <mat-error>{{ getErrorMessage(f.description) }}</mat-error>
+        </mat-form-field>
+    </div>
+</form>
+
+<div class="team-container">
+    <mat-form-field appearance="outline">
+        <mat-label>Teams</mat-label>
+        <mat-select [formControl]="teamFC" placeholder="Team" (selectionChange)="onSelectTeam($event)">
+            <mat-option *ngFor="let item of filteredTeamOptions" [value]="item">{{item.title}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <div class="team-list">
+        <ul>
+            <ng-container *ngFor="let team of teamOptions">
+                <li *ngIf="isMemberInTeam(team, currentEntity.contactID)">
+                    <h6 class="list">
+                        {{ team.title }}
+                    </h6>
+                    <mat-icon (click)="onRemoveMember(team)">clear</mat-icon>
+                </li>
+            </ng-container>
+        </ul>
+    </div>
+</div>
+
+<app-mcv-file-upload class="pt-1" [uploaderConfig]="blobConfigAppointment" [showPaste]="true"
+    (upload)="onUploadAppointment($event)" *ngIf="blobConfigAppointment">
+</app-mcv-file-upload>
+<ul class="mcv-file-list">
+    <li *ngFor="let file of getFilteredAttachments(currentEntity.attachments,0,true)">
+        <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="true" (delete)="onDeleteAttachment(file)"
+            [downloadUrl]="file.url" [showPreview]="true" [singlePreview]="true" [url]="file.url"
+            [thumbUrl]="file.thumbUrl">
+        </mcv-file>
+        <div class="p-2">
+            <app-mcv-tag-editor [tags]="file.searchTags" [tagOptions]="attachmentTagOptions" [isPermissionEdit]="true"
+                (update)="onTagsUpdate($event,file)">
+            </app-mcv-tag-editor>
+        </div>
+    </li>
+</ul>
+<ul class="mcv-file-list">
+    <li *ngFor="let file of getFilteredAttachments(currentEntity.attachments,0,false)">
+        <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="true" (delete)="onDeleteAttachment(file)"
+            [downloadUrl]="file.url" [thumbUrl]="file.thumbUrl">
+        </mcv-file>
+        <div class="p-2">
+            <app-mcv-tag-editor [tags]="file.searchTags" [tagOptions]="attachmentTagOptions" [isPermissionEdit]="true"
+                (update)="onTagsUpdate($event,file)">
+            </app-mcv-tag-editor>
+        </div>
+    </li>
+</ul>

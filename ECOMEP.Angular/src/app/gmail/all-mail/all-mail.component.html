@@ -1,0 +1,88 @@
+<mat-form-field appearance="outline" class="search-box">
+  <mat-label>Search emails</mat-label>
+  <input
+    matInput
+    [(ngModel)]="searchText"
+    (input)="highlightAllMatches()"
+    placeholder="Search anything"
+  />
+</mat-form-field>
+
+<mat-card class="email-card" *ngFor="let thread of emailThreads">
+
+  <div class="email-header" (click)="toggleThread(thread)">
+    <div class="sender-avatar">{{ thread.from?.charAt(0) }}</div>
+    <div class="header-content">
+      <div class="header-top">
+        <span class="from">
+          {{ thread.messages[0]?.from }}
+        </span>
+        <span
+          class="thread-count"
+          *ngIf="thread.messages && thread.messages.length > 0">
+          ({{ thread.messages.length }})
+        </span>
+        <span class="date">
+          {{ thread.messages[0]?.date | date:'short' }}
+        </span>
+      </div>
+      <div class="subject-line">{{ thread.subject }}</div>
+      <div class="header-recipients" *ngIf="thread.messages?.length">
+        <span *ngIf="thread.messages[0]?.to">
+          To: {{ thread.messages[0].to }}
+        </span>
+
+        <span *ngIf="thread.messages[0]?.cc">
+          • CC: {{ thread.messages[0].cc }}
+        </span>
+
+        <span *ngIf="thread.messages[0]?.bcc">
+          • BCC: {{ thread.messages[0].bcc }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="thread-expanded" *ngIf="thread.expanded">
+    <div *ngFor="let msg of thread.messages" class="message-card">
+      <div class="meta">
+        <strong>{{ msg.from }}</strong>
+        <span>{{ msg.date | date:'short' }}</span>
+      </div>
+      <div class="recipients">
+        <div *ngIf="msg.to"><strong>To:</strong> {{ msg.to }}</div>
+        <div *ngIf="msg.cc"><strong>CC:</strong> {{ msg.cc }}</div>
+        <div *ngIf="msg.bcc"><strong>BCC:</strong> {{ msg.bcc }}</div>
+      </div>
+
+      <!-- <div class="body" [innerHTML]="msg.safeBody"></div> -->
+      <iframe
+        class="email-frame"
+        [srcdoc]="msg.body">
+      </iframe>
+      <div class="attachments" *ngIf="msg.attachments?.length">
+          <div class="attachment-title">Attachments</div>
+
+          <div class="attachment-item" *ngFor="let att of msg.attachments">
+            <mat-icon>attach_file</mat-icon>
+
+            <a
+              [href]="att.blobUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              [innerHTML]="att.safeName || att.fileName"
+            >
+              {{ att.fileName }}
+            </a>
+          </div>
+      </div>
+    </div>
+  </div>
+</mat-card>
+<div class="pagination" *ngIf="totalEmails > 0">
+  <button mat-button [disabled]="currentPage === 1 || loadingEmails" (click)="goToPage(currentPage - 1)"> Prev </button>
+  <ng-container *ngFor="let page of pageNumbers">
+    <button mat-button [ngClass]="{'active': page === currentPage}" (click)="goToPage(page)"> {{ page }} </button>
+  </ng-container>
+  <button mat-button [disabled]="currentPage === totalPages || loadingEmails" (click)="goToPage(currentPage + 1)"> Next </button>
+</div>

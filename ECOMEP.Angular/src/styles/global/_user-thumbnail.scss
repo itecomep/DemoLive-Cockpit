@@ -1,0 +1,12 @@
+/* ---------------------------------------------------
+   User Thumbnail
+----------------------------------------------------- */
+img.user-thumbnail {
+  width: 2.5rem;
+  height: 2.5rem;
+  object-fit: cover;
+  border-radius: $border-radius;
+  background-color: $white;
+}
+
+/*==========================*/

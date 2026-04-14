@@ -1,0 +1,85 @@
+/* ---------------------------------------------------
+ Material Tabs
+----------------------------------------------------- */
+
+// .detail-wrapper .mat-tab-group {
+//   height: calc(100% - 50px);
+//   overflow: hidden;
+
+//   .mat-tab-body.mat-tab-body-active {
+//     position: relative;
+//     overflow: hidden;
+//   }
+// }
+.mat-mdc-tab-body-wrapper {
+  position: relative;
+  padding-top: 0.2rem;
+}
+
+.mat-mdc-tab-body-content {
+  // padding: 0 !important;
+  // width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+
+.mat-mdc-tab-label,
+.mat-mdc-tab-link {
+  font-family: $font-family-sans-serif !important;
+  // font-size: 14px;
+  // font-weight: 500;
+}
+
+.mat-mdc-tab-list {
+  border-bottom: 1px solid $gray-200;
+  padding: 0 0.3rem 0.2rem;
+}
+
+.mdc-tab {
+  min-width: 4rem !important;
+  height: 48px !important;
+  padding: 0 0.8rem !important;
+  opacity: 1 !important;
+  margin: 0 0.1rem !important;
+  background-color: $white !important;
+  box-shadow: $box-shadow !important;
+}
+
+.mat-mdc-tab-group {
+  font-family: $font-family-sans-serif;
+}
+
+.mat-mdc-tab-group-no-overflow {
+  overflow: hidden;
+  height: 100%;
+}
+
+.mat-mdc-tab-no-overflow {
+  /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
+  .mat-tab-body-content {
+    overflow-y: hidden !important;
+  }
+  /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
+  .mat-mdc-tab-body.mat-tab-body-active {
+    overflow-y: hidden !important;
+  }
+}
+
+.mat-mdc-tab .mdc-tab__text-label {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap;
+
+  small {
+    font-size: 0.55rem;
+  }
+}
+
+.mat-mdc-tab.mdc-tab {
+  flex-grow: 0 !important;
+}
+
+
+/*==========================*/

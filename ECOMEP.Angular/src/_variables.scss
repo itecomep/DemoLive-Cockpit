@@ -1,0 +1,193 @@
+$white: #fff !default;
+$gray-100: #f8f9fa !default;
+$gray-200: #e9ecef !default;
+$gray-300: #dee2e6 !default;
+$gray-400: #ced4da !default;
+$gray-500: #515356 !default;
+$gray-600: #6c757d !default;
+$gray-700: #495057 !default;
+$gray-800: #343a40 !default;
+$gray-900: #212529 !default;
+$black: #000 !default;
+
+$blue: #0070b7 !default;
+$indigo: #6610f2 !default;
+$purple: #6f42c1 !default;
+$pink: #e83e8c !default;
+$red: #b00000 !default;
+$orange: #fd7e14 !default;
+$yellow: #ffc107 !default;
+$green: #088100 !default;
+$teal: #20c997 !default;
+$cyan: #17a2b8 !default;
+$dark-blue: #051b31 !default;
+$light-green: #DDFFE5 !default;
+$light-blue: #ddeeff !default;
+$light-red: #ffdddd !default;
+$light-yellow: #ffc1075e !default;
+// options
+// option1-green:#2d6d0e;
+// option1-gray:#909191;
+
+// options-green: #085f00;
+// option2-gray: #515356;
+
+$red-50: rgba(244, 67, 54, 0.2) !default;
+$green-50: rgba(88, 208, 142, 0.2) !default;
+$yellow-50: rgba(225, 233, 113, 0.2) !default;
+$orange-50: rgba(233, 173, 113, 0.2) !default;
+$purple-50: rgba(229, 113, 233, 0.2) !default;
+$paper-yellow: rgb(255 226 121 / 74%);
+// brands
+// $primary: mat-color($mcv-primary, 500);
+$success: $green;
+$danger: $red;
+// $secondary: mat-color($mcv-accent, 500);
+// $warn: mat-color($mcv-warn, 400);
+// $success: $green;
+// $info: $cyan;
+// $warning: $yellow;
+// $danger: $gray-900;
+// $light: $gray-100;
+// $dark: $gray-800;
+
+$grid-gutter-width: 5px;
+
+// $font-size-base: 0.85rem !default;
+$font-family-sans-serif: "Quicksand",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Helvetica Neue",
+    Arial,
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
+    "Noto Color Emoji" !default;
+
+$font-size-base: 0.8rem !default; // Assumes the browser default, typically `16px`
+$font-size-lg: $font-size-base * 1.25 !default;
+$font-size-sm: $font-size-base * .875 !default;
+
+$font-weight-lighter: lighter !default;
+$font-weight-light: 300 !default;
+$font-weight-normal: 400 !default;
+$font-weight-bold: 600;
+$font-weight-bolder: bolder !default;
+
+$font-weight-base: $font-weight-normal !default;
+$line-height-base: 1.5 !default;
+
+$h1-font-size: $font-size-base * 2 !default;
+$h2-font-size: $font-size-base * 1.75 !default;
+$h3-font-size: $font-size-base * 1.5 !default;
+$h4-font-size: $font-size-base * 1.25 !default;
+$h5-font-size: $font-size-base * 1.2 !default;
+$h6-font-size: $font-size-base * 1.1 !default;
+
+$headings-margin-bottom: 0;
+$headings-font-family: $font-family-sans-serif;
+$headings-font-weight: 400;
+$headings-line-height: 1.2;
+$headings-color: inherit;
+
+$small-font-size: 80% !default;
+$text-muted: $gray-600 !default;
+
+$paragraph-margin-bottom: 5px;
+
+$link-hover-color: $gray-900;
+$link-hover-decoration: none;
+
+$list-width: 22%;
+$detail-width: calc(100% - 22%);
+$border-radius: 6px;
+$box-shadow: 0 3px 1px -2px rgba(22, 18, 18, 0.2),
+    0 2px 2px 0 rgba(0, 0, 0, 0.14),
+    0 1px 5px 0 rgba(0, 0, 0, 0.12);
+$box-shadow-inverse: 0 -3px 1px -2px rgba(0, 0, 0, 0.2),
+    0 -2px 2px 0 rgba(0, 0, 0, 0.14),
+    0 -1px 5px 0 rgba(0, 0, 0, 0.12);
+
+$page-background: $gray-100;
+$title-bar-background: #67a75d;
+$task-title-bar-background: $yellow;
+$title-bar-color: $white;
+$title-bar-label-color: $gray-400;
+$task-title-bar-label-color: $gray-700;
+$action-bar-color: $white;
+$action-bar-background: $gray-200;
+$activity-background: $gray-300;
+$agile-background: $white;
+
+
+// scrollbar-custom
+$scroll-bg: transparent !default;
+$scroll-color: $gray-800 !default;
+$scroll-size: 10px !default;
+
+
+//meeting
+$meeting_type_0: $purple;
+$meeting_type_1: $orange;
+
+$mcv-data-list-dark-bg-color: $dark-blue !default;
+$mcv-data-list-dark-color: $white !default;
+$mcv-data-list-inner-bg-color: $gray-700 !default;
+$mcv-data-list-inner-color: $white !default;
+$mcv-data-list-inner-font-size: 0.85em !default;
+
+$mcv-data-list-header-bg-color: $gray-500 !default;
+$mcv-data-list-header-color: $gray-200 !default;
+$mcv-data-list-header-dark-bg-color: $yellow !default;
+$mcv-data-list-header-dark-color: $gray-900 !default;
+$mcv-data-list-header-font-size: 0.85em !default;
+
+$mcv-data-list-total-bg-color: $black !default;
+$mcv-data-list-total-color: $yellow !default;
+$mcv-data-list-total-font-size: 1.2em !default;
+
+$mcv-data-list-inner-header-bg-color: $blue !default;
+$mcv-data-list-inner-header-color: $gray-300 !default;
+$mcv-data-list-inner-header-font-size: 0.8em !default;
+
+$mcv-data-list-dark-row-border-bottom: 1px solid $gray-700;
+$mcv-data-list-inner-row-border-bottom: 1px solid $gray-800;
+$mcv-data-list-row-border-bottom: 1px solid $gray-300;
+$mcv-data-list-row-hover-bg-color: $yellow !default;
+$mcv-data-list-row-hover-color: $white !default;
+
+$mcv-data-list-cell-padding: 3px !default;
+
+//Seven Variat2on for the size of the font
+$mcv-text-size-1: $font-size-base * 1;
+$mcv-text-size-2: $font-size-base * 1.30; //1.30
+$mcv-text-size-3: $font-size-base * 1.60; //1.60
+$mcv-text-size-4: $font-size-base * 1.90; //1.90
+$mcv-text-size-5: $font-size-base * 2.20; //2.20
+$mcv-text-size-6: $font-size-base * 2.50; //2.50
+$mcv-text-size-7: $font-size-base * 2.80; //2.80
+
+//Seven Variation for weight of the font
+$mcv-text-weight-1: 300;
+$mcv-text-weight-2: 400;
+$mcv-text-weight-3: 500;
+
+
+//mcv-tags tranparent Color
+$tranparent-blue: #0070b7c7;
+
+$app-header-height: 2.5rem;
+$header-button-font-size: 0.6rem;
+$header-button-padding: 0.2rem;
+
+$mcv-file-thumbnail-width: 250px !default;
+$mcv-file-thumbnail-height: 180px !default;
+
+$mcv-file-bg-color: $gray-400 !default;
+$mcv-file-bg-color-hover: $gray-500 !default;
+$mcv-lightbox-wrapper-width: 60vw !default;
+$mcv-menu-sidebar-height: calc(100% - 40px);
+$mcv-menu-width: 22%;
+$mcv-footer-background: $white;

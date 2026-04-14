@@ -1,0 +1,19 @@
+<ul class="simple-list">
+  <li *ngFor="let item of dataList">
+    <mcv-activity-list-item [item]="item"></mcv-activity-list-item>
+  </li>
+  <li *ngIf="dataList.length==0">
+    <div class="row">
+      <div class="col-12">
+        <span>No items found</span>
+      </div>
+    </div>
+  </li>
+  <li *ngIf="totalRecordsCount>0 && (currentPage+1) < totalPages" (click)="loadMoreRecords()" class="text-center">
+    <div class="row">
+      <div class="col-12">
+        <span style="cursor:pointer;">Show More</span>
+      </div>
+    </div>
+  </li>
+</ul>

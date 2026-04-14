@@ -1,0 +1,76 @@
+@import 'variables';
+
+.sitevisit-page-wrapper {
+    width: 100%;
+    background-color: $page-background;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: absolute;
+    top: $app-header-height;
+    left: 0;
+    bottom: 50px;
+
+    &.page-wrapper-no-footer {
+        bottom: 0;
+    }
+}
+
+.sitevisit-detail-wrapper {
+    position: absolute;
+    left: $list-width;
+    top: 0;
+    height: 100%;
+    width: $detail-width;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.sitevisit-detail-wrapper-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.sitevisit-list-wrapper {
+    display: inline-block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: $list-width;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-shadow: $box-shadow; // 3px 3px 3px rgba(0, 0, 0, 0.2);
+    background-color: $white;
+    z-index: 3;
+}
+
+
+@media (max-width: 768px) {
+    .detail-wrapper {
+        width: 100%;
+        left: 0;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .sitevisit-page-wrapper,
+    .scroll-wrapper {
+        top: 92px;
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .sitevisit-list-wrapper {
+        width: 100%;
+    }
+
+    .sitevisit-detail-wrapper {
+        width: 100%;
+        left: 0;
+    }
+}

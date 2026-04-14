@@ -1,0 +1,31 @@
+<div class="item">
+  <div class="w-100">
+    <div class="d-flex justify-content-between align-items-center">
+
+      <h6 class="leave-dates mb-0"
+        *ngIf="item.typeFlag==LEAVE_TYPEFLAG_CASUAL_FIRST_HALF || item.typeFlag==LEAVE_TYPEFLAG_CASUAL_SECOND_HALF || item.typeFlag==LEAVE_TYPEFLAG_EMERGENCY_FIRST_HALF || item.typeFlag==LEAVE_TYPEFLAG_EMERGENCY_SECOND_HALF">
+        {{item.start| date:'dd MMM y HH:mm' }} - {{item.end | date:'HH:mm' }}</h6>
+
+      <h6 class="leave-dates mb-0"
+        *ngIf="!(item.typeFlag==LEAVE_TYPEFLAG_CASUAL_FIRST_HALF || item.typeFlag==LEAVE_TYPEFLAG_CASUAL_SECOND_HALF || item.typeFlag==LEAVE_TYPEFLAG_EMERGENCY_FIRST_HALF || item.typeFlag==LEAVE_TYPEFLAG_EMERGENCY_SECOND_HALF)">
+        {{item.start | date:'dd MMM y' }} - {{item.end | date:'dd MMM y' }}</h6>
+
+      <mat-icon *ngIf="item.statusFlag !== null && item.statusFlag !== undefined" [ngClass]="{ 'status-text': true, 'status-pending': item.statusFlag === 0, 'status-approved': item.statusFlag === 1,
+    'status-rejected': item.statusFlag === -1
+  }">
+        {{
+        item.statusFlag === 0 ? 'help' :
+        item.statusFlag === 1 ? 'done_all' :
+        item.statusFlag === -1 ? 'remove_done' : ''
+        }}
+      </mat-icon>
+
+    </div>
+    <div class="d-flex justify-content-between align-items-center mt-1">
+      <div class="d-flex align-items-center">
+        <h6 class="leave-type">{{item.typeValue}}</h6>
+      </div>
+      <h6 class="leave-type total">{{item.total}}</h6>
+    </div>
+  </div>
+</div>

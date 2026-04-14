@@ -1,0 +1,136 @@
+@import "variables";
+@import "theme";
+
+.contact-team-appointment-list-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+
+    .contact-team-appointment-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+        max-width: 850px;
+
+        &>li {
+            border-radius: $border-radius;
+            box-shadow: $box-shadow;
+            padding: 0.3rem;
+            background-color: $white;
+            // width: calc(50% - 0.3rem);
+
+            .contact-team-appointment-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.3rem;
+                background-color: mat-color($mcv-accent, 500);
+                color: $white;
+                padding: 0.5rem;
+                border-radius: $border-radius;
+
+                &.active {
+                    background-color: mat-color($mcv-primary, 500);
+                }
+            }
+
+            &.new-appointment-card {
+                display: flex;
+                // flex-direction: column;
+                align-items: center;
+                // justify-content: space-between;
+                background-color: $paper-yellow;
+                cursor: pointer;
+
+                .mat-icon {
+                    height: auto;
+                    width: auto;
+                }
+
+                .material-icons {
+                    font-size: 2.5rem;
+                }
+
+                // h6 {
+                //     font-size: 1.5rem;
+                // }
+            }
+
+            .contact-team-appointment-details {
+
+
+                .property-collection {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 0.5rem;
+                    padding-bottom: 0.5rem;
+
+                    .property {
+                        display: flex;
+                        gap: 0.3rem;
+                        justify-content: space-between;
+                        border: 1px solid $gray-300;
+                        border-radius: 4px;
+                        cursor: pointer;
+                        padding: 0.3rem;
+                        flex-grow: 1;
+                        flex-shrink: 1;
+                        min-width: 20rem;
+                        min-height: 2.5rem;
+
+                        .property-details {
+                            flex-grow: 1;
+                            flex-shrink: 1;
+                            max-width: 100%;
+                        }
+
+                        .property-value {
+                            .list {
+                                // border: 1px solid $gray-500;
+                                padding: 0.2rem;
+                                border-radius: 4px;
+                                margin-bottom: 0.2rem;
+                            }
+                        }
+
+                        .property-label {
+                            font-size: 0.7rem;
+                            color: $gray-600;
+                        }
+
+                        .property-actions {
+                            display: flex;
+                            justify-content: flex-end;
+                            // gap: 0.5rem;
+
+                            // mat-icon {
+                            //   height: 20px;
+                            //   width: 20px;
+                            //   font-size: 20px;
+                            //   // padding: 0.3rem;
+                            // }
+                        }
+
+                    }
+
+
+                }
+            }
+
+        }
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .contact-team-appointment-list-wrapper {
+
+        .contact-team-appointment-list {
+            max-width: 100%;
+        }
+    }
+
+}

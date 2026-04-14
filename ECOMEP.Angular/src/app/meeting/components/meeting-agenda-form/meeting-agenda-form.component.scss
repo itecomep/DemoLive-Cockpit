@@ -1,0 +1,105 @@
+@import 'variables';
+@import 'theme';
+
+.meeting-agenda-dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: mat-color($mcv-primary, 500);
+    color: $white;
+
+    .meeting-agenda-dialog-header-title {
+        font-weight: 600;
+        padding: 12px;
+    }
+
+    .meeting-agenda-dialog-header-actions {
+        flex-grow: 1;
+        flex-shrink: 0;
+        display: flex;
+        gap: 0.3rem;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0 15px;
+    }
+}
+
+.meeting-agenda-form {
+    max-width: 700px;
+    padding: 0.5rem;
+
+    .contact-alert-bar {
+        margin: 0.5rem;
+        padding: 0.5rem;
+        border-radius: $border-radius;
+        background-color: $red;
+        color: $white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    form {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.3rem;
+
+        .meeting-agenda-form-field {
+            flex-grow: 1;
+
+            .street-field {
+                min-width: 45%;
+            }
+        }
+
+        .meeting-agenda-form-actions {
+            display: flex;
+            align-items: flex-end;
+            gap: 0.3rem;
+            flex-grow: 0;
+        }
+    }
+
+    .form-collection {
+        border-radius: $border-radius;
+        padding: 0.3rem;
+        margin: 15px 0 0 0;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+
+        .form-collection-title {
+            font-weight: 600;
+            padding: 0.3rem;
+            color: $gray-600;
+        }
+
+        .form-collection-actions {
+            display: flex;
+            gap: 0.3rem;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0.2rem;
+        }
+
+        .form-collection-item {
+            border: 1px solid $gray-300;
+            border-radius: $border-radius;
+            padding: 0.3rem 0;
+        }
+    }
+}
+
+.meeting-agenda-attachments {
+    // max-width: 700px;
+    padding: 10px 0;
+}
+
+@media only screen and (max-width: 768px) {
+    .meeting-agenda-form {
+        max-width: auto;
+    }
+
+}

@@ -1,0 +1,179 @@
+<div class="contact-team-appointment-list-wrapper">
+    <ul class="contact-team-appointment-list">
+        <li class="new-appointment-card" *ngIf="isPermissionEdit" (click)="onClickNew()">
+            <mat-icon>add</mat-icon>
+            <div>
+                <h4 class="font-focused" aria-label="New Appointment">
+                    New Appointment
+                </h4>
+                <small>Click here to add new appointment</small>
+            </div>
+        </li>
+        <li *ngFor="let appointment of contact.appointments">
+            <div class="contact-team-appointment-header" [ngClass]="{
+              active: appointment.statusFlag == TEAM_APPOINTMENT_STATUS_APPOINTED            }">
+                <h3 class="contact-team-appointment-code">
+                    {{ appointment.code }}
+                </h3>
+                <h5 class="contact-team-appointment-code"><small>Appointed On:</small> {{appointment.joiningDate |
+                    date:'dd MMM y'}}
+                    <small *ngIf="appointment.resignationDate">Resigned On:</small>
+                    {{appointment.resignationDate | date:'dd MMM y'}}
+                </h5>
+            </div>
+            <div class="contact-team-appointment-details" *ngIf="!isPermissionEdit">
+
+                <div class="property-collection">
+                    <div class="property">
+                        <div class="property-details">
+                            <small class="property-label">Type</small>
+                            <div class="property-value">
+                                <h6>{{appointment.typeValue}}</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="property">
+                        <div class="property-details">
+                            <small class="property-label">Company Name</small>
+                            <div class="property-value">
+                                <h6>{{appointment.company?.initials}} | {{appointment.company?.title}}</h6>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="property">
+                        <div class="property-details">
+                            <small class="property-label">Designation</small>
+                            <div class="property-value">
+                                <h6>{{appointment.designation}}</h6>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="property">
+                        <div class="property-details">
+                            <small class="property-label">Employee Code</small>
+                            <div class="property-value">
+                                <h6>{{appointment.employeeCode}}</h6>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="property-collection">
+                    <div class="property">
+                        <div class="property-details">
+                            <small class="property-label">Joining Date</small>
+                            <div class="property-value">
+                                <h6>{{appointment.joiningDate | date:'dd MMM y'}}</h6>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="property">
+                        <div class="property-details">
+                            <small class="property-label">Resignation Date</small>
+                            <div class="property-value">
+                                <h6>{{appointment.resignationDate | date:'dd MMM y'}}</h6>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="property">
+                        <div class="property-details">
+                            <small class="property-label">Location</small>
+                            <div class="property-value">
+                                <h6>{{appointment.location}}</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="property-collection">
+                    <div class="property">
+                        <div class="property-details">
+                            <small class="property-label">Status</small>
+                            <div class="property-value">
+                                <h6>{{appointment.statusValue }}</h6>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="property">
+                        <div class="property-details">
+                            <small class="property-label">Reporting To</small>
+                            <div class="property-value">
+                                <h6>{{appointment.managerContact?.name}}</h6>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="property">
+                        <div class="property-details">
+                            <small class="property-label">Comment</small>
+                            <div class="property-value">
+                                <p>{{appointment.description}}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="property">
+                        <div class="property-details">
+                            <small class="property-label">Teams</small>
+                            <div class="property-value">
+                                <ng-container *ngFor="let team of teams">
+                                    <h6 class="list" *ngIf="isMemberInTeam(team, appointment.contactID)">
+                                        {{ team.title }}
+                                    </h6>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="property-collection">
+
+                    <ul class="mcv-file-list">
+                        <li *ngFor="let file of getFilteredAttachments(appointment.attachments,0,true)">
+                            <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="false"
+                                [downloadUrl]="file.url" [showPreview]="true" [singlePreview]="true" [url]="file.url"
+                                [thumbUrl]="file.thumbUrl">
+                            </mcv-file>
+                            <div class="p-2">
+                                <mat-chip-set>
+                                    <mat-chip *ngFor="let tag of file.searchTags">
+                                        {{tag}}
+                                    </mat-chip>
+                                </mat-chip-set>
+                            </div>
+                        </li>
+
+                        <li *ngFor="let file of getFilteredAttachments(appointment.attachments,0,false)">
+                            <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="false"
+                                [downloadUrl]="file.url" [thumbUrl]="file.thumbUrl">
+                            </mcv-file>
+                            <div class="p-2">
+                                <mat-chip-set>
+                                    <mat-chip *ngFor="let tag of file.searchTags">
+                                        {{tag}}
+                                    </mat-chip>
+                                </mat-chip-set>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+            <app-contact-team-appointment-form [config]="{
+                contact: contact,
+                appointment: appointment,
+                contactOptions: contactOptions,
+                teamOptions: teams
+              }" (update)="onUpdate($event,appointment)" (delete)="onDelete($event)"
+                *ngIf="isPermissionEdit"></app-contact-team-appointment-form>
+            <app-contact-team-appointment [appointment]="appointment"></app-contact-team-appointment>
+
+        </li>
+
+    </ul>
+</div>

@@ -1,0 +1,56 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">Upload Files</h5>
+    <div class="d-flex align-items-center">
+        <button mat-icon-button (click)="onSubmit()">
+            <mat-icon>done</mat-icon>
+        </button>
+        <button mat-icon-button aria-label="close" (click)="onClose()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+<mat-dialog-content>
+    <div class="form-wrapper">
+        <div class="row" [formGroup]="form">
+            <mat-form-field appearance="outline" class="col-md-5 col-12">
+                <mat-label>Received Date</mat-label>
+                <input placeholder="Received Date" aria-label="Received Date" matInput formControlName="receivedDate"
+                    [matDatepicker]="pickerExpectedCompletionDate">
+                <mat-datepicker-toggle matSuffix [for]="pickerExpectedCompletionDate"></mat-datepicker-toggle>
+                <mat-datepicker [touchUi]="isMobileView" #pickerExpectedCompletionDate></mat-datepicker>
+                <mat-error>{{getErrorMessage(f['receivedDate'])}}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-7 col-12">
+                <mat-label>Received From</mat-label>
+                <input placeholder="Enter name of contact to select from the list" aria-label="Received From" matInput
+                    formControlName="contact" [matAutocomplete]="autoContact" />
+                <mat-autocomplete #autoContact="matAutocomplete" [displayWith]="displayFnContact">
+                    <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
+                        {{ option.name }} <small>({{ option.email }})</small>
+                    </mat-option>
+                </mat-autocomplete>
+                <span matSuffix>
+                    <mat-icon>person</mat-icon>
+                </span>
+                <mat-error>{{ getErrorMessage(f['contact']) }}</mat-error>
+            </mat-form-field>
+        </div>
+
+        <div>
+            <app-mcv-file-upload class="pt-1" [uploaderConfig]="blobConfig" [showPaste]="true"
+                (upload)="onUpload($event)" *ngIf="blobConfig">
+            </app-mcv-file-upload>
+
+            <ul class="mcv-file-list">
+                <li *ngFor="let file of attachments">
+                    <mcv-file [file]="file" [filename]="file.filename" [size]="file.size"
+                        [showRemove]="true" (delete)="onDeleteAttachment(file)"
+                        [downloadUrl]="file.url" [showPreview]="true" [singlePreview]="true" [url]="file.url"
+                        [thumbUrl]="file.thumbUrl">
+                    </mcv-file>
+                </li>
+            </ul>
+        </div>
+    </div>
+</mat-dialog-content>

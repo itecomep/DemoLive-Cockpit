@@ -1,0 +1,26 @@
+@import 'variables';
+
+.mat-expansion-panel {
+
+    .cockpit-panel .mat-expansion-panel-body,
+    .cockpit-panel-md .mat-expansion-panel-body {
+        height: 450px;
+    }
+
+    .cockpit-panel-sm .mat-expansion-panel-body {
+        height: 300px;
+    }
+
+    .cockpit-panel-lg .mat-expansion-panel-body {
+        height: 600px;
+    }
+}
+
+.cockpit-expansion-panel-search-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    gap: 0.2rem;
+}

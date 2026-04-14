@@ -1,0 +1,215 @@
+<div class="row">
+    <div class="col-md-8">
+        <mat-expansion-panel [expanded]="true">
+            <mat-expansion-panel-header>
+                <mat-panel-title>Details</mat-panel-title>
+                <button *ngIf="isPermissionWorkOrderEdit" mat-raised-button color="primary"
+                    (click)="onAddToMaster($event)">
+                    Add to Master
+                </button>
+                <button *ngIf="isPermissionWorkOrderEdit" mat-icon-button (click)="onEditWorkOrder($event)">
+                    <mat-icon>edit</mat-icon>
+                </button>
+            </mat-expansion-panel-header>
+            <div class="property-collection">
+                <div class="property">
+                    <div class="property-details">
+                        <small class="property-label">Company</small>
+                        <div class="property-value">
+                            <h6>{{workOrder.company?.title}}</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="property">
+                    <div class="property-details">
+                        <small class="property-label">Typology</small>
+                        <div class="property-value">
+                            <h6>{{workOrder.typology}}</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="property">
+                    <div class="property-details">
+                        <small class="property-label">WorkOrder Number</small>
+                        <div class="property-value">
+                            <h6>{{workOrder.workOrderNo}}</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="property">
+                    <div class="property-details">
+                        <small class="property-label">WorkOrder Date</small>
+                        <div class="property-value">
+                            <h6>{{workOrder.workOrderDate | date:'dd MMM y HH:mm'}}</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="property">
+                    <div class="property-details">
+                        <small class="property-label">Due Date</small>
+                        <div class="property-value">
+                            <h6>{{workOrder.dueDate | date:'dd MMM y'}}</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="property">
+                    <div class="property-details">
+                        <small class="property-label">Area</small>
+                        <div class="property-value">
+                            <h6>{{workOrder.area}}</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="property">
+                    <div class="property-details">
+                        <small class="property-label">Rate</small>
+                        <div class="property-value">
+                            <h6>{{workOrder.rate | currency: 'INR' }}</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="property">
+                    <div class="property-details">
+                        <small class="property-label">is LumpSum</small>
+                        <div class="property-value">
+                            <h6>{{workOrder.isLumpSum ? 'Yes' : 'No'}}</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="property">
+                    <div class="property-details">
+                        <small class="property-label">Amount</small>
+                        <div class="property-value">
+                            <h6>{{workOrder.amount | currency: 'INR' }}</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </mat-expansion-panel>
+    </div>
+    <div class="col-md-4">
+        <mat-expansion-panel [expanded]="true">
+            <mat-expansion-panel-header>
+                <mat-panel-title>Attachments</mat-panel-title>
+            </mat-expansion-panel-header>
+            <ul class="mcv-file-list">
+                <li *ngFor="let file of workOrder.attachments">
+                    <mcv-file [filename]="file.filename" [size]="file.size" [downloadUrl]="file.url"
+                        [showPreview]="false" [url]="file.url || file.thumbUrl" [singlePreview]="true"
+                        [showRemove]="false" (delete)="onDeleteAttachment(file)">
+                    </mcv-file>
+                </li>
+            </ul>
+        </mat-expansion-panel>
+    </div>
+</div>
+<div class="project-stages-wrapper" *ngIf="workOrderStages.length > 0">
+    <div class="project-stages-header">
+        <div>
+            <small>Total Progress</small>
+            <h5 class="font-focused">{{stageTotalProgress}} %</h5>
+        </div>
+
+        <div>
+            <small>Pending Stages</small>
+            <h5 class="font-focused">{{stagePendingProgress}} %</h5>
+        </div>
+    </div>
+
+    <div class="project-stages-table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="2">#</th>
+                    <th>Stage</th>
+                    <th>Value</th>
+                    <th>Amount</th>
+                    <th>Target Date</th>
+                    <!-- <th>Comments</th> -->
+                    <th>Billing Date</th>
+                    <th>Payment Received Date</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+                <tr class="total">
+                    <th colspan="3">Total</th>
+                    <th [ngClass]="{ 'bg-red': stageTotal != 100 }">
+                        {{stageTotal}}%
+                    </th>
+                    <th colspan="6"></th>
+                </tr>
+                <tr *ngIf="stageTotal != 100">
+                    <th colspan="12">
+                        <h5 class="error-message">Stage total must be exact 100%</h5>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let item of workOrderStages;let i = index">
+                    <tr>
+                        <td class="align-center" colspan="2">
+                            {{i + 1}}
+                        </td>
+                        <td>
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <h6>{{item.title}}</h6>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="align-center">
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <h6>{{item.percentage}}</h6>
+                                    <span class="cell-input-suffix">%</span>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="align-center">
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <h6>{{item.amount | currency: 'INR'}}</h6>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="align-center">
+                            <div class="cell-content justify-content-between">
+                                <div>{{item.dueDate | date:"dd MMM yyyy"}}</div>
+                            </div>
+                        </td>
+
+                        <td class="align-center">
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <h6>{{item.billingDate | date:"dd MMM yyyy"}}</h6>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="align-center">
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <h6>{{item.paymentReceivedDate | date:"dd MMM yyyy"}}</h6>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="align-center">
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <h6>{{getStatusTitle(item.statusFlag)}}</h6>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="align-center">
+                        </td>
+                    </tr>
+                </ng-container>
+            </tbody>
+        </table>
+    </div>
+</div>
+<h6 class="bold" *ngIf="workOrderStages.length == 0">No Stages Found!</h6>

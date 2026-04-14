@@ -1,0 +1,78 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">New WorkOrder</h5>
+    <div class="d-flex align-items-center">
+        <button mat-raised-button aria-label="close" color="primary" (click)="onSubmit()">
+            Save
+        </button>
+        <button mat-icon-button aria-label="close" (click)="onClose()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+<mat-dialog-content>
+    <div class="form-container">
+        <h6 class="font-focused py-1">Details</h6>
+        <div class="row p-1" [formGroup]="form">
+            <mat-form-field appearance="outline" class="col-md-12">
+                <mat-label>Company</mat-label>
+                <mat-select formControlName="companyID">
+                    <mat-option *ngFor="let company of companyOptions" [value]="company.id">
+                        {{ company.initials }} | {{ company.title }}
+                    </mat-option>
+                </mat-select>
+                <mat-error>{{ getErrorMessage(f.companyID) }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-12">
+                <mat-label>WorkOrder Date</mat-label>
+                <input placeholder="WorkOrder Date" aria-label="WorkOrder Date" matInput formControlName="workOrderDate"
+                    [matDatepicker]="pickerWorkOrderDate">
+                <mat-datepicker-toggle matSuffix [for]="pickerWorkOrderDate"></mat-datepicker-toggle>
+                <mat-datepicker [touchUi]="isMobileView" #pickerWorkOrderDate></mat-datepicker>
+                <mat-error>{{getErrorMessage(f.workOrderDate)}}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-12">
+                <mat-label>Due Date</mat-label>
+                <input placeholder="Due Date" aria-label="Due Date" matInput formControlName="dueDate"
+                    [matDatepicker]="pickerDueDate">
+                <mat-datepicker-toggle matSuffix [for]="pickerDueDate"></mat-datepicker-toggle>
+                <mat-datepicker [touchUi]="isMobileView" #pickerDueDate></mat-datepicker>
+                <mat-error>{{getErrorMessage(f.dueDate)}}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-12">
+                <mat-label>WorkOrder Number</mat-label>
+                <input placeholder="WorkOrder Number" aria-label="WorkOrder Number" matInput
+                    formControlName="workOrderNo" [min]="0">
+                <span matSuffix><mat-icon>hourglass_empty</mat-icon></span>
+                <mat-error>{{getErrorMessage(f.workOrderNo)}}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-12">
+                <mat-label>Amount</mat-label>
+                <input type="number" placeholder="Amount" aria-label="Amount" matInput formControlName="fees" [min]="0">
+                <span matSuffix><mat-icon>currency_rupee</mat-icon></span>
+                <mat-error>{{getErrorMessage(f.fees)}}</mat-error>
+            </mat-form-field>
+        </div>
+
+        <h6 class="font-focused py-1">Attachments</h6>
+        <div class="attachment-container">
+            <app-mcv-file-upload class="pt-1" [uploaderConfig]="blobConfig" [showPaste]="true"
+                (upload)="onUpload($event)" *ngIf="blobConfig">
+            </app-mcv-file-upload>
+
+            <div class="col-12">
+                <ul class="mcv-file-list">
+                    <li *ngFor="let file of workOrder.attachments">
+                        <mcv-file [filename]="file.filename" [size]="file.size" [downloadUrl]="file.url"
+                            [showPreview]="true" [url]="file.url || file.thumbUrl" [singlePreview]="true"
+                            [showRemove]="true" (delete)="onDeleteAttachment(file)">
+                        </mcv-file>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</mat-dialog-content>

@@ -1,0 +1,61 @@
+<div class='expense-form-div'>
+    <form [formGroup]="form" autocomplete="off">
+        <div class="row">
+            <!-- Amount  -->
+            <mat-form-field appearance="outline" class="col-4 col-md-3">
+                <mat-label>Amount</mat-label>
+                <input type="number" placeholder="Enter Expense Amount" aria-label="expenseAmount" matInput
+                    formControlName="expenseAmount" min="0" class="form-input-currency" />
+                <span matSuffix class="form-input-suffix"> &#x20B9;</span>
+                <mat-error>{{ getErrorMessage(f.expenseAmount) }}</mat-error>
+            </mat-form-field>
+
+            <!-- Category  -->
+            <mat-form-field appearance="outline" class="col-4 col-md-3">
+                <mat-label>Expense Head</mat-label>
+                <mat-select formControlName="expenseHead">
+                    <mat-option *ngFor="let item of expenseHeadOptions" [value]="item">
+                        {{item}}
+                    </mat-option>
+                </mat-select>
+                <mat-error>{{ getErrorMessage(f.expenseHead) }}</mat-error>
+            </mat-form-field>
+
+            <!-- Particulars  -->
+            <mat-form-field appearance="outline" class="col-4 col-md-3">
+                <mat-label>Particulars</mat-label>
+                <input placeholder="Particulars" aria-label="Particulars" matInput
+                    formControlName="particulars" />
+                <mat-error>{{ getErrorMessage(f.particulars)}}</mat-error>
+            </mat-form-field>
+
+            <!-- Buttons  -->
+            <div class="col-md-12">
+                <div class="d-flex justify-content-end">
+                    <div class="d-flex">
+                        <app-mcv-file-upload [uploaderConfig]="blobConfig" [showDrop]="false" [showPaste]="true"
+                            (upload)="onUpload($event)" *ngIf="blobConfig">
+                        </app-mcv-file-upload>
+                    </div>
+                    <button mat-icon-button color="primary" matTooltip="Save" aria-label="Save" (click)="onSave()">
+                        <mat-icon>check</mat-icon>
+                    </button>
+                    <button mat-icon-button color="warn" matTooltip="Delete" aria-label="Delete" (click)="onDelete()" *ngIf="!isCreateMode">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Attachments -->
+    <ul class="mcv-file-list">
+        <li *ngFor="let file of currentEntity.attachments">
+            <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="true" [tags]="file.searchTags"
+                (delete)="onDeleteAttachment(file)" [allowTagging]="true" [downloadUrl]="file.url" [showPreview]="true"
+                [singlePreview]="true" [url]="file.url">
+            </mcv-file>
+        </li>
+    </ul>
+</div>

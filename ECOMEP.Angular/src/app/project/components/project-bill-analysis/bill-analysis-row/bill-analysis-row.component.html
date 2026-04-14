@@ -1,0 +1,247 @@
+<div class="followup-container">
+
+  <button class="dialog-close-btn" (click)="closeDialog()">✖</button>
+
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+
+    <h3>Follow-Up History</h3>
+
+    <div *ngIf="followUps && followUps.length > 0; else noHistory">
+
+      <div class="card history-card" *ngFor="let f of followUps">
+
+        <!-- ACTION ICONS -->
+        <div class="actions">
+          <button mat-icon-button color="primary" (click)="editFollowUp(f)">
+            <mat-icon>edit</mat-icon>
+          </button>
+
+          <button mat-icon-button color="warn" (click)="deleteFollowUp(f.id)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+
+        <!-- ROW 1 -->
+        <div class="row">
+          <p>
+            <span class="label">Communicated By:</span>
+            <span class="value">{{ f.communicatedByClient || '-' }}</span>
+          </p>
+
+          <p>
+            <span class="label">Date:</span>
+            <span class="value">{{ f.communicationDate | date:'dd MMM y' }}</span>
+          </p>
+        </div>
+
+        <!-- ROW 2 -->
+        <div class="row">
+          <p>
+            <span class="label">To:</span>
+            <span class="value">{{ f.communicatedTo || '-' }}</span>
+          </p>
+
+          <p>
+            <span class="label">Next Follow-Up:</span>
+            <span class="value">
+              {{ f.nextFollowUpDate ? (f.nextFollowUpDate | date:'dd MMM y') : '-' }}
+            </span>
+          </p>
+        </div>
+
+        <!-- RESPONSE -->
+        <p>
+          <span class="label">Response:</span>
+          <span class="value">{{ f.response || '-' }}</span>
+        </p>
+
+        <!-- ATTACHMENTS -->
+        <div>
+          <p><b>Attachments:</b></p>
+
+          <div *ngIf="f.files && f.files.length > 0; else noFileHistory">
+
+            <!-- 🔥 FLEX WRAP CONTAINER -->
+            <div class="file-container">
+
+              <div *ngFor="let file of f.files" class="file-chip">
+
+                <!-- IMAGE -->
+                <span *ngIf="isImage(file.url)" class="file-link" (click)="openPreview(file)">
+                  {{ getFileName(file) }}
+                </span>
+
+                <!-- NON IMAGE -->
+                <a *ngIf="!isImage(file.url)" [href]="file.url" target="_blank" download class="file-link">
+                  {{ getFileName(file) }}
+                </a>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <ng-template #noFileHistory>
+            <span>-</span>
+          </ng-template>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ✅ FIXED TEMPLATE -->
+    <ng-template #noHistory>
+      <p>No follow-ups yet.</p>
+    </ng-template>
+
+  </div>
+
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+
+    <h2>Bill Details</h2>
+
+   <div class="card">
+
+  <p>
+    <span class="label">Project:</span>
+    <span class="value">{{ bill?.projectCode }} - {{ bill?.projectTitle }}</span>
+  </p>
+
+  <p>
+    <span class="label">Client:</span>
+    <span class="value">{{ bill?.clientName }}</span>
+  </p>
+
+  <!-- 🔥 ROW 1 -->
+  <div class="row">
+    <p>
+      <span class="label">Bill No:</span>
+      <span class="value">{{ getBillNo(bill) }}</span>
+    </p>
+
+    <p>
+      <span class="label">Bill Date:</span>
+      <span class="value">{{ bill?.billDate | date:'dd MMM y' }}</span>
+    </p>
+  </div>
+
+  <!-- 🔥 ROW 2 -->
+  <div class="row">
+    <p>
+      <span class="label">Bill Amount:</span>
+      <span class="value">{{ bill?.dueAmount | currency:'INR' }}</span>
+    </p>
+
+    <p>
+      <span class="label">Received:</span>
+      <span class="value">{{ getReceivedPayment(bill) | currency:'INR' }}</span>
+    </p>
+  </div>
+
+  <!-- 🔥 BALANCE -->
+  <p>
+    <span class="label">Balance:</span>
+    <span class="value"
+      [ngClass]="{
+        'text-red': getPendingPayment(bill) > 0,
+        'text-green': getPendingPayment(bill) <= 0
+      }">
+      {{ getPendingPayment(bill) | currency:'INR' }}
+    </span>
+  </p>
+
+</div>
+
+
+
+    <h2>Follow-Up Form</h2>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Communication Date</mat-label>
+      <input matInput [matDatepicker]="picker" [(ngModel)]="formData.communicationDate">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Communicated To</mat-label>
+      <input matInput [(ngModel)]="formData.communicatedTo">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Next Follow-Up Date</mat-label>
+      <input matInput [matDatepicker]="nextPicker" [(ngModel)]="formData.nextFollowUpDate">
+      <mat-datepicker-toggle matSuffix [for]="nextPicker"></mat-datepicker-toggle>
+      <mat-datepicker #nextPicker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Response</mat-label>
+      <textarea matInput rows="4" [(ngModel)]="formData.response"></textarea>
+    </mat-form-field>
+
+    <div class="file-upload">
+
+      <button mat-stroked-button type="button" (click)="fileInput.click()">
+        Upload File
+      </button>
+
+      <input #fileInput type="file" multiple hidden (change)="onFileSelected($event)" />
+
+      <div *ngIf="attachments.length > 0">
+        <p><b>Selected Files:</b></p>
+
+        <div *ngFor="let file of attachments">
+          {{ file.name }}
+        </div>
+      </div>
+
+    </div>
+
+    <!-- EXISTING FILES -->
+    <div *ngIf="(existingFiles || []).length > 0">
+      <p><b>Existing Files:</b></p>
+
+      <div class="file-container">
+        <div *ngFor="let file of existingFiles; let i = index" class="file-chip">
+
+          <span class="file-name">
+            {{ getFileName(file) }}
+          </span>
+
+          <button mat-icon-button color="warn" (click)="removeExistingFile(i)"
+            style="font-size: 10px; width: 20px; height: 20px;">
+            ❌
+          </button>
+
+        </div>
+      </div>
+    </div>
+
+    <button mat-raised-button color="primary" class="save-btn" (click)="save()">
+      Save Follow-Up
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- FILE PREVIEW MODAL -->
+<div class="preview-overlay" *ngIf="previewFile" (click)="closePreview()">
+
+  <div class="preview-modal" (click)="$event.stopPropagation()">
+
+    <button class="close-btn" (click)="closePreview()">✖</button>
+
+    <img *ngIf="isImage(previewFile.url)" [src]="previewFile.url" class="modal-img" />
+
+  </div>
+
+</div>

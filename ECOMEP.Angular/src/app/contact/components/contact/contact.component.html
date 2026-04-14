@@ -1,0 +1,70 @@
+<div class="contact-wrapper">
+
+  <div class="contact-header " [ngClass]="{'editable':isEditMode}">
+    <div class="title-bar">
+      <div>
+        <img class="contact-icon" src="{{ currentEntity.photoUrl || 'assets/images/person-icon.svg' }}" alt=""
+          *ngIf="!currentEntity.isCompany" (click)="openPhotoDialog()" style="cursor: pointer;"/>
+        <img class="contact-icon" src="{{ currentEntity.photoUrl || 'assets/images/company-icon.svg' }}" alt=""
+          *ngIf="currentEntity.isCompany" (click)="openPhotoDialog()" style="cursor: pointer;"/>
+      </div>
+
+      <div>
+        <h5 class="font-focused">{{currentEntity.name}}</h5>
+
+        <div class="category-tag-list">
+          <span *ngFor="let category of currentEntity.categories" class="category-tag">{{category}}
+          </span>
+        </div>
+        <div class="appointment-list">
+          <span *ngFor="let app of currentEntity.appointments" class="appointment-tag">{{app.code}} |
+            {{app.designation}}</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="action-bar">
+      <small *ngIf="isActiveAppointment" class="pr-2">Editable in Team List</small>
+    </div>
+  </div>
+
+
+
+  <mat-tab-group *ngIf="currentEntity">
+
+    <mat-tab label="Contact Details">
+      <ng-template matTabContent>
+
+        <app-contact-details [currentEntity]="currentEntity" *ngIf="!isEditMode"></app-contact-details>
+        <!-- <app-contact-update [currentEntity]="currentEntity" (updated)="onUpdate($event)" *ngIf="isEditMode"
+          (formChange)="onFormChange($event)"></app-contact-update> -->
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Associations" *ngIf="isPermissionAssocationView">
+      <ng-template matTabContent>
+        <app-contact-association [config]="{
+          contact: currentEntity,
+          associations: currentEntity.isCompany ? currentEntity.associatedContacts : currentEntity.associatedCompanies,
+          contactOptions: [],
+          updateDatabase: true
+        }" (update)="updateAssociation($event)"></app-contact-association>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="WorkOrders" *ngIf="isPermissionWorkOrderView">
+      <ng-template matTabContent>
+        <app-contact-work-order [contact]="currentEntity"></app-contact-work-order>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Projects" *ngIf="isPermissionProjectView">
+      <ng-template matTabContent>
+        <app-contact-projects [contact]="currentEntity"></app-contact-projects>
+      </ng-template>
+    </mat-tab>
+
+  </mat-tab-group>
+
+</div>

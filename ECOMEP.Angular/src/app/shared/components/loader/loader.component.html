@@ -1,0 +1,29 @@
+<ng-container *ngIf="showLoader">
+  <div class="loader-overlay">
+  </div>
+
+  <!-- <div class="loader-logo">
+    <img src="{{ logoUrl || 'assets/images/logo.png' }}" />
+  </div> -->
+
+  <div class="loader-content">
+    <div class="loader-animation">
+      <div class="loading">
+        <div class="bounceball"></div>
+        <div class="text">
+          <h1>LOADING....</h1>
+          <small>Please wait.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loader-footer">
+    <div class="loader-logo">
+      <img src="{{ logoUrl || 'assets/images/logo.png' }}" />
+    </div>
+    <h2>MyCockpitView&copy;</h2>
+    <small>Powered by Newarch<sup>&reg;</sup> Infotech LLP</small>
+  </div>
+
+</ng-container>

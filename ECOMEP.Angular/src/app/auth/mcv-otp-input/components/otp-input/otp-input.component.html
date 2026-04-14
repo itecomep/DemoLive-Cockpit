@@ -1,0 +1,9 @@
+<div class="mcv-otp-input-wrapper wrapper {{config.containerClass}}" id="c_{{componentKey}}" *ngIf="otpForm?.controls"
+    [ngStyle]="config.containerStyles">
+    <input (paste)="handlePaste($event)" [pattern]="config.allowNumbersOnly ? '\\d*' : ''" [type]="inputType"
+        [placeholder]="config?.placeholder || ''" [ngStyle]="config.inputStyles"
+        class="mcv-otp-input {{config.inputClass}}" autocomplete="one-time-code"
+        *ngFor="let item of otpForm?.controls | otpInputKeys;let i=index" [formControl]="getFormControl(item)" #inp
+        id="otp_{{i}}_{{componentKey}}" (keyup)="onKeyUp($event,i)" (input)="onInput($event)"
+        (keydown)="onKeyDown($event)">
+</div>

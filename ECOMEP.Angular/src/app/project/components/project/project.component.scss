@@ -1,0 +1,180 @@
+@import "variables";
+@import "theme";
+
+.project-wrapper {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  .project-details {
+    flex-grow: 1;
+    flex-shrink: 1;
+    max-height: 100%;
+    overflow: hidden;
+  }
+
+  ::ng-deep .mat-mdc-tab-group {
+    flex-grow: 1;
+    flex-shrink: 1;
+    max-height: 100%;
+    overflow: hidden;
+
+    .mat-mdc-tab-body {
+      overflow: hidden !important;
+    }
+
+    .mat-mdc-tab-list {
+      border-bottom: 1px solid $gray-200;
+      padding: 0 0.3rem 0.2rem;
+
+      .mdc-tab {
+        min-width: 4rem !important;
+        height: 48px !important;
+        padding: 0 0.8rem !important;
+        opacity: 1 !important;
+        margin: 0 0.1rem !important;
+        background-color: $white !important;
+        // box-shadow: $box-shadow !important;
+      }
+
+      .mat-mdc-tab .mdc-tab__text-label {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        white-space: nowrap;
+
+        small {
+          font-size: 0.6rem;
+        }
+      }
+
+      .mat-mdc-tab.mdc-tab {
+        flex-grow: 0 !important;
+      }
+    }
+
+    .mat-mdc-tab-label,
+    .mat-mdc-tab-link {
+      font-family: $font-family-sans-serif !important;
+    }
+
+    .mat-mdc-tab-body-wrapper {
+      height: 100%;
+
+      .mat-mdc-tab-body-content {
+        overflow-x: hidden !important;
+      }
+    }
+  }
+
+
+  ::ng-deep .mat-mdc-tab-list {
+    padding: 0 !important;
+
+  }
+
+  ::ng-deep .mat-mdc-tab.mdc-tab {
+    min-width: 4rem !important;
+    height: 48px;
+    padding: 0 .8rem !important;
+    opacity: 1 !important;
+    background-color: $gray-200 !important;
+    box-shadow: none !important;
+  }
+
+
+
+  .project-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.3rem;
+    background-color: mat-color($mcv-accent, 500);
+    color: $white;
+    box-shadow: $box-shadow;
+
+    &.editable {
+      background-color: mat-color($mcv-primary, 500);
+      color: $white;
+      box-shadow: $box-shadow;
+    }
+
+    .title-bar {
+      display: -webkit-box;
+      display: flex;
+      -webkit-box-align: center;
+      align-items: center;
+      gap: 0.3rem;
+      flex-grow: 1;
+      flex-shrink: 0;
+      padding: 0.3rem;
+
+      .list-item-details {
+        flex-grow: 1;
+        flex-shrink: 1;
+        display: flex;
+        flex-direction: column;
+
+        .project-title {
+          font-weight: 500;
+        }
+
+        .project-code {
+          font-weight: 600;
+        }
+
+        .subtitle {
+          display: flex;
+          justify-content: space-between;
+          gap: 0.3rem;
+        }
+
+        .segment-list {
+          display: flex;
+          gap: 0.3rem;
+          flex-wrap: wrap;
+
+
+        }
+
+        .segment-tag {
+          background-color: $gray-700;
+          color: $white;
+          font-size: 0.6rem;
+          padding: 2px 4px;
+          border-radius: $border-radius;
+        }
+
+      }
+    }
+
+    .action-bar {
+      display: -webkit-box;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.3rem;
+      flex-grow: 1;
+      flex-shrink: 0;
+    }
+  }
+
+}
+
+@media only screen and (max-width:768px) {
+  .project-wrapper {
+    .project-header {
+      flex-wrap: wrap !important;
+
+      .title-bar {
+        flex-wrap: wrap !important;
+        flex-shrink: 1 !important;
+      }
+    }
+  }
+}

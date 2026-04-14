@@ -1,0 +1,30 @@
+@import 'variables';
+
+.project-notes {
+    list-style: none;
+    padding: 0.3rem;
+    // display: flex;
+    // flex-wrap: wrap;
+    // gap: 0.3rem;
+
+    &>li {
+        // width: calc(50% - 0.3rem);
+        // min-width: 300px;
+        border-bottom: 1px solid $gray-300;
+        border-radius: $border-radius;
+        padding: 0.3rem;
+        margin-bottom: 0.3rem;
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+}
+
+
+.project-notes-action-wrapper{
+    .action-buttons{
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.3rem;
+    }
+  }

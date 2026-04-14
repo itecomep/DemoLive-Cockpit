@@ -1,0 +1,85 @@
+<div class="contact-address-form-wrapper">
+  <form [formGroup]="form" autocomplete="off">
+
+    <div class=" contact-address-form-actions">
+
+      <mat-form-field appearance="outline">
+        <mat-label>Type</mat-label>
+        <mat-select placeholder="Type" formControlName="title">
+          <mat-option *ngFor="let title of titleOptions" [value]="title">{{title}}</mat-option>
+        </mat-select>
+        <mat-error>{{ getErrorMessage(f.title) }}</mat-error>
+      </mat-form-field>
+
+      <mat-checkbox [checked]="currentEntity.isPrimary" formControlName="isPrimary">Primary
+      </mat-checkbox>
+      <!-- <button mat-icon-button (click)="onSubmit()">
+        <mat-icon>done</mat-icon>
+      </button> -->
+      <button mat-icon-button (click)="onDelete()" >
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+    <div class="contact-address-form-fields">
+
+      <div class="row m-0">
+        <mat-form-field appearance="outline" class="col-md-12">
+          <mat-label>Street</mat-label>
+          <textarea placeholder="Street" aria-label="Street" matInput formControlName="street" cdkTextareaAutosize
+          #autosize="cdkTextareaAutosize"></textarea>
+          <mat-error>{{ getErrorMessage(f.street) }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-md-12">
+          <mat-label>Area</mat-label>
+          <input placeholder="Area" aria-label="Area" matInput formControlName="area" />
+          <mat-error>{{ getErrorMessage(f.area) }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-md-6">
+          <mat-label>City</mat-label>
+          <input placeholder="City" aria-label="City" matInput formControlName="city" [matAutocomplete]="autoCity" />
+          <mat-autocomplete #autoCity="matAutocomplete">
+            <mat-option *ngFor="let option of filteredCityOptions$ | async" [value]="option">
+              {{ option }}
+            </mat-option>
+          </mat-autocomplete>
+          <mat-error>{{ getErrorMessage(f.city) }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-md-6">
+          <mat-label>State</mat-label>
+          <input placeholder="State" aria-label="State" matInput formControlName="state"
+            [matAutocomplete]="autoState" />
+          <mat-autocomplete #autoState="matAutocomplete">
+            <mat-option *ngFor="let option of filteredStateOptions$ | async" [value]="option">
+              {{ option }}
+            </mat-option>
+          </mat-autocomplete>
+          <mat-error>{{ getErrorMessage(f.state) }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-md-6">
+          <mat-label>Country</mat-label>
+          <input placeholder="Country" aria-label="Country" matInput formControlName="country"
+            [matAutocomplete]="autoCountry" />
+          <mat-autocomplete #autoCountry="matAutocomplete">
+            <mat-option *ngFor="let option of filteredCountryOptions$ | async" [value]="option">
+              {{ option }}
+            </mat-option>
+          </mat-autocomplete>
+          <mat-error>{{ getErrorMessage(f.country) }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-md-6">
+          <mat-label>Pin Code</mat-label>
+          <input placeholder="Pin Code" aria-label="Pin Code" matInput formControlName="pinCode" />
+          <mat-error>{{ getErrorMessage(f.pinCode) }}</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+
+
+  </form>
+  <small class="validation-message" *ngIf="form.invalid">{{validationMessages}}</small>
+</div>

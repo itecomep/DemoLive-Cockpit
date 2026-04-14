@@ -1,0 +1,176 @@
+<mat-expansion-panel [expanded]="true" *ngIf="!isReadonly">
+  <mat-expansion-panel-header>
+    <mat-panel-title> Task Action </mat-panel-title>
+  </mat-expansion-panel-header>
+  <ng-content></ng-content>
+
+
+  <div class="row mb-1" *ngIf="previousTask && stage.showAssessment">
+    <div class="col-12">
+      <div class="mb-1">
+        <small class="text-muted">Previous Task</small>
+        <div class="d-flex align-items-center">
+          <div class="flex-grow-0 flex-shrink-0">
+            <img alt="" src="{{ previousTask.contact.photoUrl || 'assets/images/user.png'}}"
+              [matTooltip]="previousTask.contact.name" class="user-thumbnail">
+          </div>
+          <div class="ml-1">
+
+            <h5>{{previousTask.contact.name}}</h5>
+            <h6>{{previousTask.title}} | {{previousTask.entityTitle}} <small>R</small> {{previousTask.stageRevision}}
+            </h6>
+            <div>
+              <small>{{previousTask.subtitle}}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3 col-6">
+      <small class="text-muted">Assigned MHr</small>
+      <h4>{{ previousTask.mHrAssigned | number:'2.0-2' }}</h4>
+    </div>
+
+    <div class="col-sm-3 col-6">
+      <small class="text-muted">Consumed MHr</small>
+      <h4>{{ previousTask.mHrConsumed | number:'2.0-2' }}</h4>
+    </div>
+
+    <div class="col-sm-3 col-6">
+      <small class="text-muted">Assessment Points</small>
+      <h4>{{ previousTask.assessmentPoints }}/<small>10</small></h4>
+    </div>
+
+    <div class="col-sm-3 col-6">
+      <small class="text-muted">Assessed Mhr</small>
+      <h4>{{ previousTask.mHrAssessed | number:'2.0-2' }}</h4>
+    </div>
+  </div>
+
+  <p>{{ task.history }}</p>
+
+  <div class="row mt-2 mb-2" *ngIf="stage && stage.showAttachment">
+    <div class="col-12">
+      <app-mcv-file-upload [uploaderConfig]="blobConfig" [showPaste]="true" [showDrop]="true"
+        (upload)="onUpload($event)" *ngIf="blobConfig && !isReadonly">
+      </app-mcv-file-upload>
+
+      <ul class="mcv-file-list">
+
+        <li *ngFor="let file of task?.attachments">
+          <mcv-file [size]="file.size" [filename]="file.filename" [url]="file.url || file.thumbUrl"
+            [contentType]="file.contentType" [showPreview]="true" [showRemove]="true" [singlePreview]="true"
+            [isVerticalThumb]="true" [downloadUrl]="file.url" (delete)="onDeleteAttachment(file)">
+          </mcv-file>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- [matDatepickerFilter]="dateFilter" -->
+  <form [formGroup]="form" autocomplete="off">
+    <mat-form-field appearance="outline" class="col-md-12" *ngIf="stage && stage.showFollowUpDate">
+      <mat-label>Follow Up Date</mat-label>
+      <input id="followUpDate" placeholder="FollowUp Date" aria-label="FollowUp Date" matInput
+        formControlName="followUpDate" [matDatepicker]="picker" />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker [touchUi]="isMobileView" #picker></mat-datepicker>
+      <mat-error>{{ getErrorMessage(f.followUpDate) }}</mat-error>
+    </mat-form-field>
+
+    <app-wf-task-assessment *ngIf="stage && stage.showAssessment" [wfTaskID]="task.previousTaskID"
+      (assessmentData)="onUpdatedAssessment($event)"></app-wf-task-assessment>
+
+    <ng-container *ngIf="task.projectID && stage && stage.code == 'TODO_SUBMISSION'">
+      <app-wf-task-todo-request-ticket-action [task]="task"
+        (update)="onUpdateTask($event)"></app-wf-task-todo-request-ticket-action>
+    </ng-container>
+
+    <mat-form-field appearance="outline" class="col-md-12">
+      <mat-label>Comment</mat-label>
+      <textarea id="comment" aria-label="comment" matInput formControlName="comment" cdkTextareaAutosize
+        #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="2" cdkAutosizeMaxRows="5"></textarea>
+      <mat-error>{{ getErrorMessage(f.comment) }}</mat-error>
+    </mat-form-field>
+
+    <div class="row" *ngIf="
+        stage &&
+        stage.actions &&
+        stage.actions.length !== 0 &&
+        stage.actionType == 'BUTTON'
+      ">
+      <div class="col-12">
+        <div class="inline-list inline-list-justify-right">
+          <!-- <button mat-raised-button color="warn" *ngIf="stage.showAssessment"
+            [disabled]="isReadonly ||  !(previousTask  && task.statusFlag!=1)" class="flex-grow-1"
+            matTooltip="Assessment" aria-label="Assessment" (click)="onAssessmentClick(task)">
+            Assess & Submit
+          </button>
+          <button mat-raised-button color="primary" *ngIf="stage.showAssessment"
+            [disabled]="isReadonly || !(previousTask  && task.statusFlag!=1)" class="flex-grow-1"
+            matTooltip="Reassign" aria-label="Reassign" (click)="onReassignTask(task)">
+            Re-assign
+          </button> -->
+          <ng-container>
+            <ng-container *ngFor="let item of stage.actions">
+              <!-- <button [disabled]="
+                  (item.taskStatusFlag == 1 && disableComplete) ||
+                  task.statusFlag == 1 ||
+                  loading || 
+                  (item.taskStatusFlag == 3 && disablePause)
+                " mat-raised-button color="{{item.buttonClass}}" class="flex-grow-1" [matTooltip]="item.buttonTooltip"
+                [attr.aria-label]="item.buttonText" (click)="onTaskAction(item)">
+                {{ item.buttonText }}
+              </button> -->
+              <button
+                [disabled]="task.statusFlag == 1 ||
+                  loading || task.wfStageCode == TASK_STAGE_TODO_WORK && disableButton(item.taskStatusFlag,item.taskOutcomeFlag)"
+                mat-raised-button color="{{item.buttonClass}}" class="flex-grow-1" [matTooltip]="item.buttonTooltip"
+                [attr.aria-label]="item.buttonText" (click)="onTaskAction(item)">
+                {{ item.buttonText }}
+              </button>
+
+            </ng-container>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+    <div class="row" *ngIf="
+        stage &&
+        stage.actions &&
+        stage.actions.length !== 0 &&
+        stage.actionType == 'DROPDOWN'
+      ">
+      <div class="col-12">
+        <mat-form-field appearance="outline">
+          <mat-label>Select an option</mat-label>
+          <mat-select [formControl]="selectedActionFC">
+            <mat-option *ngFor="let item of stage.actions" [value]="item">{{
+              item.buttonText
+              }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div class="inline-list inline-list-justify-right">
+          <button [disabled]="isReadonly || !selectedActionFC.value ||
+          task.statusFlag == 1" mat-raised-button matTooltip="Submit" aria-label="Submit" (click)="
+              onTaskAction(
+                selectedActionFC.value
+              )
+            ">
+            Submit
+          </button>
+        </div>
+      </div>
+    </div>
+    <span *ngIf="!stage || !stage.actions || stage.actions.length === 0">
+      Task Actions not available!
+    </span>
+    <span *ngIf="task.statusFlag==1">Task already submitted!</span>
+  </form>
+  <small *ngIf="disableComplete">{{ disableCompleteMessage }}</small>
+  <div *ngIf="pauseDisableTime">
+    <small class="text-muted">
+      Pause will be disabled at: {{ pauseDisableTime | date: 'shortTime' }}
+    </small>
+  </div>
+</mat-expansion-panel>

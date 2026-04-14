@@ -1,0 +1,68 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">Update {{team.title}}</h5>
+    <div class="d-flex align-items-center">
+        <button mat-raised-button color="primary" aria-label="Save" (click)="onSubmit()">Save</button>
+        <button mat-icon-button aria-label="close" (click)="onClose(null)">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+<mat-dialog-content>
+    <div class="update-container">
+        <div class="form-wrapper mb-2">
+            <mat-form-field appearance="outline"  class="col-md-12">
+                <mat-label>Title</mat-label>
+                <input placeholder="Title" aria-label="Title" matInput [formControl]="titleFC" />
+                <mat-error>{{ getErrorMessage(titleFC) }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-sm-12">
+                <mat-label>Select Member</mat-label>
+                <input placeholder="Enter name of person to select from the list"
+                    aria-label="Select Member" matInput [formControl]="contactFC" [matAutocomplete]="autoContact"
+                    />
+
+                <mat-autocomplete #autoContact="matAutocomplete" [displayWith]="displayFnContact" (optionSelected)="onSelectContact($event)" >
+                    <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
+                        {{ option.name }}
+                    </mat-option>
+                </mat-autocomplete>
+                <span matSuffix>
+                    <mat-icon>person</mat-icon>
+                </span>
+                <mat-error>{{ getErrorMessage(contactFC) }}</mat-error>
+                <mat-hint >Enter name of person to select from the
+                    list</mat-hint>
+            </mat-form-field>
+        </div>
+        <ul class="">
+            <li *ngFor="let member of team.members">
+                <div class="team-contact-list-item">
+                    <div class="list-item-details">
+                        <img class="contact-icon" src="{{ member.contact?.photoUrl || 'assets/images/person-icon.svg' }}" alt="" />
+                        <div class="flex-grow-1">
+                            <h6 class="font-focused">{{member.contact?.fullName}}</h6>
+                            <div class="d-flex align-items-center">
+                                <!-- <small>{{member.designation}}</small> -->
+                                <span class="ml-1 badge badge-danger" *ngIf="team.leaderID == member.contactID">Leader</span>
+                                <span class="ml-1 badge badge-primary"
+                                    *ngIf="team.assistantID == member.contactID">Assistant</span>
+                            </div>
+                        </div>
+                        <div class="list-item-actions">
+                            <button mat-raised-button (click)="setMemberAs('Leader',member)" 
+                                matTooltip="Set as Leader" *ngIf="team.leaderID != member.contactID">Set as Leader</button>
+                            <!-- <button mat-raised-button (click)="setMemberAs('Assisstant',member)" color="primary"
+                                matTooltip="Set as Assistant" *ngIf="team.assisstantID !== member.contactID">A</button> -->
+                            <!-- <button mat-raised-button (click)="setMemberAs('Member',member)" mattooltip="Set as Member"
+                                *ngIf="team.assisstantID == member.id || team.leaderID == member.contactID">M</button> -->
+                            <button mat-icon-button (click)="onRemoveMember(member)">
+                                <mat-icon>clear</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</mat-dialog-content>

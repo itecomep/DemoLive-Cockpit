@@ -1,0 +1,99 @@
+<app-header [title]="headerTitle" [titleCount]="headerTitleCount">
+    <!-- <div class="mv-list-search-filter" *ngIf="isMobileView">
+      <mat-icon matPrefix>search</mat-icon>
+      <input aria-label="Type to Search" [formControl]="searchFC" matInput />
+    </div> -->
+</app-header>
+
+<div class="status-wrapper" *ngIf="typePresets">
+    <form [formGroup]="form">
+        <table>
+            <thead>
+                <tr>
+                    <!-- <th>Type</th> -->
+                    <th>Sr No</th>
+                    <th (click)="sort('entity')">
+                        <div class="sort-header">
+                            Entity
+                            <mat-icon *ngIf="sortColumn === 'entity'">
+                                {{ sortDirection === 'asc' ? 'arrow_drop_down' : 'arrow_drop_up' }}
+                              </mat-icon>
+                        </div>
+                      
+                    </th>
+                    <th (click)="sort('title')">
+                        <div class="sort-header">
+                            Title
+                        <mat-icon *ngIf="sortColumn === 'title'">
+                            {{ sortDirection === 'asc' ? 'arrow_drop_down' : 'arrow_drop_up' }}
+                          </mat-icon>
+                        </div>      
+                    </th>
+                    <th (click)="sort('value')">
+                        <div class="sort-header"> Value
+                        <mat-icon *ngIf="sortColumn === 'value'">
+                            {{ sortDirection === 'asc' ? 'arrow_drop_down' : 'arrow_drop_up' }}
+                          </mat-icon>
+                          </div>
+                    </th>
+                    <th></th>
+                </tr>
+
+            </thead>
+            <tbody formArrayName="presets">
+                <ng-container *ngFor="let item of typePresets; let i=index" [formGroupName]="i">
+                    <tr>
+                        <td class="text-center">
+                            <h6>{{i+1}}</h6>
+                        </td>
+                        <td class="text-wrap">
+                            <div class="cell-content">
+                                <div class="cell-input">
+
+                                    <textarea class="text-start" aria-label="Entity" matInput
+                                        [formControl]="getFormControl(fa,i,'entity')" cdkTextareaAutosize
+                                        #autosize="cdkTextareaAutosize" [cdkAutosizeMinRows]="1" (change)="updatePreset($event,i,'entity')"></textarea>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-wrap">
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <textarea class="text-start" aria-label="Title" matInput
+                                        [formControl]="getFormControl(fa,i,'title')" cdkTextareaAutosize
+                                        (input)="onInputChange($event, i)"  #autosize="cdkTextareaAutosize" [cdkAutosizeMinRows]="0" (change)="updatePreset($event,i,'title')"></textarea>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-wrap">
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <textarea class="text-start" aria-label="Value" matInput
+                                        [formControl]="getFormControl(fa,i,'value')" cdkTextareaAutosize
+                                        #autosize="cdkTextareaAutosize" [cdkAutosizeMinRows]="0" (change)="updatePreset($event,i,'value')"></textarea>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-center">
+                                <mat-icon class="delete-preset" (click)="onDeletePreset(i)">delete</mat-icon>
+
+                            </div>
+                           
+                        </td>
+                    </tr>
+                   
+                </ng-container>
+                <tr>
+                    <td colspan="5">
+                        <div class="d-flex justify-content-center" (click)="addPreset()">
+                            <mat-icon>add</mat-icon>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+
+<app-footer></app-footer>

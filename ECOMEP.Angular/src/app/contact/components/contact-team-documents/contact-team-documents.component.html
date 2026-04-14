@@ -1,0 +1,44 @@
+<mat-expansion-panel [expanded]="false" *ngFor="let category of categoryOptions">
+
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            <span>{{category}} <small>({{getAttachmentsByTitle(category)?.length}})</small></span>
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <app-mcv-file-upload class="pt-1" [uploaderConfig]="blobConfig" [showPaste]="true" [showDrop]="true"
+        (upload)="onUpload($event, category)" (copied)="onCopiedAttachment($event,category)" *ngIf="blobConfig && uploaderConfig?.allowEdit">
+    </app-mcv-file-upload>
+
+    <ul class="mcv-file-list">
+        <li *ngFor="let file of getAttachmentsByTitle(category)">
+            <mcv-file [file]="file" [filename]="file.filename" [size]="file.size"
+                [showRemove]="uploaderConfig?.allowDelete" (delete)="onDeleteAttachment(file)"
+                [downloadUrl]="file.url" [showPreview]="true" [singlePreview]="true" [url]="file.url"
+                [thumbUrl]="file.thumbUrl" [showCopy]="true">
+            </mcv-file>
+        </li>
+    </ul>
+</mat-expansion-panel>
+
+<mat-expansion-panel [expanded]="false">
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            <span>Other <small>({{getAttachmentsByTitle(undefined)?.length}})</small></span>
+        </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <app-mcv-file-upload class="pt-1" [uploaderConfig]="blobConfig" [showPaste]="true"  [showDrop]="true"
+        (upload)="onUpload($event,undefined)" (copied)="onCopiedAttachment($event)" *ngIf="blobConfig && uploaderConfig?.allowEdit">
+    </app-mcv-file-upload>
+    <ul class="mcv-file-list">
+        <li *ngFor="let file of getAttachmentsByTitle(undefined)">
+            <mcv-file [file]="file" [filename]="file.filename" [size]="file.size"
+                [showRemove]="uploaderConfig?.allowDelete" (delete)="onDeleteAttachment(file)"
+                [downloadUrl]="file.url" [showPreview]="true" [singlePreview]="true" [url]="file.url"
+                [thumbUrl]="file.thumbUrl" [showCopy]="true">
+            </mcv-file>
+
+        </li>
+    </ul>
+</mat-expansion-panel>

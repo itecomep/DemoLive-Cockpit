@@ -1,0 +1,84 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">Project Stage Masters</h5>
+    <button mat-icon-button aria-label="close" (click)="onClose(null)">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+<mat-dialog-content>
+    <div class="d-flex align-items-center p-1">
+        <div>
+            <mat-form-field>
+                <mat-select [(value)]="selectedType" (selectionChange)="onTypeSelection($event)">
+                    <mat-option *ngFor="let option of uniqueTopology" [value]="option">
+                        {{option}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="ml-2">
+            <button mat-raised-button color="primary" (click)="openDialog()">New Stage</button>
+        </div>
+        <div class="ml-2">
+            <h6 class="text-danger ml-1" *ngIf="totalStageValue!=100">Total stage value must be 100%</h6>
+        </div>
+    </div>
+    <div class="mat-table-wrapper">
+        <div class="mat-table-container">
+            <table>
+                <thead>
+                    <tr class="header-title">
+                        <th>#</th>
+                        <th>Stage Title</th>
+                        <th>Stage Value</th>
+                        <th>Typology</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    <tr class="total">
+                        <th></th>
+                        <th>Total</th>
+                        <th>
+                            <strong [ngClass]="{'text-danger':totalStageValue!=100}">{{totalStageValue}}%</strong>
+                        </th>
+                        <th></th>
+                        <th>
+                            <!-- <strong
+                                [ngClass]="{'text-danger':totalWorkOrderStageValue!=100}">{{totalWorkOrderStageValue}}%</strong> -->
+                        </th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody cdkDropList [cdkDropListData]="dataSource" (cdkDropListDropped)="onDrop($event)">
+                    <ng-container *ngFor="let item of dataSource; let i = index">
+                        <tr cdkDrag>
+                            <td>{{i+1}}</td>
+                            <td>{{item.title}}</td>
+                            <td>{{item.percentage}} % </td>
+                            <td>{{item.typology}}</td>
+                            <td>
+                                <button mat-icon-button cdkDragHandle>
+                                    <mat-icon>drag_handle</mat-icon>
+                                </button>
+                            </td>
+                            <td>
+                                <button mat-icon-button aria-label="Edit" matTooltip="Edit" (click)="onEdit(item)">
+                                    <mat-icon>edit</mat-icon>
+                                </button>
+                            </td>
+                            <td>
+                                <button mat-icon-button aria-label="Delete" matTooltip="Delete"
+                                    (click)="onDelete(item)">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </td>
+                        </tr>
+                    </ng-container>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</mat-dialog-content>

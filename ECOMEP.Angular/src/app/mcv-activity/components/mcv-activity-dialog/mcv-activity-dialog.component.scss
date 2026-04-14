@@ -1,0 +1,57 @@
+@import 'variables';
+
+// Dialog Header
+.mcv-dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 12px;
+  border-bottom: 1px solid $gray-300;
+
+  h5 {
+    margin: 0;
+    font-weight: $font-weight-bold;
+  }
+
+  h6 {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+// Activity Table
+.activity-table-container {
+  // Override analytical table header colors
+  ::ng-deep app-analytical-table {
+    .analytical-wrapper {
+      height: fit-content;
+    }
+    
+    .analytical-table-wrapper {
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+    
+    table {
+      thead {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+    }
+    
+    thead th {
+      background-color: $gray-500 !important;
+      color: white !important;
+      position: sticky;
+      top: 0;
+    }
+  }
+}
+
+// Dialog Content
+mat-dialog-content {
+  padding: 0;
+  margin: 0;
+  max-height: 70vh;
+}

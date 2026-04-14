@@ -1,0 +1,54 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": ".NET Core Launch (web)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/MyCockpitView.WebApi/bin/Debug/net8.0/MyCockpitView.WebApi.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/MyCockpitView.WebApi",
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_WATCH_RESTART_ON_RUDE_EDIT": "true"
+      },
+      "sourceFileMap": {
+        "/Views": "${workspaceFolder}/Views"
+      }
+    },
+    {
+      "name": ".NET Core Launch (web) - Hot Reload",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "watch",
+      "program": "${workspaceFolder}/MyCockpitView.WebApi/bin/Debug/net8.0/MyCockpitView.WebApi.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/MyCockpitView.WebApi",
+      "stopAtEntry": false,
+      "console": "integratedTerminal",
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_WATCH_RESTART_ON_RUDE_EDIT": "true",
+        "DOTNET_WATCH_SUPPRESS_LAUNCH_BROWSER": "true"
+      },
+      "sourceFileMap": {
+        "/Views": "${workspaceFolder}/Views"
+      }
+    },
+    {
+      "name": ".NET Core Attach",
+      "type": "coreclr",
+      "request": "attach"
+    }
+  ]
+}

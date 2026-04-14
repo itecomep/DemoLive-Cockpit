@@ -1,0 +1,304 @@
+@import 'variables';
+@import 'theme';
+
+.meeting-view-wrapper {
+  height: 100%;
+  overflow: hidden auto;
+  display: flex;
+  flex-direction: column;
+  padding: 2px;
+
+  ::ng-deep .mat-mdc-tab-group {
+    flex-grow: 1;
+    flex-shrink: 1;
+    max-height: 100%;
+    overflow: hidden;
+
+    .mat-mdc-tab-body {
+      overflow: hidden !important;
+    }
+
+    .mat-mdc-tab-list {
+      border-bottom: 1px solid $gray-200;
+      padding: 0 0.3rem 0.2rem;
+
+      .mdc-tab {
+        min-width: 4rem !important;
+        height: 48px !important;
+        padding: 0 0.8rem !important;
+        opacity: 1 !important;
+        margin: 0 0.1rem !important;
+        background-color: $white !important;
+        // box-shadow: $box-shadow !important;
+      }
+
+      .mat-mdc-tab .mdc-tab__text-label {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        white-space: nowrap;
+
+        small {
+          font-size: 0.6rem;
+        }
+      }
+
+      .mat-mdc-tab.mdc-tab {
+        flex-grow: 0 !important;
+      }
+    }
+
+    .mat-mdc-tab-label,
+    .mat-mdc-tab-link {
+      font-family: $font-family-sans-serif !important;
+    }
+
+    .mat-mdc-tab-body-wrapper {
+      height: 100%;
+
+      .mat-mdc-tab-body-content {
+        overflow-x: hidden !important;
+      }
+    }
+  }
+
+
+  ::ng-deep .mat-mdc-tab-list {
+    padding: 0 !important;
+
+  }
+
+  ::ng-deep .mat-mdc-tab.mdc-tab {
+    min-width: 4rem !important;
+    height: 48px;
+    padding: 0 .8rem !important;
+    opacity: 1 !important;
+    background-color: $gray-200 !important;
+    box-shadow: none !important;
+  }
+}
+
+.form-collection {
+  border-radius: $border-radius;
+  // padding: 0.3rem;
+  margin: 15px 0 0 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  .form-collection-title {
+    font-weight: 600;
+    padding: 0.3rem;
+    color: $gray-600;
+  }
+
+  .form-collection-actions {
+    display: flex;
+    gap: 0.3rem;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0.2rem;
+  }
+
+  .form-collection-item {
+    border: 1px solid $gray-300;
+    border-radius: $border-radius;
+    padding: 0.3rem 0;
+  }
+}
+
+.meeting-header {
+  position: sticky;
+  top: 0.2rem;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.3rem;
+  margin: 0.2rem 0.5rem;
+  box-shadow: $box-shadow;
+  color: $title-bar-color;
+  background-color: mat-color($mcv-accent, 500);
+  border-radius: $border-radius;
+
+  .title-bar {
+    padding: 0.2rem;
+    display: -webkit-box;
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    flex-grow: 1;
+    flex-shrink: 0;
+    gap: 0.5rem;
+
+    img.contact-icon {
+      width: 40px;
+      height: 40px;
+      -o-object-fit: cover;
+      object-fit: cover;
+      border-radius: $border-radius;
+    }
+
+
+    &>* {
+      max-width: 40%;
+    }
+  }
+
+  .action-bar {
+    display: -webkit-box;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-grow: 1;
+    flex-shrink: 0;
+    gap: 0.3rem;
+    // border-radius: $border-radius;
+    // background-color: $white;
+    // color: $black;
+  }
+}
+
+.meeting-action-buttons {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+
+  button {
+    flex-grow: 1;
+  }
+}
+
+.meeting-attendee-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.3rem;
+
+  &>li {
+    border-bottom: 1px solid $gray-200;
+  }
+}
+
+.meeting-attendee {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.3rem;
+  padding: 0.3rem;
+
+  .meeting-attendee-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.3rem;
+  }
+}
+
+.meeting-attendee-input {
+  display: flex;
+  flex-direction: column;
+  // align-items: center;
+  gap: 0.3rem;
+
+  .meeting-attendee-input-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    justify-content: flex-end;
+  }
+}
+
+cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drop-dragging .cdk-drag {
+  transition: transform 500ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drag-animating {
+  transition: transform 550ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drag-placeholder {
+  list-style: none;
+  // padding: 0.5rem;
+  // margin: 0.3rem;
+  border-radius: $border-radius;
+  border: dotted 2px $gray-700;
+  min-height: 50px;
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drag-handle {
+  color: $gray-400;
+  cursor: move;
+  height: 43px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cdk-drag-preview {
+  list-style: none;
+  padding: 0.5rem;
+  margin: 0.3rem;
+  // border: 1px solid $gray-300;
+  border-radius: $border-radius;
+  border-bottom: 1px $gray-400 solid;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+    0 8px 10px 1px rgba(0, 0, 0, 0.14),
+    0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  background-color: $gray-100;
+}
+
+.gmap-form-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.3rem;
+}
+
+.document-carried-form-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@media only screen and (max-width:768px) {
+  .meeting-attendee-input {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+
+    .meeting-attendee-input-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      justify-content: flex-end;
+    }
+  }
+
+  .meeting-view-wrapper {
+    .container-fluid {
+      padding: 0rem 0rem 2rem 0rem!important;
+    .meeting-header {
+      position: relative;
+      flex-wrap: wrap !important;
+
+      .title-bar {
+        flex-wrap: wrap !important;
+        flex-shrink: 1 !important;
+      }
+    }
+  }
+  }
+}

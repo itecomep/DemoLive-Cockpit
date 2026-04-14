@@ -1,0 +1,18 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">{{contact.name}} | Photo</h5>
+    <button mat-icon-button aria-label="close" (click)="onClose(null)">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+<mat-dialog-content class="mat-dialog-content-class">
+    <div class="photo-upload">
+        <img alt="" src="{{ contact.photoUrl || 'assets/images/user.png' }}" />
+    </div>
+    <div class="d-flex ">
+        <app-mcv-file-upload [uploaderConfig]="blobConfig" [showPaste]="true" (upload)="onUpload($event)"
+            *ngIf="blobConfig">
+        </app-mcv-file-upload>
+        <button (click)="onRemovePhoto()" mat-icon-button aria-label="remove"
+            *ngIf="contact?.photoUrl"><mat-icon>delete</mat-icon></button>
+    </div>
+</mat-dialog-content>

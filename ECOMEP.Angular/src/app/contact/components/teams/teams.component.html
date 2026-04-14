@@ -1,0 +1,64 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">Team Management</h5>
+    <div class="d-flex aling-items-center">
+        <button mat-raised-button (click)="onAddNewTeam()" color="primary">New
+            <mat-icon>add</mat-icon>
+        </button>
+        <button mat-icon-button aria-label="close" (click)="onClose()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+<mat-dialog-content>
+    <div class="team-container">
+        <div class="team-list-container">
+            <div class="header">
+                <h6>Teams</h6>
+                <small>{{teams.length}}</small>
+            </div>
+            <ul>
+                <li *ngFor="let team of teams" [ngClass]="{'selected':team.id == selectedTeam?.id}"
+                    (click)="onSelectTeam(team)">
+                    <h6 class="font-focused">{{team.title}}</h6>
+                </li>
+            </ul>
+        </div>
+        <div class="team-member-list-container" *ngIf="selectedTeam">
+            <div class="header">
+                <div class="d-flex align-item-center">
+                    <h6> Members</h6>
+                    <small class="pl-2">{{selectedTeam.members.length}}</small>
+                </div>
+                <div class="d-flex align-items-center">
+                    <button mat-icon-button (click)="onEditTeam()">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="onDeleteTeam()">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </div>
+            </div>
+            <ul>
+                <li *ngFor="let member of selectedTeam.members">
+                    <div class="team-contact-list-item">
+                        <div class="list-item-details">
+                            <img class="contact-icon" src="{{ member.contact?.photoUrl || 'assets/images/person-icon.svg' }}" 
+                                (click)="openPhotoDialog(member.contact); $event.stopPropagation()" style="cursor: pointer;"
+                                alt="" />
+                            <div class="flex-grow-1">
+                                <h6 class="font-focused">{{member.contact?.fullName}}</h6>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <!-- <small>{{member.designation}}</small> -->
+                                    <span class="ml-1 badge badge-danger"
+                                        *ngIf="selectedTeam.leaderID == member.contactID">Leader</span>
+                                    <span class="ml-1 badge badge-primary"
+                                        *ngIf="selectedTeam.assistantID == member.contactID">Assistant</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</mat-dialog-content>

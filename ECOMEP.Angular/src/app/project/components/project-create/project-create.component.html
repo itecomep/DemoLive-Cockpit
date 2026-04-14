@@ -1,0 +1,343 @@
+<!-- Reusable template for your form -->
+<ng-template #headerActionTemplate>
+  <form [formGroup]="form" autocomplete="off"></form>
+  <button mat-raised-button aria-label="Save" (click)="onSubmit()">Save</button>
+</ng-template>
+
+<div class="mat-dialog-header project-create-dialog-header">
+  <h5 class="project-create-dialog-header-title">{{ dialogTitle }}</h5>
+  <div class="project-create-dialog-header-actions theme-dark">
+    <ng-container *ngTemplateOutlet="headerActionTemplate"></ng-container>
+  </div>
+  <button mat-icon-button aria-label="close" (click)="onClose(null)">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+<div class="project-create-dialog-mobile-actions">
+  <ng-container *ngTemplateOutlet="headerActionTemplate"></ng-container>
+</div>
+<mat-dialog-content>
+  <div class="project-create-form">
+    <div class="project-alert-bar" *ngIf="isShowAlert">
+      <mat-icon>warning</mat-icon>
+      <div>
+        <h6>{{ this.existing.length }} Duplicate {{ nameOfEntity }} Found !</h6>
+        <small>
+          {{ nameOfEntity }}(s) already exists with same title. Please do add
+          some prefix if the title is same. eg. {{ f.title.value }} ({{
+          f.location.value || "Andheri"
+          }})
+        </small>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-8">
+        <div class="form-collection">
+          <form [formGroup]="form" autocomplete="off">
+            <div class="row">
+            <mat-form-field appearance="outline" class="col-md-6">
+              <mat-label>Company</mat-label>
+              <mat-select formControlName="companyID">
+                <mat-option *ngFor="let company of companyOptions" [value]="company.id">
+                  {{ company.initials }} | {{ company.title }}
+                </mat-option>
+              </mat-select>
+              <mat-error>{{ getErrorMessage(f.companyID) }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-6">
+              <mat-label>Code</mat-label>
+              <input placeholder="Code" aria-label="Code" matInput formControlName="code" />
+              <mat-error>{{ getErrorMessage(f.code) }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-12">
+              <mat-label>Project Name</mat-label>
+              <input placeholder="Project Name" aria-label="Project Name" matInput formControlName="title" />
+              <mat-error>{{ getErrorMessage(f.title) }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-12">
+              <mat-label>Location</mat-label>
+              <input placeholder="Project Location" aria-label="Project Location" matInput formControlName="location"
+                [matAutocomplete]="autoLoc" />
+              <mat-autocomplete #autoLoc="matAutocomplete" [displayWith]="displayFnLocation">
+                <mat-option *ngFor="let option of filteredLocationOptions | async" [value]="option">
+                  {{ option }}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error>{{ getErrorMessage(f.location) }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-3">
+              <mat-label>City</mat-label>
+              <input placeholder="City" aria-label="City" matInput formControlName="city" [matAutocomplete]="autoCity" />
+              <mat-autocomplete #autoCity="matAutocomplete">
+                <mat-option *ngFor="let option of filteredCityOptions$ | async" [value]="option">
+                  {{ option }}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error>{{ getErrorMessage(f.city) }}</mat-error>
+            </mat-form-field>
+    
+            <mat-form-field appearance="outline" class="col-md-3">
+              <mat-label>State</mat-label>
+              <input placeholder="State" aria-label="State" matInput formControlName="state"
+                [matAutocomplete]="autoState" />
+              <mat-autocomplete #autoState="matAutocomplete">
+                <mat-option *ngFor="let option of filteredStateOptions$ | async" [value]="option">
+                  {{ option }}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error>{{ getErrorMessage(f.state) }}</mat-error>
+            </mat-form-field>
+    
+            <mat-form-field appearance="outline" class="col-md-3">
+              <mat-label>Country</mat-label>
+              <input placeholder="Country" aria-label="Country" matInput formControlName="country"
+                [matAutocomplete]="autoCountry" />
+              <mat-autocomplete #autoCountry="matAutocomplete">
+                <mat-option *ngFor="let option of filteredCountryOptions$ | async" [value]="option">
+                  {{ option }}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error>{{ getErrorMessage(f.country) }}</mat-error>
+            </mat-form-field>
+    
+            <mat-form-field appearance="outline" class="col-md-3">
+              <mat-label>Pin Code</mat-label>
+              <input placeholder="Pin Code" aria-label="Pin Code" matInput formControlName="pinCode" />
+              <mat-error>{{ getErrorMessage(f.pinCode) }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-6">
+              <mat-label>Typology</mat-label>
+              <mat-select placeholder="Typology" formControlName="typologies" [multiple]="true">
+                <mat-option *ngFor="let item of typologyOptions" [value]="item">
+                  {{ item }}
+                </mat-option>
+              </mat-select>
+              <mat-error>{{ getErrorMessage(f.typologies) }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-6 col-md-6">
+              <mat-label>Segment</mat-label>
+              <mat-select placeholder="Segment" formControlName="segments" [multiple]="true">
+                <mat-option *ngFor="let item of segmentOptions" [value]="item">
+                  {{item}}
+                </mat-option>
+              </mat-select>
+              <mat-error>{{getErrorMessage(f.segments)}}</mat-error>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline" class="col-6 ">
+              <mat-label>Contract Start Date</mat-label>
+              <input placeholder="Contract Start Date" aria-label="Contract Start Date" matInput
+                formControlName="contractStartDate" [matDatepicker]="pickerContractStartDate" />
+              <mat-datepicker-toggle matSuffix [for]="pickerContractStartDate"></mat-datepicker-toggle>
+              <mat-datepicker [touchUi]="isMobileView" #pickerContractStartDate></mat-datepicker>
+              <mat-error>{{
+                getErrorMessage(f.contractStartDate)
+                }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-6 ">
+              <mat-label>Contract Completion Date</mat-label>
+              <input placeholder="Contract Completion Date" aria-label="Contract Completion Date" matInput
+                formControlName="contractCompletionDate" [matDatepicker]="pickerContactCompletionDate" />
+              <mat-datepicker-toggle matSuffix [for]="pickerContactCompletionDate"></mat-datepicker-toggle>
+              <mat-datepicker [touchUi]="isMobileView" #pickerContactCompletionDate></mat-datepicker>
+              <mat-error>{{
+                getErrorMessage(f.contractCompletionDate)
+                }}</mat-error>
+            </mat-form-field>
+
+            <!-- <mat-form-field appearance="outline" class="col-6 ">
+              <mat-label>Expected Completion Date</mat-label>
+              <input placeholder="Expected Completion Date" aria-label="Expected Completion Date" matInput
+                formControlName="expectedCompletionDate" [matDatepicker]="pickerExpectedCompletionDate" />
+              <mat-datepicker-toggle matSuffix [for]="pickerExpectedCompletionDate"></mat-datepicker-toggle>
+              <mat-datepicker [touchUi]="isMobileView" #pickerExpectedCompletionDate></mat-datepicker>
+              <mat-error>{{
+                getErrorMessage(f.expectedCompletionDate)
+                }}</mat-error>
+            </mat-form-field> -->
+
+            <mat-form-field appearance="outline" class="col-md-6">
+              <mat-label>Expected MHr</mat-label>
+              <input type="number" placeholder="Expected MHr" aria-label="Expected MHr" matInput
+                formControlName="expectedMHr" [min]="0" />
+              <span matSuffix><mat-icon>hourglass_empty</mat-icon></span>
+              <mat-error>{{ getErrorMessage(f.expectedMHr) }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-6">
+              <mat-label>Status</mat-label>
+              <mat-select placeholder="Status" formControlName="statusFlag">
+                <mat-option *ngFor="let item of statusOptions" [value]="item.value">
+                  {{ item.title }}
+                </mat-option>
+              </mat-select>
+              <mat-error>{{ getErrorMessage(f.statusFlag) }}</mat-error>
+              <mat-hint>Status must only be changed via task flow.</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-6">
+              <mat-label>Referred By</mat-label>
+              <mat-select formControlName="referredByContact" placeholder="Search Contact" #singleSelect>
+                <mat-option>
+                  <ngx-mat-select-search [formControl]="referredByFC"  placeholderLabel="Search here" 
+                  noEntriesFoundLabel="No matching value found"></ngx-mat-select-search>
+                </mat-option>
+                <mat-option *ngFor="let option of filteredReferrerOptions | async" [value]="option">
+                  {{option?.name}}
+                </mat-option>
+              </mat-select>
+              <mat-error>{{getErrorMessage(f.referredByContact)}}</mat-error>
+            </mat-form-field>
+
+               <mat-form-field appearance="outline" class="col-md-6">
+                <mat-label>Group Company Contact</mat-label>
+                <mat-select formControlName="groupCompanyContact" placeholder="Search Group Company" #singleSelect>
+                  <mat-option>
+                    <ngx-mat-select-search [formControl]="groupCompanyContactFC" placeholderLabel="Search here"
+                      noEntriesFoundLabel="No matching value found"></ngx-mat-select-search>
+                  </mat-option>
+                  <mat-option *ngFor="let option of filteredGroupCompanyOptions | async" [value]="option">
+                    {{ option?.name }}
+                  </mat-option>
+                </mat-select>
+                <mat-error>{{ getErrorMessage(f.groupCompanyContact) }}</mat-error>
+              </mat-form-field>
+          </div>
+          </form>
+        </div>
+
+        <div class="form-collection">
+          <h5 class="form-collection-title">Billing & Client Details</h5>
+          <form [formGroup]="form" autocomplete="off">
+            <div class="row m-0">
+              <mat-form-field appearance="outline" class="col-md-6">
+                <mat-label>Bill To Company/Client</mat-label>
+                <mat-select formControlName="clientContact" placeholder="Search Contact" #singleSelect>
+                  <mat-option>
+                    <ngx-mat-select-search [formControl]="clientContactFC" placeholderLabel="Search here"
+                      noEntriesFoundLabel="No matching value found"></ngx-mat-select-search>
+                  </mat-option>
+                  <mat-option *ngFor="let option of filteredClientOptions | async" [value]="option">
+                    {{option?.name}}
+                  </mat-option>
+                </mat-select>
+                <mat-error>{{getErrorMessage(f.clientContact)}}</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-md-6">
+                <mat-label>Title on Bill</mat-label>
+                <input placeholder="Title on Bill" aria-label="Title on Bill" matInput formControlName="billingTitle" />
+                <mat-error>{{ getErrorMessage(f.billingTitle) }}</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-md-6">
+                <mat-label>Group Contact</mat-label>
+                <mat-select formControlName="groupContact" placeholder="Search Contact" #singleSelect>
+                  <mat-option>
+                    <ngx-mat-select-search [formControl]="groupContactFC" placeholderLabel="Search here"
+                      noEntriesFoundLabel="No matching value found"></ngx-mat-select-search>
+                  </mat-option>
+                  <mat-option *ngFor="let option of filteredGroupOptions | async" [value]="option">
+                    {{option?.name}}
+                  </mat-option>
+                </mat-select>
+                <mat-error>{{getErrorMessage(f.groupContact)}}</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-md-6">
+                <mat-label>Project HSN/SAC</mat-label>
+                <input matInput formControlName="hsn">
+                <mat-error>{{getErrorMessage(f.hsn)}}</mat-error>
+              </mat-form-field>
+    
+              <mat-form-field appearance="outline" class="col-md-6">
+                <mat-label>Project GST StateCode</mat-label>
+                <input placeholder="Project GST StateCode" aria-label="Project GST StateCode" matInput formControlName="stateCode"
+                  [matAutocomplete]="autoStateCode">
+                <mat-autocomplete #autoStateCode="matAutocomplete" [displayWith]="displayFnStateCode">
+                  <mat-option *ngFor="let option of filteredStateCodeOptions$ | async" [value]="option.tin">
+                    {{option.tin}} <small>({{option.state}})</small>
+                  </mat-option>
+                </mat-autocomplete>
+                <mat-error>{{getErrorMessage(f.stateCode)}}</mat-error>
+              </mat-form-field>
+
+              <!-- <mat-form-field appearance="outline" class="col-md-6">
+                <mat-label>Client GSTIN</mat-label>
+                <input matInput formControlName="gstin" />
+                <mat-error>{{ getErrorMessage(f.gstin) }}</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-md-6">
+                <mat-label>Client PAN</mat-label>
+                <input matInput formControlName="pan" />
+                <mat-error>{{ getErrorMessage(f.pan) }}</mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="col-md-6">
+                <mat-label>Client TAN</mat-label>
+                <input matInput formControlName="tan" />
+                <mat-error>{{ getErrorMessage(f.tan) }}</mat-error>
+              </mat-form-field> -->
+   
+              <!--  <mat-form-field appearance="outline"class="col-md-6">
+                            <mat-label>Project Fees</mat-label>
+                            <input type="number" placeholder="Project Fees" aria-label="Project Fees" matInput
+                              class="form-input-text-right" formControlName="fee">
+                            <span matSuffix>&#8377;&nbsp;</span>
+                            <mat-error>{{getErrorMessage(f.fee)}}</mat-error>
+                
+                          </mat-form-field>
+                
+                           <mat-form-field appearance="outline"class="col-md-6">
+                            <mat-label>Discount</mat-label>
+                            <input type="number" placeholder="Discount" aria-label="Discount" matInput class="form-input-text-right"
+                              formControlName="discount">
+                            <span matSuffix>&#8377;&nbsp;</span>
+                            <mat-error>{{getErrorMessage(f.discount)}}</mat-error>
+                
+                          </mat-form-field> -->
+              <!-- <mat-form-field appearance="outline" class="col-md-6">
+                <mat-label>Fee</mat-label>
+                <input type="number" placeholder="Fee" aria-label="Fee" matInput formControlName="fee" [min]="0" />
+                <span matSuffix><mat-icon>currency_rupee</mat-icon></span>
+                <mat-error>{{ getErrorMessage(f.fee) }}</mat-error>
+              </mat-form-field> -->
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>Associations</mat-panel-title>
+          </mat-expansion-panel-header>
+        
+          <app-project-create-associations [config]="associationConfig" 
+            (update)="onAssociationsChange($event)"></app-project-create-associations>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>Notes</mat-panel-title>
+          </mat-expansion-panel-header>
+          <form [formGroup]="form" autocomplete="off">
+            <mat-form-field appearance="outline" class="col-md-12">
+              <!-- <mat-label>Notes</mat-label> -->
+              <textarea aria-label="note" matInput formControlName="note" cdkTextareaAutosize
+                #autosize="cdkTextareaAutosize" placeholder="Enter Notes/Comments here" rows="5"></textarea>
+              <mat-error>{{ getErrorMessage(f["note"]) }}</mat-error>
+            </mat-form-field>
+          </form>
+        </mat-expansion-panel>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>

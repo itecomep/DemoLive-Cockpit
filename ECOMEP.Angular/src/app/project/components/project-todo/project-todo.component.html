@@ -1,0 +1,62 @@
+<div class="todo-list-wrapper">
+    <div class="todo-header">
+        <h5 class="font-focused">Todo's</h5>
+        <div class="d-flex align-items-center flex-wrap">
+            <div class="mv-list-search-filter">
+                <mat-icon matPrefix>search</mat-icon>
+                <input aria-label="Type to Search" [formControl]="searchFC" matInput />
+              </div>
+            <div *ngIf="statusOptions && statusOptions.length > 0">
+                <mat-form-field appearance="outline">
+                    <mat-select [formControl]="statusFC" multiple placeholder="Status">
+                        <mat-option *ngFor="let item of statusOptions" [value]="item">{{
+                            item.title
+                            }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <mat-paginator [length]="totalRecordsCount" [pageIndex]="pagedListConfig.pageIndex"
+                [pageSize]="pagedListConfig.pageSize" (page)="handlePageEvent($event)" aria-label="Select page">
+            </mat-paginator>
+        </div>
+    </div>
+
+    <ul>
+        <li *ngFor="let item of dataList" (click)="onViewTodo(item)" >
+            <div class="d-flex">
+                <img src="{{ item.assignee.photoUrl || 'assets/images/user.png' }}" (click)="openPhotoDialog(item.assignee); $event.stopPropagation()" style="cursor: pointer;"
+                    [matTooltip]="item.assignee.name || ''" class="user-thumbnail float-left mr-2" />
+                <div class="d-flex align-items-center">
+
+                    <div class="flex-grow-1">
+                        <div>
+                            <span class="font-focused">{{ item.title }} </span> | <small>{{item.subTitle}}</small>
+                        </div>
+
+                        <div>
+                            <span><small>Assigner: </small>{{ item.assigner.name }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between">
+                <div>
+                    <small>Start: </small>
+                    <span>{{ item.startDate | date: "dd MMM y HH:mm" }}</span>
+                </div>
+                <div>
+                    <small>Due: </small><span>{{ item.dueDate | date: "dd MMM y HH:mm" }}</span>
+                </div>
+                <div>
+                    <span class="badge mr-1" [ngClass]="{
+                    'red':item.priority == PRIORITY_HIGH,
+                   'green':item.priority == PRIORITY_LOW,
+                    'yellow':item.priority == PRIORITY_NORMAL}">{{ item.priority }}</span>
+                    <span *ngIf="item.statusFlag == 0" class="badge green">{{ item.statusValue }}</span>
+                    <span *ngIf="item.statusFlag == 1" class="badge gray-700">{{item.statusValue}}</span>
+                    <span *ngIf="item.statusFlag == 2" class="badge gray-500">{{item.statusValue}}</span>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>

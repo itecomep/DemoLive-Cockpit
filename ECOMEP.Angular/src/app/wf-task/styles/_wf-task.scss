@@ -1,0 +1,19 @@
+@import "./variables";
+
+.task-title-bar {
+  background-color: $task-title-bar-background;
+  color: $task-title-bar-color;
+
+  & small {
+    color: $task-title-bar-label-color;
+  }
+
+  &.delayed-task {
+    background: $red  !important;
+    color: $white  !important;
+
+    small {
+      color: $white  !important;
+    }
+  }
+}

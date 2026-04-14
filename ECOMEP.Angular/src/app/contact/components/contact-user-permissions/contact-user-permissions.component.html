@@ -1,0 +1,67 @@
+<div class="user-permissions">
+    <!-- Card 1 -->
+    <mat-expansion-panel class="row pl-3" [expanded]="true">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                Login Details
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="username-actions">
+            <div *ngIf="isEmployeeRegistered">
+                <small>Username</small>
+                <h4>{{ this.contact.username }}</h4>
+            </div>
+            <span *ngIf="!isEmployeeRegistered && !isInitializing">Please click on Register to assign user</span>
+            <div class="buttons">
+                <button mat-raised-button color="primary"
+                    *ngIf="!isEmployeeRegistered && !isInitializing && isPermissionEdit" class=" ml-2 "
+                    matTooltip="Register" aria-label="Register" (click)="onRegisterButtonClicked()">
+                    Register
+                </button>
+                <button mat-raised-button color="primary" matTooltip="Reset Password" aria-label="Reset Password"
+                    (click)="onResetPasswordClick()"
+                    *ngIf="isEmployeeRegistered && !isInitializing && isPermissionEdit">
+                    Reset Password
+                </button>
+                <button mat-raised-button color="warn" matTooltip="Remove User" aria-label="Remove User"
+                    (click)="onRemoveClick()"
+                    *ngIf="isEmployeeRegistered && !isInitializing && !haveMasterPermission()">
+                    Remove User
+                </button>
+            </div>
+        </div>
+    </mat-expansion-panel>
+
+    <!-- Card 1 Ends -->
+    <!-- Cards for showing Previleges  -->
+    <div *ngIf="isEmployeeRegistered">
+        <mat-accordion>
+            <mat-expansion-panel (click)="onSelect(i)"
+                *ngFor="let moduleGrp of roles | mcvGroupBy: ['module'];  let i=index;" id="permissiondropdown{{i}}">
+                <mat-expansion-panel-header>
+                    {{ moduleGrp.key }}
+                </mat-expansion-panel-header>
+                <ng-container *ngFor="let grp of moduleGrp.values | mcvGroupBy: ['group'];  let j=index;">
+                    <div class="permission-group">
+                        <div class="permission-group-header" *ngIf="grp.key && grp.key.length">
+                            <h5>{{ grp.key }}</h5>
+                        </div>
+
+                        <ul class="permission-list">
+                            <li *ngFor="let item of grp.values;">
+                                <div class="permission">
+                                    <mat-checkbox [checked]="item.isAssigned"
+                                        (change)="onRoleChanged($event, item)"></mat-checkbox>
+                                    <div>
+                                        <h6>{{ item.title }}</h6>
+                                        <span>{{ item.description }}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </ng-container>
+            </mat-expansion-panel>
+        </mat-accordion>
+    </div>
+</div>

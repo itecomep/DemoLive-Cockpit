@@ -1,0 +1,158 @@
+<div class="mat-dialog-header project-inward-dialog-header">
+  <h5 class="project-inward-dialog-header-title">{{dialogTitle}}</h5>
+  <!-- <div class="project-inward-dialog-header-actions theme-dark"> -->
+  <!-- <ng-container *ngTemplateOutlet="headerActionTemplate"></ng-container> -->
+  <!-- </div> -->
+  <div class="d-flex align-items-center">
+    <button mat-raised-button aria-label="close" (click)="onSubmit()" *ngIf="isEditMode">
+      Save
+    </button>
+    <button mat-icon-button aria-label="close" (click)="onClose()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+</div>
+<!-- <div class="project-inward-dialog-mobile-actions"> -->
+<!-- <ng-container *ngTemplateOutlet="headerActionTemplate"></ng-container> -->
+<!-- </div> -->
+<mat-dialog-content>
+
+  <div class="project-inward-wrapper">
+    <div class="project-inward-form-wrapper" *ngIf="isEditMode">
+      <form [formGroup]="form">
+        <div class="row m-0">
+          <mat-form-field appearance="outline" class="col-sm-6">
+            <mat-label>Received Date</mat-label>
+            <input placeholder="Received Date" aria-label="Received Date" matInput formControlName="receivedDate"
+              [matDatepicker]="pickerExpectedCompletionDate" [max]="now">
+            <mat-datepicker-toggle matSuffix [for]="pickerExpectedCompletionDate"></mat-datepicker-toggle>
+            <mat-datepicker [touchUi]="isMobileView" #pickerExpectedCompletionDate></mat-datepicker>
+            <mat-error>{{getErrorMessage(f['receivedDate'])}}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-sm-6">
+            <mat-label>Received From</mat-label>
+            <input placeholder="Enter name of contact to select from the list" aria-label="Received From" matInput
+              formControlName="contact" [matAutocomplete]="autoContact" />
+            <mat-autocomplete #autoContact="matAutocomplete" [displayWith]="displayFnContact">
+              <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
+                {{ option.name }} <small>({{ option.email }})</small>
+              </mat-option>
+            </mat-autocomplete>
+            <span matSuffix>
+              <mat-icon>person</mat-icon>
+            </span>
+            <mat-error>{{ getErrorMessage(f['contact']) }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-sm-6">
+            <mat-label>Title/Subject</mat-label>
+            <input id="title" placeholder="Title/Subject" aria-label="Tite/Subject" matInput formControlName="title">
+            <mat-error>{{getErrorMessage(f['title'])}}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-sm-6">
+            <mat-label>Category</mat-label>
+            <mat-select placeholder="Category" formControlName="category">
+              <mat-option *ngFor="let category of inwardCategories" [value]="category">{{category}}</mat-option>
+            </mat-select>
+            <mat-error>{{ getErrorMessage(f['category']) }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-sm-12">
+            <mat-label>Message/Comment</mat-label>
+            <textarea aria-label="message" matInput formControlName="message" cdkTextareaAutosize
+              #autosize="cdkTextareaAutosize" placeholder="Message/Comment" rows="3"></textarea>
+            <mat-error>{{ getErrorMessage(f['message'])}}</mat-error>
+          </mat-form-field>
+        </div>
+      </form>
+    </div>
+
+    <div class="project-inward-detail-wrapper" *ngIf="!isEditMode">
+      <div class="property-row">
+        <div class="property">
+          <small class="property-label">Received Date</small>
+          <div class="property-value">
+            <span>{{inward.receivedDate | date:'dd MMM y'}}</span>
+          </div>
+        </div>
+
+        <div class="property">
+          <small class="property-label">Received From</small>
+          <div class="property-value">
+            <span>{{ inward.senderName }}</span>
+            <small class="pl-2">({{inward.senderEmail}})</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="property-row">
+        <div class="property">
+          <small class="property-label">Subject/Title</small>
+          <div class="property-value">
+            <span>{{inward.title}}</span>
+          </div>
+        </div>
+
+        <div class="property">
+          <small class="property-label">Category</small>
+          <div class="property-value">
+            <span>{{inward.category}}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="property-row">
+        <div class="property">
+          <small class="property-label">Message/Comment</small>
+          <div class="property-value">
+            <p>{{inward.message}}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="property-row">
+        <div class="property">
+          <small class="property-label">Uploaded on</small>
+          <div class="property-value">
+            <span>{{inward.created | date:'dd MMM y HH:mm' }}</span>
+          </div>
+        </div>
+
+        <div class="property">
+          <small class="property-label">Uploaded by</small>
+          <div class="property-value">
+            <span>{{inward.createdBy }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-inward-documents-wrapper">
+      <div class="view-property">
+        <app-mcv-file-upload class="pt-1" [uploaderConfig]="blobConfig" [showPaste]="true"  [showDrop]="true" (upload)="onUpload($event)"
+          *ngIf="blobConfig && isEditMode">
+        </app-mcv-file-upload>
+        <div>
+          <small class="label-text">Files ({{inward.attachments.length}})</small>
+        </div>
+        <ul class="mcv-file-list">
+
+          <li *ngFor="let file of getFilteredAttachments(inward.attachments,false); let i = index">
+            <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="isEditMode"
+              (delete)="onDeleteAttachment(file,i)" [allowTagging]="isEditMode" [downloadUrl]="file.url"
+              [showPreview]="true" [singlePreview]="true" [url]="file.url" [thumbUrl]="file.thumbUrl">
+            </mcv-file>
+          </li>
+          <li *ngFor="let file of getFilteredAttachments(inward.attachments,true); let i = index">
+            <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="isEditMode"
+              (delete)="onDeleteAttachment(file,i)" [allowTagging]="isEditMode" [downloadUrl]="file.url"
+              [showPreview]="true" [singlePreview]="true" [url]="file.url" [thumbUrl]="file.thumbUrl">
+            </mcv-file>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>

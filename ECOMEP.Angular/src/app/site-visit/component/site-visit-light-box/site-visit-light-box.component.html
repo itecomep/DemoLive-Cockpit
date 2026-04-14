@@ -1,0 +1,42 @@
+<div class="mat-dialog-header mcv-dialog-header">
+  <h5 class="font-focused">{{data.dialogTitle}}</h5>
+  <button mat-icon-button aria-label="close" (click)="onClose(null)">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+<div class="sitevisit-box-wrapper">
+  <div class="sitevisit-box-image-container" [ngClass]="{'no-reviewer':attachmentArray.length == 0}">
+    <div class="sitevisit-image-video-wrapper" [ngStyle]="{'width': isMobileView ? '100%' : '70%'}">
+      <img src="{{activeAttachment.originalUrl || activeAttachment.url}}"
+        *ngIf="(mediaType=='image' || mediaType!=='video')  && (activeAttachment.url)">
+      <app-site-visit-video-player [url]="activeAttachment.url" [autoplay]="true" [showControls]="true"
+        [contentType]="activeAttachment.contentType" *ngIf="mediaType=='video' && activeAttachment.url">
+      </app-site-visit-video-player>
+    </div>
+    <div class="sitevisit-agenda-comment" *ngIf="data.comment && !isMobileView">
+      <p>{{data.comment}}</p>
+    </div>
+  </div>
+  <div class="sitevisit-box-footer">
+    <button mat-raised-button class="btn btn-circle btn-primary" (click)="onPreviousClick()" matTooltip="previous"
+      aria-label="previous" [disabled]="selectedIndex == 0">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <div>
+      <div class="sitevisit-box-image-reviewer" *ngIf="attachmentArray.length != 0">
+        <div class="sitevisit-box-image-reviewer-container" [ngClass]="{'scale-image':activeAttachment===image}"
+          *ngFor="let image of attachmentArray" (click)="onClick(image)">
+          <img src="{{getVideoThumbUrl(image.url)}}" *ngIf="image.url">
+          <div class="sitevisit-file-thumbnail-icon" *ngIf="image
+                  .contentType =='video/mp4'">
+            <mat-icon>play_circle_filled</mat-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button mat-raised-button class="btn btn-circle btn-primary" (click)="onNextClick()" matTooltip="next"
+      aria-label="next" [disabled]="selectedIndex == this.attachmentArray.length-1">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+</div>

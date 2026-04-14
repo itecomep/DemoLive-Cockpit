@@ -1,0 +1,32 @@
+<ul class="agile-list task-list">
+
+  <li *ngFor="let item of dataList" [routerLinkActive]="['active']"
+    [ngClass]="{'highlight-red': isDelayed(item),'highlight-yellow': isForToday(item)}">
+    <a [routerLink]="[pagedListConfig.route,item.id]" *ngIf="!openAsDialog">
+      <wf-task-list-item [item]="item" [showAll]="pagedListConfig.showAll"></wf-task-list-item>
+    </a>
+    <wf-task-list-item [item]="item" [showAll]="pagedListConfig.showAll" (open)="onTaskClick(item)"
+      *ngIf="openAsDialog"></wf-task-list-item>
+
+  </li>
+  <div *ngFor="let item of dataList" [routerLinkActive]="['active']"
+    [ngClass]="{'highlight-red': isDelayed(item),'highlight-yellow': isForToday(item)}">
+  </div>
+
+  <li *ngIf="!isLoading && dataList.length==0">
+    <div class="row">
+      <div class="col-12">
+        <span>No items found</span>
+      </div>
+    </div>
+  </li>
+  <li *ngIf="!isLoading && totalRecordsCount>0 && (pagedListConfig.pageIndex+1) < totalPages"
+    (click)="loadMoreRecords()" class="text-center">
+    <div class="row">
+      <div class="col-12">
+        <span style="cursor:pointer;">Show More</span>
+      </div>
+    </div>
+  </li>
+
+</ul>

@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="AutoMapper" Version="13.0.1" />
+	  <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8" />
+	  <PackageReference Include="Azure.Storage.Blobs" Version="12.22.0" />
+
+	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
+	  <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.8" />
+	  <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.8" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.8" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	  <PackageReference Include="Microsoft.Identity.Client" Version="4.64.1" />
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	  <PackageReference Include="SendGrid" Version="9.29.3" />
+	  <PackageReference Include="Swashbuckle.AspNetCore" Version="6.8.0" />
+	  <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MyCockpitView.CoreModule\MyCockpitView.CoreModule.csproj" />
+    <ProjectReference Include="..\MyCockpitView.Utility.Common\MyCockpitView.Utility.Common.csproj" />
+    <ProjectReference Include="..\MyCockpitView.Utility.Excel\MyCockpitView.Utility.Excel.csproj" />
+    <ProjectReference Include="..\MyCockpitView.Utility.ImageEncodeClient\MyCockpitView.Utility.ImageEncodeClient.csproj" />
+    <ProjectReference Include="..\MyCockpitView.Utility.PDFCombineClient\MyCockpitView.Utility.PDFCombineClient.csproj" />
+    <ProjectReference Include="..\MyCockpitView.Utility.PDFSharp\MyCockpitView.Utility.PDFSharp.csproj" />
+    <ProjectReference Include="..\MyCockpitView.Utility.RDLCClient\MyCockpitView.Utility.RDLCClient.csproj" />
+    <ProjectReference Include="..\MyCockpitView.Utility.VideoEncodeClient\MyCockpitView.Utility.VideoEncodeClient.csproj" />
+    <ProjectReference Include="..\MyCockpitView.Utility.ZeptoMailClient\MyCockpitView.Utility.ZeptoMailClient.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="AssetModule\Extensions\" />
+    <Folder Include="WorkOrderModule\Extensions\" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,326 @@
+<div class="project-work-order-bill">
+    <div class="row">
+        <div class="col-md-6 col-12">
+            <mat-expansion-panel [expanded]="true" [formGroup]="form">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>Billing Details</mat-panel-title>
+                    <button mat-raised-button color="primary" (click)="onSaveProject($event)" *ngIf="isPermissionEdit">
+                        Save
+                    </button>
+                </mat-expansion-panel-header>
+
+                <div class="col-md-12 col-12 mb-2">
+                    <mat-form-field appearance="outline" *ngIf="!project.clientContact">
+                        <mat-label>Bill To Company/Client</mat-label>
+                        <mat-select formControlName="clientContact" placeholder="Search Contact" #singleSelect>
+                            <mat-option>
+                                <ngx-mat-select-search [formControl]="clientContactFC" placeholderLabel="Search here"
+                                    noEntriesFoundLabel="No matching value found"></ngx-mat-select-search>
+                            </mat-option>
+                            <mat-option *ngFor="let option of filteredClientOptions | async" [value]="option">
+                                {{ option?.name }}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error>{{ getErrorMessage(f['clientContact']) }}</mat-error>
+                    </mat-form-field>
+
+                    <div class="contact-container col-md-12" *ngIf="project.clientContact">
+                        <div class="d-flex justify-content-between align-items-center w-100">
+                            <div class="d-flex align-items-start" (click)="onOpenContactDialog(project.clientContact)">
+                                <img class="image"
+                                    [src]="project.clientContact?.photoUrl || 'assets/images/person-icon.svg'" />
+                                <div class="d-flex flex-column ml-2">
+                                    <small class="font-focused">Bill To Company/Client</small>
+                                    <h6 class="name">{{ project.clientContact?.fullName }}</h6>
+                                </div>
+                            </div>
+                            <mat-icon (click)="onDeleteClientContact()">clear</mat-icon>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12 col-12 mb-2">
+                    <mat-form-field appearance="outline" *ngIf="!project.groupContact">
+                        <mat-label>Group Contact</mat-label>
+                        <mat-select formControlName="groupContact" placeholder="Search Contact" #singleSelect>
+                            <mat-option>
+                                <ngx-mat-select-search [formControl]="groupContactFC" placeholderLabel="Search here"
+                                    noEntriesFoundLabel="No matching value found"></ngx-mat-select-search>
+                            </mat-option>
+                            <mat-option *ngFor="let option of filteredClientOptions | async" [value]="option">
+                                {{ option?.name }}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error>{{ getErrorMessage(f['groupContact']) }}</mat-error>
+                    </mat-form-field>
+
+                    <div class="contact-container col-md-12" *ngIf="project.groupContact && project.groupContactID">
+                        <div class="d-flex justify-content-between align-items-center w-100">
+                            <div class="d-flex align-items-start" (click)="onOpenContactDialog(project.groupContact)">
+                                <img class="image"
+                                    [src]="project.groupContact?.photoUrl || 'assets/images/person-icon.svg'" />
+                                <div class="d-flex flex-column ml-2">
+                                    <small class="font-focused">Group Contact</small>
+                                    <h6 class="name ">{{ project.groupContact?.fullName }}</h6>
+                                </div>
+                            </div>
+
+                            <mat-icon (click)="onDeleteGroupContact()">clear</mat-icon>
+                        </div>
+                    </div>
+                </div>
+
+                <mat-form-field appearance="outline" class="col-md-6">
+                    <mat-label>Title on Bill</mat-label>
+                    <input placeholder="Title on Bill" aria-label="Title on Bill" matInput
+                        formControlName="billingTitle">
+                    <mat-error>{{getErrorMessage(f['billingTitle'])}}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="col-md-6">
+                    <mat-label>Project Fees</mat-label>
+                    <input type="number" placeholder="Project Fees" aria-label="Project Fees" matInput
+                        class="form-input-text-right" formControlName="fee">
+                    <span matSuffix>&#8377;&nbsp;</span>
+                    <mat-error>{{getErrorMessage(f['fee'])}}</mat-error>
+
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="col-md-6">
+                    <mat-label>Project HSN/SAC</mat-label>
+                    <input matInput formControlName="hsn">
+                    <mat-error>{{getErrorMessage(f['hsn'])}}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="col-md-6">
+                    <mat-label>Project GST StateCode</mat-label>
+                    <input placeholder="Project GST StateCode" aria-label="Project GST StateCode" matInput
+                        formControlName="stateCode" [matAutocomplete]="autoStateCode">
+                    <mat-autocomplete #autoStateCode="matAutocomplete" [displayWith]="displayFnStateCode">
+                        <mat-option *ngFor="let option of filteredStateCodeOptions$ | async" [value]="option.tin">
+                            {{option.tin}} <small>({{option.state}})</small>
+                        </mat-option>
+                    </mat-autocomplete>
+                    <mat-error>{{getErrorMessage(f['stateCode'])}}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="col-md-12">
+                    <mat-label>Comment</mat-label>
+                    <textarea aria-label="comment" matInput formControlName="comment" cdkTextareaAutosize
+                        #autosize="cdkTextareaAutosize" [cdkAutosizeMinRows]="3"></textarea>
+                    <mat-error>{{ getErrorMessage(f['comment']) }}</mat-error>
+                </mat-form-field>
+            </mat-expansion-panel>
+        </div>
+
+        <div class="col-md-6 col-12">
+            <mat-expansion-panel [expanded]="true">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>Work Order Details</mat-panel-title>
+                </mat-expansion-panel-header>
+                <div class="property-collection">
+                    <div class="property">
+                        <div class="property-details">
+                            <small class="property-label">Company</small>
+                            <div class="property-value">
+                                <h6>{{workOrder.company?.title}}</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="property">
+                        <div class="property-details">
+                            <small class="property-label">Typology</small>
+                            <div class="property-value">
+                                <h6>{{workOrder.typology}}</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="property">
+                        <div class="property-details">
+                            <small class="property-label">WorkOrder Number</small>
+                            <div class="property-value">
+                                <h6>{{workOrder.workOrderNo}}</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="property">
+                        <div class="property-details">
+                            <small class="property-label">WorkOrder Date</small>
+                            <div class="property-value">
+                                <h6>{{workOrder.workOrderDate | date:'dd MMM y HH:mm'}}</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="property">
+                        <div class="property-details">
+                            <small class="property-label">Due Date</small>
+                            <div class="property-value">
+                                <h6>{{workOrder.dueDate | date:'dd MMM y'}}</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="property">
+                        <div class="property-details">
+                            <small class="property-label">isLumpSum</small>
+                            <div class="property-value">
+                                <h6>{{workOrder.isLumpSum ? 'Yes' : 'No'}}</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="property">
+                        <div class="property-details">
+                            <small class="property-label">Area</small>
+                            <div class="property-value">
+                                <h6>{{workOrder.area}}</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="property">
+                        <div class="property-details">
+                            <small class="property-label">Amount</small>
+                            <div class="property-value">
+                                <h6>{{workOrder.amount | currency: 'INR' }}</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </mat-expansion-panel>
+        </div>
+    </div>
+    <div class="bill-container">
+        <div class="bills-scroll-wrapper">
+        <div class="project-bills-header">
+            <div>
+                <small>Total Stage Percentage (A)</small>
+                <h6> {{workPercentage | number:'1.0-1'}}%</h6>
+            </div>
+
+            <div>
+                <small>Total Bill Percentage (B)</small>
+                <h6>{{totalBillPercentage | number:'1.0-1'}}%</h6>
+            </div>
+
+            <div>
+                <small>Total Due Percentage (A-B)</small>
+                <h6>{{ workPercentage - totalBillPercentage | number:'1.0-1'}}%</h6>
+            </div>
+
+            <div *ngIf="isPermissionBillingEdit">
+                <button mat-raised-button (click)="onCreate(true)">
+                    <mat-icon>add</mat-icon> Proforma (pre-dated)
+                </button>
+                <button mat-raised-button (click)="onCreate(false)">
+                    <mat-icon>add</mat-icon> Proforma
+                </button>
+            </div>
+        </div>
+    <div class="project-bills-table-wrapper">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Bill Date</th>
+                    <th>Bill No.</th>
+                    <th>Bill %</th>
+                    <th>Bill Amount</th>
+                    <th>GST</th>
+                    <th>TDS</th>
+                    <th>Payable</th>
+                    <th>Received</th>
+                    <th>Amount After TDS</th>
+                    <th></th>
+                </tr>
+                <tr class="total">
+                    <th colspan="3">Total</th>
+                    <!-- <td>{{totalBillPercentage | number:'1.0-1'}}%</td> -->
+                    <td>{{totalBillAmount | currency:'INR'}}</td>
+                    <td>{{totalGstAmount | currency:'INR'}}</td>
+                    <td>{{totalTdsAmount | currency:'INR'}}</td>
+                    <td>{{totalPayable | currency:'INR'}}</td>
+                    <td>{{totalReceivedAmount | currency:'INR'}}</td>
+                    <td>{{totalAmountAfterTDS | currency:'INR'}}</td>
+                    <td></td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let bill of bills">
+                    <td class="align-center">
+                        <h6>{{bill.billDate | date:'dd MMM y'}}</h6>
+                        <small *ngIf="bill.typeFlag==PROJECT_BILL_TYPEFLAG_TAX_INVOICE">
+                            {{bill.proformaDate | date:'dd MMM y'}}</small>
+                    </td>
+                    <td class="align-center">
+                        <h6>{{bill.typeFlag==PROJECT_BILL_TYPEFLAG_PROFORMA_INVOICE ? bill.proformaInvoiceNo :
+                            bill.taxInvoiceNo}}</h6>
+                        <small
+                            *ngIf="bill.typeFlag==PROJECT_BILL_TYPEFLAG_TAX_INVOICE">{{bill.proformaInvoiceNo}}</small>
+                    </td>
+                    <td class="align-center">{{bill.billPercentage |number:'1.0-1'}}%</td>
+                    <td class="align-right">{{bill.dueAmount | currency:'INR'}}</td>
+                    <td class="align-right">
+                        <h6>{{(bill.sgstAmount+bill.cgstAmount+bill.igstAmount) | currency:'INR'}}</h6>
+                        <small>({{getGSTPercentage(bill)}}%)</small>
+                    </td>
+                    <td class="align-right">
+                        <h6>{{bill.tdsAmount | currency:'INR'}}</h6>
+                        <small>(10%)</small>
+                    </td>
+                    <td class="align-right">
+                        <h6>{{bill.payableAmount | currency:'INR'}}</h6>
+                        <!-- <small>{{getPaymentMode(bill)}} Amount: {{getPaymentWithoutTDS(bill) | currency:'INR'}}</small> -->
+                    </td>
+                    <td class="align-right">
+                        <h6>{{getReceivedPayment(bill) | currency:'INR'}}</h6>
+                        <small *ngIf="bill.payments.length != 0 && getPendingPayment(bill) != 0"
+                            [ngClass]="{ 'text-red': getPendingPayment(bill) > 0,'text-green': getPendingPayment(bill) < 0 }">Pending
+                            Amount: {{getPendingPayment(bill)
+                            | currency:'INR'}}</small>
+                    </td>
+
+                    <td class="align-right">{{bill.amountAfterTDS | currency:'INR'}}</td>
+                    <td class="align-center">
+                        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="context-menu">
+                            <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #menu="matMenu">
+                            <button mat-menu-item (click)="onDownloadPdf(bill.proformaInvoiceUrl)"
+                                *ngIf="bill.proformaInvoiceUrl">
+                                <mat-icon>download</mat-icon>
+                                <span>Proforma Invoice</span>
+                            </button>
+                            <button mat-menu-item (click)="onDownloadPdf(bill.taxInvoiceUrl)"
+                                *ngIf="bill.taxInvoiceUrl">
+                                <mat-icon>download</mat-icon>
+                                <span>Tax Invoice</span>
+                            </button>
+
+                            <button mat-menu-item (click)="onEdit(bill)" *ngIf="isPermissionBillingEdit ">
+                                <mat-icon>edit</mat-icon>
+                                <span>Edit</span>
+                            </button>
+
+                            <button mat-menu-item (click)="onConvert(bill)"
+                                *ngIf="isPermissionBillingEdit && bill.typeFlag==PROJECT_BILL_TYPEFLAG_PROFORMA_INVOICE && !bill.isPreDated">
+                                <mat-icon>price_check</mat-icon>
+                                <span>Convert To Tax Invoice</span>
+                            </button>
+
+                            <button mat-menu-item (click)="onEditPayments(bill)" *ngIf="isPermissionBillingEdit">
+                                <mat-icon>currency_rupee</mat-icon>
+                                <span>Payments</span>
+                            </button>
+
+                            <button mat-menu-item (click)="onDelete(bill)" *ngIf="isPermissionBillingEdit">
+                                <mat-icon>delete</mat-icon>
+                                <span>Delete</span>
+                            </button>
+
+                        </mat-menu>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+    </div>
+    </div>

@@ -1,0 +1,136 @@
+@import 'variables';
+@import 'theme';
+
+.contact-view-wrapper {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+img.contact-icon {
+    width: 40px;
+    height: 40px;
+    -o-object-fit: cover;
+    object-fit: cover;
+    border-radius: $border-radius;
+}
+
+.title-bar {
+    padding: .2rem !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    box-shadow: $box-shadow;
+    color: #fff;
+    background-color: mat-color($mcv-primary, 500);
+    margin: 3px 6px;
+    border-radius: $border-radius;
+}
+
+
+img.contact-icon {
+    width: 40px;
+    height: 40px;
+    -o-object-fit: cover;
+    object-fit: cover;
+    border-radius: $border-radius;
+}
+
+.category-tag-list {
+    display: flex;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+
+    .category-tag {
+        background-color: $gray-700;
+        color: $white;
+        font-size: 0.6rem;
+        padding: 2px 4px;
+        border-radius: $border-radius;
+    }
+}
+
+.appointment-list {
+    display: flex;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+
+    .appointment-tag {
+        background-color: mat-color($mcv-primary, 500);
+        color: $white;
+        font-size: 0.6rem;
+        padding: 2px 4px;
+        border-radius: $border-radius;
+    }
+}
+
+.title-bar-action-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.2rem;
+}
+
+.leave-detail {
+    padding: 0.3rem;
+    border-radius: $border-radius;
+    box-shadow: $box-shadow;
+    flex-grow: 1;
+
+    .property-container {
+        display: flex;
+        gap: 0.3rem;
+    }
+}
+
+.property-wrapper {
+    padding: 0.2rem;
+    border: 1px solid $gray-400;
+    border-radius: 4px;
+    min-height: 2.8rem;
+    min-width: 13.5rem;
+    flex-shrink: 1;
+    flex-grow: 1;
+
+    .property-label {
+        font-size: 0.6rem;
+    }
+
+    .property-value {
+        font-weight: 500;
+    }
+}
+
+.leave-detail-container {
+    display: flex;
+    gap: 0.3rem;
+    margin: 0 0.5rem;
+}
+
+.mv-list-search-filter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 80%;
+    border: 1px solid $gray-300;
+    border-radius: 5px;
+    height: 2.1rem;
+
+    input {
+        border: none;
+    }
+}
+
+.leave-icon-pending {
+    color: $yellow;
+}
+
+.leave-icon-approved {
+    color: #4DACD4;
+}
+
+.leave-icon-rejected {
+    color: rgb(255, 0, 0);
+}

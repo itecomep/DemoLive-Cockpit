@@ -1,0 +1,39 @@
+<div class="mat-dialog-header mcv-dialog-header">
+  <h5 class="font-focused">{{title}}</h5>
+  <button mat-icon-button aria-label="close" (click)="onClose()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+<mat-dialog-content>
+
+
+  <div class="mcv-lightbox" *ngIf="mediaType=='image'">
+    <div class="mcv-lightbox-preview" [ngClass]="{'mcv-lightbox-preview-single': !urls || urls.length<=1}">
+      <img src="{{activeUrl}}" *ngIf="activeUrl" />
+    </div>
+    <div class="mcv-lightbox-thumbnails self-scrollbar" *ngIf="urls && urls.length>1">
+      <div class="mcv-lightbox-thumbnail" [ngClass]="{'active':activeUrl===item}" *ngFor="let item of urls; let i=index"
+        (click)="activeUrl=item">
+        <img src="{{item}}" />
+      </div>
+    </div>
+  </div>
+  <div class="mcv-lightbox" *ngIf="mediaType==='video'">
+    <div class="mcv-lightbox-preview mcv-lightbox-preview-single">
+      <mcv-video-player [url]="activeUrl" [autoplay]="true" [showControls]="true"
+        [contentType]="contentType"></mcv-video-player>
+    </div>
+  </div>
+  <div class="mcv-lightbox" *ngIf="mediaType==='audio'">
+    <div class="mcv-lightbox-preview mcv-lightbox-preview-single">
+      <!-- <img class="mcv-file-thumbnail-icon" src="assets/icons/mp3.png" /> -->
+      <audio controls style="max-width: 100%;" autoplay>
+        <source src="{{activeUrl}}">
+        Your browser does not support the audio playback
+      </audio>
+    </div>
+  </div>
+  <div class="mcv-lightbox-caption" *ngIf="mediaCaption">
+    <span>{{mediaCaption}}</span>
+  </div>
+</mat-dialog-content>

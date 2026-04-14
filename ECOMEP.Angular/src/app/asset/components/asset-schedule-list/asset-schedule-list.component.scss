@@ -1,0 +1,139 @@
+@import 'variables';
+@import 'theme';
+.mcv-dialog-header{
+    background-color: mat-color($mcv-primary, 500);
+    color: $white;
+}
+mat-dialog-content {
+    max-height: 80vh !important;
+    height: 78vh !important;
+    width: 70vw !important;
+}
+
+
+mat-icon {
+    cursor: pointer;
+}
+
+.schedule-ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    // width: 40rem;
+    // height: 50vh;
+
+    li {
+        border-bottom: 1px solid $gray-300;
+        // border-radius: $border-radius;
+        padding: 0.3rem;
+        display: flex;
+        // align-items: center;
+        gap: 0.3rem;
+        flex-direction: column;
+
+        .property-wrapper {
+            // border: 1px solid $gray-300;
+            // border-radius: $border-radius;
+            padding: 0.2rem;
+            flex-basis: 100%;
+            flex: 1;
+        }
+
+        .schedule-property {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-grow: 1;
+        }
+
+        .schedule-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+    }
+}
+
+.description-attachment-wrapper {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.3rem;
+
+    .description-container {
+        width: 48%;
+    }
+
+    .description-wrapper,
+    .file-list-wrapper {
+        padding: 0.3rem;
+        // box-shadow: $box-shadow;
+        border: 1px solid $gray-300;
+        border-radius: $border-radius;
+    }
+
+    .file-list-wrapper {
+        width: 51%;
+    }
+}
+
+.pending {
+    color: $yellow;
+}
+
+.approved {
+    color: $green;
+}
+
+.verified {
+    color: $blue;
+}
+
+table {
+    width: 100%;
+
+    thead {
+        position: sticky;
+        top: 0;
+        z-index: 999;
+        background-color: $gray-300;
+        height: 2rem;
+        text-align: center;
+
+        tr {
+            &.total {
+                background-color: $gray-500 !important;
+                color: $white;
+            }
+        }
+    }
+
+    tbody {
+        tr {
+            cursor: pointer;
+        }
+
+        td {
+            border-bottom: 1px solid $gray-400;
+            border-right: 1px solid $gray-300;
+            padding: 0 0.3rem;
+            text-align: center;
+        }
+    }
+}
+
+@media only screen and (max-width:768px) {
+
+    mat-dialog-content {
+        max-height: 88vh !important;
+        height: 88vh !important;
+        width: 100% !important;
+    }
+
+    .description-attachment-wrapper {
+        flex-wrap: wrap;
+
+        .description-container,
+        .file-list-wrapper {
+            width: 100%;
+        }
+    }
+}

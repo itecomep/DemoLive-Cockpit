@@ -1,0 +1,208 @@
+@import "variables";
+@import 'theme';
+
+.mcv-lightbox-overlay {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  // background: rgba(0, 0, 0, 0.7);
+  align-items: center;
+  justify-content: center;
+  z-index: 999999999;
+}
+
+.mcv-lightbox-dialog {
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  background-color: $white;
+  width: 95%;
+  height: 92%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  // padding: 8px;
+  position: relative;
+  border-radius: $border-radius;
+  color: $black;
+}
+
+@media (max-width: 768px) {
+  .mcv-lightbox-dialog {
+    width: 80%;
+    height: 40%;
+  }
+}
+
+.mcv-lightbox-header {
+  overflow: hidden;
+  position: sticky;
+  top: 0;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: $box-shadow;
+
+  & .title {
+    flex: 1 0;
+    margin-left: 5px;
+  }
+
+  & .close {
+    flex: 0 0;
+    color: $black;
+    opacity: 1;
+    font-size: 1.5rem;
+  }
+}
+
+.mcv-lightbox {
+  overflow: hidden;
+  position: absolute;
+  top: 48px;
+  bottom: 5px;
+  left: 5px;
+  right: 5px;
+  padding: 10px;
+
+  & .mcv-lightbox-preview {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80%;
+    bottom: 0;
+    overflow: hidden;
+    padding: 0.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    // background-color: #000;
+
+    & img {
+      height: 100%;
+      width: 100%;
+      // Makes `<img>` tags behave like `background-size: cover`. Not supported
+      // in IE, but we're using it as a progressive enhancement.
+      -o-object-fit: contain;
+      object-fit: contain;
+    }
+  }
+
+  & .mcv-lightbox-preview.mcv-lightbox-preview-single {
+    width: 100%;
+    flex-direction: column;
+    // & .icon {
+    //   max-height: 150px;
+    //   max-width: 150px;
+    //   // Makes `<img>` tags behave like `background-size: cover`. Not supported
+    //   // in IE, but we're using it as a progressive enhancement.
+    //   -o-object-fit: contain;
+    //   object-fit: contain;
+    // }
+  }
+
+  & .mcv-lightbox-thumbnails {
+    display: block;
+    position: absolute;
+    left: 80%;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden auto;
+    overscroll-behavior: contain;
+    /* Prevent SCROLL-CHAINING to parent elements. */
+    padding: 0 3px 0 0;
+    // background-color: #000;
+
+    cursor: pointer;
+
+    & .mcv-lightbox-thumbnail {
+      box-sizing: border-box;
+      margin: 5px 0;
+      box-shadow: $box-shadow;
+      opacity: 0.7;
+
+      &.active {
+        border: 2px solid mat-color($mcv-primary, 500);
+        z-index: 9999;
+        opacity: 1;
+      }
+
+      &:hover {
+        z-index: 9999;
+        opacity: 1;
+      }
+
+      // &:last-of-type {
+      //   animation: mcv-light-box-pulse 2s infinite;
+      //   &:hover {
+      //     animation: none;
+      //   }
+      // }
+
+      & img {
+        height: 100%;
+        width: 100%;
+        // Makes `<img>` tags behave like `background-size: cover`. Not supported
+        // in IE, but we're using it as a progressive enhancement.
+        -o-object-fit: cover;
+        object-fit: cover;
+        margin: 3px 0;
+      }
+    }
+  }
+}
+
+.mcv-lightbox-caption {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 10px 15px;
+  position: absolute;
+  bottom: 0;
+}
+
+@keyframes mcv-light-box-pulse {
+  0% {
+    // transform: scale(0.96, 1);
+    transform: translate(0, 5px);
+    // opacity: 0.7;
+  }
+
+  50% {
+    // transform: scale(1, 1);
+    transform: translate(0);
+    // opacity: 1;
+  }
+
+  100% {
+    // transform: scale(0.96, 1);
+    transform: translate(0, 5px);
+    // opacity: 0.7;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .mcv-lightbox-preview {
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+  }
+
+  .mcv-lightbox-thumbnails {
+    display: none !important;
+  }
+
+  .mcv-lightbox-header {
+    & .title {
+      &>* {
+        font-size: 0.8rem;
+      }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+@import 'variables';
+
+.contact-notes {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  // flex-wrap: wrap;
+  gap: 0.3rem;
+  padding: 0.5rem;
+
+  &>li {
+    border-radius: $border-radius;
+    padding: 0.3rem;
+    margin-bottom: 0.3rem;
+    box-shadow: $box-shadow;
+
+    .new-card {
+      // display: flex;
+      // // flex-direction: column;
+      // align-items: center;
+      // justify-content: space-between;
+      background-color: $paper-yellow;
+      cursor: pointer;
+
+      .mat-icon {
+        height: auto;
+        width: auto;
+      }
+
+      .material-icons {
+        font-size: 2.5rem;
+      }
+
+      // h6 {
+      //     font-size: 1.5rem;
+      // }
+    }
+  }
+}

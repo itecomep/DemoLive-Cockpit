@@ -1,0 +1,315 @@
+<app-footer>
+    <div class="mcv-footer-actions">
+        <div>
+            <mat-form-field appearance="outline">
+                <!-- <mat-label>Search</mat-label> -->
+                <input placeholder="Search" aria-label="Search" matInput [formControl]="searchFC" />
+                <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+        </div>
+
+        <button mat-icon-button (click)="sidenav.toggleSidenav()" matTooltip="Filters" aria-label="Filters">
+            <mat-icon>filter_list</mat-icon>
+        </button>
+
+        <button mat-raised-button (click)="onToggleShowAll()" *ngIf="isPermissionShowAll && !showAll"
+            matTooltip="Show All" aria-label="Show All">
+            Show All
+        </button>
+
+        <button mat-raised-button color="primary" (click)="onToggleShowAll()" *ngIf="isPermissionShowAll && showAll"
+            matTooltip="Show All" aria-label="Show All">
+            Show All
+        </button>
+
+        <button mat-icon-button (click)="onRefresh()" matTooltip="Refresh" aria-label="Refresh">
+            <mat-icon>refresh</mat-icon>
+        </button>
+
+        <button mat-icon-button (click)="onExportExcel()" matTooltip="Export Excel" aria-label="export excel"
+            *ngIf="isPermissionExcel">
+            <!-- <mat-icon>file_download</mat-icon> -->
+            <img src="assets/icons/file-excel.png" alt="xlsx" />
+        </button>
+    </div>
+
+    <div class="mcv-footer-mobile-actions">
+        <button mat-raised-button (click)="onToggleShowAll()" *ngIf="isPermissionShowAll && !showAll"
+            matTooltip="Show All" aria-label="Show All">
+            Show All
+        </button>
+
+        <button mat-raised-button color="primary" (click)="onToggleShowAll()" *ngIf="isPermissionShowAll && showAll"
+            matTooltip="Show All" aria-label="Show All">
+            Show All
+        </button>
+
+        <button mat-icon-button (click)="sidenav.toggleSidenav()" matTooltip="Filters" aria-label="Filters">
+            <mat-icon>filter_list</mat-icon>
+        </button>
+
+        <button mat-icon-button (click)="onRefresh()" matTooltip="Refresh" aria-label="Refresh">
+            <mat-icon>refresh</mat-icon>
+        </button>
+
+        <button mat-icon-button (click)="onExportExcel()" matTooltip="Export Excel" aria-label="export excel"
+            *ngIf="isPermissionExcel">
+            <!-- <mat-icon>file_download</mat-icon> -->
+            <img src="assets/icons/file-excel.png" alt="xlsx" />
+        </button>
+    </div>
+</app-footer>
+
+<app-mcv-filter-sidenav #sidenav (refreshFiltersEvent)="refreshFilters()">
+    <div *ngIf="isMobileView">
+        <mat-form-field appearance="outline">
+            <!-- <mat-label>Search</mat-label> -->
+            <input placeholder="Search" aria-label="Search" matInput [formControl]="searchFC" />
+            <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+    </div>
+
+    <div [formGroup]="dateFC">
+        <mat-form-field appearance="outline">
+            <mat-date-range-input [rangePicker]="rangePicker1">
+                <input matStartDate placeholder="Select Range" formControlName="start" />
+                <input matEndDate placeholder="End date" formControlName="end" />
+            </mat-date-range-input>
+            <mat-datepicker-toggle matSuffix [for]="rangePicker1"></mat-datepicker-toggle>
+            <mat-date-range-picker [touchUi]="isMobileView" #rangePicker1></mat-date-range-picker>
+        </mat-form-field>
+    </div>
+
+    <div *ngIf="showAll">
+        <mat-form-field appearance="outline">
+            <mat-select [formControl]="userFC" multiple placeholder="Person">
+                <mcv-select-all [selectFC]="userFC" [values]="userOptions">
+                </mcv-select-all>
+                <mat-option *ngFor="let item of userOptions" [value]="item">
+                    {{item.name }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+
+    <div *ngIf="(teamOptions && teamOptions.length > 0 ) && authService.isRoleMaster" >
+        <mat-form-field appearance="outline">
+            <mat-label>Team</mat-label>
+            <mat-select [formControl]="teamFC" multiple placeholder="Team">
+                <mat-option *ngFor=" let item of teamOptions" [value]="item">{{ item.title
+                    }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+</app-mcv-filter-sidenav>
+
+<div class="task-analysis">
+    <div class="task-analsysis-table-wrapper">
+
+        <table>
+            <thead>
+                <!-- Table Header  -->
+                <tr>
+                    <th></th>
+                    <th>
+                       
+                        <div class="analysis-table-header" (click)="sortData('startDate')" >
+                            <h6>StartDate</h6>
+                            <mat-icon *ngIf="sortState['activeColumn'] === 'startDate' && sortState['startDate'] === 'newFirst'">south</mat-icon>
+                            <mat-icon *ngIf="sortState['activeColumn'] === 'startDate' && sortState['startDate'] === 'oldFirst'">north</mat-icon>
+                            <mat-icon *ngIf="sortState['activeColumn'] === '' && sortState['startDate'] === ''">import_export</mat-icon>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="analysis-table-header" (click)="sortData('dueDate')">
+                            <h6>Due</h6>
+                            <mat-icon *ngIf="sortState['activeColumn'] === 'dueDate' && sortState['dueDate'] === 'newFirst'">south</mat-icon>
+                            <mat-icon *ngIf="sortState['activeColumn'] === 'dueDate' && sortState['dueDate'] === 'oldFirst'">north</mat-icon>
+                            <mat-icon *ngIf="sortState['activeColumn'] === '' && sortState['dueDate'] === ''">import_export</mat-icon>
+                          </div>
+                    </th>
+                    <th>     
+                        <div class="analysis-table-header" (click)="sortData('completedDate')">
+                            <h6>Completed</h6>
+                            <mat-icon *ngIf="sortState['activeColumn'] === 'completedDate' && sortState['completedDate'] === 'newFirst'">south</mat-icon>
+                            <mat-icon *ngIf="sortState['activeColumn'] === 'completedDate' && sortState['completedDate'] === 'oldFirst'">north</mat-icon>
+                            <mat-icon *ngIf="sortState['activeColumn'] === '' && sortState['completedDate'] === ''">import_export</mat-icon>
+                          </div>
+                    </th>
+                    <th>Delay</th>
+                    <th *ngIf="showAll || isLeader" mat-button [matMenuTriggerFor]="assignedToMenu" [ngClass]="{'filter': selectedAssignedTo.length > 0}">
+                        <div class="analysis-table-header">
+                            <h6>Assigned By</h6>
+                            <mat-icon >filter_alt</mat-icon>
+                            <mat-menu #assignedToMenu="matMenu">
+                                <div class="search-container p-1">
+                                    <mat-form-field appearance="outline" (click)="$event.stopPropagation();">
+                                        <input
+                                        matInput
+                                        placeholder="Search"
+                                        [(ngModel)]="assignedToSearch"
+                                        (input)="filterDistinctAssignedTo()"
+                                      />
+                                      <mat-icon class="clear-icon"
+                                      matSuffix
+                                      (click)="clearSearch($event)">close</mat-icon>
+                                    </mat-form-field>
+                                  </div>
+                                <!-- <button mat-menu-item (click)="resetFilter()">Reset</button> -->
+                                <button mat-menu-item  (click)="$event.stopPropagation(); toggleSelectAll('assignedTo')">
+                                    {{ isAllSelected('assignedTo') ? 'Deselect All' : 'Select All' }}
+                                </button>
+                              <mat-option class="menu-mat-option" *ngFor="let person of filteredAssignedTo" (click)="$event.stopPropagation(); toggleSelection(person, 'assignedTo')">
+                                <mat-checkbox [checked]="selectedAssignedTo.includes(person)">{{ person }}</mat-checkbox>
+                              </mat-option>
+                             
+                            </mat-menu>
+                          </div>
+                    </th>
+                    <th mat-button [matMenuTriggerFor]="assignedByMenu" [ngClass]="{'filter': selectedAssignedBy.length > 0}">
+                        <div class="analysis-table-header">
+                            <h6>Assigned To</h6>
+                            <mat-icon>filter_alt</mat-icon>
+                            
+                            <mat-menu #assignedByMenu="matMenu">
+                                <div class="search-container p-1">
+                                    <mat-form-field appearance="outline" (click)="$event.stopPropagation();">
+                                        <input
+                                        matInput
+                                        placeholder="Search"
+                                        [(ngModel)]="assignedBySearch"
+                                        (input)="filterDistinctAssignedBy()"
+                                      />
+                                      <mat-icon class="clear-icon"
+                                      matSuffix
+                                      (click)="clearSearch($event)">close</mat-icon>
+                                    </mat-form-field>
+                                  </div>
+                                <button mat-menu-item (click)="$event.stopPropagation();  toggleSelectAll('assignedBy')">
+                                    {{ isAllSelected('assignedBy') ? 'Deselect All' : 'Select All' }}
+                                </button>
+                                <mat-option *ngFor="let person of filteredAssignedBy" (click)="$event.stopPropagation(); toggleSelection(person, 'assignedBy')">
+                                    <mat-checkbox [checked]="selectedAssignedBy.includes(person)">{{ person }}</mat-checkbox>
+                                </mat-option>
+                            </mat-menu>
+                        </div>
+                    </th>
+                    <th mat-button [matMenuTriggerFor]="taskMenu" [ngClass]="{'filter': selectedTask.length > 0}">
+                        <div class="analysis-table-header">
+                            <h6>Task</h6>
+                            <mat-icon>filter_alt</mat-icon>
+                            <mat-menu #taskMenu="matMenu">
+                                <div class="search-container p-1">
+                                    <mat-form-field appearance="outline" (click)="$event.stopPropagation();">
+                                        <input
+                                        matInput
+                                        placeholder="Search"
+                                        [(ngModel)]="assignedtaskSearch"
+                                        (input)="filterDistinctTask()"
+                                      />
+                                      <mat-icon class="clear-icon"
+                                      matSuffix
+                                      (click)="clearSearch($event)">close</mat-icon>
+                                    </mat-form-field>
+                                  </div>
+                                <button mat-menu-item (click)="$event.stopPropagation(); toggleSelectAll('task')">
+                                    {{ isAllSelected('task') ? 'Deselect All' : 'Select All' }}
+                                </button>
+                                <mat-option *ngFor="let person of filteredTask" (click)="$event.stopPropagation(); toggleSelection(person, 'task')">
+                                    <mat-checkbox [checked]="selectedTask.includes(person)">{{ person }}</mat-checkbox>
+                                </mat-option>
+                            </mat-menu>
+                        </div>
+                    </th>
+                    <th>Revision</th>
+                    <th mat-button [matMenuTriggerFor]="titleMenu" [ngClass]="{'filter': selectedTitle.length > 0}">
+                        <div class="analysis-table-header">
+                            <h6>Title</h6>
+                            <mat-icon>filter_alt</mat-icon>
+                            <mat-menu #titleMenu="matMenu">
+                                <div class="search-container p-1">
+                                    <mat-form-field appearance="outline" (click)="$event.stopPropagation();">
+                                        <input
+                                        matInput
+                                        placeholder="Search"
+                                        [(ngModel)]="assignedtitle"
+                                        (input)="filterDistinctTitle()"
+                                      />
+                                      <mat-icon class="clear-icon"
+                                      matSuffix
+                                      (click)="clearSearch($event)">close</mat-icon>
+                                    </mat-form-field>
+                                  </div>
+                                <button mat-menu-item (click)="$event.stopPropagation(); toggleSelectAll('title')">
+                                    {{ isAllSelected('title') ? 'Deselect All' : 'Select All' }}
+                                </button>
+                                <mat-option *ngFor="let person of filteredTitle" (click)="$event.stopPropagation(); toggleSelection(person, 'title')">
+                                    <mat-checkbox [checked]="selectedTitle.includes(person)">{{ person }}</mat-checkbox>
+                                </mat-option>
+                            </mat-menu>
+                        </div>
+                    </th>
+                    <th>MHrAssigned</th>
+                    <th>MHrConsumed</th>
+                    <th>Points</th>
+                    <th>MHrAssessed</th>
+                </tr>
+                <!-- Table Header Total  -->
+                <tr class="total" *ngIf="total">
+
+                    <td></td>
+                    <td class="font-focused">Total</td>
+                    <td></td>
+                    <td></td>
+                    <td><span [ngClass]="{'text-muted': total.delay < 0,'text-danger': total.delay > 0}"
+                            *ngIf="total.delay > 0">+</span>
+                        <span [ngClass]="{'text-muted': total.delay < 0,'text-danger': total.delay > 0}">
+                            {{ total.delay | number: "2.0-2" }}</span>
+                    </td>
+                    <td *ngIf="showAll || isLeader"></td>
+                    <td colspan="4"></td>
+                    <td class="align-right font-focused">{{ total.mHrAssigned | number: "2.0-2" }}</td>
+                    <td class="align-right font-focused">{{ total.mHrConsumed | number: "2.0-2" }}</td>
+                    <td></td>
+                    <td class="align-right font-focused">{{ total.mHrAssessed | number: "2.0-2" }}</td>
+                </tr>
+            </thead>
+            <!-- Table Body  -->
+            <tbody>
+                <ng-container *ngFor="let item of dataList; let i=index">
+                    <tr>
+                        <td *ngIf="!item.assessmentRemark && item.assessments.length == 0"></td>
+                        <td *ngIf="item.assessmentRemark || item.assessments.length > 0" (click)="toggleExpand(i)">
+                            <mat-icon *ngIf="!isExpanded[i]">expand_more</mat-icon>
+                            <mat-icon *ngIf="isExpanded[i]">expand_less</mat-icon>
+                        </td>
+                        <td (click)="onOpenTodoDetails(item)">{{item.startDate | date:'dd MMM y HH:mm'}}
+                        </td>
+                        <td (click)="onOpenTodoDetails(item)">{{item.dueDate | date:'dd MMM y HH:mm'}}</td>
+                        <td (click)="onOpenTodoDetails(item)">{{item.completedDate | date:'dd MMM y HH:mm'}}</td>
+                        <td (click)="onOpenTodoDetails(item)">{{item.delay | number:'2.0-2'}}</td>
+                        <td *ngIf="showAll || isLeader">{{item.person}}</td>
+                        <td (click)="onOpenTodoDetails(item)">{{item.assignedBy}}</td>
+                        <td (click)="onOpenTodoDetails(item)">{{item.taskTitle}}</td>
+                        <td (click)="onOpenTodoDetails(item)">R{{item.revision}}</td>
+                        <td class="text-pre-wrap">{{item.entityTitle}}</td>
+                        <td class="align-right">{{item.mHrAssigned | number:'2.0-2'}}</td>
+                        <td class="align-right">{{item.mHrConsumed | number:'2.0-2'}}</td>
+                        <td class="align-right">
+                            <span *ngIf="item.isAssessmentApplicable">{{item.assessmentPoints}}<small>/10</small></span>
+                            <span *ngIf="!item.isAssessmentApplicable">N/A</span>
+                        </td>
+                        <td class="align-right">{{item.mHrAssessed | number:'2.0-2'}}</td>
+                    </tr>
+                    <tr *ngIf="item.assessments.length">
+                        <td class="collapsed" colspan="13">
+                            <task-analysis-assessment [item]="item" [isMobileView]="isMobileView" [showAll]="showAll"
+                                [isExpanded]="isExpanded" [i]="i">
+                            </task-analysis-assessment>
+                        </td>
+                    </tr>
+                </ng-container>
+            </tbody>
+        </table>
+    </div>
+</div>

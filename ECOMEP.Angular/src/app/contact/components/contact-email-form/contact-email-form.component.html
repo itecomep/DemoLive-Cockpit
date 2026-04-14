@@ -1,0 +1,34 @@
+<div class="contact-email-form-wrapper">
+    <form [formGroup]="form" autocomplete="off">
+        <div class=" contact-email-form-actions">
+            <mat-form-field appearance="outline">
+                <mat-label>Type</mat-label>
+                <mat-select placeholder="Type" formControlName="title">
+                    <mat-option *ngFor="let title of titleOptions" [value]="title">{{title}}</mat-option>
+                </mat-select>
+                <mat-error>{{ getErrorMessage(f.title) }}</mat-error>
+            </mat-form-field>
+            <div>
+                <mat-checkbox [checked]="currentEntity.isPrimary" formControlName="isPrimary">Primary
+                </mat-checkbox>
+            </div>
+            <!-- <button mat-icon-button (click)="onSubmit()">
+                <mat-icon>done</mat-icon>
+            </button> -->
+            <button mat-icon-button (click)="onDelete()">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </div>
+        <div class="contact-email-form-fields">
+
+            <mat-form-field appearance="outline">
+                <mat-label>Email</mat-label>
+                <input type="email" placeholder="Email" aria-label="Email" matInput formControlName="email" />
+                <mat-error>{{ getErrorMessage(f.email) }}</mat-error>
+            </mat-form-field>
+        </div>
+
+
+
+    </form>
+</div>

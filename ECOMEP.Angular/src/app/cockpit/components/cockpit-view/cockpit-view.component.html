@@ -1,0 +1,174 @@
+<app-header [title]="headerTitle"></app-header>
+
+<!-- *ngIf="!isAppointed" -->
+<!-- <div class="cockpit-wrapper">
+  <div class="cockpit-message">
+    <h3>Welcome</h3>
+    <div class="cockpit-logo">
+      <img src="{{ logoUrl || 'assets/images/logo.png' }}" />
+    </div>
+    <h2>MyCockpitView®</h2>
+  </div>
+
+</div> -->
+
+<!-- *ngIf="isAppointed || isPermissionMaster" -->
+<div class="cockpit-wrapper">
+  <mat-tab-group [selectedIndex]="selectedTabIndex" (selectedIndexChange)="onSelectedTabIndexChange($event)">
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>dashboard</mat-icon>
+        <small>MyWorkboard</small>
+      </ng-template>
+      <ng-template matTabContent>
+        <app-cockpit></app-cockpit>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>task_alt</mat-icon>
+        <small>MyTaskAnalysis</small>
+      </ng-template>
+      <ng-template matTabContent>
+        <task-analysis></task-analysis>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab *ngIf="isPermissionTeamProgress">
+      <ng-template mat-tab-label>
+        <mat-icon>sort</mat-icon>
+        <small>Team Progress</small>
+      </ng-template>
+      <ng-template matTabContent>
+        <team-task-progress-chart></team-task-progress-chart>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab *ngIf="isPermissionProjectBillAnalysis">
+      <ng-template mat-tab-label>
+        <mat-icon>currency_rupee</mat-icon>
+        <small>Billing Analysis</small>
+      </ng-template>
+      <ng-template matTabContent>
+        <app-project-bill-analysis></app-project-bill-analysis>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab *ngIf="isPermissionTodoAnalysis">
+      <ng-template mat-tab-label>
+        <mat-icon>query_stats</mat-icon>
+        <small>Todo Analysis</small>
+      </ng-template>
+      <ng-template matTabContent>
+        <app-todo-analysis></app-todo-analysis>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab *ngIf="isPermissionStageAnalysisView">
+      <ng-template mat-tab-label>
+        <mat-icon>view_timeline</mat-icon>
+        <small>Project Stages</small>
+      </ng-template>
+      <ng-template matTabContent>
+        <app-project-stages-analysis></app-project-stages-analysis>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>event</mat-icon>
+        <small>My Calendar</small>
+      </ng-template>
+      <ng-template matTabContent>
+        <app-cockpit-my-calendar>
+        </app-cockpit-my-calendar>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab *ngIf="isPermissionTeamCalendarView">
+      <ng-template mat-tab-label>
+        <mat-icon>calendar_month</mat-icon>
+        <small>Team Calendar</small>
+      </ng-template>
+      <ng-template matTabContent>
+        <app-cockpit-team-calendar [showAll]="true"></app-cockpit-team-calendar>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab *ngIf="isPermissionGmailView">
+      <ng-template mat-tab-label>
+        <mat-icon>mail</mat-icon>
+        <small>Gmail</small>
+      </ng-template>
+      <ng-template matTabContent>
+        <app-email-list [showAll]="true" [connectGmailFn]="connectGmail.bind(this)"></app-email-list>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab *ngIf="isPermissionFileView">
+      <ng-template mat-tab-label>
+        <mat-icon>folder</mat-icon>
+        <small>Files</small>
+      </ng-template>
+      <ng-template matTabContent>
+        <app-file></app-file>
+      </ng-template>
+    </mat-tab>
+
+     <mat-tab *ngIf="isPermissionAssetMaintenanceView">
+      <ng-template mat-tab-label>
+        <mat-icon>handyman</mat-icon>
+        <small>Asset Maintenance</small>
+      </ng-template>
+      <ng-template matTabContent>
+        <app-asset-maintenance></app-asset-maintenance>
+      </ng-template>
+    </mat-tab>
+
+
+    <!-- <mat-tab *ngIf="isPermissionProjectAnalysis">
+      <ng-template mat-tab-label>
+        <mat-icon>trending_up</mat-icon>
+        <small>Project Analysis</small>
+      </ng-template>
+      <ng-template matTabContent>
+        <project-analysis></project-analysis>
+      </ng-template>
+    </mat-tab> -->
+
+    <!-- <mat-tab *ngIf="isPermissionProjectProgress">
+      <ng-template mat-tab-label>
+        <mat-icon>sort</mat-icon>
+        <small>Project Progress</small>
+      </ng-template>
+      <ng-template matTabContent>
+        <project-progress-chart></project-progress-chart>
+      </ng-template>
+    </mat-tab> -->
+
+
+    <!-- <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>view_timeline</mat-icon>
+        <small>MyTimeline</small>
+      </ng-template>
+      <ng-template matTabContent>
+        <app-cockpit-timeline [contact]="currentUser"></app-cockpit-timeline>
+      </ng-template>
+    </mat-tab>
+
+
+    <mat-tab *ngIf="isPermissionProjectProgress">
+      <ng-template mat-tab-label>
+        <mat-icon>sort</mat-icon>
+        <small>Project Progress</small>
+      </ng-template>
+      <ng-template matTabContent>
+        <project-progress-chart></project-progress-chart>
+      </ng-template>
+    </mat-tab> -->
+
+  </mat-tab-group>
+</div>

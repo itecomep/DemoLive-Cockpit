@@ -1,0 +1,6 @@
+@import 'variables';
+@import 'theme';
+.mcv-dialog-header{
+    background-color: mat-color($mcv-primary, 500);
+    color: $white;
+}

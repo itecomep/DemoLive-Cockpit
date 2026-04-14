@@ -1,0 +1,46 @@
+@import 'variables';
+@import 'theme';
+
+.item {
+    display: flex;
+    align-items: center;
+}
+
+.status-text {
+    font-weight: 400;
+
+    &.status-rejected {
+        color: rgb(255, 0, 0);
+    }
+
+    &.status-approved {
+        color: #4DACD4;
+    }
+
+    &.status-pending {
+        color: #f3c807;
+    }
+}
+
+.leave-dates {
+    font-weight: 600;
+    // font-size: 0.8rem;
+}
+
+.leave-type {
+    font-weight: 600;
+
+    &.total {
+        font-weight: 800;
+        padding-right: 0.6rem;
+    }
+}
+
+.violation-badge {
+    background-color: #ac1616;
+    color: white;
+    font-size: 0.6rem;
+    font-weight: 600;
+    padding: 0rem 0.2rem;
+    border-radius: 4px;
+}

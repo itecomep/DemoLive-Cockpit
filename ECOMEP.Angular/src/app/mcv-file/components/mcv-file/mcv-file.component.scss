@@ -1,0 +1,167 @@
+@import "variables";
+@import 'theme';
+
+::ng-deep {
+
+
+    .mat-mdc-progress-bar {
+        border-radius: $border-radius;
+    }
+
+    /* TODO(mdc-migration): The following rule targets internal classes of progress-bar that may no longer apply for the MDC version.*/
+    .mat-progress-bar-buffer {
+        background-color: $gray-900;
+    }
+
+    /* TODO(mdc-migration): The following rule targets internal classes of progress-bar that may no longer apply for the MDC version.*/
+    .mat-progress-bar-fill::after {
+        background-color: $yellow;
+    }
+
+    .mcv-file-spinner {
+        stroke: $white;
+    }
+}
+
+
+.mcv-file-wrapper {
+    background-color: $gray-400;
+    box-sizing: border-box;
+    border-radius: $border-radius;
+    cursor: pointer;
+    width: 214px;
+    flex: 0 0;
+
+    &.uploading {
+        background-color: mat-color($mcv-primary, 500);
+        color: $white;
+
+        .mcv-file-icon {
+            color: inherit !important;
+        }
+    }
+
+    .mcv-file-thumbnail-wrapper {
+        // height: 180px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: $border-radius;
+        flex-grow: 0;
+        flex-shrink: 0;
+        padding: 3px 3px 0 3px;
+        position: relative;
+
+        .mcv-file-video-preview {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            border-radius: $border-radius;
+            flex-grow: 0;
+            flex-shrink: 0;
+            padding: 3px 3px 0 3px;
+        }
+
+        &.mcv-file-thumbnail-wrapper-vertical {
+            height: 260px !important;
+        }
+
+        & .mcv-file-thumbnail {
+            flex-grow: 1;
+            flex-shrink: 0;
+            height: 12rem;
+            width: 100%;
+            // Makes `<img>` tags behave like `background-size: cover`. Not supported
+            // in IE, but we're using it as a progressive enhancement.
+            -o-object-fit: cover;
+            object-fit: cover;
+            border-radius: $border-radius;
+        }
+
+
+        & .mcv-file-thumbnail-icon {
+            z-index: 9;
+            color: mat-color($mcv-primary, 500);
+            max-width: 9rem;
+
+            .material-icons {
+                font-size: 60px;
+                height: 60px;
+                width: 60px;
+            }
+        }
+
+
+
+    }
+
+    .mcv-file-caption {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: 5px;
+    }
+
+    .mcv-file {
+        display: -webkit-box;
+        flex: 1 0;
+        display: flex;
+        -webkit-box-align: center;
+        align-items: center;
+        -webkit-box-pack: justify;
+        justify-content: space-between;
+
+        min-height: 3px;
+
+        & .mcv-file-detail {
+            padding: 5px;
+            position: relative;
+            display: -webkit-box;
+            display: flex;
+            -webkit-box-align: center;
+            align-items: center;
+            flex-grow: 1;
+
+            .mcv-file-spinner {
+                width: 40px;
+                height: 40px;
+            }
+
+            & .mcv-file-icon {
+                color: mat-color($mcv-primary, 500);
+                margin: 0 2px;
+            }
+        }
+
+        & .mcv-file-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            flex-grow: 0;
+            flex-shrink: 0;
+        }
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .mcv-file-wrapper {
+        width: 100% !important;
+
+        .mcv-file-thumbnail-wrapper {
+            height: 180px;
+        }
+    }
+}
+
+.mcv-file-detail {
+
+    h6,
+    span {
+        font-size: 0.8rem;
+    }
+}

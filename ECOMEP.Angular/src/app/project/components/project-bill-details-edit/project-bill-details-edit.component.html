@@ -1,0 +1,178 @@
+<div class="row">
+  <div class="col-md-8">
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Billing Details</mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="form-collection">
+        <form [formGroup]="form" autocomplete="off">
+
+          <div class="row m-0">
+
+            <div class="col-md-6 col-12 mb-2">
+              <mat-form-field appearance="outline" *ngIf="!currentEntity.clientContact" class="col-md-12">
+                <mat-label>Bill To Company/Client</mat-label>
+                <mat-select formControlName="clientContact" placeholder="Search Contact" #singleSelect>
+                  <mat-option>
+                    <ngx-mat-select-search [formControl]="clientContactFC" placeholderLabel="Search here"
+                      noEntriesFoundLabel="No matching value found"></ngx-mat-select-search>
+                  </mat-option>
+                  <mat-option *ngFor="let option of filteredClientOptions | async" [value]="option">
+                    {{ option?.name }}
+                  </mat-option>
+                </mat-select>
+                <mat-error>{{ getErrorMessage(f.clientContact) }}</mat-error>
+              </mat-form-field>
+
+              <div class="contact-container col-md-12" *ngIf="currentEntity.clientContact" > 
+                <div class="d-flex justify-content-between align-items-center w-100">
+                  <!-- Left Column -->
+                  <div class="d-flex align-items-start" (click)="onOpenContactDialog(currentEntity.clientContact)">
+                    <img class="image"
+                      [src]="currentEntity.clientContact?.photoUrl || 'assets/images/person-icon.svg'" />
+                    <div class="d-flex flex-column ml-2">
+                      <small class="font-focused">Bill To Company/Client</small>
+                      <h6 class="name">{{ currentEntity.clientContact?.fullName }}</h6>
+                    </div>
+                  </div>
+
+                  <!-- Right Column -->
+                  <mat-icon (click)="onDeleteClientContact()">clear</mat-icon>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6 col-12 mb-2">
+              <mat-form-field appearance="outline" *ngIf="!currentEntity.groupContact">
+                <mat-label>Group Contact</mat-label>
+                <mat-select formControlName="groupContact" placeholder="Search Contact" #singleSelect>
+                  <mat-option>
+                    <ngx-mat-select-search [formControl]="groupContactFC" placeholderLabel="Search here"
+                      noEntriesFoundLabel="No matching value found"></ngx-mat-select-search>
+                  </mat-option>
+                  <mat-option *ngFor="let option of filteredClientOptions | async" [value]="option">
+                    {{ option?.name }}
+                  </mat-option>
+                </mat-select>
+                <mat-error>{{ getErrorMessage(f.groupContact) }}</mat-error>
+              </mat-form-field>
+
+              <div class="contact-container col-md-12" 
+                *ngIf="currentEntity.groupContact && currentEntity.groupContactID">
+                <div class="d-flex justify-content-between align-items-center w-100">
+                  <!-- Left Column -->
+                  <div class="d-flex align-items-start" (click)="onOpenContactDialog(currentEntity.groupContact)">
+                    <img class="image"
+                      [src]="currentEntity.groupContact?.photoUrl || 'assets/images/person-icon.svg'" />
+                    <div class="d-flex flex-column ml-2">
+                      <small class="font-focused">Group Contact</small>
+                      <h6 class="name ">{{ currentEntity.groupContact?.fullName }}</h6>
+                    </div>
+                  </div>
+
+                  <!-- Right Column -->
+                  <mat-icon (click)="onDeleteGroupContact()">clear</mat-icon>
+                </div>
+              </div>
+            </div>
+
+
+
+            <mat-form-field appearance="outline" class="col-md-6">
+              <mat-label>Title on Bill</mat-label>
+              <input placeholder="Title on Bill" aria-label="Title on Bill" matInput formControlName="billingTitle">
+              <mat-error>{{getErrorMessage(f.billingTitle)}}</mat-error>
+            </mat-form-field>
+
+
+
+            <mat-form-field appearance="outline" class="col-md-6">
+              <mat-label>Project Fees</mat-label>
+              <input type="number" placeholder="Project Fees" aria-label="Project Fees" matInput
+                class="form-input-text-right" formControlName="fee">
+              <span matSuffix>&#8377;&nbsp;</span>
+              <mat-error>{{getErrorMessage(f.fee)}}</mat-error>
+
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-6">
+              <mat-label>Project HSN/SAC</mat-label>
+              <input matInput formControlName="hsn">
+              <mat-error>{{getErrorMessage(f.hsn)}}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-6">
+              <mat-label>Project GST StateCode</mat-label>
+              <input placeholder="Project GST StateCode" aria-label="Project GST StateCode" matInput
+                formControlName="stateCode" [matAutocomplete]="autoStateCode">
+              <mat-autocomplete #autoStateCode="matAutocomplete" [displayWith]="displayFnStateCode">
+                <mat-option *ngFor="let option of filteredStateCodeOptions$ | async" [value]="option.tin">
+                  {{option.tin}} <small>({{option.state}})</small>
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error>{{getErrorMessage(f.stateCode)}}</mat-error>
+            </mat-form-field>
+
+
+
+            <div class="col-md-12">
+              <div class="property-collection">
+
+                <div class="property">
+                  <div class="property-details">
+                    <small class="property-label">Client GSTIN </small>
+                    <div class="property-value">
+                      <span>{{ currentEntity.clientContact?.gstin }}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="property">
+                  <div class="property-details">
+                    <small class="property-label">Client PAN </small>
+                    <div class="property-value">
+                      <span>{{ currentEntity.clientContact?.pan }}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="property">
+                  <div class="property-details">
+                    <small class="property-label">Client TAN </small>
+                    <div class="property-value">
+                      <span>{{ currentEntity.clientContact?.tan }}</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+
+          </div>
+        </form>
+      </div>
+
+    </mat-expansion-panel>
+  </div>
+  <div class="col-md-4">
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Action</mat-panel-title>
+        <mat-panel-description>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div [formGroup]="form">
+        <mat-form-field appearance="outline">
+          <mat-label>Comment</mat-label>
+          <textarea aria-label="comment" matInput formControlName="comment" cdkTextareaAutosize
+            #autosize="cdkTextareaAutosize" [cdkAutosizeMinRows]="3"></textarea>
+          <mat-error>{{ getErrorMessage(f.comment) }}</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="d-flex align-items-center justify-content-end">
+        <button mat-raised-button color="primary" (click)="onSubmit()" aria-label="save" *ngIf="isPermissionEdit">
+          Save
+        </button>
+      </div>
+    </mat-expansion-panel>
+  </div>
+</div>

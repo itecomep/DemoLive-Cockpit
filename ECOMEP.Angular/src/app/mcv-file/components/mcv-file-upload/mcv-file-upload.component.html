@@ -1,0 +1,41 @@
+<div class="uploader" *ngIf="uploaderConfig" [ngClass]="{'expanded':imageUrl}">
+    <div class="uploader-actions">
+        <button mat-icon-button class="browse" (click)="onClickUpload()" matTooltip="browse files">
+            <mat-icon>attach_file</mat-icon>
+            <span *ngIf="showLabels">Browse</span>
+            <input type="file" #fileInput multiple (change)="onSelectionChange($event)" *ngIf="uploadMultiple" />
+            <input type="file" #fileInput single (change)="onSelectionChange($event)" *ngIf="!uploadMultiple" />
+        </button>
+
+        <button mat-icon-button class="paste" (click)="onClickPaste()" matTooltip="paste file from clipboard"
+            *ngIf="showPaste">
+            <mat-icon>content_paste</mat-icon>
+            <span *ngIf="showLabels">Paste</span>
+        </button>
+
+        <!-- <button mat-icon-button class="drop" mcvFileDrop (filesDropped)="onFilesDropped($event)" *ngIf="showDrop">
+            <mat-icon>archive</mat-icon>
+            <span *ngIf="showLabels">Drop</span>
+        </button> -->
+
+        <ng-content select=".dms-button"></ng-content>
+    </div>
+    <div class="uploader-thumbnail" *ngIf="imageUrl">
+        <img alt="" [src]="imageUrl" />
+    </div>
+    <div class="drop-box" mcvFileDrop (filesDropped)="onFilesDropped($event)" *ngIf="showDrop">
+        <mat-icon>archive</mat-icon>
+        <span>Drop Files here</span>
+    </div>
+</div>
+<div *ngIf="unSupportedMediaTypes && unSupportedMediaTypes.length">
+    <small class="text-muted" *ngFor="let type of unSupportedMediaTypes">{{type}} </small><small
+        class="text-muted">files not supported.</small>
+</div>
+<ul class="uploading-queue">
+    <li *ngFor="let item of uploadQueue">
+        <mcv-file [filename]="item.file.name" [size]="item.file.size" [progress]="item.progress" [showRemove]="true"
+            [isUploading]="true" (delete)="onDeleteFromQueue(item)">
+        </mcv-file>
+    </li>
+</ul>

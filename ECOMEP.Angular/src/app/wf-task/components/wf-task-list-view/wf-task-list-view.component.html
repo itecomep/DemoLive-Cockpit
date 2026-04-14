@@ -1,0 +1,144 @@
+<app-header [title]="headerTitle" [titleCount]="headerTitleCount">
+
+  <div class="search-filter" *ngIf="isMobileView">
+    <mat-icon matPrefix>search</mat-icon>
+    <input aria-label="search" [formControl]="searchFC" matInput />
+  </div>
+</app-header>
+
+<div class="page-wrapper no-overflow">
+  <!-- List -->
+  <div class="list-wrapper" *ngIf="isShowList" (scroll)="onContainerScroll($event)">
+    <app-wf-task-paged-list #pagedList [config]="pagedListConfig" (listLoad)="onListLoad($event)">
+    </app-wf-task-paged-list>
+  </div>
+
+  <!-- Details -->
+  <div class="detail-wrapper" *ngIf="isShowDetail && id">
+    <ng-template wfTaskEntityComponentHost #taskhost></ng-template>
+  </div>
+
+  <div class="detail-wrapper no-overflow" *ngIf="!(isShowDetail && id)">
+    <div class="detail-wrapper-message">
+      <mat-icon class="icon-xl light">vertical_split</mat-icon>
+      <h3>Select an item from list to see details</h3>
+
+    </div>
+  </div>
+</div>
+
+<app-footer>
+
+  <div class="mcv-footer-actions">
+    <div class="search-filter">
+      <mat-icon matPrefix>search</mat-icon>
+      <input aria-label="search" [formControl]="searchFC" matInput />
+    </div>
+    <button mat-icon-button (click)="refresh()" matTooltip="Refresh" aria-label="Refresh">
+      <mat-icon>refresh</mat-icon>
+    </button>
+
+    <button mat-raised-button (click)="onToggleShowAll()" *ngIf="isPermissionSpecialShowAll && !pagedListConfig.showAll"
+      matTooltip="Show All" aria-label="Show All">
+      Show All
+    </button>
+    <button mat-raised-button color="primary" (click)="onToggleShowAll()"
+      *ngIf="isPermissionSpecialShowAll && pagedListConfig.showAll" matTooltip="Show All" aria-label="Show All">
+      Show All
+    </button>
+
+    <button mat-raised-button (click)="onToggleShowToday()" *ngIf="!showToday" matTooltip="Show All"
+      aria-label="Show All">
+      Today
+    </button>
+    <button mat-raised-button color="primary" (click)="onToggleShowToday()" *ngIf=" showToday" matTooltip="Show All"
+      aria-label="Show All">
+      Today
+    </button>
+    <div>
+      <mat-form-field appearance="outline">
+        <mat-select [formControl]="entityFC" multiple placeholder="Task">
+          <mat-option *ngFor="let item of entityOptions" [value]="item.key">{{item.value}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div *ngIf="statusOptions && statusOptions.length > 0">
+      <mat-form-field appearance="outline">
+        <mat-select [formControl]="statusFC" multiple placeholder="Status">
+          <mat-option *ngFor="let item of statusOptions" [value]="item">{{
+            item.title
+            }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div *ngIf="typeOptions && typeOptions.length > 0">
+      <mat-form-field appearance="outline">
+        <mat-select [formControl]="typeFC" multiple placeholder="Type">
+          <mat-option *ngFor="let item of typeOptions" [value]="item">{{
+            item.title
+            }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+  </div>
+
+  <div class="mcv-footer-mobile-actions" *ngIf="isShowList">
+
+    <button mat-raised-button (click)="refresh()" matTooltip="Refresh" aria-label="Refresh">
+      <mat-icon>refresh</mat-icon>
+    </button>
+
+    <button mat-raised-button class="btn btn-dark" appFilterToggle matTooltip="Filters" aria-label="Filters">
+      <mat-icon>filter_list</mat-icon>
+    </button>
+
+    <button mat-raised-button (click)="onToggleShowAll()" *ngIf="isPermissionSpecialShowAll && !pagedListConfig.showAll"
+      matTooltip="Show All" aria-label="Show All">
+      Show All
+    </button>
+    <button mat-raised-button color="primary" (click)="onToggleShowAll()"
+      *ngIf="isPermissionSpecialShowAll && pagedListConfig.showAll" matTooltip="Show All" aria-label="Show All">
+      Show All
+    </button>
+    <button mat-raised-button class="btn" [ngClass]="{ 'btn-warning': showToday, 'btn-light': !showToday }"
+      (click)="onToggleShowToday()" matTooltip="Show tasks for today" aria-label="Show tasks for today">
+      Today
+    </button>
+  </div>
+  <div class="mcv-footer-mobile-actions" *ngIf="!isShowList">
+    <button mat-raised-button (click)="back()" matTooltip="Back" aria-label="Back">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+  </div>
+
+  <div class="mcv-footer-filters">
+    <div class="inline-list">
+      <div>
+        <mat-form-field appearance="outline">
+          <mat-select [formControl]="entityFC" multiple placeholder="Task Filters">
+            <mat-option *ngFor="let item of entityOptions" [value]="item.key">{{item.value}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div *ngIf="statusOptions && statusOptions.length > 0">
+        <mat-form-field appearance="outline">
+          <mat-select [formControl]="statusFC" multiple placeholder="Status">
+            <mat-option *ngFor="let item of statusOptions" [value]="item">{{
+              item.title
+              }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div *ngIf="typeOptions && typeOptions.length > 0">
+        <mat-form-field appearance="outline">
+          <mat-select [formControl]="typeFC" multiple placeholder="Type">
+            <mat-option *ngFor="let item of typeOptions" [value]="item">{{
+              item.title
+              }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+</app-footer>

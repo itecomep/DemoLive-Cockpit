@@ -1,0 +1,938 @@
+<!-- <div class="meeting-view-wrapper">
+
+  <div class="meeting-header" *ngIf="!isTaskMode">
+    <div class="title-bar">
+      <div [matTooltip]="currentEntity.contact.name" *ngIf="currentEntity.contact">
+        <img class="contact-icon" src="{{ currentEntity.contact.photoUrl || 'assets/images/person-icon.svg' }}" alt=""
+          *ngIf="!currentEntity.contact.isCompany" />
+        <img class="contact-icon" src="{{ currentEntity.contact.photoUrl || 'assets/images/company-icon.svg' }}" alt=""
+          *ngIf="currentEntity.contact.isCompany" />
+      </div>
+
+      <div>
+        <h6 class="font-focused">{{currentEntity.title}}</h6>
+        <h5 class="float-left mr-1"> #{{currentEntity.orderFlag | number:'3.0'}}</h5>
+        <span class="mb-0"> <small>on</small> {{currentEntity.startDate| date:'dd MMM y' }} </span>
+      </div>
+
+      <div>
+        <small>Created By </small>
+        <h6>
+          {{currentEntity.createdBy || 'System'}}
+        </h6>
+      </div>
+
+      <div>
+        <small>Created On </small>
+        <h6>
+          {{currentEntity.created | date:'dd MMM y HH:mm'}}
+        </h6>
+      </div>
+
+      <div>
+        <small>Modified By </small>
+        <h6>
+          {{currentEntity.modifiedBy || 'System'}}
+        </h6>
+      </div>
+
+      <div>
+        <small>Modified On</small>
+        <h6>
+          {{currentEntity.modified | date:'dd MMM y HH:mm'}}
+        </h6>
+      </div>
+    </div>
+  </div>
+  <app-wftask-title-bar [task]="task" *ngIf="isTaskMode"></app-wftask-title-bar>
+
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-8">
+        <mat-expansion-panel [expanded]="true"
+          *ngIf="currentEntity?.typeFlag==MEETING_TYPEFLAG_MEETING || currentEntity?.typeFlag==MEETING_TYPEFLAG_INSPECTION">
+          <mat-expansion-panel-header>
+            <mat-panel-title> Details </mat-panel-title>
+          </mat-expansion-panel-header>
+          <form [formGroup]="form" autocomplete="off">
+            <mat-form-field appearance="outline" class="col-md-4">
+              <mat-label>Start Date</mat-label>
+              <input id="startDate" placeholder=" From" aria-label=" From" matInput formControlName="startDate"
+                [matDatepicker]="pickerFrom">
+              <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+              <mat-datepicker [touchUi]="isMobileView" #pickerFrom></mat-datepicker>
+              <mat-error>{{getErrorMessage(f.startDate)}}</mat-error>
+              <mat-hint align="end">Meeting start</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-2">
+              <mat-label>Start Time</mat-label>
+              <input id="startTime" aria-label="startTime" [ngxTimepicker]="pickerstartTime" formControlName="startTime"
+                matInput [format]="24">
+              <ngx-material-timepicker #pickerstartTime [minutesGap]="minutesGap"></ngx-material-timepicker>
+
+              <mat-error>{{getErrorMessage(f.startTime)}}</mat-error>
+              <mat-hint align="end">24 hour</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-4">
+              <mat-label>End Date</mat-label>
+              <input id="endDate" placeholder=" To" aria-label=" To" matInput formControlName="endDate"
+                [matDatepicker]="pickerTo">
+              <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
+              <mat-datepicker [touchUi]="isMobileView" #pickerTo></mat-datepicker>
+              <mat-error>{{getErrorMessage(f.endDate)}}</mat-error>
+              <mat-hint align="end">Meeting end</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-2">
+              <mat-label>End Time</mat-label>
+              <input id="endTime" aria-label="endTime" [ngxTimepicker]="pickerendTime" matInput
+                formControlName="endTime" [format]="24">
+              <ngx-material-timepicker #pickerendTime [minutesGap]="minutesGap"></ngx-material-timepicker>
+
+              <mat-error>{{getErrorMessage(f.endTime)}}</mat-error>
+              <mat-hint align="end">24 hour</mat-hint>
+            </mat-form-field>
+
+            <div class="clear-fix"></div>
+
+            <mat-form-field appearance="outline" class="col-sm-12">
+              <mat-label>Location</mat-label>
+              <input id="location" aria-label="location" matInput formControlName="location">
+              <mat-error>{{getErrorMessage(f.location)}}</mat-error>
+            </mat-form-field>
+          </form>
+
+
+        </mat-expansion-panel>
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>Recipients</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <div class="meeting-attendee-input">
+            <mat-form-field appearance="outline" *ngIf="currentEntity.isEditable">
+              <mat-label>To</mat-label>
+              <input placeholder="Enter name of person to select from the list" aria-label="To" matInput
+                [formControl]="assigneeFC" [matAutocomplete]="autoRequestTo" />
+
+              <mat-autocomplete #autoRequestTo="matAutocomplete" [displayWith]="displayFnContact"
+                (optionSelected)="onSelectContact(MEETING_ATTENDEE_TYPEFLAG_TO)">
+                <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
+                  <h6>
+                    {{option.name}}
+                  </h6>
+                  <span>{{option.email}} <small *ngIf="option.company">({{option.company}})</small></span>
+                </mat-option>
+              </mat-autocomplete>
+              <span matSuffix>
+                <mat-icon>person</mat-icon>
+              </span>
+              <mat-error>{{ getErrorMessage(assigneeFC) }}</mat-error>
+              <mat-hint align="end">Enter name of person to select from the list</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <h4 class="m-2 font-bold">TO</h4>
+          <span class="text-danger" *ngIf="toList.length==0">
+            Please add atleast 1 contact to send!
+          </span>
+          <ul class="meeting-attendee-list" id="toList">
+            <ng-container *ngFor="let item of toList; let i = index;">
+              <li>
+                <div *cdkDragPlaceholder></div>
+                <div class="meeting-attendee">
+                  <div>
+                    <h6>{{item.name}}</h6>
+                    <span>{{item.email}} </span> (<small>{{item.company}} </small>)
+                  </div>
+                  <div class="meeting-attendee-actions" *ngIf="currentEntity.isEditable">
+                    <button mat-icon-button (click)="onDeleteAttendee(item)" matTooltip="Remove" aria-label="Remove">
+                      <mat-icon>clear</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </ng-container>
+          </ul>
+
+          <div class="meeting-attendee-input">
+            <mat-form-field appearance="outline" *ngIf="currentEntity.isEditable">
+              <mat-label>CC</mat-label>
+              <input placeholder="Enter name of person to select from the list" aria-label="Assign CC" matInput
+                [formControl]="assigneeFC" [matAutocomplete]="autoRequestCC" />
+
+              <mat-autocomplete #autoRequestCC="matAutocomplete" [displayWith]="displayFnContact"
+                (optionSelected)="onSelectContact(MEETING_ATTENDEE_TYPEFLAG_CC)">
+                <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
+                  <h6>
+                    {{option.name}}
+                  </h6>
+                  <span>{{option.email}} <small *ngIf="option.company">({{option.company}})</small></span>
+                </mat-option>
+              </mat-autocomplete>
+              <span matSuffix>
+                <mat-icon>person</mat-icon>
+              </span>
+              <mat-error>{{ getErrorMessage(assigneeFC) }}</mat-error>
+              <mat-hint align="end">Enter name of person to select from the list</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <h4 class="m-2 font-bold">CC</h4>
+          <ul class="meeting-attendee-list" id="ccList">
+            <ng-container *ngFor="let item of ccList; let i = index;">
+              <li>
+                <div class="meeting-attendee">
+                  <div>
+                    <h6>{{item.name}}</h6>
+                    <span>{{item.email}} </span> (<small>{{item.company}} </small>)
+                  </div>
+                  <div class="meeting-attendee-actions" *ngIf="currentEntity.isEditable">
+                    <button mat-icon-button (click)="onDeleteAttendee(item)" matTooltip="Remove" aria-label="Remove">
+                      <mat-icon>clear</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </ng-container>
+          </ul>
+
+        </mat-expansion-panel>
+      </div>
+
+      <div class="col-md-4" *ngIf="!isCreateMode">
+        <mat-expansion-panel [expanded]="true" *ngIf="isTaskMode && task">
+          <mat-expansion-panel-header>
+            <mat-panel-title> Time Entries </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mcv-time-entry-list [wfTask]="task" (deleted)="onRemoveTimeEntry($event)"></mcv-time-entry-list>
+        </mat-expansion-panel>
+
+        <app-wf-task-action *ngIf="task" [task]="task" (updateEntity)="onSubmit($event)"
+          (complete)="onTaskCompleted($event)" (updated)="onTaskUpdated($event)">
+        </app-wf-task-action>
+
+        <mat-expansion-panel [expanded]="true" *ngIf="!isTaskMode && !task">
+          <mat-expansion-panel-header>
+            <mat-panel-title>Action </mat-panel-title>
+            <mat-panel-description>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div class="meeting-action-buttons">
+            <button mat-raised-button color="primary" aria-label="Save" (click)="onSubmit()"
+              *ngIf="isAllowedToUpdate && !isAllowedToSendUpdate">Save</button>
+            <button mat-raised-button color="primary" aria-label="Save & Send" (click)="onClickSaveAndSend()"
+              *ngIf="isAllowedToSendUpdate ">Save & Send</button>
+            <button mat-raised-button color="warn" aria-label="delete" (click)="onDelete()"
+              *ngIf="isAllowedToDelete">Delete</button>
+
+          </div>
+        </mat-expansion-panel>
+
+
+        <mat-expansion-panel [expanded]="true" *ngIf="!isCreateMode">
+          <mat-expansion-panel-header>
+            <mat-panel-title> Activity </mat-panel-title>
+            <mat-panel-description>
+
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <div class="mcv-activity-list-wrapper">
+            <mcv-activity-list #activity [entity]="nameOfEntity" [entityID]="entityID">
+            </mcv-activity-list>
+          </div>
+        </mat-expansion-panel>
+      </div>
+    </div>
+
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Agenda </mat-panel-title>
+        <mat-panel-description>
+
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <span *ngIf="currentEntity?.isEditable">The meeting will remain open for edit for {{meetingEditDuration}} days
+        after being sent.</span>
+      <mat-tab-group>
+        <mat-tab label="For edit">
+          <ng-template matTabContent>
+            <div class="d-flex align-items-center justify-content-end pb-2"
+              *ngIf="currentEntity?.isEditable && (currentEntity?.typeFlag==MEETING_TYPEFLAG_MEETING || currentEntity?.typeFlag==MEETING_TYPEFLAG_INSPECTION)">
+              <button mat-raised-button color="primary" aria-label="New Agenda" (click)="onNewAgenda()"
+                *ngIf="currentEntity.isEditable || isPermissionSpecialEdit"><mat-icon>add</mat-icon> Agenda</button>
+              <button mat-raised-button aria-label="Preview Minutes" (click)="onPreviewLink(currentEntity.uid)">
+                <span>Preview Minutes</span>
+              </button>
+            </div>
+
+            <ng-container *ngFor="let item of currentEntity?.agendas; let i = index;">
+              <app-meeting-agenda [config]="{ agenda:item, blobConfig:blobConfig, meeting:currentEntity}" [index]="i"
+                [allowDelete]="!item.previousAgendaID && (isPermissionSpecialEdit || currentEntity.isEditable)"
+                [allowEdit]="currentEntity.isEditable || isPermissionSpecialEdit"
+                [allowAttachmentDelete]="currentEntity.isEditable || isPermissionSpecialEdit"
+                (update)="onAgendaChange($event)" (delete)="onDeleteAgenda(item)">
+              </app-meeting-agenda>
+            </ng-container>
+
+          </ng-template>
+        </mat-tab>
+
+        <ng-container *ngFor="let version of versions">
+          <mat-tab label="Sent: {{version.created | date:'dd MMM yyyy HH:mm'}} | R{{version.version}}">
+            <ng-template matTabContent>
+
+              <app-minutes [hideTitleBar]="true" [uid]="version.uid"></app-minutes>
+
+            </ng-template>
+          </mat-tab>
+        </ng-container>
+      </mat-tab-group>
+    </mat-expansion-panel>
+  </div>
+</div> -->
+
+<div class="meeting-view-wrapper">
+  <div class="meeting-header" *ngIf="!isTaskMode">
+    <div class="title-bar">
+      <div [matTooltip]="currentEntity.contact.name" *ngIf="currentEntity.contact">
+        <img class="contact-icon" src="{{ currentEntity.contact.photoUrl || 'assets/images/person-icon.svg' }}" alt="" (click)="openPhotoDialog(currentEntity.contact); $event.stopPropagation()" style="cursor: pointer;"
+          *ngIf="!currentEntity.contact.isCompany" />
+        <img class="contact-icon" src="{{ currentEntity.contact.photoUrl || 'assets/images/company-icon.svg' }}" alt="" (click)="openPhotoDialog(currentEntity.contact); $event.stopPropagation()" style="cursor: pointer;"
+          *ngIf="currentEntity.contact.isCompany" />
+      </div>
+
+      <div>
+        <h6 class="font-focused">{{currentEntity.title}}</h6>
+        <h5 class="float-left mr-1"> #{{currentEntity.orderFlag | number:'3.0'}}</h5>
+        <span class="mb-0"> <small>on</small> {{currentEntity.startDate| date:'dd MMM y' }} </span>
+      </div>
+
+      <div>
+        <small>Created By </small>
+        <h6>
+          {{currentEntity.createdBy || 'System'}}
+        </h6>
+      </div>
+
+      <div>
+        <small>Created On </small>
+        <h6>
+          {{currentEntity.created | date:'dd MMM y HH:mm'}}
+        </h6>
+      </div>
+
+      <div>
+        <small>Modified By </small>
+        <h6>
+          {{currentEntity.modifiedBy || 'System'}}
+        </h6>
+      </div>
+
+      <div>
+        <small>Modified On</small>
+        <h6>
+          {{currentEntity.modified | date:'dd MMM y HH:mm'}}
+        </h6>
+      </div>
+    </div>
+  </div>
+  <app-wftask-title-bar [task]="task" *ngIf="isTaskMode"></app-wftask-title-bar>
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-8">
+
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Meeting Details
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <form [formGroup]="form" autocomplete="off">
+            <div class="row m-0">
+              <mat-form-field appearance="outline" class="col-md-6 col-12">
+                <mat-label>Purpose</mat-label>
+                <mat-select formControlName="purpose" placeholder="Purpose">
+                  <mat-option *ngFor=" let item of meetingPurposeOptions" [value]="item">{{item}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <div class="col-md-6 col-12">
+                <mat-radio-group formControlName="subjectType">
+                  <mat-radio-button [value]="'Project'">
+                    Project
+                  </mat-radio-button>
+                  <mat-radio-button [value]="'Event'">
+                    Event
+                  </mat-radio-button>
+                </mat-radio-group>
+              </div>
+
+              <mat-form-field appearance="outline" class="col-md-6 col-6">
+                <mat-label>Start Date</mat-label>
+                <input id="startDate" placeholder=" From" aria-label=" From" matInput formControlName="startDate"
+                  [matDatepicker]="pickerFrom">
+                <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+                <mat-datepicker [touchUi]="isMobileView" #pickerFrom></mat-datepicker>
+                <mat-error>{{getErrorMessage(f.startDate)}}</mat-error>
+                <mat-hint align="end">Meeting start</mat-hint>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-md-6 col-6">
+                <mat-label>Start Time</mat-label>
+                <input aria-label="startTime" [ngxTimepicker]="pickerstartTime" matInput formControlName="startTime"
+                  [format]="24">
+                <ngx-material-timepicker #pickerstartTime [minutesGap]="minutesGap"></ngx-material-timepicker>
+                <mat-error>{{getErrorMessage(f.startTime)}}</mat-error>
+                <mat-hint align="end">24 hour</mat-hint>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-md-6 col-6">
+                <mat-label>End Date</mat-label>
+                <input id="endDate" placeholder=" To" aria-label=" To" matInput formControlName="endDate"
+                  [matDatepicker]="pickerTo">
+                <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
+                <mat-datepicker [touchUi]="isMobileView" #pickerTo></mat-datepicker>
+                <mat-error>{{getErrorMessage(f.endDate)}}</mat-error>
+                <mat-hint align="end">Meeting end</mat-hint>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-md-6 col-6">
+                <mat-label>End Time</mat-label>
+                <input id="endTime" aria-label="endTime" [ngxTimepicker]="pickerendTime" matInput
+                  formControlName="endTime" [format]="24">
+                <ngx-material-timepicker #pickerendTime [minutesGap]="minutesGap"></ngx-material-timepicker>
+                <mat-error>{{getErrorMessage(f.endTime)}}</mat-error>
+                <mat-hint align="end">24 hour</mat-hint>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-md-12 col-12" *ngIf="f.subjectType.value!='Event'">
+                <mat-label>Project</mat-label>
+                <input placeholder="Enter project name and select" aria-label="Enter project name and select" matInput
+                  formControlName="project" [matAutocomplete]="auto" />
+                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onProjectSelected($event.option.value)"
+                  [displayWith]="displayFnProject">
+                  <mat-option *ngFor="let option of (filteredProjects$ | async)" [value]="option">
+                    {{ option.code }}-{{ option.title }}
+                  </mat-option>
+                </mat-autocomplete>
+                <mat-error>{{ getErrorMessage(f.project) }}</mat-error>
+                <mat-hint align="end">Enter project name and select</mat-hint>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-md-12 col-12" *ngIf="f.subjectType.value=='Event'">
+                <mat-label>Title</mat-label>
+                <input placeholder="Title" aria-label="Title" matInput formControlName="title"
+                  [matAutocomplete]="subject">
+                <mat-autocomplete #subject="matAutocomplete" [displayWith]="displayFnSubject">
+                  <mat-option *ngFor="let option of filteredSubjectOptions$ | async" [value]="option">
+                    {{option}}
+                  </mat-option>
+                </mat-autocomplete>
+                <mat-error>{{getErrorMessage(f.title)}}</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-md-6">
+                <mat-label>Status</mat-label>
+                <mat-select formControlName="statusFlag" placeholder="Status">
+                  <mat-option *ngFor="let item of statusOptions" [value]="item.value">{{
+                    item.title
+                    }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-md-6">
+                <mat-label>Location</mat-label>
+                <input placeholder="Location" aria-label="Location" matInput formControlName="location" />
+                <mat-error>{{ getErrorMessage(f.location) }}</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" appearance="outline" class="col-md-12">
+                <mat-label>Remark</mat-label>
+                <textarea aria-label="remark" matInput formControlName="remark" cdkTextareaAutosize
+                  #autosize="cdkTextareaAutosize" [cdkAutosizeMinRows]="3"></textarea>
+                <mat-error>{{ getErrorMessage(f.remark) }}</mat-error>
+              </mat-form-field>
+            </div>
+          </form>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Gmap
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="row">
+            <div class="col-md-12" [formGroup]="form">
+              <div class="form-collection" formArrayName="gmaps">
+                <ng-container *ngFor="let item of gmaps().controls;let i = index">
+                  <div class="gmap-form-wrapper" [formGroupName]="i">
+                    <mat-form-field appearance="outline" class="flex-grow-1">
+                      <mat-label>Title</mat-label>
+                      <input placeholder="Title" aria-label="Title" matInput formControlName="title" />
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="flex-grow-1">
+                      <mat-label>Url</mat-label>
+                      <input placeholder="Url" aria-label="Url" matInput formControlName="url" />
+                      <mat-error *ngIf="item.get('url')?.hasError('required')">Url is
+                        required</mat-error>
+                    </mat-form-field>
+
+                    <div class="d-flex">
+                      <button mat-icon-button [disabled]="!item.value.url || item.value.url == ''"
+                        (click)="onOpenUrl(item.value.url)">
+                        <mat-icon>open_in_new</mat-icon>
+                      </button>
+
+                      <button mat-icon-button (click)="onRemoveGmap(i)"
+                        *ngIf="(gmaps().length === 2 && i === 0) || (gmaps().length > 2 && i !== gmaps().length - 1)">
+                        <mat-icon>clear</mat-icon>
+                      </button>
+
+                      <button mat-icon-button (click)="onAddGmap()" *ngIf="i === gmaps().length - 1"
+                        [disabled]="!item.value.title || !item.value.url">
+                        <mat-icon>add</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Internal Attendee
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <div class="meeting-attendee-input">
+            <mat-form-field appearance="outline">
+              <mat-label>To</mat-label>
+              <input placeholder="Enter name of person to select from the list" aria-label="To" matInput
+                [formControl]="assigneeFC" [matAutocomplete]="autoRequestTo" />
+
+              <mat-autocomplete #autoRequestTo="matAutocomplete" [displayWith]="displayFnContact"
+                (optionSelected)="onSelectContact(MEETING_ATTENDEE_INTERNAL)">
+                <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
+                  <h6>
+                    {{option.name}}
+                  </h6>
+                  <span>{{option.email}} <small *ngIf="option.company">({{option.company}})</small></span>
+                </mat-option>
+              </mat-autocomplete>
+              <span matSuffix>
+                <mat-icon>person</mat-icon>
+              </span>
+              <mat-error>{{ getErrorMessage(assigneeFC) }}</mat-error>
+              <mat-hint align="end">Enter name of person to select from the list</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <h4 class="m-2 font-bold">TO</h4>
+          <span class="text-danger" *ngIf="internalAttendeeList.length==0">
+            Please add atleast 1 contact to send!
+          </span>
+          <ul class="meeting-attendee-list">
+            <ng-container *ngFor="let item of internalAttendeeList; let i = index;">
+              <li>
+                <div class="meeting-attendee">
+                  <div>
+                    <h6>{{item.name}}</h6>
+                    <span>{{item.email}} </span> (<small>{{item.company}} </small>)
+                  </div>
+                  <div class="meeting-attendee-actions">
+                    <button mat-icon-button (click)="onDeleteAttendee(item)" matTooltip="Remove" aria-label="Remove">
+                      <mat-icon>clear</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </ng-container>
+          </ul>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              External Attendee
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <app-meeting-external-attendees [typeFlag]="MEETING_ATTENDEE_EXTERNAL" (create)="onCreate($event)"
+            (update)="onUpdate($event)"></app-meeting-external-attendees>
+
+          <ul class="meeting-attendee-list">
+            <ng-container *ngFor="let item of externalAttendeeList; let i = index;">
+              <li>
+                <div class="meeting-attendee">
+                  <div>
+                    <h6>{{item.name}} | {{item.phone}}</h6>
+                    <span>{{item.email}} </span>
+                  </div>
+                  <div class="meeting-attendee-actions">
+                    <mat-checkbox [checked]="item.isRecipient" (change)="onToggleRecipient(item)"></mat-checkbox>
+                    <button mat-icon-button (click)="onDeleteExternalAttendee(item)" matTooltip="Remove"
+                      aria-label="Remove">
+                      <mat-icon>clear</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </ng-container>
+          </ul>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Contact Person
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="row" [formGroup]="contactPersonForm">
+            <mat-form-field appearance="outline" class="col-md-6">
+              <mat-label>Name</mat-label>
+              <input aria-label="name" matInput formControlName="name" [matAutocomplete]="contactPersonAuto">
+              <mat-autocomplete #contactPersonAuto="matAutocomplete" [displayWith]="displayFnContactName"
+                (optionSelected)="onContactPersonSelected($event.option.value)">
+                <mat-option *ngFor="let option of filteredContactsForContactPerson$ | async" [value]="option">
+                  {{option.name}} | {{option.email}}
+                </mat-option>
+              </mat-autocomplete>
+              <span matSuffix>
+                <mat-icon>person</mat-icon>
+              </span>
+              <mat-error>{{getErrorMessage(cpf?.name)}}</mat-error>
+              <mat-hint align="end">Enter name of person to select from the list</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-6">
+              <mat-label>Phone</mat-label>
+              <input type="number" aria-label="phone" matInput formControlName="phone">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-11">
+              <mat-label>Email</mat-label>
+              <input aria-label="email" type="email" matInput formControlName="email">
+            </mat-form-field>
+            <div class="col-md-1">
+              <button mat-icon-button (click)="onCreateContactPerson()"
+                [disabled]="!contactPersonForm.get('name')?.value">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <ul class="meeting-attendee-list">
+            <ng-container *ngFor="let item of contactPersonList; let i = index;">
+              <li>
+                <div class="meeting-attendee">
+                  <div>
+                    <h6>{{item.name}} | {{item.phone}}</h6>
+                    <span>{{item.email}} </span>
+                  </div>
+                  <div class="meeting-attendee-actions">
+                    <button mat-icon-button (click)="onDeleteContactPerson(item)" matTooltip="Remove"
+                      aria-label="Remove">
+                      <mat-icon>clear</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </ng-container>
+          </ul>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Follow Up
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="row" [formGroup]="form">
+            <div class="col-md-12">
+              <mat-checkbox formControlName="isFollowUp">Follow Up</mat-checkbox>
+            </div>
+            <mat-form-field appearance="outline" class="col-md-12">
+              <mat-label>Follow Up Remark</mat-label>
+              <textarea matInput formControlName="followUpRemark" rows="3"
+                placeholder="Enter follow up remarks"></textarea>
+            </mat-form-field>
+          </div>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title> Expense Voucher <small class="text-muted">Vouchers can only be added/updated in
+                task.</small></mat-panel-title>
+          </mat-expansion-panel-header>
+          <ul class="simple-list-hover">
+            <li *ngFor="let item of currentEntity.vouchers">
+              <app-meeting-voucher [item]="item" [meetingID]="currentEntity.id" (update)="onUpdateVoucher($event)"
+                (delete)="onDeleteVoucher(item)"></app-meeting-voucher>
+            </li>
+            <li *ngIf="isTaskMode && task && task.wfStageCode && task.wfStageCode == 'MEETING_TRAVEL_TIME'">
+              <app-meeting-voucher [meetingID]="currentEntity.id" [isCreateMode]="true" [item]="newVoucher"
+                (create)="onCreate($event)">
+              </app-meeting-voucher>
+            </li>
+          </ul>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Documents Carried
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="row">
+            <div class="col-md-12" [formGroup]="form">
+              <div class="form-collection" formArrayName="documentsCarried">
+                <ng-container *ngFor="let item of documentsCarried().controls;let i = index">
+                  <div class="document-carried-form-wrapper" [formGroupName]="i">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Title</mat-label>
+                      <input placeholder="Title" aria-label="Title" matInput formControlName="title" />
+                      <mat-error *ngIf="item.get('documentsCarried')?.hasError('required')">Title is
+                        required</mat-error>
+                    </mat-form-field>
+
+                    <div>
+                      <button mat-icon-button (click)="onRemoveDocumentCarried(i)"
+                        *ngIf="(documentsCarried().length === 2 && i === 0) || (documentsCarried().length > 2 && i !== documentsCarried().length - 1)">
+                        <mat-icon>clear</mat-icon>
+                      </button>
+
+                      <button mat-icon-button (click)="onAddDocumentsCarried()"
+                        *ngIf="i === documentsCarried().length - 1"
+                        [disabled]="!item.value.title"><mat-icon>add</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Attachments
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <mat-tab-group>
+            <mat-tab label="Meeting Attachments">
+              <app-mcv-file-upload [uploaderConfig]="blobConfig" [showPaste]="true" [showDrop]="true"
+                (upload)="onUpload($event,0)" *ngIf="blobConfig">
+              </app-mcv-file-upload>
+              <ul class="mcv-file-list">
+                <li *ngFor="let file of getFilteredAttachments(currentEntity.attachments, 0); let i = index">
+                  <mcv-file [filename]="file.filename" [size]="file.size" [downloadUrl]="file.url" [showPreview]="true"
+                    [url]="file.url || file.thumbUrl" [singlePreview]="true" [showRemove]="true"
+                    (delete)="onDeleteAttachment(file)">
+                  </mcv-file>
+                </li>
+              </ul>
+            </mat-tab>
+
+            <!-- Reports -->
+            <mat-tab label="Reports" *ngIf="isTaskMode && task">
+              <app-mcv-file-upload [uploaderConfig]="blobConfig" [showPaste]="true" [showDrop]="true"
+                (upload)="onUpload($event,1)">
+              </app-mcv-file-upload>
+              <ul class="mcv-file-list">
+                <li *ngFor="let file of getFilteredAttachments(currentEntity.attachments, 1); let i = index">
+                  <mcv-file [filename]="file.filename" [size]="file.size" [downloadUrl]="file.url" [showPreview]="true"
+                    [url]="file.url || file.thumbUrl" [singlePreview]="true" [showRemove]="true"
+                    (delete)="onDeleteAttachment(file)">
+                  </mcv-file>
+                </li>
+              </ul>
+            </mat-tab>
+
+            <mat-tab label="Reports" *ngIf="!isTaskMode && !task">
+              <app-mcv-file-upload [uploaderConfig]="blobConfig" [showPaste]="true" [showDrop]="true"
+                (upload)="onUpload($event,1)">
+              </app-mcv-file-upload>
+              <ul class="mcv-file-list">
+                <li *ngFor="let file of getFilteredAttachments(currentEntity.attachments, 1); let i = index">
+                  <mcv-file [filename]="file.filename" [size]="file.size" [downloadUrl]="file.url" [showPreview]="true"
+                    [url]="file.url || file.thumbUrl" [singlePreview]="true" [showRemove]="true"
+                    (delete)="onDeleteAttachment(file)">
+                  </mcv-file>
+                </li>
+              </ul>
+            </mat-tab>
+
+            <!-- Photos -->
+            <mat-tab label="Photos" *ngIf="isTaskMode && task">
+              <app-mcv-file-upload [uploaderConfig]="blobConfig" [showPaste]="true" [showDrop]="true"
+                (upload)="onUpload($event,2)">
+              </app-mcv-file-upload>
+              <ul class="mcv-file-list">
+                <li *ngFor="let file of getFilteredAttachments(currentEntity.attachments, 2); let i = index">
+                  <mcv-file [filename]="file.filename" [size]="file.size" [downloadUrl]="file.url" [showPreview]="true"
+                    [url]="file.url || file.thumbUrl" [singlePreview]="true" [showRemove]="true"
+                    (delete)="onDeleteAttachment(file)">
+                  </mcv-file>
+                </li>
+              </ul>
+            </mat-tab>
+
+            <mat-tab label="Photos" *ngIf="!isTaskMode && !task">
+              <app-mcv-file-upload [uploaderConfig]="blobConfig" [showPaste]="true" [showDrop]="true"
+                (upload)="onUpload($event,2)">
+              </app-mcv-file-upload>
+              <ul class="mcv-file-list">
+                <li *ngFor="let file of getFilteredAttachments(currentEntity.attachments, 2); let i = index">
+                  <mcv-file [filename]="file.filename" [size]="file.size" [downloadUrl]="file.url" [showPreview]="true"
+                    [url]="file.url || file.thumbUrl" [singlePreview]="true" [showRemove]="true"
+                    (delete)="onDeleteAttachment(file)">
+                  </mcv-file>
+                </li>
+              </ul>
+            </mat-tab>
+
+
+            <!-- Drawing  -->
+            <mat-tab label="Drawings" *ngIf="isTaskMode && task">
+              <app-mcv-file-upload [uploaderConfig]="blobConfig" [showPaste]="true" [showDrop]="true"
+                (upload)="onUpload($event,3)">
+              </app-mcv-file-upload>
+              <ul class="mcv-file-list">
+                <li *ngFor="let file of getFilteredAttachments(currentEntity.attachments, 3); let i = index">
+                  <mcv-file [filename]="file.filename" [size]="file.size" [downloadUrl]="file.url" [showPreview]="true"
+                    [url]="file.url || file.thumbUrl" [singlePreview]="true" [showRemove]="true"
+                    (delete)="onDeleteAttachment(file)">
+                  </mcv-file>
+                </li>
+              </ul>
+            </mat-tab>
+
+            <mat-tab label="Drawings" *ngIf="!isTaskMode && !task">
+              <app-mcv-file-upload [uploaderConfig]="blobConfig" [showPaste]="true" [showDrop]="true"
+                (upload)="onUpload($event,3)">
+              </app-mcv-file-upload>
+              <ul class="mcv-file-list">
+                <li *ngFor="let file of getFilteredAttachments(currentEntity.attachments, 3); let i = index">
+                  <mcv-file [filename]="file.filename" [size]="file.size" [downloadUrl]="file.url" [showPreview]="true"
+                    [url]="file.url || file.thumbUrl" [singlePreview]="true" [showRemove]="true"
+                    (delete)="onDeleteAttachment(file)">
+                  </mcv-file>
+                </li>
+              </ul>
+            </mat-tab>
+          </mat-tab-group>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Agendas
+            </mat-panel-title>
+            <button mat-raised-button aria-label="Preview Minutes" (click)="onPreviewLink($event,currentEntity.uid)">
+              <span>Preview Minutes</span>
+            </button>
+          </mat-expansion-panel-header>
+          <mat-tab-group>
+            <mat-tab label="Agenda">
+              <ng-template matTabContent>
+                <div class="d-flex align-items-center justify-content-end pb-2">
+                  <button mat-raised-button color="primary" (click)="onNewAgenda(0)"
+                    aria-label="New Agenda"><mat-icon>add</mat-icon>
+                    Agenda
+                  </button>
+                </div>
+
+                <ng-container *ngFor="let item of getFilteredAgendas(0); let i = index;">
+                  <app-meeting-agenda
+                    [config]="{ agenda:item, blobConfig:blobConfig, meeting:currentEntity,autoUpdate: true, isCreateMode:false}"
+                    [allowDelete]="true" [allowEdit]="true" [allowAttachmentDelete]="true"
+                    (update)="onAgendaChange($event)" (delete)="onDeleteAgenda(item)" [index]="i">
+                  </app-meeting-agenda>
+                </ng-container>
+              </ng-template>
+            </mat-tab>
+
+            <!-- *ngIf="isTaskMode && task && task.wfStageCode  == 'MEETING_TRAVEL_TIME' || task.wfStageCode  == 'MEETING_CLOSURE'" -->
+            <mat-tab label="Discussions">
+              <ng-template matTabContent>
+                <div class="d-flex align-items-center justify-content-end pb-2">
+                  <button mat-raised-button color="primary" (click)="onNewAgenda(1)"
+                    aria-label="New Agenda"><mat-icon>add</mat-icon>
+                    Agenda
+                  </button>
+                </div>
+
+                <ng-container *ngFor="let item of getFilteredAgendas(1); let i = index;">
+                  <app-meeting-agenda
+                    [config]="{ agenda:item, blobConfig:blobConfig, meeting:currentEntity,autoUpdate: true, isCreateMode:false}"
+                    [allowDelete]="true" [allowEdit]="true" [allowAttachmentDelete]="true"
+                    (update)="onAgendaChange($event)" (delete)="onDeleteAgenda(item)" [index]="i">
+                  </app-meeting-agenda>
+
+                </ng-container>
+              </ng-template>
+            </mat-tab>
+          </mat-tab-group>
+        </mat-expansion-panel>
+      </div>
+      <div class="col-sm-4">
+        <mat-expansion-panel [expanded]="true" *ngIf="isTaskMode && task && task.wfStageCode  == 'MEETING_TRAVEL_TIME'">
+          <mat-expansion-panel-header>
+            <mat-panel-title> Time Entries </mat-panel-title>
+          </mat-expansion-panel-header>
+          <app-meeting-time-entry-list [wfTask]="task"
+            (deleted)="onRemoveTimeEntry($event)"></app-meeting-time-entry-list>
+        </mat-expansion-panel>
+
+        <app-wf-task-action *ngIf="task" [task]="task" (updateEntity)="onSubmit($event)"
+          (complete)="onTaskCompleted($event)" (updated)="onTaskUpdated($event)">
+        </app-wf-task-action>
+
+        <mat-expansion-panel [expanded]="true" *ngIf="!isTaskMode && !task">
+          <mat-expansion-panel-header>
+            <mat-panel-title>Action </mat-panel-title>
+            <mat-panel-description>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div class="meeting-action-buttons">
+            <button mat-raised-button color="primary" aria-label="Save" (click)="onSubmit()"
+              *ngIf="isAllowedToUpdate && !isAllowedToSendUpdate">Save</button>
+            <button mat-raised-button color="primary" aria-label="Save & Send" (click)="onClickSaveAndSend()"
+              *ngIf="isAllowedToSendUpdate ">Save & Send</button>
+            <button mat-raised-button color="warn" aria-label="delete" (click)="onDelete()"
+              *ngIf="isAllowedToDelete">Delete</button>
+
+          </div>
+        </mat-expansion-panel>
+
+
+        <mat-expansion-panel [expanded]="true" *ngIf="!isCreateMode">
+          <mat-expansion-panel-header>
+            <mat-panel-title> Activity </mat-panel-title>
+            <mat-panel-description>
+
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <div class="mcv-activity-list-wrapper">
+            <mcv-activity-list #activity [entity]="nameOfEntity" [entityID]="entityID">
+            </mcv-activity-list>
+          </div>
+        </mat-expansion-panel>
+      </div>
+    </div>
+  </div>
+</div>

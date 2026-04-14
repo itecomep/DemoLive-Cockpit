@@ -1,0 +1,321 @@
+@import 'variables';
+@import 'theme';
+
+
+
+.project-bills-wrapper {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  .scroll-container {
+    overflow-x: auto;
+    overflow-y: visible;
+  }
+
+  .property-collection {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+
+    .property {
+      display: flex;
+      gap: 0.3rem;
+      justify-content: space-between;
+      border: 1px solid $gray-300;
+      border-radius: 4px;
+      cursor: pointer;
+      padding: 0.3rem;
+      flex-grow: 1;
+      flex-shrink: 1;
+      min-width: 10rem;
+      min-height: 2.5rem;
+
+      .property-details {
+        flex-grow: 1;
+        flex-shrink: 1;
+        max-width: 100%;
+      }
+
+      .property-label {
+        font-size: 0.7rem;
+        color: $gray-600;
+      }
+
+      .property-actions {
+        display: flex;
+        justify-content: flex-end;
+        // gap: 0.5rem;
+
+        // mat-icon {
+        //   height: 20px;
+        //   width: 20px;
+        //   font-size: 20px;
+        //   // padding: 0.3rem;
+        // }
+      }
+
+    }
+
+
+  }
+
+  .text-green {
+    color: $green;
+  }
+
+  .text-red {
+    color: $red;
+  }
+
+  .project-bills-header {
+    display: flex;
+    align-items: center;
+    gap: 1.3rem;
+    padding: 0.2rem 0.5rem;
+    background-color: $gray-300;
+    min-width: max-content;
+
+    .property {
+      display: flex;
+      gap: 0.3rem;
+      justify-content: space-between;
+      border: 1px solid $gray-300;
+      border-radius: 4px;
+      cursor: pointer;
+      padding: 0.3rem;
+      flex-grow: 1;
+      flex-shrink: 1;
+      min-width: 10rem;
+      min-height: 2.5rem;
+
+      .property-value {
+        font-weight: 600;
+        text-align: right;
+      }
+
+      .property-label {
+        font-size: 0.7rem;
+        color: $gray-600;
+      }
+    }
+
+    .actions{
+      flex-grow: 1;
+      flex-shrink: 0;
+      display: flex;
+      gap: 0.5rem;  
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .warning-message {
+      color: $red;
+    }
+
+  }
+
+  .project-bills-table-wrapper {
+    position: relative;
+    min-width: max-content;
+
+    .error-message {
+      color: $red;
+      font-size: 0.7rem;
+    }
+
+    table {
+      min-width: 100%;
+
+      thead {
+        background-color: $gray-400;
+        position: sticky;
+        position: -webkit-sticky;
+        top: 0;
+        z-index: 9;
+
+        tr {
+          &.total {
+            background-color: $gray-600;
+            color: $white;
+          }
+
+          td,
+          th {
+            border-bottom: 1px solid $gray-400;
+            // white-space: nowrap;
+            border-right: 1px solid $gray-300;
+            padding: 0 0.3rem;
+
+            text-align: center;
+
+            &.align-right {
+              text-align: right;
+            }
+
+            &.text-pre-wrap {
+              white-space: pre-wrap;
+            }
+
+            &.collapsed {
+              padding: 0 !important;
+            }
+
+            .bg-red {
+              background-color: $red;
+            }
+
+          }
+        }
+
+      }
+
+      tbody {
+        tr {
+          td {
+            border-bottom: 1px solid $gray-400;
+            white-space: nowrap;
+            border-right: 1px solid $gray-300;
+            padding: 0.3rem;
+            &.align-center {
+              text-align: center;
+          }
+
+            &.align-right {
+              text-align: right;
+            }
+
+            &.text-pre-wrap {
+              white-space: pre-wrap;
+            }
+
+            .badge {
+              border-radius: $border-radius;
+              padding: 0.1rem 0.3rem;
+              font-size: 0.6rem;
+              background-color: $gray-300;
+              color: $white;
+
+              &.badge-black {
+                background-color: $gray-900;
+              }
+
+              &.badge-orange {
+                background-color: $orange;
+              }
+
+              &.badge-red {
+                background-color: $red;
+              }
+
+              &.badge-green {
+                background-color: $green;
+              }
+            }
+
+            .cell-content {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+
+              .cell-action,
+              .cell-input,
+              .cell-value {
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                // text-align: right;
+                max-width: 100%;
+                margin: 0;
+                border: none;
+                cursor: pointer;
+              }
+
+              .cell-input,
+              .cell-value {
+                flex-grow: 1;
+                flex-shrink: 1;
+
+                form {
+                  width: 100%;
+                }
+
+                input {
+                  border: none;
+                  text-align: center;
+                  width: 100%;
+                }
+              }
+
+              .cell-action {
+                flex-grow: 0;
+                flex-shrink: 0;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+              }
+
+              .cell-input-prefix,
+              .cell-input-suffix {
+                flex-grow: 0;
+                flex-shrink: 0;
+              }
+            }
+
+
+
+          }
+        }
+      }
+    }
+  
+  }
+}
+
+// Mobile View
+@media (max-width: 768px) {
+  .project-bills-wrapper {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    .property-collection {
+      flex-direction: column;
+      gap: 0.3rem;
+
+      .property {
+        min-width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    .project-bills-header {
+      gap: 2.1rem;
+      align-items: stretch;
+
+      .property {
+        min-width: 100%;
+      }
+
+      .actions {
+        justify-content: center;
+      }
+    }
+
+    .project-bills-table-wrapper {
+      table {
+        font-size: 0.75rem;
+        overflow: auto;
+
+        thead, tbody {
+          tr {
+            td, th {
+              padding: 0.2rem;
+              font-size: 0.7rem;
+            }
+          }
+        }
+      }
+    }
+  }
+}

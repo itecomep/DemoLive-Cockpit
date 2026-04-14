@@ -1,0 +1,29 @@
+@import 'variables';
+
+.time-line-search {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 2.7rem;
+  border: 1px solid $gray-500;
+  border-radius: 5px;
+
+  input {
+    height: 100%;
+    border: none;
+  }
+}
+
+.contact-options-form-ul {
+  display: flex;
+  list-style: none;
+
+  li {
+    margin-right: 0.3rem;
+  }
+}
+
+.nav-footer-timeline-group {
+  position: absolute;
+  right: 6.5rem;
+}

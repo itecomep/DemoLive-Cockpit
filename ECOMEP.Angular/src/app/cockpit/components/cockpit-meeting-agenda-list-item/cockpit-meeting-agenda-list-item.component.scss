@@ -1,0 +1,109 @@
+@import 'variables';
+@import "theme";
+
+.agenda-content {
+    padding: 0.3rem;
+
+    .project-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .agenda-title {
+        font-size: 0.9rem;
+        font-weight: 300;
+    }
+
+    .agenda-comment {
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .project-name {
+        font-size: 0.65rem;
+    }
+
+    small {
+        font-size: 0.6rem;
+    }
+
+    .agenda-subtitle {
+        font-size: 0.8rem;
+    }
+
+    .history-toggle {
+        color: $blue;
+        cursor: pointer;
+    }
+
+    .agenda-history {
+        color: $gray-600;
+        padding: 0.3rem;
+        max-height: 8rem;
+        overflow: hidden;
+
+        &.show-history {
+            max-height: 100%;
+        }
+
+        p {
+            font-size: 0.7rem;
+        }
+    }
+
+    .toggle-agenda-history {
+        cursor: pointer;
+        color: mat-color($mcv-primary, 400);
+        font-weight: 600;
+    }
+
+    .agenda-package-tag {
+        background-color: $gray-400;
+        padding: 0.3rem;
+        border-radius: $border-radius;
+        margin: 0.3rem 0;
+        display: flex;
+        width: fit-content;
+        border-radius: 50%;
+
+        cursor: pointer;
+
+        .mat-icon {
+            margin: 0.3rem;
+        }
+
+        &.active {
+            background-color: $yellow;
+            color: $black;
+        }
+    }
+}
+
+.minutes-agenda-text-standard {
+    font-size: 0.65rem;
+}
+
+
+:host ::ng-deep .mcv-file-list {
+    justify-content: center;
+
+    &>li {
+        width: 50%;
+        min-width: 150px;
+        max-width: 200px;
+
+        .mcv-file-wrapper {
+            width: auto;
+        }
+    }
+}
+
+.selected {
+    background-color: $yellow;
+    color: $black;
+}
+
+.not-selected {
+    background-color: $white;
+    color: $black;
+}

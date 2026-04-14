@@ -1,0 +1,7 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">{{data.dialogTitle}}</h5>
+    <button mat-icon-button aria-label="close" (click)="onClose(null)"><mat-icon>close</mat-icon></button>
+</div>
+<mat-dialog-content>
+    <team-task-progress [config]="data.config" (cancel)="onClose($event)" *ngIf="data"></team-task-progress>
+</mat-dialog-content>

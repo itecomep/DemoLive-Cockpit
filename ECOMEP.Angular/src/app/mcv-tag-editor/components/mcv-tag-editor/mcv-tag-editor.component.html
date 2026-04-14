@@ -1,0 +1,24 @@
+<form autocomplete="off">
+    <ng-container>
+        <mat-form-field appearance="outline">
+            <mat-label>Tags</mat-label>
+            <mat-chip-grid #chipGrid aria-label="Tags">
+                <mat-chip-row *ngFor="let tag of tags" (removed)="onRemove(tag)">
+                    {{tag}}
+                    <button matChipRemove [attr.aria-label]="'remove ' + tag" *ngIf="isPermissionEdit">
+                        <mat-icon>cancel</mat-icon>
+                    </button>
+                </mat-chip-row>
+            </mat-chip-grid>
+            <mat-autocomplete #autoTag="matAutocomplete" [displayWith]="displaySelectedValue"
+                (optionSelected)="onSelected($event)">
+                <mat-option *ngFor="let option of filteredOptions$ | async" [value]="option">
+                    {{option}}
+                </mat-option>
+            </mat-autocomplete>
+            <input #tagInput placeholder="Enter new tag here" [formControl]="tagFC" [matChipInputFor]="chipGrid"
+                [matAutocomplete]="autoTag" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                (matChipInputTokenEnd)="onAdd($event)"/>
+        </mat-form-field>
+    </ng-container>
+</form>

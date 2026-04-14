@@ -1,0 +1,342 @@
+<div class="minutes-wrapper" *ngIf="currentEntity">
+  <div class="minutes-page">
+
+    <div class="minutes-page-header">
+      <div class="minutes-page-header-title">
+        <h3 class="font-focused">{{reportType}}</h3>
+        <h4>{{sitevisitTitle}}</h4>
+      </div>
+      <div class="minutes-page-header-logo">
+        <img src="{{ logoUrl || 'assets/images/logo.png' }}" />
+      </div>
+
+
+    </div>
+    <div class="minutes-page-header-actions">
+      <!-- <button mat-icon-button matTooltip="Download PDF" aria-label="Download PDF" (click)="onClickDownloadPDF()">
+        <mat-icon>download</mat-icon>
+      </button> -->
+      <button mat-icon-button matTooltip="Share" aria-label="Share"
+        (click)="onClickShare()"><mat-icon>share</mat-icon></button>
+    </div>
+    <div class="minutes-page-content">
+
+      <div class="row ">
+        <div class="col-sm-6 py-1" [ngClass]="{'d-flex justify-content-between align-items-center':isMobileView}">
+          <div>
+            <small>No.</small>
+            <h6 class="font-focused">#{{currentEntity.orderFlag | number:'3.0'}}</h6>
+          </div>
+        </div>
+
+        <div class="col-sm-6 py-1 minutes-intial-details">
+          <small>Date:</small>
+          <h6 class="font-focused">{{currentEntity.startDate | date:'dd MMM y HH:mm'}}</h6>
+        </div>
+
+        <div class="col-sm-6 py-1 minutes-intial-details">
+          <small>Subject:</small>
+          <h6 class="font-focused">{{currentEntity.title}}</h6>
+        </div>
+
+        <div class="col-sm-6 py-1 minutes-intial-details">
+          <small>Prepared By:</small>
+          <h6 class="font-focused">{{currentEntity.createdBy}}</h6>
+        </div>
+
+        <div class="col-sm-6 py-1 minutes-intial-details">
+          <small>Venue:</small>
+          <h6 class="font-focused">{{currentEntity.venue }}</h6>
+        </div>
+
+      </div>
+      <div class="row">
+        <div class="py-1"
+          [ngClass]="{'col-sm-12':getFilteredAttendees(1).length==0,'col-sm-6':getFilteredAttendees(1).length!=0}">
+          <small>To: ({{getFilteredAttendees(SITE_VISIT_ATTENDEE_TYPEFLAG_TO).length}})</small>
+
+          <ng-container *ngFor="let item of getFilteredAttendees(0); let i = index;">
+            <div class="minute-attendee" (click)="onAttendeeSelect(item)">
+              <div>
+                <h6 class="mb-1 p-1">{{item.name}} <i>({{item.email}})</i></h6>
+              </div>
+              <div *ngIf="getPendingAgendaCount(item)!=0">
+                <span class="badge badge-danger">
+                  {{ getPendingAgendaCount(item)| number:'2.0' }}
+                </span>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <div class="col-sm-6  py-1" *ngIf="getFilteredAttendees(1).length!=0">
+          <small>CC: ({{getFilteredAttendees(SITE_VISIT_ATTENDEE_TYPEFLAG_CC).length}})</small>
+          <ng-container *ngFor="let item of getFilteredAttendees(1); let i = index;">
+            <div class="minute-attendee" (click)="onAttendeeSelect(item)">
+              <div>
+                <h6 class="mb-1 p-1">{{item.name}} <i>({{item.email}})</i></h6>
+              </div>
+              <div *ngIf="getPendingAgendaCount(item)!=0">
+                <span class="badge badge-danger">
+                  {{ getPendingAgendaCount(item)| number:'2.0' }}
+                </span>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <div class="col-12 py-1">
+          <small>Click on any attendee to filter agenda.</small>
+        </div>
+      </div>
+
+      <div class="row" *ngIf="this.selectedAttendee">
+
+        <div class="col-sm-12 py-1">
+          <h6 class="font-focused">Filtered by: </h6>
+          <button mat-icon-button class="d-inline pl-1" (click)="resetAttendeeSelection()" matTooltip="clear"
+            aria-label="clear">
+            <mat-icon>clear</mat-icon>
+          </button>
+          <h6 class="d-inline pl-1">{{this.selectedAttendee.name }} ({{this.selectedAttendee.email}})</h6>
+        </div>
+      </div>
+
+      <small>These minutes will be considered as a true record unless otherwise advised in writing within 2
+        working days of issue.</small>
+
+      <hr />
+
+      <div *ngIf="currentEntity.typeFlag == SITE_VISIT_TYPEFLAG_INSPECTION">
+        <div class="minutes-agenda-title-header">
+          <h4 class="font-focused mb-1">Completion Status</h4>
+          <button mat-icon-button class="d-inline pl-1" (click)="resetProgressBarSelection()" matTooltip="clear"
+            aria-label="clear" *ngIf="this.selectedProgressBar">
+            <mat-icon>clear</mat-icon>
+          </button>
+
+          <button mat-raised-button class="btn btn-light" *ngIf="!this.selectedProgressBar && !progressExpanded"
+            (click)="toggleProgress()">
+            Show More
+            <mat-icon *ngIf="!progressExpanded">expand_more</mat-icon>
+            <mat-icon *ngIf="progressExpanded">expand_less</mat-icon>
+          </button>
+          <button mat-raised-button class="btn btn-light" *ngIf="!this.selectedProgressBar && progressExpanded"
+            (click)="toggleProgress()">
+            Show Less
+            <mat-icon *ngIf="!progressExpanded">expand_more</mat-icon>
+            <mat-icon *ngIf="progressExpanded">expand_less</mat-icon>
+          </button>
+        </div>
+        <ng-container *ngIf="progressExpanded">
+          <ul class="minutes-agenda-list">
+            <li *ngFor="let item of currentEntity.agendas; let i = index;">
+              <div class="minutes-agenda-progress-content row" (click)="onProgressBarSelected(item)"
+                [ngClass]="{'selectedProgressBar':isProgressBarSelected}">
+                <h6 class="col-md-3">{{item.title}}</h6>
+                <div class="col-md-8 col-11">
+                  <mat-progress-bar class="minutes-agenda-progress-bar" mode="determinate" value={{item.progress}}>
+                  </mat-progress-bar>
+                </div>
+                <h6 class="col-md-1 col-1 text-right">{{item.progress}}%</h6>
+              </div>
+            </li>
+          </ul>
+
+          <div class="py-1">
+            <small>Click on any progress bar to filter agenda.</small>
+          </div>
+        </ng-container>
+        <hr />
+      </div>
+
+
+      <div class="d-flex align-items-center justify-content-end pb-1">
+        <button mat-raised-button class="btn btn-light" [matMenuTriggerFor]="agendaSort" matTooltip="Sort">
+          <mat-icon>sort</mat-icon> Sort by {{sortKey}}
+        </button>
+        <mat-menu #agendaSort="matMenu" xPosition="before">
+          <button mat-menu-item (click)="sortBy('Due Date')" aria-label="dueDate">
+            Due Date
+          </button>
+          <button mat-menu-item (click)="sortBy('Agenda')" aria-label="Agenda">
+            Agenda
+          </button>
+          <button mat-menu-item (click)="sortBy('Action By')" aria-label="Action By">
+            Action By
+          </button>
+          <!-- <button mat-menu-item (click)="sortBy('Modified Date')" aria-label="Modified Date">
+            Modified Date
+          </button>
+          <button mat-menu-item (click)="sortBy('Created Date')" aria-label="Created Date">
+            Created Date
+          </button> -->
+        </mat-menu>
+      </div>
+
+      <ul class="minutes-agenda-list">
+        <li *ngFor="let item of currentEntity.agendas; let i = index;">
+          <div class="row">
+            <div class="col-md-7 col-12">
+              <div>
+
+                <h6 class="font-focused">{{item.title}} | <span
+                    [ngStyle]="{'font-weight':'400'}">{{item.subtitle}}</span></h6>
+              </div>
+              <div class="d-flex align-items-center justify-content-between"
+                [ngClass]="{'flex-column align-items-start':isMobileView}">
+                <div class="py-1" [ngClass]="{'d-flex justify-content-between align-items-center w-100':isMobileView}">
+                  <small>Status: </small>
+                  <div>
+                    <span class="badge mr-1"
+                      [ngClass]="{'badge-pending':!currentEntity.isDelayed, 'badge-delayed':currentEntity.isDelayed}"
+                      *ngIf="item.statusFlag==SITE_VISIT_AGENDA_STATUSFLAG_PENDING && !currentEntity.isDelayed">PENDING</span>
+                    <span class="badge mr-1"
+                      [ngClass]="{'badge-pending':!currentEntity.isDelayed, 'badge-delayed':currentEntity.isDelayed}"
+                      *ngIf="item.statusFlag==SITE_VISIT_AGENDA_STATUSFLAG_PENDING && currentEntity.isDelayed">DELAYED</span>
+                    <span class="badge badge-resolved mr-1"
+                      *ngIf="item.statusFlag!=SITE_VISIT_AGENDA_STATUSFLAG_PENDING &&(currentEntity.typeFlag==SITE_VISIT_TYPEFLAG_SITE_VISIT || currentEntity.typeFlag==SITE_VISIT_TYPEFLAG_CNOTE)">RESOLVED</span>
+                    <span class="badge badge-resolved mr-1"
+                      *ngIf="item.statusFlag!=SITE_VISIT_AGENDA_STATUSFLAG_PENDING && (currentEntity.typeFlag==SITE_VISIT_TYPEFLAG_INSPECTION)">COMPLETE</span>
+                  </div>
+                </div>
+                <div class="py-1" [ngClass]="{'d-flex justify-content-between align-items-center w-100':isMobileView}">
+                  <small>Reminder: </small>
+                  <h6 class="minutes-agenda-text-standard"> {{item?.reminderCount | number:'2.0'}}</h6>
+                </div>
+                <div class="py-1" [ngClass]="{'d-flex justify-content-between align-items-center w-100':isMobileView}">
+                  <small>Due Date: </small>
+                  <h6 class="minutes-agenda-text-focused">{{item?.dueDate | date:'dd MMM y'}}</h6>
+                </div>
+
+                <div class="py-1" [ngClass]="{'d-flex justify-content-between align-items-center w-100':isMobileView}">
+                  <small>Action By: </small>
+                  <h6 class="minutes-agenda-text-focused">{{item?.actionBy}}</h6>
+                </div>
+              </div>
+
+              <small>Comment: </small>
+              <p class="minutes-agenda-comment-focused">{{item?.comment}}</p>
+
+              <!-- <div class="row">
+                <div class="col-12 col-sm-4"
+                  [ngClass]="{'d-flex align-items-center justify-content-between':isMobileView, 'py-1':!isMobileView}">
+                  <small>Modified on: </small>
+                  <h6 class="minutes-agenda-text-standard">{{item?.modified | date:"dd MMM yy HH:mm"}}</h6>
+                </div>
+                <div class="col-12 col-sm-4"
+                  [ngClass]="{'d-flex align-items-center justify-content-between':isMobileView, 'py-1':!isMobileView}">
+                  <small>Modified by: </small>
+                  <h6 class="minutes-agenda-text-standard">{{item?.modifiedBy}}</h6>
+                </div>
+                <div class="col-12 col-sm-4"
+                  [ngClass]="{'d-flex align-items-center justify-content-between':isMobileView, 'py-1':!isMobileView}">
+                  <small>Modified via: </small>
+                  <h6 class="minutes-agenda-text-standard">{{item?.updateFrom ||
+                    (item?.typeFlag==SITEVISIT_TYPEFLAG_INSPECTION?'INSPECTION':'SITEVISIT')}}</h6>
+                </div>
+              </div> -->
+
+
+              <ul class="mcv-file-list">
+                <li *ngFor="let file of item.attachments; let i = index" class="">
+                  <div class="mcv-file-wrapper">
+                    <div class="mcv-file-thumbnail-wrapper"
+                      *ngIf="getMediaType(file.filename)=='image' || getMediaType(file.filename)=='video' || getMediaType(file.filename)=='audio'"
+                      (click)="onPreview(item.title,file,item.attachments,i,item?.comment)">
+
+                      <img class="mcv-file-thumbnail"
+                        src="{{ file.thumbUrl || file.url || 'assets/images/file-not-found.png' }}" alt=""
+                        *ngIf="getMediaType(file.filename)==='image'" />
+
+                      <div class="mcv-file-thumbnail-icon" *ngIf="getMediaType(file.filename)==='video'">
+                        <mat-icon>play_circle_filled</mat-icon>
+                      </div>
+                      <div class="mcv-file-thumbnail-icon" *ngIf="getMediaType(file.filename)==='audio'">
+                        <mat-icon>music_note</mat-icon>
+                      </div>
+
+                      <!-- <img class="mcv-file-thumbnail-icon" src="assets/icons/{{file.extension}}.png" alt=""
+                    *ngIf="getMediaType(file.filename)!='image' && getMediaType(file.filename)!='video' && getMediaType(file.filename)!='audio'" /> -->
+
+                      <div class="mcv-file-video-preview" *ngIf="getMediaType(file.filename)=='video' && file.url">
+                        <img class="mcv-file-thumbnail"
+                          src="{{ getVideoThumbUrl(file?.thumbUrl || file.url) || 'assets/images/file-not-found.png' }}"
+                          alt="" />
+                      </div>
+                    </div>
+                    <div class="mcv-file" *ngIf="getMediaType(file.filename) == 'other'">
+                      <div class="mcv-file-detail text-nowrap mr-1" [matTooltip]="file.filename"
+                        (click)="onPreview(item.title ,file,item.attachments,i)"
+                        *ngIf="!((getMediaType(file.filename)=='image' || getMediaType(file.filename)==='video' || getMediaType(file.filename)==='audio'))">
+                        <mat-icon class="mcv-file-icon">attach_file</mat-icon>
+
+                        <div class="text-nowrap">
+                          <h6 class="mcv-file-name mb-0">{{file.filename | mcvFileExtension:13}}</h6>
+                          <span *ngIf="file.size">{{file.size | mcvFileSize}}</span>
+                        </div>
+                      </div>
+                      <div class="mcv-file-actions">
+                        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="context-menu">
+                          <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #menu="matMenu">
+                          <button mat-menu-item (click)="onPreview(item.title ,file,item.attachments,i)"
+                            aria-label="Preview"
+                            *ngIf="getMediaType(file.filename) === 'image' || getMediaType(file.filename) === 'video' || getMediaType(file.filename) === 'audio'">
+                            <mat-icon>launch</mat-icon>
+                            <span>Preview</span>
+                          </button>
+                          <button mat-menu-item (click)="onDownload(file)" aria-label="Download">
+                            <mat-icon>get_app</mat-icon>
+                            <span>Download</span>
+                          </button>
+                        </mat-menu>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+
+              <div class="d-flex">
+                <small>Modified: {{item?.modified | date:"dd MMM yy HH:mm"}} | {{item?.modifiedBy}} |
+                  {{item?.updateFrom
+                  ||
+                  (item?.typeFlag==SITE_VISIT_TYPEFLAG_INSPECTION?'INSPECTION':'SITEVISIT')}}
+                </small>
+              </div>
+            </div>
+            <div class="col-md-5 col-12 pl-2">
+              <div class="image-history-wrapper">
+                <div class="row history-wrapper" *ngIf="item?.previousHistory">
+                  <div class="col-12 py-1">
+                    <small>History: </small>
+                    <div class="history" [ngClass]="{'hide-history':!showHistory[i]}">
+                      <p class="minutes-agenda-text-history">{{item?.previousHistory}}</p>
+                    </div>
+                    <small class="show-more" (click)="toggleHistorySection(i)" *ngIf="!showHistory[i]">...show
+                      more</small>
+                    <small class="show-more" (click)="toggleHistorySection(i)" *ngIf="showHistory[i]">...show
+                      less</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr>
+        </li>
+      </ul>
+    </div>
+    <div class="minutes-page-footer">
+      <div>
+        <h6>MyCockpitView©</h6>
+        <small>Powered by Newarch® Infotech LLP</small>
+      </div>
+      <div>
+        <h6>v{{version}}</h6>
+        <small>Copyrights 2022</small>
+      </div>
+    </div>
+  </div>
+</div>

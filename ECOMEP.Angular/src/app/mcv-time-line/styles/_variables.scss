@@ -1,0 +1,43 @@
+$light: #fff;
+$dark: #242424;
+
+$mcv-timeline-now-bg: #ff0000;
+
+$mcv-timeline-hour-width: 52px;
+$mcv-timeline-slot-width: 13px;
+
+
+$mcv-timeline-week-hour-width: 208px;
+$mcv-timeline-week-slot-width: 52px;
+
+$mcv-timeline-border-color: $gray-400;
+
+$mcv-timeline-avatar-size: 40px !default;
+$mcv-timeline-taskview-event-group-panel-width: 150px;
+
+$mcv-timeline-grid-column-color: $gray-400; 
+$mcv-timeline-grid-border-color: #dedede;
+$mcv-timeline-grid-bg: #f4f4f4;
+$mcv-timeline-grid-bg-odd: #fdfdfd;
+
+$mcv-timeline-cell-bg-hover: rgba(180, 180, 180, 0.575);
+$mcv-timeline-cell-bg-select: #5a5a5a;
+$mcv-timeline-cell-bg-holiday:rgba(255, 193, 7, 0.341);
+
+$mcv-timeline-event-height: 24px;
+$mcv-timeline-event-bg: #484848;
+$mcv-timeline-event-color: $light;
+$mcv-timeline-event-bg-hover: #dcdcdc;
+$mcv-timeline-event-color-hover: $dark;
+
+$mcv-timeline-eventGroup-bg-hover: #dcdcdc;
+$mcv-timeline-eventGroup-color-hover: $dark;
+
+$mcv-timeline-row-height: 46px;
+$mcv-timeline-event-flushed-bg: rgba(255, 255, 255, 0.5);
+$mcv-timeline-event-flushed-color: #484848;
+
+$resize-handle-color: #ff000094;
+$move-handle-color: none;
+$resize-handle-positon: 0;
+$resize-handle-size: 4px;

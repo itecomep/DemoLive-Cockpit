@@ -1,0 +1,107 @@
+/* ---------------------------------------------------
+   Material Table
+----------------------------------------------------- */
+table {
+  min-width: 100%;
+}
+
+.mat-mdc-table-wrapper {
+  height: 100%;
+  overflow: auto;
+  // display: flex;
+  // flex-direction: column;
+
+  // & .mat-table-container {
+  //   flex-grow: 1;
+  //   flex-shrink: 0;
+  //   max-height: 100%;
+  //   overflow: hidden;
+  // }
+
+  // & .mat-table-container {
+  //   flex-grow: 1;
+  //   flex-shrink: 1;
+  //   max-height: 100%;
+  //   overflow: hidden auto;
+  //   -ms-scroll-chaining: none;
+  //   overscroll-behavior: contain;
+  // }
+}
+
+.mat-mdc-table-filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  background-color: $white;
+
+  &>* {
+    margin-right: 10px !important;
+  }
+}
+
+.mat-mdc-paginator-container {
+  min-height: 0 !important;
+}
+
+/* TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version. */
+.mat-mdc-paginator,
+.mat-mdc-paginator-page-size .mat-select-trigger {
+  color: inherit;
+}
+
+.mat-mdc-header-row,
+mat-header-row,
+.mat-mdc-footer-row,
+mat-footer-row {
+  background-color: $gray-400;
+}
+
+.mat-mdc-header-row,
+mat-header-row,
+.mat-mdc-row,
+mat-row,
+.mat-mdc-footer-row,
+mat-footer-row {
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+.mat-mdc-cell,
+.mat-mdc-footer-cell {
+  color: inherit !important;
+  font-size: inherit !important;
+}
+
+.mat-mdc-header-cell,
+mat-header-cell,
+.mat-mdc-cell,
+mat-cell,
+.mat-mdc-footer-cell,
+mat-footer-cell {
+  // white-space: normal;
+  // overflow-wrap: normal;
+  // max-width: 200px;
+  // min-width: 80px;
+  // min-width: 10rem;
+  padding: 3px !important;
+}
+
+.mat-mdc-header-cell:first-of-type,
+.mat-mdc-cell:first-of-type,
+.mat-mdc-footer-cell:first-of-type,
+mat-header-cell:first-of-type,
+mat-cell:first-of-type,
+mat-footer-cell:first-of-type {
+  padding-left: 10px !important;
+}
+
+.mat-mdc-header-cell:last-of-type,
+.mat-mdc-cell:last-of-type,
+.mat-mdc-footer-cell:last-of-type,
+mat-header-cell:last-of-type,
+mat-cell:last-of-type,
+mat-footer-cell:last-of-type {
+  padding-right: 10px !important;
+}
+
+/*==========================*/

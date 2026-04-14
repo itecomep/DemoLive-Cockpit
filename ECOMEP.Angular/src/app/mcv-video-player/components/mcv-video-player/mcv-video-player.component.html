@@ -1,0 +1,16 @@
+<div class="mcv-video-wrapper" [ngClass]="{'mcv-video-wrapper-cover':fit=='cover'}">
+  <video id="video1" *ngIf="url && autoplay && showControls" autoplay controls controlsList="nodownload"
+    oncontextmenu="return false;">
+    <source src="{{url}}" type="video/mp4">
+  </video>
+  <video id="video1" *ngIf="url && !autoplay && showControls" controls controlsList="nodownload"
+    oncontextmenu="return false;">
+    <source src="{{url}}" type="video/mp4">
+  </video>
+  <video id="video1" *ngIf="url && autoplay && !showControls" autoplay oncontextmenu="return false;">
+    <source src="{{url}}" type="video/mp4">
+  </video>
+  <video id="video1" *ngIf="url && !autoplay && !showControls" oncontextmenu="return false;">
+    <source src="{{url}}" type="video/mp4">
+  </video>
+</div>

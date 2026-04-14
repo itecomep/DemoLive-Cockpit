@@ -1,0 +1,103 @@
+<div class="project-team-wrapper">
+  <div>
+    <form autocomplete="off" *ngIf="isPermissionView && isPermissionEdit">
+      <div class="row">
+        <div class="col-md-6 col-12">
+          <h6 class="font-focused p-1">Team Leader</h6>
+
+          <mat-form-field appearance="outline" *ngIf="!project.projectManagerContactID">
+            <mat-label>Team Leader</mat-label>
+            <mat-select [formControl]="projectManagerContactFC" placeholder="Search Contact" #firstSelect
+              (selectionChange)="onPMSelected($event)">
+              <mat-option>
+                <ngx-mat-select-search [formControl]="pmFC" placeholderLabel="Search here"
+                  noEntriesFoundLabel="No matching value found"></ngx-mat-select-search>
+              </mat-option>
+              <mat-option *ngFor="let option of filteredPMOptions$ | async" [value]="option">
+                {{option?.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <div class="project-manager-container" *ngIf="project.projectManagerContact">
+            <div class="details">
+              <img class="image" src="{{project.projectManagerContact?.photoUrl || 'assets/images/person-icon.svg'}}" (click)="openPhotoDialog(project.projectManagerContact)" style="cursor: pointer;" />
+              <h6 class="name">{{project.projectManagerContact?.fullName}}</h6>
+            </div>
+            <mat-icon (click)="onDeleteProjectManager()">clear</mat-icon>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-12">
+          <h6 class="font-focused p-1">Junior Team Leader</h6>
+
+          <mat-form-field appearance="outline" *ngIf="!project.assistantProjectManagerContactID">
+            <mat-label>Junior Team Leader</mat-label>
+            <mat-select [formControl]="assistantProjectManagerContactFC" placeholder="Search Contact" #secondSelect
+              (selectionChange)="onAPMSelected($event)">
+              <mat-option>
+                <ngx-mat-select-search [formControl]="apmFC" placeholderLabel="Search here"
+                  noEntriesFoundLabel="No matching value found"></ngx-mat-select-search>
+              </mat-option>
+              <mat-option *ngFor="let option of filteredAPMOptions$ | async" [value]="option">
+                {{option?.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <div class="project-manager-container" *ngIf="project.assistantProjectManagerContact">
+            <div class="details">
+              <img class="image"
+                src="{{project.assistantProjectManagerContact?.photoUrl || 'assets/images/person-icon.svg'}}"(click)="openPhotoDialog(project.assistantProjectManagerContact)" style="cursor: pointer;"  />
+              <h6 class="name">{{project.assistantProjectManagerContact?.fullName}}</h6>
+            </div>
+            <mat-icon (click)="onDeleteAssistantProjectManager()">clear</mat-icon>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="project-team-header">
+    <h5 *ngIf="teams.length == 0">No Team Assigned!</h5>
+    <form class="col-12" autocomplete="off" *ngIf="isPermissionView && isPermissionEdit">
+      <mat-form-field appearance="outline">
+        <mat-label>Select Team</mat-label>
+        <input placeholder="Enter team title to select from the list" aria-label="Select Team" matInput
+          [formControl]="teamFC" [matAutocomplete]="autoTeam" />
+
+        <mat-autocomplete #autoTeam="matAutocomplete" [displayWith]="displayFnTeam"
+          (optionSelected)="onSelectTeam($event)">
+          <mat-option *ngFor="let option of filteredTeams$ | async" [value]="option">
+            {{ option.title }}
+          </mat-option>
+        </mat-autocomplete>
+        <span matSuffix>
+          <mat-icon>group</mat-icon>
+        </span>
+      </mat-form-field>
+    </form>
+  </div>
+
+  <div class="teams-container">
+    <ng-container *ngFor="let team of teams">
+      <div class="project-team-container">
+        <div class="d-flex align-items-center justify-content-between">
+          <h6 class="team-title">{{team.contactTeam.title}}</h6>
+          <mat-icon *ngIf="isPermissionDelete" color="red" (click)="onDeleteTeam(team)">delete</mat-icon>
+        </div>
+        <ul class="team-member-list">
+          <li *ngFor="let member of team?.contactTeam?.members" class="team-member">
+            <img class="member-image" src="{{member.contact?.photoUrl || 'assets/images/person-icon.svg'}}" (click)="openPhotoDialog(member)" style="cursor: pointer;"/>
+            <div>
+              <h6 class="member-name">{{member.contact?.fullName}}</h6>
+              <span class="badge badge-danger" *ngIf="team?.contactTeam?.leaderID == member.contactID">Leader</span>
+              <span class="badge badge-primary" *ngIf="team?.contactTeam?.assistantID == member.contactID">Assistant
+                Leader</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </ng-container>
+  </div>
+</div>

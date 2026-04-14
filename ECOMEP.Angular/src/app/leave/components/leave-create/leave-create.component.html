@@ -1,0 +1,112 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">Leave Application</h5>
+    <div class="d-flex align-items-center">
+        <button mat-raised-button color="accent" aria-label="Save" (click)="onSubmit()">
+            Save
+        </button>
+        <button mat-icon-button aria-label="Close" (click)="onClose()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+<mat-dialog-content>
+    <div class="leave-create-wrapper">
+        <div class="leave-form-container" [formGroup]="form">
+            <mat-form-field appearance="outline" *ngIf="typeOptions && typeOptions.length > 0">
+                <mat-label>Application Type</mat-label>
+                <mat-select formControlName="typeFlag" placeholder="Type">
+                    <mat-option *ngFor="let item of typeOptions" [value]="item.value">
+                        {{ item.title }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" *ngIf="isPermissionSpecialEdit">
+                <mat-label>Applicant</mat-label>
+                <input placeholder="Enter name of applicant" aria-label="Applicant" matInput formControlName="contact"
+                    [matAutocomplete]="auto" />
+                <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFnContact">
+                    <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
+                        {{ option.name }}
+                    </mat-option>
+                </mat-autocomplete>
+                <span matSuffix>
+                    <mat-icon>person</mat-icon>
+                </span>
+                <mat-error>{{ getErrorMessage(f.contact) }}</mat-error>
+            </mat-form-field>
+        </div>
+
+        <div class="leave-details-wrapper mt-2">
+            <h6 class="font-focused">DETAILS</h6>
+
+            <div class="row m-0 gap-2" [formGroup]="form">
+                <mat-form-field appearance="outline" class="col-md-6" [ngClass]="{'col-md-12':
+                                            f.typeFlag.value == LEAVE_TYPEFLAG_CASUAL_FIRST_HALF ||
+                                             f.typeFlag.value == LEAVE_TYPEFLAG_CASUAL_SECOND_HALF ||
+                                             f.typeFlag.value == LEAVE_TYPEFLAG_EMERGENCY_FIRST_HALF ||
+                                            f.typeFlag.value == LEAVE_TYPEFLAG_EMERGENCY_SECOND_HALF}">
+                    <mat-label>From Date</mat-label>
+                    <input matInput formControlName="start" [matDatepicker]="startDatePicker"
+                        [matDatepickerFilter]="dateFilter" placeholder="Select Start Date" readonly />
+                    <mat-error>{{ getErrorMessage(f.start) }}</mat-error>
+ 
+                    <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker [touchUi]="isMobileView" #startDatePicker></mat-datepicker>
+                </mat-form-field>
+
+                <!-- <mat-form-field appearance="outline" class="col-md-6 col-6" *ngIf="showTimeSelection">
+                    <mat-label>From Time</mat-label>
+                    <input aria-label="Start Time" [ngxTimepicker]="pickerStartTime" formControlName="startTime"
+                        matInput [format]="24" readonly />
+                    <ngx-material-timepicker #pickerStartTime [minutesGap]="minutesGap">
+                    </ngx-material-timepicker>
+                    <mat-error>{{ getErrorMessage(f.startTime)}}</mat-error>
+                </mat-form-field> -->
+
+                <mat-form-field appearance="outline" class="col-md-6 col-6"
+                    *ngIf="f.typeFlag.value == LEAVE_TYPEFLAG_CASUAL || f.typeFlag.value == LEAVE_TYPEFLAG_EMERGENCY">
+                    <mat-label>To Date</mat-label>
+                    <input matInput formControlName="end" [matDatepicker]="endDatePicker"
+                        [matDatepickerFilter]="dateFilter" placeholder="Select End Date" readonly />
+                    <mat-error>{{ getErrorMessage(f.end) }}</mat-error>
+                    <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker [touchUi]="isMobileView" #endDatePicker></mat-datepicker>
+                </mat-form-field>
+
+                <!-- <mat-form-field appearance="outline" class="col-md-6 col-6" *ngIf="showTimeSelection">
+                    <mat-label>To Time</mat-label>
+                    <input aria-label="Due Time" [ngxTimepicker]="pickerDueTime" formControlName="endTime" matInput
+                        [format]="24" readonly />
+                    <ngx-material-timepicker #pickerDueTime [minutesGap]="minutesGap">
+                    </ngx-material-timepicker>
+                    <mat-error>{{ getErrorMessage(f.endTime)}}</mat-error>
+                </mat-form-field> -->
+
+                <mat-form-field appearance="outline" class="col-md-12 col-6">
+                    <mat-label>Reason</mat-label>
+                    <textarea id="reason" aria-label="reason" matInput formControlName="reason" cdkTextareaAutosize
+                        #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="4" cdkAutosizeMaxRows="5"></textarea>
+                    <mat-error>{{getErrorMessage(f.reason)}}</mat-error>
+                </mat-form-field>
+            </div>
+            <div *ngIf="leaveViolationError" class="col-md-12 text-danger small mt-1">
+                    {{ leaveViolationError }}
+            </div>
+        </div>
+        <div class="leave-details-wrapper mt-2">
+            <h6 class="font-focused">ATTACHMENTS</h6>
+            <app-mcv-file-upload [uploaderConfig]="blobConfig" [showPaste]="true" [showDrop]="true"
+                (upload)="onUpload($event)" *ngIf="blobConfig && allowEdit">
+            </app-mcv-file-upload>
+            <ul class="mcv-file-list">
+                <li *ngFor="let file of currentEntity.attachments">
+                    <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="allowEdit"
+                        (delete)="onDeleteAttachment(file)" [downloadUrl]="file.url"
+                        [showPreview]="true" [singlePreview]="true" [url]="file.url" [thumbUrl]="file.thumbUrl">
+                    </mcv-file>
+                </li>
+            </ul>
+        </div>
+    </div>
+</mat-dialog-content>

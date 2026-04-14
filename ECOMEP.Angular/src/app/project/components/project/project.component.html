@@ -1,0 +1,193 @@
+<div class="project-wrapper">
+  <div class="project-header" [ngClass]="{'editable':isEditMode}">
+    <div class="title-bar">
+      <div class="list-item-details">
+        <h6 class="project-title">{{currentEntity.title}}</h6>
+        <div class="subtitle">
+          <h5 class="project-code">{{currentEntity.code}}</h5> <span
+            class="badge {{statusColor}}">{{currentEntity.statusValue}}</span>
+          <span class="segment-tag">{{currentEntity.typology}}</span>
+          <small> {{currentEntity.created | date:'dd MMM y'}} </small>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <!-- <button matTooltip="Edit" mat-icon-button (click)="onEdit()" aria-label="Edit"
+        *ngIf="(isPermissionEdit) && !isEditMode">
+        <mat-icon>
+          edit
+        </mat-icon>
+      </button> -->
+
+      <!-- <button mat-raised-button color="accent" (click)="onCreateChild()" aria-label="Add new child Project"
+        *ngIf="(isPermissionEdit) && isEditMode && !currentEntity.parentID">
+        <mat-icon>add</mat-icon> Child
+      </button>
+
+      <button mat-raised-button (click)="onSubmit()" aria-label="save" *ngIf="(isPermissionEdit) && isEditMode">
+        Save
+      </button> -->
+
+      <!-- <button color="warn" class="ml-1" mat-raised-button (click)="onDelete()" aria-label="delete"
+        *ngIf="isPermissionDelete && isEditMode">
+        Delete
+      </button> -->
+
+      <!-- <button matTooltip="Cancel Edit" mat-icon-button (click)="onViewMode()" aria-label="Cancel Edit"
+        *ngIf="isEditMode">
+        <mat-icon>
+          close
+        </mat-icon>
+      </button> -->
+    </div>
+  </div>
+
+  <mat-tab-group *ngIf="currentEntity" (selectedTabChange)="onTabChange($event)">
+    <mat-tab label="Definition">
+      <ng-template matTabContent>
+        <app-project-definition [currentEntity]="currentEntity"
+          *ngIf="isPermissionList && !isPermissionEdit"></app-project-definition>
+        <app-project-definition-update [currentEntity]="currentEntity" (updated)="onUpdate($event)"
+          *ngIf="isPermissionList && isPermissionEdit"
+          (formChange)="onFormChange($event)"></app-project-definition-update>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Team" *ngIf="isPermissionTeamView">
+      <ng-template matTabContent>
+        <app-project-team [project]="currentEntity" (update)="onUpdate($event)"
+          [isEditMode]="isEditMode"></app-project-team>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Stages" *ngIf="isPermissionStagesView">
+      <ng-template matTabContent>
+        <app-project-stages-update [project]="currentEntity" (update)="onUpdate($event)"
+      ></app-project-stages-update>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Work Order" *ngIf="isPermissionWorkOrderView">
+      <ng-template matTabContent>
+        <app-project-work-order [project]="{project:currentEntity, typeFlag:0}">
+        </app-project-work-order>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="New Work Order" *ngIf="isPermissionWorkOrderView">
+      <ng-template matTabContent>
+        <!-- <app-project-work-order [project]="{project:currentEntity, typeFlag:0}">
+        </app-project-work-order> -->
+        <app-work-order [project]="currentEntity"></app-work-order>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Offer" *ngIf="isPermissionWorkOrderView">
+      <ng-template matTabContent>
+        <app-project-work-order [project]="{project:currentEntity, typeFlag:1}">
+        </app-project-work-order>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Billing" *ngIf="isPermissionBillingView">
+      <ng-template matTabContent>
+        <app-project-bills [project]="currentEntity" (updated)="onUpdate($event)"
+          (formChange)="onFormChange($event)"></app-project-bills>
+      </ng-template>
+    </mat-tab>
+
+     <mat-tab label="New Billing" *ngIf="isPermissionBillingView">
+      <ng-template matTabContent>
+        <app-project-work-order-bill-view [project]="currentEntity"></app-project-work-order-bill-view>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Associations" *ngIf="isPermissionAssociationsView">
+      <ng-template matTabContent>
+        <app-project-association [config]="associationConfig"
+          (update)="onAssociationsUpdate($event)"></app-project-association>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Notes" *ngIf="isPermissionNotesView">
+      <ng-template matTabContent>
+        <app-project-notes [config]="notesConfig" (update)="onNotesUpdate($event)"></app-project-notes>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Inwards" *ngIf="isPermissionInwardsView">
+      <ng-template matTabContent>
+        <app-project-inward [config]="inwardConfig" [isPermissionEdit]="isPermissionInwardsEdit" [title]="'Inward'"
+          (update)="onInwardsUpdate($event)"></app-project-inward>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Photos" *ngIf="isPermissionPhotosView">
+      <ng-template matTabContent>
+        <app-project-inward [config]="inwardPhotosConfig" [isPermissionEdit]="isPermissionPhotosEdit"
+          [title]="'Photos/Videos'" (update)="onInwardsPhotosUpdate($event)"></app-project-inward>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Report" *ngIf="isPermissionPhotosView">
+      <ng-template matTabContent>
+        <app-project-inward [config]="inwardReportConfig" [isPermissionEdit]="isPermissionPhotosEdit"
+          [title]="'Reports'" (update)="onInwardsReportsUpdate($event)"></app-project-inward>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="DMS" *ngIf="isPermissionDMSView">
+      <ng-template matTabContent>
+        <app-project-dms [project]="currentEntity" (update)="onDMSUpdate($event)"></app-project-dms>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Todo" *ngIf="isPermissionTodoView">
+      <ng-template matTabContent>
+        <app-project-todo [project]="currentEntity" [isEditMode]="isEditMode"></app-project-todo>
+      </ng-template>
+    </mat-tab>
+  
+    <mat-tab label="Email" *ngIf="isPermissionRequestTicketsView">
+      <ng-template matTabContent>
+        <app-project-request-ticket-view [project]="currentEntity"></app-project-request-ticket-view>
+      </ng-template>
+    </mat-tab> 
+
+    <mat-tab label="Gmail">
+      <ng-template matTabContent>
+        <app-project-gmail-dialog
+          [emails]="gmailEmails"
+          [loading]="gmailLoading"
+          [currentLabelName]="currentLabelName"
+          [currentPage]="currentPage"
+          [totalPages]="totalPages"
+          [totalEmails]="totalEmails"
+          [hasNext]="!!pageTokens[currentPage + 1]"
+          (prevPage)="loadGmailEmails(currentPage - 1)"
+          (nextPage)="loadGmailEmails(currentPage + 1)">
+        </app-project-gmail-dialog>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Gmail-All" *ngIf="isPermissionGmailView">
+      <ng-template matTabContent>
+        <app-all-mail [labelName]="currentLabelName"></app-all-mail>
+      </ng-template>
+    </mat-tab>
+
+     <mat-tab label="Meeting" *ngIf="isPermissionMeetingsView">
+      <ng-template matTabContent>
+        <app-project-meeting-view [project]="currentEntity"></app-project-meeting-view>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Files" *ngIf="isPermissionFileDms">
+      <ng-template matTabContent>
+        <app-project-file [project]="currentEntity"></app-project-file>
+      </ng-template>
+    </mat-tab>
+
+  </mat-tab-group>
+</div>

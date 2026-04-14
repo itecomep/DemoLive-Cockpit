@@ -1,0 +1,118 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">Maintenance Schedule <small>{{schedules.length}}</small> | {{asset.code}}-{{asset.title}}-{{asset.subtitle}}</h5>
+    <div class="d-flex align-items-center">
+        <small color="primary" *ngIf="isPending">Verify or approve all schedule to add more.</small>
+        <button mat-icon-button (click)="onAddAssetSchedule()" *ngIf="!isPending">
+            <mat-icon>add</mat-icon>
+        </button>
+        <button mat-icon-button aria-label="close" (click)="onClose()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+<mat-dialog-content>
+    <div class="schedule-table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <!-- <th>Action/Title</th> -->
+                    <th>Action By</th>
+                    <th>Cost</th>
+                    <th>Status</th>
+                    <th colspan="3">Actions</th>
+                </tr>
+                <tr class="total">
+                    <th colspan="2"></th>
+                    <th>{{scheduleTotal | currency:'INR':'symbol':'1.0-2'}}</th>
+                    <th colspan="4"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let schedule of schedules; let i = index">
+                    <tr>
+                        <td>{{schedule.nextScheduleDate | date:'dd MMM y'}}</td>
+                        <td>
+                            <span
+                                *ngIf="schedule.statusFlag !== ASSET_SCHEDULE_ISSUE_PENDING">{{schedule.modifiedBy}}</span>
+                        </td>
+                        <td>{{calculateComponentTotal(schedule) | currency:'INR':'symbol':'1.0-2'}}</td>
+                        <td>
+                            <mat-icon class="pending" matTooltip="Pending"
+                                *ngIf="schedule.statusFlag == ASSET_SCHEDULE_ISSUE_PENDING">help</mat-icon>
+                            <mat-icon class="approved" matTooltip="Approved"
+                                *ngIf="schedule.statusFlag == ASSET_SCHEDULE_ISSUE_APPROVED">done</mat-icon>
+                            <mat-icon class="verified" matTooltip="Verified"
+                                *ngIf="schedule.statusFlag == ASSET_SCHEDULE_ISSUE_VERIFIED">done_all</mat-icon>
+                        </td>
+                        <!-- <td>
+                            <mat-icon (click)="onDeleteAssetSchedule(schedule)">delete</mat-icon>
+                        </td>-->
+                        <td>
+                            <span
+                                *ngIf="schedule.nextScheduleDate ? schedule.nextScheduleDate : currentDate ">
+                                <mat-icon (click)="onEditAssetSchedule(schedule)">edit</mat-icon>
+                            </span>
+                        </td>
+                        <td>
+                            <mat-icon (click)="onToggleSchedule(i)"
+                                *ngIf="!toggleSchedule[i]">keyboard_arrow_down</mat-icon>
+                            <mat-icon (click)="onToggleSchedule(i)"
+                                *ngIf="toggleSchedule[i]">keyboard_arrow_up</mat-icon>
+                        </td>
+                    </tr>
+                    <tr *ngIf="toggleSchedule[i]">
+                        <td colspan="8">
+                            <div class="description-attachment-wrapper">
+                                <div class="description-container">
+                                    <div class="description-wrapper">
+                                        <h6 class="font-focused">Description</h6>
+                                        <p>{{schedule.description}}</p>
+                                    </div>
+
+                                    <div class="description-wrapper mt-2"
+                                        *ngIf="schedule.components && schedule.components.length > 0 ">
+                                        <h6 class="font-focused">Components</h6>
+                                        <table  >
+                                            <thead>
+                                                <tr>
+                                                    <th>Component</th>
+                                                    <th>WarrantyDate</th>
+                                                    <th>Cost</th>
+                                                </tr>
+                                            </thead>
+                                           
+                                            <tbody  >
+                                                <ng-container *ngFor="let item of schedule.components" >
+                                                    <tr *ngIf="!item.isDeleted">
+                                                        <td>{{item.component}}</td>
+                                                        <td>{{item.warrantyDate | date:'dd MMM y'}}</td>
+                                                        <td>{{item.cost | currency:'INR':'symbol':'1.0-2'}}</td>
+                                                    </tr>
+                                                </ng-container>
+                                        
+                                            </tbody>
+                                
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="file-list-wrapper">
+                                    <h6 class="font-focused">Attachments</h6>
+                                    <ul class="mcv-file-list">
+                                        <li *ngFor="let item of schedule.attachments">
+                                            <mcv-file [size]="item.size" [filename]="item.filename" [showRemove]="false"
+                                                [url]="item.url" [tags]="item.searchTags"
+                                                [contentType]="item.contentType" [showPreview]="true"
+                                                [downloadUrl]="item.url" [singlePreview]="true" [showEditor]="false"
+                                                [isVerticalThumb]="false"></mcv-file>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-container>
+            </tbody>
+        </table>
+    </div>
+</mat-dialog-content>

@@ -1,0 +1,19 @@
+<div class="tab-header-scroll">
+    <div class="tab-header-container">
+        <div class="tab-item" *ngFor="let item of workOrders; let i = index" [class.active]="i === selectedTabIndex"
+            (click)="selectedTabIndex = i">
+            {{ item.typology }}
+        </div>
+
+        <div class="tab-item new-btn" (click)="onCreateNewWorkOrder()">
+            + New
+        </div>
+    </div>
+</div>
+
+<div class="tab-content">
+    <app-work-order-details *ngIf="workOrders[selectedTabIndex]" [config]="{
+        workOrder: workOrders[selectedTabIndex],
+        projectID: project.id
+      }"></app-work-order-details>
+</div>

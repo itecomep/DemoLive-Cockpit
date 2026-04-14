@@ -1,0 +1,85 @@
+<div class="contact-wrapper">
+    <div class="contact-header " [ngClass]="{'editable':isEditMode}">
+        <div class="title-bar">
+            <div>
+                <img class="contact-icon" src="{{ currentEntity.photoUrl || 'assets/images/person-icon.svg' }}" alt=""
+                    *ngIf="!currentEntity.isCompany" (click)="openPhotoDialog()" style="cursor: pointer;" />
+                <img class="contact-icon" src="{{ currentEntity.photoUrl || 'assets/images/company-icon.svg' }}" alt=""
+                    *ngIf="currentEntity.isCompany" (click)="openPhotoDialog()" style="cursor: pointer;" />
+            </div>
+
+            <div>
+                <h5 class="font-focused">{{currentEntity.fullName}}</h5>
+
+                <div class="category-tag-list">
+                    <span *ngFor="let category of currentEntity.categories" class="category-tag">{{category}}
+                    </span>
+                </div>
+
+                <div class="appointment-list">
+                    <span *ngFor="let app of currentEntity.appointments" class="appointment-tag">{{app.code}} |
+                        {{app.designation}}</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="action-bar">
+            <!-- <button matTooltip="Edit" mat-icon-button (click)="onEdit()" aria-label="Edit"
+                *ngIf="(isPermissionEdit || isPermissionAppointmentEdit) && !isEditMode">
+                <mat-icon>
+                    edit
+                </mat-icon>
+            </button>
+            <button mat-raised-button (click)="onSubmit()" aria-label="save"
+                *ngIf="(isPermissionEdit || isPermissionAppointmentEdit) && isEditMode">
+                Save
+            </button> -->
+
+            <!-- <button color="warn" class="ml-1" mat-raised-button (click)="onDelete()" aria-label="delete"
+                *ngIf="isPermissionDelete && isEditMode">
+                Delete
+            </button> -->
+            <button matTooltip="Cancel Edit" mat-icon-button (click)="onViewMode()" aria-label="Cancel Edit"
+                *ngIf="isEditMode">
+                <mat-icon>
+                    close
+                </mat-icon>
+            </button>
+        </div>
+    </div>
+
+    <mat-tab-group *ngIf="currentEntity">
+
+        <mat-tab label="Personal Details" *ngIf="isPermissionView">
+            <ng-template matTabContent>
+                <app-contact-team-details [currentEntity]="currentEntity"></app-contact-team-details>
+                <!-- <app-contact-team-update [currentEntity]="currentEntity" (updated)="onUpdate($event)"
+                    *ngIf="isPermissionEdit"
+                    (formChange)="onFormChange($event)"></app-contact-team-update> -->
+            </ng-template>
+
+        </mat-tab>
+
+        <mat-tab label="Appointments" *ngIf="isPermissionAppointmentsView">
+            <ng-template matTabContent>
+                <app-contact-team-appointment-list [contact]="currentEntity"></app-contact-team-appointment-list>
+            </ng-template>
+        </mat-tab>
+
+        <mat-tab label="Documents" *ngIf="isPermissionDocumentsView">
+            <ng-template matTabContent>
+                <app-contact-team-documents [attachments]="currentEntity.attachments"
+                    [config]="editableAttachmentConfig"
+                    (uploadComplete)="onUploadAttachments($event)"></app-contact-team-documents>
+            </ng-template>
+        </mat-tab>
+
+        <mat-tab label="User Access" *ngIf="isPermissionUserManagement">
+            <ng-template matTabContent>
+                <app-contact-user-permissions [contact]="currentEntity"></app-contact-user-permissions>
+            </ng-template>
+        </mat-tab>
+
+    </mat-tab-group>
+</div>

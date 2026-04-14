@@ -1,0 +1,386 @@
+<div class="title-bar" *ngIf="!isTaskMode && !isCreateMode">
+  <div>
+    <h5 *ngIf="!isCreateMode">{{currentEntity.title}}</h5>
+    <small *ngIf="!isCreateMode">{{currentEntity.subTitle}}</small>
+  </div>
+  <div>
+    <span *ngIf="currentEntity.statusFlag == 0" class="badge green">{{ currentEntity.statusValue }}</span>
+    <span *ngIf="currentEntity.statusFlag == 1" class="badge gray-700">{{currentEntity.statusValue}}</span>
+    <span *ngIf="currentEntity.statusFlag == 2" class="badge gray-500">{{currentEntity.statusValue}}</span>
+  </div>
+
+  <div>
+    <small>Assigned By </small>
+    <h6 *ngIf="!isCreateMode && currentEntity.assigner"> {{currentEntity.assigner.name}}</h6>
+  </div>
+
+  <div>
+    <small>Assigned On </small>
+    <h6 *ngIf="!isCreateMode">
+      {{currentEntity.created | date:'dd MMM y HH:mm'}}
+    </h6>
+  </div>
+
+  <div>
+    <small>Modified </small>
+    <h6 *ngIf="!isCreateMode">
+      {{currentEntity.modified | date:'dd MMM y HH:mm'}}
+    </h6>
+  </div>
+</div>
+<app-wftask-title-bar [task]="task" *ngIf="isTaskMode"></app-wftask-title-bar>
+
+<div class="container-fluid todo-component">
+
+  <div class="row">
+    <!-- <div class="col-md-12" *ngIf="isTaskMode && task && !isMobileView">
+      <mat-expansion-panel [expanded]="true">
+        <mcv-time-entry-time-line #timeline [wfTask]="task" (created)="onUpdateTimeEntries($event)"
+          (updated)="onUpdateTimeEntries($event)" (deleted)="onUpdateTimeEntries($event)"
+          [readonly]="task.wfStageCode===TASK_STAGE_TODO_WORK">
+        </mcv-time-entry-time-line>
+      </mat-expansion-panel>
+    </div> -->
+
+    <!-- Not CreateMode  -->
+    <div class="col-md-7">
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title> Details </mat-panel-title>
+        </mat-expansion-panel-header>
+        <form [formGroup]="form" autocomplete="off">
+
+          <mat-form-field appearance="outline" class="col-sm-6">
+            <mat-label>Type</mat-label>
+            <mat-select formControlName="titleType" placeholder="Type">
+              <mat-option *ngFor="let currentEntity of titleTypeOptions" [value]="currentEntity">
+                {{currentEntity}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-sm-6">
+            <mat-label>Assign To</mat-label>
+            <input placeholder="Enter name of person to select from the list" aria-label="Assign To" matInput
+              formControlName="assignee" [matAutocomplete]="autoContact" (blur)="onAssigneeBlur($event)" />
+
+            <mat-autocomplete #autoContact="matAutocomplete" [displayWith]="displayFnContact">
+              <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
+                {{ option.name }}
+              </mat-option>
+            </mat-autocomplete>
+            <span matSuffix>
+              <mat-icon>person</mat-icon>
+            </span>
+            <mat-error>{{ getErrorMessage(f.assignee) }}</mat-error>
+            <mat-hint *ngIf="allowEdit">Enter name of person to select from the list</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-sm-6" *ngIf="isCreateMode && isDuplicated">
+            <mat-label>Title*</mat-label>
+            <input placeholder="Title" aria-label="Title" matInput formControlName="title">
+            <mat-error>{{getErrorMessage(f.title)}}</mat-error>
+            <mat-hint>{{f.title.value?.length}} / 256</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-sm-6" *ngIf="isCreateMode">
+            <mat-label>Subtitle</mat-label>
+            <input placeholder="Subtitle" aria-label="Subtitle" matInput formControlName="subTitle">
+            <mat-error>{{getErrorMessage(f.subTitle)}}</mat-error>
+            <mat-hint>{{f.subTitle.value?.length}} / 256</mat-hint>
+          </mat-form-field>
+
+          <!-- [matDatepickerFilter]="dateFilter" -->
+          <mat-form-field appearance="outline" class="col-sm-6">
+            <mat-label>Due Date*</mat-label>
+            <input placeholder="Due Date" aria-label="Due Date" matInput formControlName="dueDate"
+              [matDatepicker]="picker" readonly>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker [touchUi]="isMobileView" #picker></mat-datepicker>
+            <mat-error>{{getErrorMessage(f.dueDate)}} Must be greater than current time</mat-error>
+            <mat-hint *ngIf="allowEdit">Must be greater than current time</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-sm-6">
+            <mat-label>Due Time*</mat-label>
+            <input placeholder="Due Time" aria-label="Due Time" matInput formControlName="dueTime"
+              [ngxTimepicker]="dueTime" [format]="24" readonly>
+            <ngx-material-timepicker #dueTime [minutesGap]="timePickerMinutesGap"></ngx-material-timepicker>
+            <mat-error>{{getErrorMessage(f.dueTime)}} 24 hour format</mat-error>
+            <mat-hint>24 hour format</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-sm-6">
+            <mat-label>Hours Assigned</mat-label>
+            <input type="number" placeholder="Hours Assigned" aria-label="Hours Assigned" matInput
+              formControlName="mHrAssigned" step="0.5" min="0.5">
+            <span matSuffix><mat-icon>hourglass_empty</mat-icon></span>
+            <mat-error>{{getErrorMessage(f.mHrAssigned)}}</mat-error>
+            <mat-hint>Hours required for the work</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-sm-6">
+            <mat-label>Priority</mat-label>
+            <mat-select formControlName="priority" placeholder="Priority">
+              <mat-option *ngFor="let item of priorityOptions" [value]="item">
+                {{item}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-md-12">
+            <mat-label>Description</mat-label>
+            <textarea aria-label="comment" matInput formControlName="comment" cdkTextareaAutosize
+              #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="2" cdkAutosizeMaxRows="5"></textarea>
+            <mat-error>{{getErrorMessage(f.comment)}}</mat-error>
+          </mat-form-field>
+        </form>
+      </mat-expansion-panel>
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Attachments <small>{{currentEntity.attachments.length}} items</small>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="mcv-activity-list-wrapper">
+          <app-mcv-file-upload [uploaderConfig]="blobConfig" [showPaste]="true" [showDrop]="true" (upload)="onUpload($event)"
+            *ngIf="blobConfig && allowEdit">
+            <div class="dms-button" *ngIf="currentEntity.projectID">
+              <button mat-raised-button (click)="onOpenTodoDMS()">Open DMS Dialog</button>
+            </div>
+          </app-mcv-file-upload>
+          <ul class="mcv-file-list">
+            <li *ngFor="let file of getFilteredAttachments(currentEntity.attachments,0,false)">
+
+              <mcv-file [file]="file" [filename]="file.filename" [size]="file.size" [showRemove]="allowEdit" [tags]="file.searchTags"
+                (addTag)="onAddAttachmentTag($event,file)" (delete)="onDeleteAttachment(file)" [allowTagging]="true"
+                [downloadUrl]="file.url" [showPreview]="true" [singlePreview]="true" [url]="file.url"
+                [thumbUrl]="file.thumbUrl" [showCopy]="true">
+              </mcv-file>
+
+            </li>
+            <li *ngFor="let file of getFilteredAttachments(currentEntity.attachments,0,true)">
+
+              <mcv-file [file]="file" [filename]="file.filename" [size]="file.size" [showRemove]="allowEdit" [tags]="file.searchTags"
+                (addTag)="onAddAttachmentTag($event,file)" (delete)="onDeleteAttachment(file)" [allowTagging]="true"
+                [downloadUrl]="file.url" [showPreview]="true" [singlePreview]="true" [url]="file.url"
+                [thumbUrl]="file.thumbUrl" [showCopy]="true">
+              </mcv-file>
+
+            </li>
+          </ul>
+        </div>
+      </mat-expansion-panel>
+
+      <!-- <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title> Meeting Agenda </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-container *ngFor="let agenda of meetingAgendaList">
+          <app-todo-meeting-agenda [agenda]="agenda">
+          </app-todo-meeting-agenda>
+        </ng-container>
+      </mat-expansion-panel> -->
+
+      <!-- Checklist & Attachment -->
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title> Checklist <small>{{currentEntity.agendas.length}} items</small></mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="row">
+          <div class="col-12">
+            <small *ngIf="!isCreateMode " class="float-right">Checklist currentEntitys can be marked/checked as
+              done in during
+              work task only</small>
+          </div>
+        </div>
+        <div class="mcv-activity-list-wrapper">
+          <todo-agenda [config]="agendaConfig" (update)="onAgendaUpdate($event)"></todo-agenda>
+        </div>
+      </mat-expansion-panel>
+    </div>
+
+    <div class="col-md-5" *ngIf="!isCreateMode">
+      <mat-expansion-panel [expanded]="true" *ngIf="isTaskMode && task">
+        <mat-expansion-panel-header>
+          <mat-panel-title> Time Entries </mat-panel-title>
+        </mat-expansion-panel-header>
+        <mcv-time-entry-list [wfTask]="task" (deleted)="onRemoveTimeEntry($event)"
+          [readonly]="task.wfStageCode==TASK_STAGE_TODO_WORK"></mcv-time-entry-list>
+      </mat-expansion-panel>
+
+      <app-wf-task-action *ngIf="isTaskMode" [task]="task" (updateEntity)="onSubmit($event)"
+        (complete)="onTaskCompleted($event)" (updated)="onTaskUpdated($event)" [disableArray]="disableArray"
+        [disableComplete]="task.wfStageCode==TASK_STAGE_TODO_WORK"
+        [disablePause]="task.wfStageCode==TASK_STAGE_TODO_WORK"
+        [isAgendaLength]="isAgendasLength"
+        [isCheckedAgendaLength]="isCheckedAgenda"
+        [isAttachmentLength]="isAttachmentPending"
+        [disableCompleteMessage]="completeValidationMessage">
+      </app-wf-task-action>
+
+      <mat-expansion-panel *ngIf="isTaskMode && task.wfStageCode==TASK_STAGE_TODO_REVIEW" [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="panel-body">
+          <div class="row m-0">
+            <div class="col-12">
+              <div class="inline-list inline-list-justify-right">
+                <button mat-raised-button color="accent" (click)="onDuplicate()" mat-raised-button class=" flex-grow-1"
+                  matTooltip="Duplicate" aria-label="duplicate">
+                  Duplicate
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel *ngIf="!isTaskMode && isPermissionEdit" [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Action
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="panel-body">
+          <div class="row m-0">
+            <div class="col-12">
+              <div class="inline-list inline-list-justify-right">
+
+                <!-- content_copy -->
+                <button (click)="onSubmit()" mat-raised-button color="primary" class=" flex-grow-1" aria-label="update"
+                  *ngIf="allowEdit">Update</button>
+                <button (click)="onDelete()" mat-raised-button color="warn" class="flex-grow-1" aria-label="delete"
+                  *ngIf="allowDelete">Delete</button>
+                <button (click)="onDuplicate()" mat-raised-button color="accent" class=" flex-grow-1"
+                  aria-label="duplicate" *ngIf="isPermissionEdit">Duplicate</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-expansion-panel>
+
+
+
+      <mat-expansion-panel [expanded]="true" *ngIf="!isCreateMode">
+        <mat-expansion-panel-header>
+          <mat-panel-title> Activity </mat-panel-title>
+          <mat-panel-description>
+
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <div class="mcv-activity-list-wrapper">
+          <mcv-activity-list #activity [entity]="nameOfEntity" [entityID]="entityID">
+          </mcv-activity-list>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Tags</mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-mcv-tag-editor [tags]="currentEntity.searchTags" [tagOptions]="tagOptions"
+          [isPermissionEdit]="isPermissionEdit" (update)="onTagsUpdate($event)" *ngIf="!isCreateMode">
+        </app-mcv-tag-editor>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel 
+        *ngIf="isPermissionEdit && currentEntity.statusFlag == STATUSFLAG_ACTIVE"
+        [expanded]="false">
+        <mat-expansion-panel-header>
+          <mat-panel-title> Checklists </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="tree-container">
+
+          <!-- STAGE -->
+          <div *ngFor="let stage of checklistTree; let i = index">
+
+            <div class="stage-title clickable" (click)="toggleStage(stage, i)">
+              <mat-icon>
+                {{ expandedStages.has(i) ? 'expand_more' : 'chevron_right' }}
+              </mat-icon>
+              {{stage.title}}
+            </div>
+
+            <!-- CATEGORY -->
+            <div *ngIf="expandedStages.has(i)">
+
+              <div *ngFor="let category of stage.categories; let j = index" class="category-block">
+
+                <div class="category-title clickable" (click)="toggleCategory(i, j)">
+                  <mat-icon>
+                    {{ expandedCategories.has(i + '-' + j) ? 'expand_more' : 'chevron_right' }}
+                  </mat-icon>
+                  {{category.title}}
+                </div>
+
+                <!-- CHECKLIST -->
+                <div *ngIf="expandedCategories.has(i + '-' + j)">
+
+                  <div *ngFor="let item of category.checklists" class="checklist-item">
+                    <mat-checkbox 
+                      [checked]="isChecklistSelected(stage, category, item)"
+                      (change)="onTreeChecklistToggle(item, stage, category)">
+                      {{item.title}}
+                    </mat-checkbox>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </div>
+  </div>
+
+  <div class="sub-todos-container" *ngIf="currentUser && currentEntity.assignerContactID == currentUser.id">
+    <div class="sub-todo-header">
+      <h6 class="font-focused">Sub Todos</h6>
+      <button (click)="onAddSubTodo()" mat-icon-button color="primary" aria-label="add" matTooltip="Add Sub Todo"
+        *ngIf="!currentEntity.parentID && currentEntity.statusFlag !== 1">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+    <ul *ngIf="subTodos.length > 0">
+      <li *ngFor="let todo of subTodos; let i = index">
+        <div class="d-flex align-items-center">
+          <div class="flex-grow-0 flex-shrink-0">
+            <img alt="" src="{{ todo.assignee?.photoUrl || 'assets/images/user.png'}}" [matTooltip]="todo.assignee.name"
+              class="user-thumbnail float-left mr-2">
+          </div>
+          <div class="flex-grow-1 d-flex flex-column justify-content-between">
+            <div class="d-flex justify-content-between">
+              <span class="font-bold">{{todo.title}}</span>
+            </div>
+            <small>{{todo.subTitle}}</small>
+          </div>
+
+          <div class="sub-todos-actions">
+            <span class="badge" [ngClass]="{
+                              'red':todo.priority == PRIORITY_HIGH,
+                             'green':todo.priority == PRIORITY_LOW,
+                              'yellow':todo.priority == PRIORITY_NORMAL}">{{todo.priority}}</span>
+            <div>
+              <span class="badge green" *ngIf="todo.statusFlag == 2">INPROGRESS</span>
+              <span class="badge paused" *ngIf="todo.statusFlag == 0">PAUSED</span>
+              <span class="badge gray-700" *ngIf="todo.statusFlag == 1">COMPLETED</span>
+            </div>
+            <mat-icon mat-icon-button (click)="onEditSubTodo(todo,i)" *ngIf="todo.statusFlag !== 1">edit</mat-icon>
+            <mat-icon mat-icon-button (click)="onDeleteSubTodo(todo,i)" *ngIf="todo.statusFlag !== 1">delete</mat-icon>
+          </div>
+        </div>
+        <div class="d-flex align-items-center">
+          <div class="flex-grow-1 flex-shrink-1">
+            <small>Due: </small><small class="font-bold">
+              {{todo.dueDate | date:'dd MMM y HH:mm'}}</small>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>

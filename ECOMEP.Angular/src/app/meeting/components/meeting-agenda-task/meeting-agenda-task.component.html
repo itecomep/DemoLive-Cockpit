@@ -1,0 +1,22 @@
+<app-wftask-title-bar [task]="task" *ngIf="isTaskMode"></app-wftask-title-bar>
+
+<mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel-header>
+        <mat-panel-title> Task Action </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div class="inline-list inline-list-justify-right pb-2">
+        <button mat-raised-button color="primary" [disabled]="task.statusFlag==1" aria-label="Update Agenda"
+            (click)="onEditClick()">
+            Update Agenda
+        </button>
+        <button mat-raised-button [disabled]="task.statusFlag==1" aria-label="Assign Todo" (click)="onCreateTodo()">
+            Assign Todo
+        </button>
+    </div>
+    <app-meeting-agenda
+        [config]="{ agenda:currentEntity, blobConfig:blobConfig, meeting:meeting, autoUpdate: false, isCreateMode:false}"
+        [hideFileDetails]="true" [hideIndex]="true" [hideAttachments]="false" [allowEdit]="true"
+        [showMeetingDetails]="true" (afterUpdate)="onUpdate($event)">
+    </app-meeting-agenda>
+
+</mat-expansion-panel>

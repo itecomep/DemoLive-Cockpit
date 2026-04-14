@@ -1,0 +1,19 @@
+.contact-phone-form-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+
+        .contact-phone-form-fields {
+            flex-grow: 1;
+            padding: 0 0.3rem;
+        }
+
+        .contact-phone-form-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.3rem;
+            flex-grow: 1;
+            padding: 0 0.3rem;
+        }
+}

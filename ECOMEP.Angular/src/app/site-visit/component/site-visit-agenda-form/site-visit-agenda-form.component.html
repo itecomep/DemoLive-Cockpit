@@ -1,0 +1,118 @@
+<div class="mat-dialog-header sitevisit-agenda-dialog-header">
+    <h5 class="sitevisit-agenda-dialog-header-title">{{dialogTitle}}</h5>
+    <!-- <form [formGroup]="form" autocomplete="off">
+        <mat-radio-group formControlName="isCompany">
+            <mat-radio-button [value]="false">
+                Person
+            </mat-radio-button>
+            <mat-radio-button [value]="true">
+                Company
+            </mat-radio-button>
+        </mat-radio-group>
+    </form> -->
+    <div class="sitevisit-agenda-dialog-header-actions  theme-dark" align="end">
+        <button mat-raised-button aria-label="Save" (click)="onSubmit()">Save</button>
+    </div>
+    <button mat-icon-button aria-label="close" (click)="onClose(null)">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+<mat-dialog-content>
+
+
+    <div class="sitevisit-agenda-form">
+        <form [formGroup]="form" autocomplete="off">
+
+            <div class="row">
+
+                <mat-form-field appearance="outline" class="col-md-6">
+                    <mat-label>Title</mat-label>
+                    <input placeholder="Title" aria-label="Title" matInput formControlName="title">
+                    <mat-error>{{getErrorMessage(f.title)}}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="col-md-6">
+                    <mat-label>Subtitle</mat-label>
+                    <input placeholder="Subtitle" aria-label="Subtitle" matInput formControlName="subtitle">
+                    <mat-error>{{getErrorMessage(f.subtitle)}}</mat-error>
+                </mat-form-field>
+
+                <div class="clearfix"></div>
+
+                <mat-form-field appearance="outline" class="col-md-4">
+                    <mat-label>Action By</mat-label>
+                    <input placeholder="Action By" aria-label="action By" matInput formControlName="actionByAttendee"
+                        [matAutocomplete]="actionBy">
+                    <mat-autocomplete #actionBy="matAutocomplete" [displayWith]="displayFnActionBy">
+                        <mat-option *ngFor="let option of filteredActionByOptions$ | async" [value]="option">
+                            {{option.name}}
+                        </mat-option>
+                    </mat-autocomplete>
+                    <mat-error>{{getErrorMessage(f.actionBy)}}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="col-md-6">
+                    <mat-label>Due Date</mat-label>
+                    <input placeholder="Due Date" aria-label="Due Date" matInput formControlName="dueDate"
+                        [matDatepickerFilter]="dateFilter" [matDatepicker]="pickerDue" readonly>
+                    <button matSuffix mat-icon-button aria-label="Clear" matTooltip="Clear" (click)="onResetDueDate()">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                    <mat-datepicker-toggle matSuffix [for]="pickerDue"></mat-datepicker-toggle>
+                    <mat-datepicker [touchUi]="isMobileView" #pickerDue></mat-datepicker>
+                    <mat-error>{{getErrorMessage(f.due)}}</mat-error>
+                </mat-form-field>
+
+                <div class="col-md-2">
+                    <mat-checkbox [checked]="currentEntity.statusFlag==SITE_VISIT_AGENDA_STATUSFLAG_RESOLVED"
+                        formControlName="isResolved">
+                        Resolved
+                    </mat-checkbox>
+                </div>
+
+                <div class="clearfix"></div>
+
+                <mat-form-field appearance="outline" class="col-md-12">
+                    <mat-label>Comment</mat-label>
+                    <textarea placeholder="Comment" aria-label="Comment" matInput formControlName="comment"
+                        cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="2"
+                        cdkAutosizeMaxRows="5"></textarea>
+                    <mat-error>{{getErrorMessage(f.comment)}}</mat-error>
+                </mat-form-field>
+
+
+            </div>
+           
+        </form>
+
+
+    </div>
+
+    <div class="sitevisit-agenda-attachments">
+        <app-mcv-file-upload [uploaderConfig]="blobConfig" [showPaste]="true" (upload)="onUpload($event)"
+            *ngIf="blobConfig">
+        </app-mcv-file-upload>
+        <ul class="mcv-file-list">
+
+            <li *ngFor="let file of getFilteredAttachments(currentEntity.attachments,0,false)">
+
+                <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="true" [tags]="file.searchTags"
+                    (delete)="onDeleteAttachment(file)" [allowTagging]="false" [downloadUrl]="file.url"
+                    [showPreview]="true" [singlePreview]="true" [url]="file.url" [thumbUrl]="file.thumbUrl">
+                </mcv-file>
+
+            </li>
+            <li *ngFor="let file of getFilteredAttachments(currentEntity.attachments,0,true)">
+
+                <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="true" [tags]="file.searchTags"
+                    (delete)="onDeleteAttachment(file)" [allowTagging]="false" [downloadUrl]="file.url"
+                    [showPreview]="true" [singlePreview]="true" [url]="file.url" [thumbUrl]="file.thumbUrl">
+                </mcv-file>
+
+            </li>
+        </ul>
+
+    </div>
+
+
+</mat-dialog-content>

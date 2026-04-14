@@ -1,0 +1,271 @@
+<app-header title="Checklist"> </app-header>
+<div class="layout">
+
+  <div class="left-panel">
+
+    <div class="top-actions">
+      <button *ngIf="projectApi.isPermissionChecklistEdit" mat-raised-button color="primary"
+        routerLink="/checklist/create">
+        + Create Checklist
+      </button>
+
+      <input type="text" placeholder="Search checklist items..." [(ngModel)]="searchText" class="search-box" />
+    </div>
+
+    <div class="tree-container">
+      <div class="tree-header">Checklist</div>
+
+      <div *ngIf="filteredTreeData?.length; else noData">
+
+        <div *ngFor="let stage of filteredTreeData" class="stage-card">
+
+          <div class="stage-header" (click)="toggleStage(stage)">
+            <mat-icon>view_module</mat-icon>
+
+            <ng-container *ngIf="editingStage !== stage || !projectApi.isPermissionChecklistEdit; else editStageTpl">
+              <span class="stage-title">{{ stage.stageName }}</span>
+            </ng-container>
+
+            <ng-template #editStageTpl>
+              <textarea [(ngModel)]="stage.stageName" class="edit-textarea big-edit" (keydown.enter)="saveStage(stage)">
+              </textarea>
+            </ng-template>
+
+            <div class="actions" *ngIf="permissions.canEdit" (click)="$event.stopPropagation()">
+
+              <mat-icon (click)="editingStage === stage ? saveStage(stage) : startEditStage(stage)">
+                {{ editingStage === stage ? 'check' : 'drive_file_rename_outline' }}
+              </mat-icon>
+
+              <mat-icon class="delete" (click)="deleteStage(stage)">
+                delete_outline
+              </mat-icon>
+            </div>
+          </div>
+
+          <!-- ✅ FIXED SEARCH EXPAND -->
+          <div *ngIf="searchText || expandedStage === stage.stageName" class="category-container">
+
+            <div *ngFor="let category of stage.categories" class="category-card">
+
+              <div class="category-header" (click)="toggleCategory(category)">
+                <mat-icon>folder_open</mat-icon>
+
+                <ng-container *ngIf="editingCategory !== category; else editCatTpl">
+                  <span class="category-title">{{ category.categoryName }}</span>
+                </ng-container>
+
+                <ng-template #editCatTpl>
+                  <textarea [(ngModel)]="category.categoryName" class="edit-textarea big-edit"
+                    (keydown.enter)="saveCategory(category)">
+                  </textarea>
+                </ng-template>
+
+                <div class="actions" *ngIf="projectApi.isPermissionChecklistEdit" (click)="$event.stopPropagation()">
+
+                  <mat-icon
+                    (click)="editingCategory === category ? saveCategory(category) : startEditCategory(category)">
+                    {{ editingCategory === category ? 'check' : 'drive_file_rename_outline' }}
+                  </mat-icon>
+
+                  <mat-icon class="delete" (click)="deleteCategory(category)">
+                    delete_outline
+                  </mat-icon>
+                </div>
+              </div>
+
+              <!-- ✅ FIXED SEARCH EXPAND -->
+              <div *ngIf="searchText || expandedCategory === category.categoryName" class="checklist-container">
+
+                <div *ngFor="let item of category.checklists" class="checklist-card" (click)="selectItem(item)"
+                  [class.active]="selectedItem?.id === item?.id">
+
+                  <mat-icon>check_circle_outline</mat-icon>
+                  <!-- <span class="item-title">{{ item.title }}</span> -->
+                  <span class="item-title" [innerHTML]="highlight(item.title)"></span>
+                </div>
+
+                <div *ngIf="category.checklists?.length === 0" class="empty-category">
+                  No items available.
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <ng-template #noData>
+        <div class="empty-state">No checklist found</div>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- ================= RIGHT PANEL ================= -->
+  <div class="right-panel">
+
+    <!-- ✅ ADDED LAST MODIFIED -->
+    <div class="last-modified-box" *ngIf="selectedItem?.modified">
+      Last Modified: {{ selectedItem.modified | date:'dd MMM yyyy, hh:mm a' }}
+    </div>
+
+    <ng-container *ngIf="selectedItem; else selectHint">
+      <div class="actions" *ngIf="projectApi.isPermissionChecklistEdit">
+        <mat-icon (click)="toggleEditMode()">edit</mat-icon>
+        <mat-icon class="delete" (click)="deleteSelectedItem()">delete_outline</mat-icon>
+      </div>
+
+      <!-- ✅ TITLE LABEL -->
+      <div class="label">Task Title:</div>
+      <div class="detail-box">
+
+        <div class="detail-header">
+
+          <ng-container *ngIf="!isEditingTitle; else editTitleTpl">
+            <h1>{{ selectedItem.title }}</h1>
+          </ng-container>
+
+          <ng-template #editTitleTpl>
+            <textarea [(ngModel)]="selectedItem.title" class="edit-textarea big-edit"
+              (keydown.enter)="toggleEditMode()">
+      </textarea>
+          </ng-template>
+        </div>
+
+      </div>
+
+      <!-- ================= DESCRIPTION ================= -->
+
+      <div class="label">Description:</div>
+      <div class="detail-box">
+        <ng-container *ngIf="!isEditingDescription; else editDescTpl">
+          <p *ngIf="selectedItem.description; else noDesc">
+            {{ selectedItem.description }}
+          </p>
+
+          <ng-template #noDesc>
+            <p class="no-description">No description yet</p>
+          </ng-template>
+        </ng-container>
+
+
+        <ng-template #editDescTpl>
+          <textarea [(ngModel)]="selectedItem.description" class="edit-textarea" (keydown.enter)="toggleEditMode()">
+    </textarea>
+        </ng-template>
+
+      </div>
+
+
+      <!-- ================= ATTACHMENTS ================= -->
+      <div class="attachments-container">
+
+        <div class="attachments-header">
+          <div class="label">Attachments:</div>
+
+          <div class="actions">
+            <input type="file" #fileInput multiple hidden (change)="onAddFiles($event)" />
+            <mat-icon *ngIf="projectApi.isPermissionChecklistEdit" (click)="fileInput.click()">
+              add
+            </mat-icon>
+          </div>
+        </div>
+
+        <ng-container *ngIf="selectedItem.files?.length; else noFiles">
+
+          <div *ngFor="let group of (groupedFiles | keyvalue)" class="file-group-box">
+
+            <div class="group-header">
+              <mat-icon [style.color]="getGroupIconColor($any(group.key))">
+                {{ getGroupIcon($any(group.key)) }}
+              </mat-icon>
+              <span>{{ $any(group.key) }}</span>
+
+              <div class="group-actions">
+                <mat-icon class="delete" *ngIf="projectApi.isPermissionChecklistEdit"
+                  (click)="toggleDeleteMode($any(group.key))">
+                  delete_outline
+                </mat-icon>
+
+                <button *ngIf="deleteMode[$any(group.key)]?.active" class="confirm-delete"
+                  (click)="confirmDelete($any(group.key))">
+                  Delete Selected
+                </button>
+              </div>
+            </div>
+
+            <div class="file-grid">
+              <div *ngFor="let file of group.value" class="file-card"
+                [class.select-mode]="deleteMode[$any(group.key)]?.active"
+                [class.selected]="isSelected($any(group.key), file)" (click)="onFileClick($any(group.key), file)">
+
+                <!-- IMAGE -->
+                <ng-container *ngIf="isImage(file); else iconTpl">
+                  <img [src]="file.url" class="file-preview" />
+                </ng-container>
+
+                <!-- FILE ICON WITH COLOR -->
+                <ng-template #iconTpl>
+                  <mat-icon [style.color]="getFileIconColor(file)">
+                    {{ getFileIcon(file) }}
+                  </mat-icon>
+                </ng-template>
+
+                <!-- ✅ UPDATED FILE UI -->
+                <div class="file-info">
+                  <div class="file-name">{{ getCleanFileName(file.name) }}</div>
+                  <div class="file-date">
+                    {{ getDateFromFileName(file.name) }}
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+        </ng-container>
+
+        <ng-template #noFiles>
+          <div class="empty-state">
+            No attachments yet. Click + to add files.
+          </div>
+        </ng-template>
+
+      </div>
+
+    </ng-container>
+
+    <ng-template #selectHint>
+      <div class="empty-state">
+        Select a checklist item to view details
+      </div>
+    </ng-template>
+
+  </div>
+
+</div>
+
+<!-- IMAGE VIEWER -->
+<div class="image-viewer" *ngIf="previewImage">
+
+  <mat-icon class="nav-arrow left" [class.disabled]="!hasPrevImage()" (click)="hasPrevImage() && prevImage($event)">
+    chevron_left
+  </mat-icon>
+
+  <div class="viewer-main" (click)="closePreview()">
+    <img [src]="previewImage.url" />
+  </div>
+
+  <mat-icon class="nav-arrow right" [class.disabled]="!hasNextImage()" (click)="hasNextImage() && nextImage($event)">
+    chevron_right
+  </mat-icon>
+
+  <div class="viewer-sidebar">
+    <mat-icon (click)="closePreview()">close</mat-icon>
+    <div>{{ previewImage.name }}</div>
+  </div>
+
+</div>

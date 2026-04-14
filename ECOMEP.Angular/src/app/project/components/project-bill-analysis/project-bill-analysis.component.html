@@ -1,0 +1,260 @@
+<div class="bill-analysis">
+    <div class="bill-analysis-table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <!-- <th>Project</th>
+                    <th>Client</th>
+                    <th>Bill Date</th> -->
+
+                    <th (click)="toggleSort('projectCode')" style="cursor:pointer">
+                        Project
+                        <mat-icon *ngIf="sort.startsWith('projectCode')">
+                            {{ sort.includes('desc') ? 'arrow_downward' : 'arrow_upward' }}
+                        </mat-icon>
+                    </th>
+
+                    <th (click)="toggleSort('clientName')" style="cursor: pointer; white-space: nowrap;">
+                        Client
+                        <mat-icon *ngIf="sort.startsWith('clientName')">
+                            {{ sort.includes('desc') ? 'arrow_downward' : 'arrow_upward' }}
+                        </mat-icon>
+                    </th>
+
+                    <th (click)="toggleSort('billdate')" style="cursor: pointer; white-space: nowrap;">
+                        Bill Date
+                        <mat-icon *ngIf="sort.startsWith('billdate')">
+                            {{ sort.includes('desc') ? 'arrow_downward' : 'arrow_upward' }}
+                        </mat-icon>
+                    </th>
+
+                    <th>Bill No.</th>
+                    <th>Bill %</th>
+                    <th>Bill Amount</th>
+                    <th>GST</th>
+                    <th>Payable</th>
+                    <th>Received</th>
+                    <th>TDS</th>
+                    <th></th>
+                </tr>
+                <tr class="total">
+                    <th colspan="5">Total</th>
+                    <!-- <td>{{totalBillPercentage | number:'1.0-1'}}%</td> -->
+                    <td>{{totalBillAmount | currency:'INR'}}</td>
+                    <td>{{totalGstAmount | currency:'INR'}}</td>
+                    <td>{{totalPayable | currency:'INR'}}</td>
+                    <td>{{totalReceivedAmount | currency:'INR'}}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </thead>
+
+            <tbody>
+                <ng-container *ngFor="let bill of dataList; let i=index">
+                    <tr>
+                        <td>{{bill.projectCode}}-{{bill.projectTitle}}</td>
+                        <td>{{bill.clientName}}</td>
+                        <td class="align-center">{{bill.billDate | date:'dd MMM y'}}</td>
+                        <td class="align-center">
+                            <h6>{{bill.typeFlag==PROJECT_BILL_TYPEFLAG_PROFORMA_INVOICE ? bill.proformaInvoiceNo :
+                                bill.taxInvoiceNo}}</h6>
+                            <small
+                                *ngIf="bill.typeFlag==PROJECT_BILL_TYPEFLAG_TAX_INVOICE">{{bill.proformaInvoiceNo}}</small>
+                        </td>
+                        <td class="align-center">{{bill.billPercentage |number:'1.0-1'}}%</td>
+                        <td class="align-right">{{bill.dueAmount | currency:'INR'}}</td>
+                        <td class="align-right">
+                            <h6>{{(bill.sgstAmount+bill.cgstAmount+bill.igstAmount) | currency:'INR'}}</h6>
+                            <small>({{bill.sgstShare + bill.cgstShare + bill.igstShare}}%)</small>
+                        </td>
+                        <td class="align-right">
+                            <h6>{{bill.payableAmount | currency:'INR'}}</h6>
+                            <!-- <small>{{getPaymentMode(bill)}} Amount: {{getPaymentWithoutTDS(bill) |
+                                currency:'INR'}}</small> -->
+                        </td>
+
+                        <td class="align-right">
+                            <h6>{{getReceivedPayment(bill) | currency:'INR'}}</h6>
+                            <small *ngIf="getPendingPayment(bill) != 0"
+                                [ngClass]="{ 'text-red': getPendingPayment(bill) > 0,'text-green': getPendingPayment(bill) < 0 }">Pending
+                                Amount: {{getPendingPayment(bill)
+                                | currency:'INR'}}</small>
+                        </td>
+                        <td class="align-right">{{bill.tdsAmount | currency:'INR'}}</td>
+                        <td class="align-center">
+                            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="context-menu">
+                                <mat-icon>more_vert</mat-icon>
+                            </button>
+                            <!-- <mat-menu #menu="matMenu">
+                                <button mat-menu-item (click)="onDownloadPdf(bill.proformaInvoiceUrl)"
+                                    *ngIf="bill.proformaInvoiceUrl">
+                                    <mat-icon>download</mat-icon> -->
+                                    <!-- <img src="assets/icons/file-pdf.png" /> -->
+                                    <!-- <span>Proforma Invoice</span>
+                                </button>
+                                <button mat-menu-item (click)="onDownloadPdf(bill.taxInvoiceUrl)"
+                                    *ngIf="bill.taxInvoiceUrl">
+                                    <mat-icon>download</mat-icon>
+                                    <span>Tax Invoice</span>
+                                </button>
+                            </mat-menu> -->
+                            <mat-menu #menu="matMenu">
+                                <button mat-menu-item (click)="onDownloadPdf(bill.proformaInvoiceUrl)"
+                                    *ngIf="bill.proformaInvoiceUrl">
+                                    <mat-icon>download</mat-icon>
+                                    <span>Proforma Invoice</span>
+                                </button>
+
+                                <button mat-menu-item (click)="onDownloadPdf(bill.taxInvoiceUrl)"
+                                    *ngIf="bill.taxInvoiceUrl">
+                                    <mat-icon>download</mat-icon>
+                                    <span>Tax Invoice</span>
+                                </button>
+
+                                <!-- ✅ NEW FOLLOW UP BUTTON -->
+                                <button mat-menu-item (click)="onFollowUp(bill)">
+                                    <mat-icon>notifications</mat-icon>
+                                    <span>Follow Up</span>
+                                </button>
+                            </mat-menu>
+                        </td>
+                    </tr>
+                </ng-container>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<app-footer>
+    <div class="mcv-footer-actions">
+        <div class="search-filter">
+            <mat-icon matPrefix>search</mat-icon>
+            <input aria-label="Enter project name and select" [formControl]="searchFC" matInput />
+        </div>
+
+        <button mat-icon-button (click)="refresh()" matTooltip="Refresh" aria-label="Refresh">
+            <mat-icon>refresh</mat-icon>
+        </button>
+
+        <button mat-icon-button (click)="sidenav.toggleSidenav()" matTooltip="Filters" aria-label="Filters">
+            <mat-icon>filter_list</mat-icon>
+        </button>
+
+        <div *ngIf="typeOptions && typeOptions.length > 0">
+            <mat-form-field appearance="outline">
+                <mat-select [formControl]="typeFC" placeholder="Type">
+                    <mat-option *ngFor="let item of typeOptions" [value]="item">{{
+                        item.title
+                        }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <div *ngIf="companyOptions && companyOptions.length > 0">
+            <mat-form-field appearance="outline">
+                <mat-select [formControl]="companyFC" multiple placeholder="Company">
+                    <mat-option *ngFor=" let item of companyOptions" [value]="item">{{item.initials}} | {{ item.title
+                        }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <div>
+            <mat-form-field appearance="outline">
+                <mat-date-range-input [formGroup]="dateFC" [rangePicker]="rangePicker1">
+                    <input matStartDate placeholder="Select Range" formControlName="start" />
+                    <input matEndDate placeholder="End date" formControlName="end" />
+                </mat-date-range-input>
+                <mat-datepicker-toggle matSuffix [for]="rangePicker1"></mat-datepicker-toggle>
+                <mat-date-range-picker [touchUi]="isMobileView" #rangePicker1></mat-date-range-picker>
+            </mat-form-field>
+        </div>
+
+        <div *ngIf="teamOptions && teamOptions.length > 0">
+            <mat-form-field appearance="outline">
+                <mat-label>Team</mat-label>
+                <mat-select [formControl]="teamFC" multiple placeholder="Team">
+                    <mat-option *ngFor=" let item of teamOptions" [value]="item">{{ item.title
+                        }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+    </div>
+
+    <div class="mcv-footer-mobile-actions">
+        <button mat-icon-button (click)="sidenav.toggleSidenav()" matTooltip="Filters" aria-label="Filters">
+            <mat-icon>filter_list</mat-icon>
+        </button>
+
+        <button mat-icon-button (click)="refresh()" matTooltip="Refresh" aria-label="Refresh">
+            <mat-icon>refresh</mat-icon>
+        </button>
+    </div>
+
+    <div class="mcv-footer-mobile-filters">
+
+        <div class="search-filter">
+            <mat-icon matPrefix>search</mat-icon>
+            <input aria-label="Enter project name and select" [formControl]="searchFC" matInput />
+        </div>
+
+        <div>
+            <mat-form-field>
+                <mat-date-range-input [formGroup]="dateFC" [rangePicker]="rangePicker2">
+                    <input matStartDate placeholder="Select Range" formControlName="start" />
+                    <input matEndDate placeholder="End date" formControlName="end" />
+                </mat-date-range-input>
+                <mat-datepicker-toggle matSuffix [for]="rangePicker2"></mat-datepicker-toggle>
+                <mat-date-range-picker [touchUi]="isMobileView" #rangePicker2></mat-date-range-picker>
+            </mat-form-field>
+        </div>
+    </div>
+</app-footer>
+
+<app-mcv-filter-sidenav #sidenav (refreshFiltersEvent)="refreshFilters()">
+    <div class="search-filter">
+        <mat-icon matPrefix>search</mat-icon>
+        <input aria-label="Enter project name and select" [formControl]="searchFC" matInput />
+    </div>
+
+    <div *ngIf="typeOptions && typeOptions.length > 0 && isMobileView">
+        <mat-form-field appearance="outline">
+            <mat-select [formControl]="typeFC" placeholder="Type">
+                <mat-option *ngFor="let item of typeOptions" [value]="item">{{
+                    item.title
+                    }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+
+    <div *ngIf="companyOptions && companyOptions.length > 0 && isMobileView">
+        <mat-form-field appearance="outline">
+            <mat-select [formControl]="companyFC" multiple placeholder="Company">
+                <mat-option *ngFor=" let item of companyOptions" [value]="item">{{item.initials}} | {{ item.title
+                    }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+
+    <div *ngIf="isMobileView">
+        <mat-form-field appearance="outline">
+            <mat-date-range-input [formGroup]="dateFC" [rangePicker]="rangePicker1">
+                <input matStartDate placeholder="Select Range" formControlName="start" />
+                <input matEndDate placeholder="End date" formControlName="end" />
+            </mat-date-range-input>
+            <mat-datepicker-toggle matSuffix [for]="rangePicker1"></mat-datepicker-toggle>
+            <mat-date-range-picker [touchUi]="isMobileView" #rangePicker1></mat-date-range-picker>
+        </mat-form-field>
+    </div>
+
+    <div *ngIf="projectStatusOptions && projectStatusOptions.length > 0 && isMobileView">
+        <mat-form-field appearance="outline">
+            <mat-select [formControl]="projectStatusFC" multiple placeholder="Project Status">
+                <mat-option *ngFor="let item of projectStatusOptions" [value]="item">{{
+                    item.title
+                    }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+</app-mcv-filter-sidenav>

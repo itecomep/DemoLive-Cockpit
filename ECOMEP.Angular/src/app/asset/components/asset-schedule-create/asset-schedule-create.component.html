@@ -1,0 +1,60 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">New Maintenance Schedule</h5>
+    <div class="d-flex align-items-center">
+        <button mat-raised-button aria-label="Submit"  (click)="onSubmit()">
+            Save
+        </button>
+        <button mat-icon-button aria-label="close" (click)="onClose()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+<mat-dialog-content>
+    <div class="form-container row" [formGroup]="form">
+        <mat-form-field class="col-md-4 col-12">
+            <mat-label>Start Date</mat-label>
+            <input matInput formControlName="startDate" [matDatepicker]="startDatePicker" placeholder="Select Date" />
+            <mat-error>{{
+                getErrorMessage(f.startDate)
+                }}</mat-error>
+            <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker [touchUi]="isMobileView" #startDatePicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field class="col-md-4 col-6">
+            <mat-label>No of Services</mat-label>
+            <input type="number" placeholder="Services" aria-label="Services" matInput formControlName="services"
+                class="text-right" />
+            <mat-error>{{getErrorMessage(f.services)}}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="col-md-4 col-6">
+            <mat-label>Duration between Services <small>(months)</small></mat-label>
+            <input type="number" placeholder="Month" aria-label="month" matInput formControlName="month"
+                class="text-right" />
+            <mat-error>{{getErrorMessage(f.month)}}</mat-error>
+        </mat-form-field>
+    </div>
+
+    <div class="schedule-review-container">
+        <div class="preview">
+            <h6>
+                Schedules Preview
+            </h6><small *ngIf="schedulesReview.length == 0">Enter No of Services to see preview</small>
+        </div>
+        <table *ngIf="schedulesReview.length > 0">
+            <thead>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Schedule Date</th>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of schedulesReview">
+                    <td>{{item.title}}</td>
+                    <td>{{item.category }}</td>
+                    <td>{{item.nextScheduleDate | date:'dd MMM y'}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</mat-dialog-content>

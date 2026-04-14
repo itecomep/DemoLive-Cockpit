@@ -1,0 +1,167 @@
+@import 'variables';
+@import 'theme';
+
+
+.project-stages-analysis-table-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: auto;
+    height: 100%;
+}
+
+table {
+    max-width: 100%;
+    font-size: 0.8rem;
+    cursor: pointer;
+
+    thead {
+        background-color: $gray-500;
+        position: sticky;
+        position: -webkit-sticky;
+        top: 0;
+        z-index: 999;
+
+        tr {
+            &.total {
+                background-color: $gray-600;
+                color: $white;
+            }
+
+            td,
+            th {
+                border-bottom: 1px solid $gray-400;
+                // white-space: nowrap;
+                border-right: 1px solid $gray-300;
+                padding: 0 0.3rem;
+                text-align: center;
+
+                &.align-right {
+                    text-align: right;
+                }
+
+                &.text-pre-wrap {
+                    white-space: pre-wrap;
+                }
+
+                &.collapsed {
+                    padding: 0 !important;
+                }
+
+                &.filter {
+                    h6 {
+                        color: white;
+                    }
+
+                    background-color: mat-color($mcv-primary, 500);
+
+                    mat-icon {
+                        color: white;
+                    }
+                }
+
+            }
+        }
+    }
+
+    tbody {
+        tr {
+            td {
+                border-bottom: 1px solid $gray-400;
+                // white-space: nowrap;
+                border-right: 1px solid $gray-300;
+                padding: 0.25rem;
+                text-align: center;
+
+                &.align-right {
+                    text-align: right;
+                }
+
+                &.align-left {
+                    text-align: left;
+                }
+
+                &.text-wrap {
+                    white-space: pre-wrap;
+                }
+
+                &.collapsed {
+                    padding: 0 !important;
+                }
+
+                .simple-list {
+                    text-align: left !important;
+                }
+            }
+        }
+
+        .project-details-tr {
+            background-color: $gray-400;
+
+            td {
+                font-weight: 600;
+                font-size: 0.8rem;
+
+                &.align-left {
+                    text-align: left;
+                }
+
+                &.align-right {
+                    text-align: right;
+                }
+            }
+        }
+    }
+
+    .project-header {
+        tr {
+            th {
+                font-weight: 400;
+                color: #fff;
+                font-size: 0.7rem;
+            }
+        }
+    }
+}
+
+.stages-tr {
+
+    thead {
+        background-color: #e9ecef !important;
+        z-index: 99 !important;
+
+        th {
+            font-size: 0.7rem !important;
+            font-weight: 500 !important;
+        }
+    }
+
+    tbody {
+        td {
+            font-size: 0.7rem !important;
+            font-weight: 500 !important;
+        }
+    }
+}
+
+.stages-tr>td {
+    padding: 0 !important;
+}
+
+.amount-border{
+    border-bottom: 1px solid $black;
+}
+
+.expand-btn {
+    min-width: 24px;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    margin-right: 8px;
+    vertical-align: middle;
+    
+    mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+    }
+}

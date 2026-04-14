@@ -1,0 +1,45 @@
+@import 'variables';
+
+mat-icon {
+    cursor: pointer;
+}
+
+.main-table {
+    min-width: 100%;
+
+    thead {
+        background-color: $gray-400;
+        position: sticky;
+        position: -webkit-sticky;
+        top: 0;
+        z-index: 9;
+
+        tr {
+            &.total {
+                background-color: $gray-600;
+                color: $white;
+            }
+
+            td,
+            th {
+                border-bottom: 1px solid $gray-400;
+                border-right: 1px solid $gray-300;
+                padding: 0 0.3rem;
+                text-align: center;
+            }
+        }
+
+    }
+
+    tbody {
+        tr {
+            td {
+                border-bottom: 1px solid $gray-400;
+                white-space: nowrap;
+                border-right: 1px solid $gray-300;
+                padding: 0.3rem;
+                text-align: center;
+            }
+        }
+    }
+}

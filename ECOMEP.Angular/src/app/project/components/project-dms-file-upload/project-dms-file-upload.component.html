@@ -1,0 +1,20 @@
+
+
+<div class="mat-dialog-header dms-file-upload-dialog-header">
+    <h5 class="dms-file-upload-dialog-header-title">Upload Files</h5>
+    <div class="d-flex align-items-center">
+      <!-- <button mat-raised-button aria-label="close" (click)="onSubmit()" >
+        Save
+      </button> -->
+      <button mat-icon-button aria-label="close" (click)="onClose()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+  <mat-dialog-content>
+<div class="dms-file-upload-wrapper">
+  <app-mcv-file-upload class="pt-1" [uploaderConfig]="blobConfig" [showPaste]="true" [showDrop]="true" (upload)="onUpload($event)"
+          *ngIf="blobConfig">
+        </app-mcv-file-upload>
+</div>
+</mat-dialog-content>

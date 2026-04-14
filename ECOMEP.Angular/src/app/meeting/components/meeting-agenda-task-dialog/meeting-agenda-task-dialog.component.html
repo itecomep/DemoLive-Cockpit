@@ -1,0 +1,13 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <div>
+        <h5 class="font-focused">{{data.task?.title}}</h5>
+        <h6>{{data.task?.subtitle}}</h6>
+    </div>
+    <button mat-icon-button aria-label="close" (click)="onClose()">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+<mat-dialog-content>
+    <app-meeting-agenda-task [config]="data" (cancel)="onClose()" (taskComplete)="onTaskComplete($event)" *ngIf="data">
+    </app-meeting-agenda-task>
+</mat-dialog-content>

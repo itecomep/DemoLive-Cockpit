@@ -1,0 +1,51 @@
+<div class="contact-association-form-wrapper">
+    <form [formGroup]="form" autocomplete="off">
+
+
+        <div class="contact-association-form-fields">
+            <div class="row m-0">
+                <mat-form-field appearance="outline" class="col-md-12">
+                    <mat-label>Select {{ !contact.isCompany ? 'Company' : 'Person' }}</mat-label>
+                    <input placeholder="Enter name to select from the list" aria-label="Select Person/Company" matInput
+                        formControlName="contact" [matAutocomplete]="autoContact" />
+                    <mat-autocomplete #autoContact="matAutocomplete" [displayWith]="displayFnContact">
+                        <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
+                            {{ option.name }}
+                        </mat-option>
+                    </mat-autocomplete>
+                    <span matSuffix>
+                        <!-- <mat-icon>person</mat-icon> -->
+                        <img class="contact-icon" src="assets/images/person-icon.svg" alt=""
+                            *ngIf="contact.isCompany" />
+                        <img class="contact-icon" src="assets/images/company-icon.svg" alt=""
+                            *ngIf="!contact.isCompany" />
+                    </span>
+                    <mat-error>{{ getErrorMessage(f.contact) }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="col-md-12">
+                    <mat-label>Department</mat-label>
+                    <input placeholder="Department" aria-label="Department" matInput formControlName="department" />
+                    <mat-error>{{ getErrorMessage(f.department) }}
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="col-md-12">
+                    <mat-label>Designation</mat-label>
+                    <input placeholder="Designation" aria-label="Designation" matInput formControlName="designation" />
+                    <mat-error>{{ getErrorMessage(f.designation) }}
+                    </mat-error>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <div class="contact-association-form-actions">
+            <button mat-icon-button (click)="onSubmit()">
+                <mat-icon>done</mat-icon>
+            </button>
+            <button mat-icon-button (click)="onDelete()" [disabled]="isCreateMode">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </div>
+
+    </form>
+</div>

@@ -1,0 +1,113 @@
+<div class="agenda-wrapper">
+    <div class="agenda-header">
+        <div class="d-flex justify-content-between" [ngClass]="{'flex-column':isMobileView}">
+            <div class="pr-1">
+                <div class="d-flex align-items-center ">
+                    <div>
+                        <!-- <h4 class="index" *ngIf="!hideIndex">{{index+1 | number:'2.0'}}</h4> -->
+                    </div>
+                    <div>
+                        <small>{{currentEntity.meetingTitle}}</small>
+                        <div>
+                            <h6 class="font-focused pr-1">{{currentEntity.title}} </h6>
+                            <div>
+
+                                <span> {{currentEntity.subtitle}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="isMobileView">
+                <small>Last Modified: <span>{{currentEntity.modified | date:"dd MMM yy HH:mm"}}
+                        | {{currentEntity.modifiedBy}}
+                        | {{currentEntity.updateFrom ||
+                        (currentEntity.typeFlag==MEETING_TYPEFLAG_INSPECTION?'INSPECTION':'MEETING')}}</span></small>
+            </div>
+            <div *ngIf="!isMobileView">
+                <small>Last Modified: </small>
+                <div>
+                    <span>{{currentEntity.modified | date:"dd MMM yy HH:mm"}}
+                        | {{currentEntity.modifiedBy}}
+                        | {{currentEntity.updateFrom ||
+                        (currentEntity.typeFlag==MEETING_TYPEFLAG_INSPECTION?'INSPECTION':'MEETING')}}</span>
+                </div>
+            </div>
+
+            <div [ngClass]="{'d-flex align-items-center justify-content-between':isMobileView,'pl-1':!isMobileView}">
+                <small>Status: </small>
+                <div>
+                    <span class="badge mr-1"
+                        [ngClass]="{'badge-pending':!currentEntity.isDelayed, 'badge-delayed':currentEntity.isDelayed}"
+                        *ngIf="currentEntity.statusFlag==MEETING_AGENDA_STATUSFLAG_PENDING && !currentEntity.isDelayed">PENDING</span>
+                    <span class="badge mr-1"
+                        [ngClass]="{'badge-pending':!currentEntity.isDelayed, 'badge-delayed':currentEntity.isDelayed}"
+                        *ngIf="currentEntity.statusFlag==MEETING_AGENDA_STATUSFLAG_PENDING && currentEntity.isDelayed">DELAYED</span>
+                    <span class="badge badge-resolved mr-1"
+                        *ngIf="(currentEntity.typeFlag==MEETING_TYPEFLAG_MEETING || currentEntity.typeFlag==MEETING_TYPEFLAG_CNOTE) && currentEntity.statusFlag==1">RESOLVED</span>
+                    <span class="badge badge-resolved mr-1"
+                        *ngIf="(currentEntity.typeFlag==MEETING_TYPEFLAG_INSPECTION) && currentEntity.statusFlag==1">COMPLETE</span>
+                </div>
+            </div>
+
+            <div
+                [ngClass]="{'d-flex align-items-center justify-content-between pl-0 py-1':isMobileView,'pl-1':!isMobileView}">
+                <small>Reminder</small>
+                <h5> {{currentEntity.reminderCount | number:'2.0'}}</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="agenda-body">
+        <div class="row  mb-2">
+            <div class="col-md-6">
+                <div [ngClass]="{'d-flex align-item-center justify-content-between':isMobileView}">
+                    <small>Action By: </small>
+                    <h6 class="font-focused">{{currentEntity.actionBy || 'No Action by'}}</h6>
+                </div>
+                <div [ngClass]="{'d-flex align-item-center justify-content-between':isMobileView}">
+                    <small> Due Date: </small>
+                    <h6 class="font-focused">{{(currentEntity.dueDate | date:'dd MMM y') || 'No Due Date'}}</h6>
+                </div>
+                <div>
+                    <small>Comment: </small>
+                    <p class="font-focused mb-2">{{currentEntity.comment}}</p>
+                </div>
+
+                <ul class="mcv-file-list">
+
+                    <li *ngFor="let file of getFilteredAttachments(currentEntity.attachments,0,false)">
+
+                        <mcv-file [filename]="file.filename" [size]="file.size" [tags]="file.searchTags"
+                            [downloadUrl]="file.url" [showPreview]="true" [singlePreview]="true" [url]="file.url"
+                            [thumbUrl]="file.thumbUrl">
+                        </mcv-file>
+
+                    </li>
+                    <li *ngFor="let file of getFilteredAttachments(currentEntity.attachments,0,true)">
+
+                        <mcv-file [filename]="file.filename" [size]="file.size" [tags]="file.searchTags"
+                            [downloadUrl]="file.url" [showPreview]="true" [singlePreview]="true" [url]="file.url"
+                            [thumbUrl]="file.thumbUrl">
+                        </mcv-file>
+
+                    </li>
+                </ul>
+
+            </div>
+            <div class="col-md-6">
+                <mat-expansion-panel [expanded]="false">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title> History </mat-panel-title>
+                    </mat-expansion-panel-header>
+
+                    <div class="agenda-history">
+                        <p class="mb-2" *ngIf="!currentEntity.previousHistory">---history not available---</p>
+                        <p class="mb-2" *ngIf="currentEntity.previousHistory">{{currentEntity.previousHistory}}</p>
+                    </div>
+                </mat-expansion-panel>
+            </div>
+        </div>
+    </div>
+</div>

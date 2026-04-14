@@ -1,0 +1,9 @@
+<div class="main-cockpit-banner main-cockpit-banner-{{ data.bannerClass }} p-2">
+  <ng-content #name></ng-content>
+  <div>
+    <h5 class="mb-0">{{ data.label1 }}</h5>
+    <span *ngIf="data.label2">{{ data.label2 }}</span>
+    <small *ngIf="data.footerNote"> {{ data.footerNote }}</small>
+  </div>
+  <h3 class="mb-0">{{ data.value }}</h3>
+</div>

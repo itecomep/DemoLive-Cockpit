@@ -1,0 +1,17 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <button class="close-btn" mat-icon-button (click)="closeDialog()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  
+  <div class="profile-content">
+    <div class="photo-container">
+      <img [src]="data?.photoUrl || 'assets/default-avatar.png'" [alt]="data?.fullName" class="user-photo">
+    </div>
+    
+    <div class="user-info">
+      <h2 class="user-name">{{ data?.fullName }}</h2>
+    </div>
+  </div>
+</div>

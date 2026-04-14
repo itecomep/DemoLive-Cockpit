@@ -1,0 +1,17 @@
+<div class="mcv-footer">
+  <!-- Desktop  -->
+  <ng-content select=".mcv-footer-actions"></ng-content>
+  <ng-content select=".mcv-footer-timeline-group"></ng-content>
+  <ng-content select=".mcv-footer-mobile-actions"></ng-content>
+
+  <div *ngIf="!showGetLoader" class="position-absolute" style="right: 1%;">
+    <span class="float-right"><small>v</small>{{version}}</span>
+  </div>
+  <div *ngIf="showGetLoader" class="loader-spinner" style="height: auto;">
+    <div class="spinner-circular-footer"></div>
+  </div>
+
+</div>
+<div class="mcv-footer-filter-wrapper" [ngClass]="{'active':showMobileFilters}">
+  <ng-content select=".mcv-footer-filters"></ng-content>
+</div>

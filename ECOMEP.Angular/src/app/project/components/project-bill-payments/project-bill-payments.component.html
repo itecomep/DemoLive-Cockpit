@@ -1,0 +1,112 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused" >Payments | {{bill.taxInvoiceNo}}</h5>
+   <div class="d-flex align-items-center">
+      <!-- <button mat-raised-button color="primary" (click)="onSubmit()">Save</button> -->
+      <button mat-raised-button color="accent" (click)="onCreatePayment()" ><mat-icon>add</mat-icon> New Payment</button>
+      <button mat-icon-button aria-label="close" (click)="onClose()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+  <mat-dialog-content>
+  <div class="project-bill-payments-wrapper">
+    <!-- <div class="project-bill-payment-new">
+      <button mat-raised-button color="accent" (click)="onCreatePayment()" ><mat-icon>add</mat-icon> New Payment</button>
+    </div> -->
+    <ul class="payment-list">
+      <li *ngFor="let item of bill.payments; let i=index">
+        <div class="payment-details">
+           <div class="property-collection">
+         
+              <div class="property" >
+                <div class="property-details">
+                  <small class="property-label">Payment Date</small>
+                  <div class="property-value">
+                    <span>{{ item.transactionDate | date: "dd MMM y" }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="property" >
+                <div class="property-details">
+                  <small class="property-label">Payment Mode</small>
+                  <div class="property-value">
+                    <span>{{ item.mode }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="property" >
+                <div class="property-details">
+                  <small class="property-label">Transaction/Reference No</small>
+                  <div class="property-value">
+                    <span>{{ item.transactionNo }}</span>
+                  </div>
+                </div>
+              </div>
+          
+            <div class="property" >
+              <div class="property-details">
+                <small class="property-label">Bank Details</small>
+                <div class="property-value">
+                  <span>{{ item.bankDetail }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="property-collection">
+            <div class="property" >
+              <div class="property-details">
+                <small class="property-label">Received Amount</small>
+                <div class="property-value">
+                  <span>{{ item.amount | currency: "INR" : "symbol" : "1.2-2" }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="property" >
+              <div class="property-details">
+                <small class="property-label">TDS Amount ({{item.tdsShare}}%)</small>
+                <div class="property-value">
+                  <span>{{ item.tdsAmount | currency: "INR" : "symbol" : "1.2-2" }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="property" >
+              <div class="property-details">
+                <small class="property-label">Net Amount</small>
+                <div class="property-value">
+                  <span>{{ item.netAmount | currency: "INR" : "symbol" : "1.2-2" }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="property-collection">
+            <div class="property" >
+              <div class="property-details">
+                <small class="property-label">Comment</small>
+                <div class="property-value">
+                  <p>{{ item.comment  }}</p>
+                </div>
+              </div>
+            </div>
+            <div class="property" >
+              <div class="property-details">
+                <small class="property-label"></small>
+                <div class="property-value">
+                </div>
+                <div class="property-actions">
+                  <button mat-icon-button (click)="onEditPayment(item)" matTooltip="Edit">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+    
+                  <button mat-icon-button (click)="onDeletePayment(item)" matTooltip="Delete">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+       
+      </li>
+    </ul>
+  </div>
+  </mat-dialog-content>

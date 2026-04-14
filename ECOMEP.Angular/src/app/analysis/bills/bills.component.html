@@ -1,0 +1,102 @@
+<app-header [title]="headerTitle" [titleCount]="headerTitleCount"></app-header>
+
+<div class="main-container">
+  <mat-card class="filter-card">
+    <div class="project-selector-row">
+      <mat-form-field appearance="outline" class="project-search">
+        <mat-label>Select Project</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input type="text" matInput [formControl]="projectsControl" [matAutocomplete]="auto" [disabled]="isLoading" placeholder="Type to search projects...">
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayProject" (optionSelected)="onProjectSelect($event.option.value.id)">
+          <mat-option *ngFor="let project of filteredProjects$ | async" [value]="project">
+            {{ project.name }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+
+    <div class="filters-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Bill Date</mat-label>
+        <input matInput [matDatepicker]="picker" [(ngModel)]="filters.billDate" (dateChange)="applyFilters()">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Invoice Number</mat-label>
+        <input matInput type="text" [(ngModel)]="filters.billNumber" (input)="applyFilters()" placeholder="Ex: INV-001">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Amount</mat-label>
+        <span matPrefix>₹&nbsp;</span>
+        <input matInput type="number" [(ngModel)]="filters.billAmount" (input)="applyFilters()">
+      </mat-form-field>
+    </div>
+  </mat-card>
+
+  <mat-card class="table-card">
+    <div class="table-scroll-viewport">
+      <table class="modern-table">
+        <thead>
+          <tr>
+            <th (click)="sortTable('projectTitle')" class="sortable">
+              Project <mat-icon>{{ currentSortColumn === 'projectTitle' ? (isAsc ? 'expand_less' : 'expand_more') : 'unfold_more' }}</mat-icon>
+            </th>
+            <th (click)="sortTable('billDate')" class="sortable">
+              Date <mat-icon>{{ currentSortColumn === 'billDate' ? (isAsc ? 'expand_less' : 'expand_more') : 'unfold_more' }}</mat-icon>
+            </th>
+            <th>Invoice No.</th>
+            <th (click)="sortTable('dueAmount')" class="sortable text-right"> 
+              Bill Amount 
+              <mat-icon>{{ currentSortColumn === 'dueAmount' ? (isAsc ? 'expand_less' : 'expand_more') : 'unfold_more' }}</mat-icon>
+            </th>
+
+            <th (click)="sortTable('payableAmount')" class="sortable text-right">
+               Payable 
+               <mat-icon>{{ currentSortColumn === 'payableAmount' ? (isAsc ? 'expand_less' : 'expand_more') : 'unfold_more' }}</mat-icon>
+            </th> 
+            <th (click)="sortTable('receivedAmount')" class="sortable text-right"> 
+              Received 
+               <mat-icon>{{ currentSortColumn === 'receivedAmount' ? (isAsc ? 'expand_less' : 'expand_more') : 'unfold_more' }}</mat-icon>
+            </th>
+            <th (click)="sortTable('amountLessGst')" class="sortable text-right">
+              <div class="header-wrap-main">
+                <span class="header-wrap">
+                  Amount <br>Less GST
+                </span>
+                <mat-icon>{{ currentSortColumn === 'amountLessGst' ? (isAsc ? 'expand_less' : 'expand_more') : 'unfold_more' }}</mat-icon>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="isLoading">
+            <td colspan="7" class="loading-state">
+              <mat-spinner diameter="30"></mat-spinner>
+              <span>Fetching data...</span>
+            </td>
+          </tr>
+
+          <tr *ngFor="let bill of filteredBills" class="data-row">
+            <td class="font-medium">{{ bill.projectTitle }}</td>
+            <td class="text-secondary">{{ bill.billDate | date: "dd MMM, yyyy" }}</td>
+            <td><span class="badge">{{ bill.taxInvoiceNo || bill.proformaInvoiceNo }}</span></td>
+            <td class="text-right font-semibold">{{ bill.dueAmount | currency: "INR" }}</td>
+            <td class="text-right">{{ bill.payableAmount | currency: "INR" }}</td>
+            <td class="text-right status-received">{{ bill.receivedAmount | currency: "INR" }}</td>
+            <td class="text-right">{{ bill.amountLessGst | currency:'INR' }}</td>
+          </tr>
+
+          <tr *ngIf="!isLoading && filteredBills.length === 0">
+            <td colspan="7" class="empty-state">
+              <mat-icon>search_off</mat-icon>
+              <p>No billing records found for the selected criteria.</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </mat-card>
+</div>

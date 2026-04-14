@@ -1,0 +1,179 @@
+@import 'variables';
+@import 'theme';
+
+.dialog-wrapper {
+    display: flex;
+    padding: 1rem !important;
+    gap: 1rem !important;
+    // align-items: center;
+
+    .dialog-data-wrapper {
+        display: flex;
+        flex-direction: column;
+        width: 50%;
+        gap: 1rem;
+
+        .detail-data-wrapper,
+        .history-wrapper {
+            border-radius: $border-radius;
+            border: 1px solid $gray-300;
+
+            padding: 0.7rem;
+
+            h5 {
+                font-weight: 500;
+                color: $gray-600 ;
+            }
+
+            .request-ticket-property-wrapper {
+                display: flex;
+                gap: 0.3rem;
+                flex-wrap: wrap;
+                padding: 0 0 0.5rem 0;
+
+                .request-ticket-property {
+                    flex-grow: 1;
+                    border-radius: $border-radius;
+                    border: 1px solid $gray-300;
+                    padding: 0.3rem;
+
+                    .property-label {
+                        font-weight: 500;
+                        font-size: 0.65rem;
+                        color: $gray-600;
+                    }
+
+                }
+            }
+
+            .attendee-group {
+                display: flex;
+                flex-direction: column;
+                gap: 1.2rem;
+            }
+
+            .attendee-block {
+                .attendee-type {
+                    font-weight: 600;
+                    color: $gray-600;
+                    margin-bottom: 0.5rem;
+                    font-size: 0.85rem;
+                }
+
+                .attendee-item {
+                    display: flex;
+                    flex-direction: column;
+                    padding: 0.5rem 0.75rem;
+                    border-left: 3px solid mat-color($mcv-primary, 500);
+                    margin-bottom: 0.5rem;
+                    background-color: #f9f9f9;
+                    border-radius: 0.3rem;
+
+                    .name {
+                        font-weight: 500;
+                        color: $gray-800;
+                        font-size: 0.85rem;
+                    }
+
+                    .email {
+                        font-size: 0.75rem;
+                        color: $gray-500;
+                    }
+                }
+            }
+
+
+            .history-block {
+                border: 1px solid $gray-300;
+                border-radius: $border-radius;
+                padding: 0.75rem;
+                margin-bottom: 1rem;
+                background-color: #fafafa;
+            }
+
+            .history-header {
+                font-size: 0.9rem;
+                color: $gray-500;
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        .attachment-wrapper,
+        .request-message-wrapper {
+            border-radius: $border-radius;
+            border: 1px solid $gray-300;
+            padding: 0.7rem;
+
+                h5 {
+                font-weight: 500;
+                color: $gray-600 ;
+            }
+        }
+
+    }
+
+    .attendees-data-wrapper {
+        flex: 1;
+        border-radius: $border-radius;
+        border: 1px solid $gray-300;
+        padding: 0.7rem;
+        background-color: #fff;
+        height: fit-content;
+        width: 50%;
+
+        h5 {
+            font-weight: 500;
+            color: $gray-600;
+            margin-bottom: 1rem;
+        }
+
+        .attendee-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .attendee-block {
+            .attendee-type {
+                font-weight: 600;
+                color: $gray-600;
+                margin-bottom: 0.5rem;
+                font-size: 0.85rem;
+            }
+
+            .attendee-item {
+                display: flex;
+                flex-direction: column;
+                padding: 0.5rem 0.75rem;
+                border-left: 3px solid mat-color($mcv-primary, 500);
+                margin-bottom: 0.5rem;
+                background-color: #f9f9f9;
+                border-radius: 0.3rem;
+
+                .name {
+                    font-weight: 500;
+                    color: $gray-800;
+                    font-size: 0.85rem;
+                }
+
+                .email {
+                    font-size: 0.75rem;
+                    color: $gray-500;
+                }
+            }
+        }
+    }
+
+}
+
+@media (max-width: 768px) {
+    .dialog-wrapper {
+        flex-direction: column;
+        padding: 0.5rem !important;
+
+        .dialog-data-wrapper,
+        .attendees-data-wrapper {
+            width: 100%;
+        }
+    }
+}

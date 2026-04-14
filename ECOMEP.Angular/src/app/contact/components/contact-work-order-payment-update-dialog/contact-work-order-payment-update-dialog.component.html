@@ -1,0 +1,95 @@
+<!-- <div class="bill-payment-form-wrapper">
+    <form [formGroup]="form">
+        <div class="row m-0">
+            <mat-form-field appearance="outline" class="col-sm-6">
+                <mat-label>Payment Date</mat-label>
+                <input matInput formControlName="transactionDate" [matDatepicker]="transactionDatePicker"
+                    placeholder="Select Date" />
+                <mat-error>{{getErrorMessage(f.transactionDate)}}</mat-error>
+                <mat-datepicker-toggle matSuffix [for]="transactionDatePicker"></mat-datepicker-toggle>
+                <mat-datepicker [touchUi]="isMobileView" #transactionDatePicker></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-sm-6">
+                <mat-label>Payment Mode</mat-label>
+                <mat-select formControlName="mode" placeholder="Payment Mode">
+                    <mat-option *ngFor="let item of modeOptions" [value]="item">{{ item }}</mat-option>
+                </mat-select>
+                <mat-error>{{getErrorMessage(f.mode)}}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-sm-6">
+                <mat-label>Transaction/Reference No.</mat-label>
+                <input placeholder="Transaction/Reference No." aria-label="transactionNo" matInput
+                    formControlName="transactionNo" />
+                <mat-error>{{getErrorMessage(f.transactionNo)}}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-6">
+                <mat-label>Bank Name & Branch</mat-label>
+                <input placeholder="Bank Name & Branch" aria-label="bankDetail" matInput formControlName="bankDetail" />
+                <mat-error>{{ getErrorMessage(f.bankDetail) }}</mat-error>
+            </mat-form-field>
+
+        </div>
+        <div class="row m-0">
+
+            <mat-form-field appearance="outline" class="col-sm-12">
+                <mat-label>Received Amount (A)</mat-label>
+                <input type="number" placeholder="Received Amount" aria-label="amount" matInput formControlName="amount"
+                    class="text-right" />
+                <span matSuffix class="pl-1">&#8377;&nbsp;</span>
+                <mat-hint align="end">Gross amount received from Client</mat-hint>
+                <mat-error>{{getErrorMessage(f.amount)}}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-sm-12">
+                <mat-label>TDS Amount ({{tdsShare}}% of A)(B)</mat-label>
+                <input type="number" placeholder="Tds Amount" aria-label="tdsAmount" matInput
+                    formControlName="tdsAmount" class="text-right" />
+                <span matSuffix class="pl-1">&#8377;&nbsp;</span>
+                <mat-error>{{getErrorMessage(f.tdsAmount)}}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-sm-12">
+                <mat-label>Net Amount (C)(A-B)</mat-label>
+                <input type="number" placeholder="Net Amount" aria-label="Net Amount" matInput
+                    formControlName="netAmount" class="text-right" />
+                <span matSuffix class="pl-1">&#8377;&nbsp;</span>
+                <mat-hint align="end">Amount received after deducting TDS</mat-hint>
+                <mat-error>{{getErrorMessage(f.netAmount)}}</mat-error>
+            </mat-form-field>
+
+        </div>
+        <div class="row m-0">
+
+
+
+            <mat-form-field appearance="outline" class="col-md-12">
+                <mat-label>Comment/Remark</mat-label>
+                <textarea placeholder="Comment" aria-label="comment" matInput formControlName="comment"
+                    cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="2"></textarea>
+                <mat-error>{{ getErrorMessage(f.comment) }}</mat-error>
+            </mat-form-field>
+        </div>
+    </form>
+
+    <div class="pt-2">
+        <app-mcv-file-upload [uploaderConfig]="blobConfig" [showDrop]="false" [showPaste]="true"
+            (upload)="onUpload($event)" *ngIf="blobConfig">
+        </app-mcv-file-upload>
+        <ul class="mcv-file-list">
+            <li *ngFor="let file of payment.attachments">
+                <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="true"
+                    (delete)="onDeleteAttachment(file)" [allowTagging]="false" [downloadUrl]="file.url"
+                    [showPreview]="true" [singlePreview]="true" [url]="file.url" [showEditor]="true">
+                </mcv-file>
+            </li>
+        </ul>
+    </div>
+
+    <div class="action-buttons">
+        <button mat-raised-button [color]="'primary'" (click)="onSubmit()">Save Payment</button>
+        <button mat-raised-button [color]="'warn'" (click)="onDelete()">Delete Payment</button>
+    </div>
+</div> -->

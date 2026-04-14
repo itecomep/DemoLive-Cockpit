@@ -1,0 +1,40 @@
+@import 'variables';
+@import 'theme';
+.project-dms-folder-create-dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: mat-color($mcv-primary, 500);
+    color: $white;
+
+    .project-dms-folder-create-dialog-header-title {
+        font-weight: 600;
+        padding: 12px;
+    }
+
+    .project-dms-folder-create-dialog-header-actions {
+        flex-grow: 1;
+        flex-shrink: 0;
+        display: flex;
+        gap: 0.3rem;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0 15px;
+    }
+}
+
+.project-dms-folder-create-dialog-mobile-actions {
+    display: none;
+}
+
+.project-dms-folder-create-wrapper{
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+}
+
+// @media screen and (max-width: 768px) {
+// }

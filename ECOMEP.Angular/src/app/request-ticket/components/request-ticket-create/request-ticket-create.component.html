@@ -1,0 +1,475 @@
+<!-- Reusable template for your form -->
+<ng-template #headerActionTemplate>
+  <form [formGroup]="form" autocomplete="off">
+    <mat-radio-group formControlName="subjectType">
+      <mat-radio-button [value]="'Project'">
+        Project
+      </mat-radio-button>
+      <mat-radio-button [value]="'Custom'">
+        Custom
+      </mat-radio-button>
+    </mat-radio-group>
+  </form>
+  <div>
+    <button mat-raised-button color="accent" aria-label="Save & Send" (click)="onSubmit(false)">Save & Send</button>
+    <button mat-raised-button aria-label="Save as draft" (click)="onSubmit(true)">Save As Draft</button>
+  </div>
+</ng-template>
+
+<div class="mat-dialog-header request-ticket-create-dialog-header">
+  <h5 class="request-ticket-create-dialog-header-title">New Request Ticket</h5>
+  <div class="request-ticket-create-dialog-header-actions">
+    <ng-container *ngTemplateOutlet="headerActionTemplate"></ng-container>
+  </div>
+  <button mat-icon-button aria-label="close" (click)="onClose(null)">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+<div class="request-ticket-create-dialog-mobile-actions">
+  <ng-container *ngTemplateOutlet="headerActionTemplate"></ng-container>
+</div>
+<mat-dialog-content>
+  <div class="request-ticket-create-form">
+    <div class="alert-bar" *ngIf="isShowAlert">
+      <h6>{{alertMessage}}</h6>
+      <mat-icon>warning</mat-icon>
+    </div>
+
+    <div class="request-ticket-create-form-section">
+      <div class="request-ticket-create-form-panel">
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Details
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <form [formGroup]="form" autocomplete="off">
+
+            <div class="row m-0">
+              <mat-form-field appearance="outline" class="col-md-12" *ngIf="f.subjectType.value==subjectTypeOptions[0]">
+                <mat-label>Project</mat-label>
+                <input placeholder="Enter project name and select" aria-label="Enter project name and select" matInput
+                  formControlName="project" [matAutocomplete]="auto" />
+                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onProjectSelected($event.option.value)"
+                  [displayWith]="displayFnProject">
+                  <mat-option *ngFor="let option of (filteredProjects$ | async)" [value]="option">
+                    {{ option.code }}-{{ option.title }}
+                  </mat-option>
+                </mat-autocomplete>
+                <mat-error>{{ getErrorMessage(f.project) }}</mat-error>
+                <mat-hint align="end">Enter project name and select</mat-hint>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-md-12" *ngIf="f.subjectType.value==subjectTypeOptions[0]">
+                <mat-label>Stage</mat-label>
+                <mat-select placeholder="Stage" formControlName="stageTitle">
+                  <mat-option *ngFor="let item of stageOptions" [value]="item">
+                    {{ item }}
+                  </mat-option>
+                </mat-select>
+                <mat-error>{{ getErrorMessage(f.stageTitle) }}</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-md-12" *ngIf="f.subjectType.value==subjectTypeOptions[0] && f.stageTitle.value=='Approval Stage'">
+                <mat-label>Authority</mat-label>
+                <mat-select placeholder="Authority" formControlName="authority">
+                  <mat-option *ngFor="let item of authorityOptions" [value]="item">
+                    {{ item }}
+                  </mat-option>
+                </mat-select>
+                <mat-error>{{ getErrorMessage(f.authority) }}</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-md-12">
+                <mat-label>Purpose</mat-label>
+                <mat-select formControlName="purpose" (selectionChange)="onPurposeChange($event)">
+                  <mat-option *ngFor="let option of purposeOptions" [value]="option.purpose">
+                    {{ option.purpose }}
+                  </mat-option>
+                </mat-select>
+                <mat-hint *ngIf="!f.purpose.value">Eg. "Request For Payment","Document",Request For
+                  Meeting,etc</mat-hint>
+                <mat-error>{{getErrorMessage(f.purpose) }}</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-md-12"
+                *ngIf="f.subjectType.value!==subjectTypeOptions[0]">
+                <mat-label>Title</mat-label>
+                <input placeholder="Title" aria-label="Title" matInput formControlName="title"
+                  [matAutocomplete]="subject">
+                <mat-autocomplete #subject="matAutocomplete" [displayWith]="displayFnSubject">
+                  <mat-option *ngFor="let option of filteredSubjectOptions$ | async" [value]="option">
+                    {{option}}
+                  </mat-option>
+                </mat-autocomplete>
+                <mat-error>{{getErrorMessage(f.title)}}</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-md-12">
+                <mat-label>Subtitle</mat-label>
+                <input placeholder="Subtitle" aria-label="Subtitle" matInput formControlName="subtitle">
+                <mat-error>{{getErrorMessage(f.subtitle)}}</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-md-6" *ngIf="f.subjectType.value==subjectTypeOptions[0]">
+                <mat-label>Revision</mat-label>
+                <input placeholder="Revision" type="number" aria-label="Revision" matInput formControlName="revision">
+                <mat-error>{{getErrorMessage(f.revision)}}</mat-error>
+              </mat-form-field>
+
+              <div class="col-md-4">
+                <mat-checkbox formControlName="isRepeatRequired"
+                  (change)="onCheckboxValue($event)">Reminder Required
+                </mat-checkbox>
+              </div>
+
+              <mat-form-field appearance="outline"
+                [ngClass]="{'col-md-6':f.subjectType.value==subjectTypeOptions[0], 'col-md-4':f.subjectType.value!==subjectTypeOptions[0]}"
+                *ngIf="f.isRepeatRequired.value">
+                <mat-label>Next Reminder Date</mat-label>
+                <input id="nextReminderDate" placeholder="Next Reminder Date" aria-label="Next Reminder Date" matInput
+                  formControlName="nextReminderDate" [matDatepickerFilter]="dateFilter" [matDatepicker]="picker"
+                  readonly>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker [touchUi]="isMobileView" #picker></mat-datepicker>
+                <mat-error>{{getErrorMessage(f.nextReminderDate)}} Must be greater than today</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline"
+                [ngClass]="{'col-md-6':f.subjectType.value==subjectTypeOptions[0], 'col-md-4':f.subjectType.value!==subjectTypeOptions[0]}"
+                *ngIf="f.isRepeatRequired.value">
+                <mat-label>Repeat Interval</mat-label>
+                <input type="number" placeholder="Repeat Interval in Days" aria-label="Repeat Interval" matInput
+                  formControlName="reminderInterval" step="1" style="text-align: right; margin-right: 10px;">
+                <span matSuffix> Days</span>
+                <mat-error>{{getErrorMessage(f.reminderInterval)}}</mat-error>
+              </mat-form-field>
+            </div>
+
+          </form>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>Recipients</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <div class="request-ticket-assignee-input">
+            <mat-form-field appearance="outline">
+              <mat-label>To</mat-label>
+              <input placeholder="Enter name of person to select from the list" aria-label="Assign To" matInput
+                [formControl]="assigneeFC" [matAutocomplete]="autoRequestTo" />
+
+              <mat-autocomplete #autoRequestTo="matAutocomplete" [displayWith]="displayFnContact"
+                (optionSelected)="onSelectContact(REQUEST_TICKET_ASSIGNEE_TYPEFLAG_TO)">
+                <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
+                  <h6>
+                    {{option.name}}
+                  </h6>
+                  <span>{{option.email}} <small *ngIf="option.company">({{option.company}})</small></span>
+                </mat-option>
+              </mat-autocomplete>
+              <span matSuffix>
+                <mat-icon>person</mat-icon>
+              </span>
+              <mat-error>{{ getErrorMessage(assigneeFC) }}</mat-error>
+              <mat-hint align="end">Enter name of person to select from the list</mat-hint>
+            </mat-form-field>
+
+            <!-- <div class="request-ticket-assignee-input-actions">
+              <button (click)="onCreateAssignee(REQUEST_TICKET_ASSIGNEE_TYPEFLAG_TO)" mat-raised-button color="primary"
+                aria-label="Add as Attendee">To</button>
+            </div> -->
+          </div>
+
+          <h4 class="m-2 font-bold">TO</h4>
+          <span class="text-danger" *ngIf="toList.length==0">
+            Please add atleast 1 contact to send!
+          </span>
+          <ul class="request-ticket-assignee-list" id="toList">
+            <!-- cdkDropList
+            [cdkDropListData]="{list:toList,typeFlag:REQUEST_TICKET_ASSIGNEE_TYPEFLAG_TO}" [cdkDropListConnectedTo]="['ccList']"
+            (cdkDropListDropped)="drop($event)" -->
+            <!-- <li *ngIf="toList.length == 0" style="min-height: 10px;">
+              <div *cdkDragPlaceholder></div>
+            </li> -->
+            <ng-container *ngFor="let item of toList; let i = index;">
+              <li>
+                <div *cdkDragPlaceholder></div>
+                <div class="request-ticket-assignee">
+                  <div>
+                    <h6>{{item.name}}</h6>
+                    <span>{{item.email}} </span> (<small>{{item.company}} </small>)
+                  </div>
+                  <div class="request-ticket-assignee-actions"
+                    *ngIf="currentEntity?.statusFlag==REQUEST_TICKET_STATUSFLAG_ACTIVE">
+                    <!-- <button mat-icon-button cdkDragHandle><mat-icon>drag_handle</mat-icon></button> -->
+                    <button mat-icon-button (click)="onDeleteAssignee(item)" matTooltip="Remove" aria-label="Remove">
+                      <mat-icon>clear</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </ng-container>
+          </ul>
+
+          <!-- CC Input -->
+          <div class="request-ticket-assignee-input">
+            <mat-form-field appearance="outline">
+              <mat-label>CC</mat-label>
+              <input placeholder="Enter name of person to select from the list" aria-label="Assign CC" matInput
+                [formControl]="assigneeFC" [matAutocomplete]="autoRequestCC" />
+
+              <mat-autocomplete #autoRequestCC="matAutocomplete" [displayWith]="displayFnContact"
+                (optionSelected)="onSelectContact(REQUEST_TICKET_ASSIGNEE_TYPEFLAG_CC)">
+                <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
+                  <h6>
+                    {{option.name}}
+                  </h6>
+                  <span>{{option.email}} <small *ngIf="option.company">({{option.company}})</small></span>
+                </mat-option>
+              </mat-autocomplete>
+              <span matSuffix>
+                <mat-icon>person</mat-icon>
+              </span>
+              <mat-error>{{ getErrorMessage(assigneeFC) }}</mat-error>
+              <mat-hint align="end">Enter name of person to select from the list</mat-hint>
+            </mat-form-field>
+
+            <!-- <div class="request-ticket-assignee-input-actions">
+              <button (click)="onCreateAssignee(REQUEST_TICKET_ASSIGNEE_TYPEFLAG_CC)" mat-raised-button
+                aria-label="Add as CC">CC</button>
+            </div> -->
+          </div>
+
+          <h4 class="m-2 font-bold">CC</h4>
+          <ul class="request-ticket-assignee-list" id="ccList">
+            <!-- cdkDropList
+            [cdkDropListData]="{list:ccList,typeFlag:REQUEST_TICKET_ASSIGNEE_TYPEFLAG_CC}" [cdkDropListConnectedTo]="['toList']"
+            (cdkDropListDropped)="drop($event)" -->
+            <!-- <li *ngIf="ccList.length == 0" style="min-height: 10px;">
+              <div *cdkDragPlaceholder></div>
+            </li> -->
+            <ng-container *ngFor="let item of ccList; let i = index;">
+              <li>
+                <!-- <div *cdkDragPlaceholder></div> -->
+                <div class="request-ticket-assignee">
+                  <div>
+                    <h6>{{item.name}}</h6>
+                    <span>{{item.email}} </span> (<small>{{item.company}} </small>)
+                  </div>
+                  <div class="request-ticket-assignee-actions"
+                    *ngIf="currentEntity?.statusFlag==REQUEST_TICKET_STATUSFLAG_ACTIVE">
+                    <!-- <button mat-icon-button cdkDragHandle><mat-icon>drag_handle</mat-icon></button> -->
+                    <button mat-icon-button (click)="onDeleteAssignee(item)" matTooltip="Remove" aria-label="Remove">
+                      <mat-icon>clear</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </ng-container>
+          </ul>
+
+          <!-- BCC Input -->
+          <div class="request-ticket-assignee-input">
+            <mat-form-field appearance="outline">
+              <mat-label>BCC</mat-label>
+              <input placeholder="Enter name of person to select from the list" aria-label="Assign Bcc" matInput
+                [formControl]="assigneeFC" [matAutocomplete]="autoRequestBcc" />
+
+              <mat-autocomplete #autoRequestBcc="matAutocomplete"
+                (optionSelected)="onSelectContact(REQUEST_TICKET_ASSIGNEE_TYPEFLAG_BCC)"
+                [displayWith]="displayFnContact">
+                <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
+                  <h6>
+                    {{option.name}}
+                  </h6>
+                  <span>{{option.email}} <small *ngIf="option.company">({{option.company}})</small></span>
+                </mat-option>
+              </mat-autocomplete>
+              <span matSuffix>
+                <mat-icon>person</mat-icon>
+              </span>
+              <mat-error>{{ getErrorMessage(assigneeFC) }}</mat-error>
+              <mat-hint align="end">Enter name of person to select from the list</mat-hint>
+            </mat-form-field>
+
+            <!-- <div class="request-ticket-assignee-input-actions">
+              <button (click)="onCreateAssignee(REQUEST_TICKET_ASSIGNEE_TYPEFLAG_BCC)" mat-raised-button
+                aria-label="Add as BCC">BCC</button>
+            </div> -->
+          </div>
+
+          <h4 class="m-2 font-bold">BCC</h4>
+          <ul class="request-ticket-assignee-list">
+            <!-- <li *ngIf="bccList.length == 0" style="min-height: 10px;">
+              <div *cdkDragPlaceholder></div>
+            </li> -->
+            <ng-container *ngFor="let item of bccList; let i = index;">
+              <li>
+                <!-- <div *cdkDragPlaceholder></div> -->
+                <div class="request-ticket-assignee">
+                  <div>
+                    <h6>{{item.name}}</h6>
+                    <span>{{item.email}} </span> (<small>{{item.company}} </small>)
+                  </div>
+                  <div class="request-ticket-assignee-actions"
+                    *ngIf="currentEntity?.statusFlag==REQUEST_TICKET_STATUSFLAG_ACTIVE">
+                    <!-- <button mat-icon-button cdkDragHandle><mat-icon>drag_handle</mat-icon></button> -->
+                    <button mat-icon-button (click)="onDeleteAssignee(item)" matTooltip="Remove" aria-label="Remove">
+                      <mat-icon>clear</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </ng-container>
+          </ul>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Request Message
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+        
+          <form [formGroup]="form" autocomplete="off">
+        
+            <mat-form-field appearance="outline">
+                      <textarea aria-label="message" matInput formControlName="requestMessage" cdkTextareaAutosize
+                        #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="8"></textarea>
+                      <mat-error>{{getErrorMessage(f.requestMessage)}}</mat-error>
+                      <mat-hint align="end">This message will appear in email</mat-hint>
+                    </mat-form-field>
+        
+            <!-- <ngx-editor-menu [editor]="editor" [toolbar]="toolbar">
+            </ngx-editor-menu>
+            <ngx-editor [editor]="editor" formControlName="requestMessage">
+            </ngx-editor> -->
+          </form>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>Attachments</mat-panel-title>
+          </mat-expansion-panel-header>
+          <app-mcv-file-upload [uploaderConfig]="blobConfig" 
+            [showDrop]="false" [showPaste]="true" [showDrop]="true" (upload)="onUpload($event)" *ngIf="blobConfig">
+            <div class="dms-button" *ngIf="selectedProject">
+              <button mat-raised-button (click)="onOpenRTDMS()">Open DMS Dialog</button>
+          </div>
+          </app-mcv-file-upload>
+          <ul class="mcv-file-list">
+            <li *ngFor="let file of currentEntity.attachments">
+              <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="true" [tags]="file.searchTags"
+                (delete)="onDeleteAttachment(file)" [allowTagging]="true" [downloadUrl]="file.url" [showPreview]="true"
+                [singlePreview]="true" [url]="file.url">
+              </mcv-file>
+            </li>
+          </ul>
+        </mat-expansion-panel>
+      </div>
+
+      <div class="request-ticket-previous-tickets-panel">
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>Previous Tickets</mat-panel-title>
+          </mat-expansion-panel-header>
+          <ul class="previous-ticket-ul" *ngIf="requestTickets && requestTickets.length > 0">
+            <li *ngFor="let item of requestTickets">
+              <div class="list-header">
+                <div>
+                  <h6>{{item.created | date:'dd MMM y'}}</h6>
+                </div>
+                <div>
+                  <h6>{{item.purpose}}</h6>
+                  <small>{{item.subtitle}}</small>
+                </div>
+                <mat-icon (click)="onSelectTicket(item)">content_copy</mat-icon>
+              </div>
+              <div>
+                <h6 class="mt-2 font-focused">To:</h6>
+                <ul class="assignee-ul">
+                  <li *ngFor="let toAssignee of filterAssignee(item,REQUEST_TICKET_ASSIGNEE_TYPEFLAG_TO)">
+                    <h6>{{toAssignee.name}}</h6>
+                    <span>{{toAssignee.email}} </span> (<small>{{toAssignee.company}} </small>)
+                  </li>
+                </ul>
+                <h6 class="mt-2 font-focused">CC:</h6>
+                <ul class="assignee-ul">
+                  <li *ngFor="let ccAssignee of filterAssignee(item,REQUEST_TICKET_ASSIGNEE_TYPEFLAG_CC)">
+                    <h6>{{ccAssignee.name}}</h6>
+                    <span>{{ccAssignee.email}} </span> (<small>{{ccAssignee.company}} </small>)
+                  </li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+          <ul class="previous-ticket-ul" *ngIf="!requestTickets || requestTickets.length == 0">
+            <li>
+              <h6 class="font-focused">No Previous Tickets Found!!!</h6>
+            </li>
+          </ul>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>Project associations</mat-panel-title>
+          </mat-expansion-panel-header>
+          <ul class="project-association-list">
+
+        <li *ngFor="let item of associations; let i=index" [class.added]="isContactAdded(item)">
+          <div class="d-flex justify-content-between">
+            <div class="association-contact">
+              <div class="flex-grow-0 flex-shrink-0">
+                <img src="{{ item.contact.photoUrl || 'assets/images/person-icon.svg' }}"
+                  class="user-thumbnail float-left mr-2" alt="" *ngIf="!item.contact.isCompany"
+                  matTooltip="{{item.contact.fullName}}" />
+                <img src="{{ item.contact.photoUrl || 'assets/images/company-icon.svg' }}"
+                  class="user-thumbnail float-left mr-2" alt="" *ngIf="item.contact.isCompany" />
+              </div>
+              <div class="flex-grow-1">
+                <div>
+                  <span class="font-focused">{{ item.contact.fullName }}</span>
+                </div>
+                <span class="badge badge-warning mr-1" *ngFor="let cat of item.contact.categories">{{ cat }}</span>
+                <span class="badge badge-gray mr-1" *ngFor="let cat of item.contact.searchTags">{{ cat }}</span>
+
+              </div>
+            </div>
+            <div class="association-actions d-flex flex-wrap">
+              <button mat-button (click)="addToRecipients(item, 'TO')" matTooltip="Add to TO" 
+                [class.active]="getContactTypeFlag(item) === REQUEST_TICKET_ASSIGNEE_TYPEFLAG_TO">To</button>
+              <button mat-button (click)="addToRecipients(item, 'CC')" matTooltip="Add to CC"
+                [class.active]="getContactTypeFlag(item) === REQUEST_TICKET_ASSIGNEE_TYPEFLAG_CC">CC</button>
+              <button mat-button (click)="addToRecipients(item, 'BCC')" matTooltip="Add to BCC"
+                [class.active]="getContactTypeFlag(item) === REQUEST_TICKET_ASSIGNEE_TYPEFLAG_BCC">BCC</button>
+            </div>
+          </div>
+          <hr class="mb-0" />
+          <div class="association-details">
+            <h6 class="font-focused">{{item.title}}</h6>
+            <mat-icon class="mr-1">email</mat-icon>
+            <small class="mr-1" *ngIf="item.contact.email">
+              {{item.contact.email}}</small>
+            <mat-icon class="mr-1">phone</mat-icon>
+            <small class="mr-1" *ngIf="item.contact.phone">
+              {{item.contact.phone}}</small>
+
+                </div>
+              </li>
+            </ul>
+          
+          <ul class="previous-ticket-ul" *ngIf="!associations || associations.length == 0">
+            <li>
+              <h6 class="font-focused">No Project Associations Found!!!</h6>
+            </li>
+          </ul>
+        </mat-expansion-panel>
+
+
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>

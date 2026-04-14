@@ -1,0 +1,159 @@
+@import 'variables';
+
+mat-dialog-content {
+    height: 45vh;
+    width: 40vw;
+}
+
+mat-form-field {
+    padding: 0.3rem
+}
+
+table {
+    min-width: 100%;
+    font-size: 0.8rem;
+    cursor: pointer;
+
+    thead {
+        background-color: $gray-400;
+        position: sticky;
+        position: -webkit-sticky;
+        top: 0;
+
+        tr {
+            &.total {
+                background-color: $gray-600;
+                color: $white;
+            }
+
+            td,
+            th {
+                border-bottom: 1px solid $gray-400;
+                border-right: 1px solid $gray-300;
+                padding: 0 0.3rem;
+                text-align: center;
+
+                &.warning {
+                    color: red;
+                }
+            }
+        }
+    }
+
+    tbody {
+        tr {
+            height: 2rem;
+
+            td {
+                border-bottom: 1px solid $gray-400;
+                white-space: nowrap;
+                border-right: 1px solid $gray-300;
+                padding: 0.3rem;
+
+                &.width-50 {
+                    width: 50px;
+                }
+
+                &.width-100 {
+                    width: 100px;
+                }
+
+                &.align-center {
+                    text-align: center;
+                }
+
+                &.align-right {
+                    text-align: right;
+                }
+
+                &.text-pre-wrap {
+                    white-space: pre-wrap;
+                }
+
+                .status-badge {
+                    border-radius: $border-radius;
+                    padding: 0.1rem 0.3rem;
+                    font-size: 0.6rem;
+                    background-color: $gray-300;
+                    color: $white;
+
+                    &.status-badge-yellow {
+                        background-color: $yellow;
+                        color: $black;
+                    }
+
+                    &.status-badge-orange {
+                        background-color: $orange;
+                        color: $black;
+                    }
+
+                    &.status-badge-red {
+                        background-color: $red;
+                    }
+
+                    &.status-badge-green {
+                        background-color: $green;
+                    }
+
+                    &.status-badge-blue {
+                        background-color: $blue;
+                    }
+                }
+
+                .cell-content {
+                    display: flex;
+                    align-items: center;
+                    // justify-content: center;
+
+                    .cell-action,
+                    .cell-input,
+                    .cell-value {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        // text-align: center;
+                        max-width: 100%;
+                        margin: 0;
+                        border: none;
+                        cursor: pointer;
+                    }
+
+                    .cell-input,
+                    .cell-value {
+                        flex-grow: 1;
+                        flex-shrink: 1;
+
+                        form {
+                            width: 100%;
+                        }
+
+                        input,
+                        textarea {
+                            border: none;
+                            // text-align: center;
+                            width: 100%;
+
+                            &.date {
+                                width: auto !important;
+                            }
+                        }
+                    }
+
+                    .cell-action {
+                        flex-grow: 0;
+                        flex-shrink: 0;
+                        display: flex;
+                        align-items: center;
+                        justify-content: flex-end;
+                    }
+
+                    .cell-input-prefix,
+                    .cell-input-suffix {
+                        flex-grow: 0;
+                        flex-shrink: 0;
+                    }
+                }
+            }
+        }
+    }
+}

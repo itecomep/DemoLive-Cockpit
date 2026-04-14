@@ -1,0 +1,100 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused" *ngIf="workOrder">WorkOrder | {{workOrder.workOrderNo}}</h5>
+    <div class="d-flex align-items-center">
+        <button mat-raised-button color="primary" (click)="onSubmit()">
+            Save
+        </button>
+        <button mat-icon-button (click)="onClose()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+<mat-dialog-content>
+    <div class="form-container row">
+        <div class="work-order-form-container col-md-7 col-12">
+            <mat-expansion-panel [expanded]="true">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>Details</mat-panel-title>
+                </mat-expansion-panel-header>
+                <div class="row p-1" [formGroup]="form">
+                    <mat-form-field appearance="outline" class="col-md-12">
+                        <mat-label>Company</mat-label>
+                        <mat-select formControlName="companyID">
+                            <mat-option *ngFor="let company of companyOptions" [value]="company.id">
+                                {{ company.initials }} | {{ company.title }}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error>{{ getErrorMessage(f.companyID) }}</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="col-6 col-md-6">
+                        <mat-label>WorkOrder Date</mat-label>
+                        <input placeholder="WorkOrder Date" matInput formControlName="workOrderDate"
+                            [matDatepicker]="pickerWorkOrderDate">
+                        <mat-datepicker-toggle matSuffix [for]="pickerWorkOrderDate"></mat-datepicker-toggle>
+                        <mat-datepicker [touchUi]="isMobileView" #pickerWorkOrderDate></mat-datepicker>
+                        <mat-error>{{getErrorMessage(f.workOrderDate)}}</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="col-6 col-md-6">
+                        <mat-label>Due Date</mat-label>
+                        <input placeholder="Due Date" matInput formControlName="dueDate"
+                            [matDatepicker]="pickerDueDate">
+                        <mat-datepicker-toggle matSuffix [for]="pickerDueDate"></mat-datepicker-toggle>
+                        <mat-datepicker [touchUi]="isMobileView" #pickerDueDate></mat-datepicker>
+                        <mat-error>{{getErrorMessage(f.dueDate)}}</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="col-6 col-md-6">
+                        <mat-label>WorkOrder Number</mat-label>
+                        <input placeholder="WorkOrder Number" matInput formControlName="workOrderNo" [min]="0">
+                        <span matSuffix><mat-icon>hourglass_empty</mat-icon></span>
+                        <mat-error>{{getErrorMessage(f.workOrderNo)}}</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="col-6 col-md-6">
+                        <mat-label>Amount</mat-label>
+                        <input type="number" placeholder="Amount" matInput formControlName="fees" [min]="0">
+                        <span matSuffix><mat-icon>currency_rupee</mat-icon></span>
+                        <mat-error>{{getErrorMessage(f.fees)}}</mat-error>
+                    </mat-form-field>
+                </div>
+
+                <h6 class="font-focused py-1">Attachments</h6>
+                <div class="attachment-container">
+                    <app-mcv-file-upload class="pt-1" [uploaderConfig]="blobConfig" [showPaste]="true"
+                        (upload)="onUpload($event)" *ngIf="blobConfig">
+                    </app-mcv-file-upload>
+
+                    <div class="col-12" *ngIf="workOrder && workOrder.attachments && workOrder.attachments.length > 0">
+                        <ul class="mcv-file-list">
+                            <li *ngFor="let file of workOrder.attachments">
+                                <mcv-file [filename]="file.filename" [size]="file.size" [downloadUrl]="file.url"
+                                    [showPreview]="true" [url]="file.url || file.thumbUrl" [singlePreview]="true"
+                                    [showRemove]="false" (delete)="onDeleteAttachment(file)">
+                                </mcv-file>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </mat-expansion-panel>
+        </div>
+
+        <div class="work-order-payments-container col-md-5 col-12">
+            <ul>
+                <ng-container *ngIf="workOrder.payments && workOrder.payments.length > 0">
+                    <li *ngFor="let item of workOrder.payments">
+                        <app-contact-work-order-payment-update
+                            [formData]="{workOrder:workOrder,tdsShare:tdsShare,payment:item}"
+                            (update)="onUpdatePayment($event)"
+                            (delete)="onDeletePayment(item)"></app-contact-work-order-payment-update>
+                    </li>
+                </ng-container>
+                <li>
+                    <app-contact-work-order-payment-create [formData]="{workOrder:workOrder,tdsShare:tdsShare}"
+                        (create)="onCreatePayment($event)"></app-contact-work-order-payment-create>
+                </li>
+            </ul>
+        </div>
+    </div>
+</mat-dialog-content>

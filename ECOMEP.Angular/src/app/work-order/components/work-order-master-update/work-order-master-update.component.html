@@ -1,0 +1,86 @@
+<table>
+    <thead>
+        <tr>
+            <th>Sr No.</th>
+            <th>Title</th>
+            <th>Value</th>
+            <th></th>
+        </tr>
+        <tr class="total">
+            <th></th>
+            <th></th>
+            <th>{{percentageTotal}} %</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <ng-container *ngFor="let item of workOrderMasterStages; let i =index">
+            <tr>
+                <td>{{i + 1}}</td>
+                <td>
+                    <div class="cell-content">
+                        <div class="cell-input">
+                            <form class="d-flex align-items-center">
+                                <input matInput (input)="onInput(fa,i,'title')"
+                                    [formControl]="getFormControl(fa,i,'title')"
+                                    (change)="onCellChange(fa,i,'title',item)">
+                            </form>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="cell-content">
+                        <div class="cell-input">
+                            <form>
+                                <input matInput (input)="onInput(fa,i,'value')"
+                                    [formControl]="getFormControl(fa,i,'value')"
+                                    (change)="onCellChange(fa,i,'value',item)">
+                            </form>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="cell-content">
+                        <button mat-icon-button (click)="onDelete(item)">
+                            <mat-icon>clear</mat-icon>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </ng-container>
+        <tr>
+            <td>
+                {{workOrderMasterStages.length+1}}
+            </td>
+            <td>
+                <div class="cell-content">
+                    <div class="cell-input">
+                        <form class="d-flex align-items-center">
+                            <input matInput (input)="onInput(fa,workOrderMasterStages.length,'title')"
+                                [formControl]="getFormControl(fa,workOrderMasterStages.length,'title')"
+                                (change)="onCellChange(fa,workOrderMasterStages.length,'title')">
+                        </form>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="cell-content">
+                    <div class="cell-input">
+                        <form>
+                            <input matInput (input)="onInput(fa,workOrderMasterStages.length,'value')"
+                                [formControl]="getFormControl(fa,workOrderMasterStages.length,'value')"
+                                (change)="onCellChange(fa,workOrderMasterStages.length,'value')">
+                        </form>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="cell-content">
+                    <button mat-icon-button (click)="onSubmit()">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>

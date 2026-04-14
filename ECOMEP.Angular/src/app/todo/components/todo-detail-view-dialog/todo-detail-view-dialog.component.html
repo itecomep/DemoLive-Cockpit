@@ -1,0 +1,191 @@
+
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused" *ngIf="currentEntity">Todo | {{currentEntity.title}}</h5>
+    <button mat-icon-button aria-label="close" (click)="onClose()">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+<mat-dialog-content>
+    <div class="title-bar" *ngIf="currentEntity">
+        <div>
+            <h5>{{currentEntity.title}}</h5>
+            <small>{{currentEntity.subTitle}}</small>
+        </div>
+        <div>
+            <span *ngIf="currentEntity.statusFlag == 0" class="badge green">{{ currentEntity.statusValue }}</span>
+            <span *ngIf="currentEntity.statusFlag == 1" class="badge gray-700">{{currentEntity.statusValue}}</span>
+            <span *ngIf="currentEntity.statusFlag == 2" class="badge gray-500">{{currentEntity.statusValue}}</span>
+        </div>
+
+        <div>
+            <small>Assigned By </small>
+            <h6 *ngIf="currentEntity.assigner"> {{currentEntity.assigner.name}}</h6>
+        </div>
+
+        <div>
+            <small>Assigned On </small>
+            <h6>
+                {{currentEntity.created | date:'dd MMM y HH:mm'}}
+            </h6>
+        </div>
+
+        <div>
+            <small>Modified </small>
+            <h6>
+                {{currentEntity.modified | date:'dd MMM y HH:mm'}}
+            </h6>
+        </div>
+    </div>
+    <!-- <app-wftask-title-bar [task]="task" *ngIf="isTaskMode"></app-wftask-title-bar> -->
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-7">
+                <mat-expansion-panel [expanded]="true" *ngIf="currentEntity">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title> Details </mat-panel-title>
+                    </mat-expansion-panel-header>
+
+                    <div class="property-collection">
+                        <div class="property">
+                            <div class="property-details">
+                                <small class="property-label">Assigned To</small>
+                                <div class="property-value">
+                                    <h6>{{currentEntity.assignee.fullName}}</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="property">
+                            <div class="property-details">
+                                <small class="property-label">Title</small>
+                                <div class="property-value">
+                                    <h6>{{currentEntity.title}}</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="property">
+                            <div class="property-details">
+                                <small class="property-label">Subtitle</small>
+                                <div class="property-value">
+                                    <h6>{{currentEntity.subTitle}}</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="property">
+                            <div class="property-details">
+                                <small class="property-label">DueDate</small>
+                                <div class="property-value">
+                                    <h6>{{currentEntity.dueDate | date: 'dd MMM y HH:mm'}}</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="property">
+                            <div class="property-details">
+                                <small class="property-label">MhrAssigned</small>
+                                <div class="property-value">
+                                    <h6>{{currentEntity.mHrAssigned}}</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="property">
+                            <div class="property-details">
+                                <small class="property-label">Priority</small>
+                                <div class="property-value">
+                                    <span class="mr-1 badge"
+                                        [ngClass]="{
+                                        'red':currentEntity.priority == PRIORITY_HIGH,
+                                       'green':currentEntity.priority == PRIORITY_LOW,
+                                        'yellow':currentEntity.priority == PRIORITY_NORMAL}">{{currentEntity.priority}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="property">
+                            <div class="property-details">
+                                <small class="property-label">Comment</small>
+                                <div class="property-value">
+                                    <h6>{{currentEntity.comment}}</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </mat-expansion-panel>
+                <mat-expansion-panel [expanded]="true" *ngIf="currentEntity">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            Attachments <small>{{currentEntity.attachments.length}} items</small>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+
+                    <div class="mcv-activity-list-wrapper">
+                        <ul class="mcv-file-list">
+                            <li *ngFor="let file of getFilteredAttachments(currentEntity.attachments,0,false)">
+                                <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="false"
+                                    [tags]="file.searchTags" [allowTagging]="true" [downloadUrl]="file.url"
+                                    [showPreview]="true" [singlePreview]="true" [url]="file.url"
+                                    [thumbUrl]="file.thumbUrl">
+                                </mcv-file>
+                            </li>
+
+                            <li *ngFor="let file of getFilteredAttachments(currentEntity.attachments,0,true)">
+                                <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="false"
+                                    [tags]="file.searchTags" [allowTagging]="true" [downloadUrl]="file.url"
+                                    [showPreview]="true" [singlePreview]="true" [url]="file.url"
+                                    [thumbUrl]="file.thumbUrl">
+                                </mcv-file>
+                            </li>
+
+                        </ul>
+                    </div>
+                </mat-expansion-panel>
+
+                <mat-expansion-panel [expanded]="true" *ngIf="currentEntity">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title> Checklist <small>{{currentEntity.agendas.length}}
+                                items</small></mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div class="row">
+                        <div class="col-12">
+                            <small class="float-right">Checklist currentEntitys can be marked/checked
+                                as
+                                done in during
+                                work task only</small>
+                        </div>
+                    </div>
+                    <div class="mcv-activity-list-wrapper">
+                        <todo-agenda [config]="agendaConfig"></todo-agenda>
+                    </div>
+                </mat-expansion-panel>
+            </div>
+
+            <div class="col-md-5">
+                <!-- <mat-expansion-panel [expanded]="true" *ngIf="wfTask">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title> Time Entries </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <mcv-time-entry-list [wfTask]="wfTask" [isEditable]="false" [readonly]="true"></mcv-time-entry-list>
+                </mat-expansion-panel> -->
+
+                <mat-expansion-panel [expanded]="true" *ngIf="currentEntity">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title> Activity </mat-panel-title>
+                        <mat-panel-description>
+
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    <div class="mcv-activity-list-wrapper">
+                        <mcv-activity-list #activity [entity]="nameOfEntity" [entityID]="currentEntity.id">
+                        </mcv-activity-list>
+                    </div>
+                </mat-expansion-panel>
+
+                <mat-expansion-panel [expanded]="true" *ngIf="currentEntity">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>Tags</mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <app-mcv-tag-editor [tags]="currentEntity.searchTags" [isPermissionEdit]="false">
+                    </app-mcv-tag-editor>
+                </mat-expansion-panel>
+            </div>
+        </div>
+    </div>
+</mat-dialog-content>

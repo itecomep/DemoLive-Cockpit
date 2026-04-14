@@ -1,0 +1,165 @@
+/* ---------------------------------------------------
+   Common
+----------------------------------------------------- */
+html,
+body {
+  height: 100%;
+}
+
+body {
+  overflow: hidden;
+  font-family: $font-family-sans-serif;
+
+  & * {
+    font-family: $font-family-sans-serif;
+  }
+}
+
+.text-nowrap {
+  overflow: hidden;
+  white-space: nowrap;
+  -ms-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+}
+
+
+.font-thin {
+  font-weight: 300;
+}
+
+.font-medium {
+  font-weight: 400;
+}
+
+.font-bold {
+  font-weight: 500;
+}
+
+.font-focused {
+  // font-size: 1.1em;
+  font-weight: 500;
+}
+
+a {
+  color: inherit;
+  cursor: pointer;
+}
+
+p {
+  white-space: pre-wrap;
+  // overflow-wrap: break-word;
+  //   word-break: break-word;
+  font-size: $font-size-base;
+}
+
+.space-wrap {
+  white-space: pre-wrap;
+  /* css-3 */
+  white-space: -moz-pre-wrap;
+  /* Mozilla, since 1999 */
+  white-space: -pre-wrap;
+  /* Opera 4-6 */
+  white-space: -o-pre-wrap;
+  /* Opera 7 */
+  word-wrap: break-word;
+  /* Internet Explorer 5.5+ */
+  word-break: break-word;
+  /*Chrome */
+  overflow-wrap: break-word;
+  word-wrap: break-word !important;
+
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+  -webkit-user-select: none;
+  /* Safari */
+  -ms-user-select: none;
+  /* IE 10+ and Edge */
+  user-select: none;
+  /* Standard syntax */
+}
+
+.disable-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.strikethrough {
+  text-decoration: line-through;
+  color: $gray-600;
+}
+
+.italic {
+  font-style: italic;
+}
+
+/*-------------------*/
+.color-white {
+  color: $white !important;
+}
+
+.bg-blue {
+  background-color: $blue !important;
+}
+
+.bg-indigo {
+  background-color: $indigo !important;
+}
+
+.bg-purple {
+  background-color: $purple !important;
+}
+
+.bg-pink {
+  background-color: $pink !important;
+}
+
+.bg-red {
+  background-color: $red !important;
+}
+
+.bg-orange {
+  background-color: $orange !important;
+}
+
+.bg-yellow {
+  background-color: $yellow !important;
+}
+
+.bg-green {
+  background-color: $green !important;
+}
+
+.bg-teal {
+  background-color: $teal !important;
+}
+
+.bg-cyan {
+  background-color: $cyan !important;
+}
+
+.bg-gray {
+  background-color: $gray-700 !important;
+}
+
+.bg-gray-light {
+  background-color: $gray-400 !important; // rgba(108, 117, 125, 0.43) !important;
+  // color: $gray-600 !important;
+}
+
+.bg-gray-300 {
+  background-color: $gray-300 !important;
+}
+
+.bg-gray-200 {
+  background-color: $gray-200 !important;
+}
+
+.bg-black {
+  background-color: $black !important; // rgba(108, 117, 125, 0.43) !important;
+  // color: $gray-600 !important;
+}
+
+// ----------------------------------------------------------

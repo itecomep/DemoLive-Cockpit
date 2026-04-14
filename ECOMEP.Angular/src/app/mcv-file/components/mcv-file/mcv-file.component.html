@@ -1,0 +1,85 @@
+<div class="mcv-file-wrapper" [ngClass]="{'mcv-file-item-small':!showPreview, 'uploading':isUploading}">
+  <div class="mcv-file-thumbnail-wrapper" [ngClass]="{'mcv-file-thumbnail-wrapper-vertical':isVerticalThumb}"
+    *ngIf="showPreview && (mediaType=='image' || mediaType=='video' || mediaType=='audio')" (click)="onPreviewClick()">
+
+    <img #previewImage class="mcv-file-thumbnail" src="{{ thumbUrl || url || 'assets/images/file-not-found.png' }}"
+      alt="" *ngIf="mediaType==='image'" crossorigin="anonymous" />
+
+    <div class="mcv-file-thumbnail-icon" *ngIf="mediaType==='video'">
+      <mat-icon>play_circle_filled</mat-icon>
+    </div>
+    <div class="mcv-file-thumbnail-icon" *ngIf="mediaType==='audio'">
+      <mat-icon>music_note</mat-icon>
+    </div>
+
+    <img class="mcv-file-thumbnail-icon" src="assets/icons/{{extension}}.png" alt=""
+      *ngIf="mediaType!='image' && mediaType!='video' && mediaType!='audio'" />
+
+
+    <div class="mcv-file-video-preview" *ngIf="mediaType=='video'">
+      <!-- <mcv-video-player [url]="url" [contentType]="contentType" [fit]="'cover'"></mcv-video-player> -->
+      <img class="mcv-file-thumbnail" src="{{ getVideoThumbUrl(url) || 'assets/images/file-not-found.png' }}" alt=""
+        *ngIf="mediaType==='video' && url" />
+    </div>
+  </div>
+
+  <div class="mcv-file-caption" *ngIf="mediaCaption">
+    <small>{{mediaCaption}}</small>
+  </div>
+  <div class="mcv-file">
+    <div class="mcv-file-detail text-nowrap mr-1" [matTooltip]="filename" (click)="onPreviewClick()"
+      *ngIf="!((mediaType=='image' || mediaType==='video' || mediaType==='audio') && hideDetails)">
+      <mat-icon class="mcv-file-icon">attach_file</mat-icon>
+
+      <div class="text-nowrap">
+        <h6 class="mcv-file-name mb-0">{{filename | mcvFileExtension:13}}</h6>
+        <span *ngIf="size">{{size | mcvFileSize}}</span>
+        <span class="float-right" *ngIf="isUploading">uploading... {{progress}}%</span>
+      </div>
+    </div>
+    <div class="mcv-file-actions" *ngIf="progress">
+      <button mat-icon-button (click)="onDelete()" aria-label="Cancel">
+        <mat-icon>clear</mat-icon>
+      </button>
+    </div>
+    <div class="mcv-file-actions" *ngIf="!hideDetails && !progress">
+      <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="context-menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+
+        <button mat-menu-item (click)="onCrop()" aria-label="crop" *ngIf="mediaType === 'image' && showEditor">
+          <mat-icon>transform</mat-icon>
+          <span>Crop</span>
+        </button>
+
+        <button mat-menu-item (click)="onPreviewClick()" aria-label="Preview"
+          *ngIf="mediaType === 'image' || mediaType === 'video' || mediaType === 'audio' || mediaType === 'pdf'">
+          <mat-icon>launch</mat-icon>
+          <span>Preview</span>
+        </button>
+
+        <button mat-menu-item (click)="onDownload()" aria-label="Download">
+          <mat-icon>get_app</mat-icon>
+          <span>Download</span>
+        </button>
+
+        <button mat-menu-item (click)="onCopy()" aria-label="Copy" *ngIf="showCopy">
+          <mat-icon>file_copy</mat-icon>
+          <span>Copy</span>
+        </button>
+
+        <button mat-menu-item (click)="onDelete()" aria-label="Remove" *ngIf="showRemove">
+          <mat-icon>clear</mat-icon>
+          <span>Delete</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+
+  <mat-progress-bar *ngIf="progress" mode="determinate" [value]="progress">
+  </mat-progress-bar>
+  <mat-progress-bar *ngIf="download$ | async as download"
+    [mode]="download.state == 'PENDING' ? 'buffer' : 'determinate'" [value]="download.progress">
+  </mat-progress-bar>
+</div>

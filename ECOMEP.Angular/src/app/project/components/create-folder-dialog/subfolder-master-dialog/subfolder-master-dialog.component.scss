@@ -1,0 +1,50 @@
+:host {
+  display: block;
+  min-width: 400px;
+}
+
+.add-section {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding-top: 8px;
+  margin-bottom: 16px;
+}
+
+.flex-grow {
+  flex: 1;
+}
+
+.list-container {
+  margin-top: 16px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.list-header {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: #666;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.subfolder-item {
+  border-radius: 4px;
+  transition: background 0.2s;
+  
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.empty-msg {
+  text-align: center;
+  padding: 40px 0;
+  color: #888;
+  font-style: italic;
+}
+
+.mat-mdc-dialog-content {
+  padding-bottom: 20px;
+}

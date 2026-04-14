@@ -1,0 +1,61 @@
+<div class="activity-item">
+  <!-- Content Section -->
+  <div class="d-flex align-items-start">
+    <div class="flex-grow-0 flex-shrink-0">
+        <img src="{{ item.contactPhotoUrl || 'assets/images/user.png'}}" alt="" [matTooltip]="item.contactName" (click)="openPhotoDialog(item)" style="cursor: pointer;"
+        class="user-thumbnail float-left mr-2">
+    </div>
+    
+    <div class="content-container">
+      <div class="timestamp d-flex justify-content-between align-items-center">
+        <span>{{item.created | date:'dd MMM y HH:mm'}}</span>
+        <mat-icon *ngIf="item.propertyChanges?.length > 0" (click)="togglePropertyChanges()" [class.rotated]="showPropertyChanges">keyboard_arrow_down</mat-icon>
+      </div>
+      <p class="activity-status" [ngClass]="{'text-primary': item.statusFlag==0,
+              'text-success':item.statusFlag==1,
+              'text-danger':item.statusFlag==2,
+              'text-warning':item.statusFlag==3}">{{item.status}}</p>
+    </div>
+  </div>
+  
+  <!-- Action and Comment Section -->
+  <div *ngIf="item.action || item.comments">
+    <div class="comment-text" *ngIf="item.action"><strong>Action:</strong> {{item.action}}</div>
+    <div class="comment-text" *ngIf="item.comments"><strong>Comment:</strong> {{item.comments}}</div>
+  </div>
+  
+  <!-- Table Section -->
+  <div class="property-changes-table" *ngIf="showPropertyChanges && item.propertyChanges?.length > 0">
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th>Field</th>
+          <th>Old Value</th>
+          <th>New Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let change of item.propertyChanges">
+          <td>{{change.propertyName}}</td>
+          <td>{{change.oldValue}}</td>
+          <td>{{change.newValue}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="row" *ngIf="item.attachments">
+    <div class="col-12">
+      <ul class="mcv-file-list">
+
+        <li *ngFor="let file of item?.attachments">
+          <mcv-file [filename]="file.filename" [size]="file.size" [downloadUrl]="file.url" [showPreview]="true"
+            [url]="file.url || file.thumbUrl" [singlePreview]="true">
+          </mcv-file>
+
+        </li>
+
+      </ul>
+    </div>
+</div>
+</div>

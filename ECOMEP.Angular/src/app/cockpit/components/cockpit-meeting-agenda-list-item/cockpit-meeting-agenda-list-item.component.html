@@ -1,0 +1,79 @@
+<div class="agenda-content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h6 class="project-title font-focused">{{agenda?.meetingTitle}}</h6>
+                    <h6 class="agenda-title font-focused">{{agenda?.title}} | {{agenda?.subtitle}}</h6>
+                </div>
+                <div class="d-flex">
+                    <button mat-icon-button (click)="onEditClick()"  matTooltip="Edit"
+                        aria-label="Edit">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between" [ngClass]="{'flex-column': isMobileView}">
+                <div [ngClass]="{'d-flex align-items-center justify-content-between':isMobileView}">
+                    <small>Status: </small>
+                    <div>
+                        <span class="badge badge-danger mr-1" *ngIf="isDelayed">DELAYED</span>
+                        <span class="badge badge-danger mr-1" *ngIf="agenda?.statusFlag==0">PENDING</span>
+                        <span class="badge badge-dark mr-1"
+                            *ngIf="(agenda?.typeFlag==MEETING_TYPEFLAG_MEETING || agenda?.typeFlag==MEETING_TYPEFLAG_CNOTE) && agenda?.statusFlag==1">RESOLVED</span>
+                        <span class="badge badge-dark mr-1"
+                            *ngIf="(agenda?.typeFlag==MEETING_TYPEFLAG_INSPECTION) && agenda?.statusFlag==1">COMPLETE</span>
+                    </div>
+                </div>
+                <div [ngClass]="{'d-flex align-items-center justify-content-between pt-1':isMobileView, 'pl-2':!isMobileView}"
+                    class="">
+                    <small>Reminders:</small>
+                    <div>
+                        <strong> {{agenda?.reminderCount | number:'2.0'}}</strong>
+                    </div>
+                </div>
+
+                <div [ngClass]="{'d-flex align-items-center justify-content-between pt-1':isMobileView, 'pl-2':!isMobileView}"
+                    class=" " *ngIf="agenda?.statusFlag==0">
+                    <small>DueDate: </small>
+                    <div>
+                        <strong>{{agenda?.dueDate | date:"dd MMM y"}}</strong>
+                    </div>
+                </div>
+
+
+                <div [ngClass]="{'d-flex align-items-center justify-content-between pt-1':isMobileView, 'pl-2':!isMobileView}"
+                    class=" " *ngIf="agenda?.statusFlag==0">
+                    <small>ActionBy: </small>
+                    <div>
+                        <strong>{{agenda?.actionBy }}</strong>
+                    </div>
+                </div>
+
+                <div class="pl-2 " *ngIf="agenda?.statusFlag!=0">
+                    <small>Resolved On: </small>
+                    <div>
+                        <strong>{{agenda?.modified | date:"dd MMM y"}}</strong>
+                    </div>
+                </div>
+
+
+                <div class="pl-2 pr-2" *ngIf="agenda?.statusFlag!=0">
+                    <small>Resolved By: </small>
+                    <div>
+                        <strong>{{agenda?.modifiedBy }}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <small>Modified: {{agenda?.modified | date:"dd MMM yy HH:mm"}} | {{agenda?.modifiedBy}} |
+                        {{agenda?.updateFrom
+                        ||
+                        (agenda?.typeFlag==MEETING_TYPEFLAG_INSPECTION?'INSPECTION':'MEETING')}}</small>
+                </div>
+            </div>
+        </div>
+    </div>

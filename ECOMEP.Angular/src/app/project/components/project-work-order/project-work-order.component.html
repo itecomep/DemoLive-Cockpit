@@ -1,0 +1,56 @@
+<div class="work-order-container">
+    <div class="d-flex align-items-center justify-content-end p-2">
+         <button mat-icon-button  (click)="openWorkOrderServiceMaster()" *ngIf="isPermissionWorkOrderServiceMaster">
+         <mat-icon >settings</mat-icon>  
+        </button>
+        <button mat-raised-button color="primary" (click)="onNewWorkOrder()" *ngIf="isPermissionWorkOrderEdit">
+            + New
+        </button>
+    </div>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th *ngIf="typeFlag == 0">WorkOrder No</th>
+                    <th *ngIf="typeFlag == 1">Offer No</th>
+                    <th *ngIf="typeFlag == 0">WorkOrder Date</th>
+                    <th *ngIf="typeFlag == 1">Offer Date</th>
+                    <th>Due Date</th>
+                    <th>Amount</th>
+                    <th></th>
+                </tr>
+                <tr class="total">
+                    <th colspan="3">Total</th>
+                    <th>{{totalFee | currency:'INR'}}</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of workOrders">
+                    <td>{{item.workOrderNo}}</td>
+                    <td>{{item.workOrderDate | date:'dd MMM y'}}</td>
+                    <td>{{item.dueDate | date:'dd MMM y'}}</td>
+                    <td>{{item.fees | currency:'INR'}}</td>
+                    <td>
+                        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="context-menu"
+                            *ngIf="isPermissionWorkOrderEdit">
+                            <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #menu="matMenu">
+                            <button mat-menu-item (click)="onEdit(item)" aria-label="edit">
+                                <mat-icon>edit</mat-icon>
+                                <span>Edit</span>
+                            </button>
+                            <button mat-menu-item (click)="onDelete(item)" aria-label="crop"
+                                *ngIf="isPermissionWorkOrderDelete">
+                                <mat-icon>delete</mat-icon>
+                                <span>Delete</span>
+                            </button>
+                        </mat-menu>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,6 @@
+@import '/src/variables';
+@import 'theme';
+
+$mcv-star-rating-default: $gray-400;
+$mcv-star-rating-active: mat-color($mcv-primary, 500);
+$mcv-star-rating-selected: mat-color($mcv-primary, 500);

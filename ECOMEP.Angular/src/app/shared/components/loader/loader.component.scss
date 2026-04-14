@@ -1,0 +1,200 @@
+@import "variables";
+@import 'theme';
+
+$ball-width: 30px;
+$ball-height: 30px;
+$bounce_height: 60px;
+
+.loader-overlay {
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999999;
+    display: -webkit-box;
+    display: flex;
+    -webkit-box-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    flex-direction: row;
+    background: $black;
+    opacity: 0.7;
+    -webkit-transition: .8s ease;
+    transition: .8s ease;
+
+    background-size: 10px 10px;
+    background-image: repeating-linear-gradient(45deg, $gray-100 0, $gray-100 1px, $gray-300 0, $gray-300 50%);
+
+
+
+}
+
+
+.loader-logo {
+    // position: absolute;
+    // top: 50%;
+    // left: 50%;
+    // transform: translate(-50%, -50%);
+    // z-index: 999999999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-height: 120px;
+    max-width: 120px;
+    // padding: 0.5rem;
+    // background-color: $white;
+    // border-radius: $border-radius;
+    // box-shadow: $box-shadow ;
+
+    & img {
+        max-width: 100%;
+        max-height: 100%;
+        // Makes `<img>` tags behave like `background-size: cover`. Not supported
+        // in IE, but we're using it as a progressive enhancement.
+        -o-object-fit: contain;
+        object-fit: contain;
+    }
+}
+
+.loader-footer {
+    position: fixed;
+    right: 2rem;
+    bottom: 1rem;
+    z-index: 999999;
+    color: $black;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.loader-header {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    /* transform: translate(-50%, 0); */
+    z-index: 999999999;
+    padding: 0 2rem;
+}
+
+.loader-content {
+    // position: absolute;
+    // top: 50%;
+    // left: 50%;
+    // transform: translate(-50%, -50%);
+    // z-index: 999999999;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    /* transform: translate(-50%, 0); */
+    z-index: 999999999;
+    // display: flex;
+    // flex-direction: column;
+    /* background: #212529; */
+    /* color: #fff; */
+    /* border-radius: 4px; */
+    /* box-shadow: 0 3px 1px -2px rgba(22, 18, 18, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12); */
+    // justify-content: space-between;
+    // align-items: flex-start;
+    padding: 0 2rem;
+
+
+    .loader-animation {
+        display: -webkit-box;
+        display: flex;
+        -webkit-box-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        align-items: center;
+        -webkit-box-orient: horizontal;
+        // padding: 0.5rem;
+
+        .loading {
+            height: 72px;
+
+            .text {
+                display: inline-block;
+                margin-left: 1rem;
+
+                h1 {
+                    margin-bottom: 2px;
+                    font-weight: 600;
+                }
+            }
+
+            .bounceball {
+                position: relative;
+                display: inline-block;
+                height: 37px;
+                width: $ball-width;
+
+                &:before {
+                    position: absolute;
+                    content: '';
+                    display: block;
+                    top: 0;
+                    width: $ball-width;
+                    height: $ball-height;
+                    border-radius: 50%;
+                    background-color: $black;
+                    transform-origin: 50%;
+                    animation: bounce 500ms alternate infinite ease;
+                }
+            }
+        }
+    }
+
+
+}
+
+
+@keyframes bounce {
+    0% {
+        top: $bounce_height;
+        height: 5px;
+        border-radius: 60px 60px 20px 20px;
+        transform: scaleX(2);
+    }
+
+    35% {
+        height: $ball-height;
+        border-radius: 50%;
+        transform: scaleX(1);
+    }
+
+    100% {
+        top: 0;
+    }
+}
+
+
+@media only screen and (max-width: 768px) {
+    .loader-logo {
+        position: absolute;
+        top: 10%;
+        left: 2rem;
+        right: 2rem;
+        transform: none;
+        display: flex;
+        justify-content: center;
+        max-width: 100%;
+    }
+
+    .loader-footer {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        align-items: center;
+    }
+
+    .loader-content {
+        right: 0;
+    }
+}

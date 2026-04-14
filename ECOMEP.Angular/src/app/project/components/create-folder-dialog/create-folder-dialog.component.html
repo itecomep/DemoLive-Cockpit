@@ -1,0 +1,228 @@
+<div class="dms-wrapper">
+  <div class="dms-header-container">
+    <h2 mat-dialog-title class="dms-header">
+      <div class="title-group">
+        <mat-icon class="header-icon">create_new_folder</mat-icon>
+        <div class="title-text">
+          <span>Save to DMS</span>
+          <small>Select destination and classify your file</small>
+        </div>
+      </div>
+    </h2>
+    <button mat-icon-button (click)="onCancel()" class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div *ngIf="uploadingFiles.length" class="global-upload-bar">
+    <div *ngFor="let file of uploadingFiles" class="upload-item">
+      <span>{{ file.filename }}</span>
+      <div class="progress-container">
+        <div class="progress-bar" [style.width.%]="file.progress"></div>
+      </div>
+      <small>{{ file.progress }}%</small>
+    </div>
+  </div>
+
+  <mat-dialog-content class="dms-body">
+    <div class="section-group" *ngIf="!isOtherMode">
+      <mat-form-field appearance="outline" class="density-tight full-width">
+        <mat-label>Classification</mat-label>
+        <input matInput [(ngModel)]="folderType" placeholder="Select classification" [matAutocomplete]="auto" (ngModelChange)="onClassificationChange($event)" />
+
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayName">
+          <mat-option *ngFor="let c of filteredClassifications" [value]="c">
+            {{ c.name }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="density-tight full-width">
+        <mat-label>Sub Classification</mat-label>
+        <input matInput [(ngModel)]="subClassification" [matAutocomplete]="subAuto" (ngModelChange)="onSubClassificationChange($event)" />
+
+        <mat-autocomplete #subAuto="matAutocomplete" [displayWith]="displayName">
+          <mat-option *ngFor="let s of filteredSubClassifications" [value]="s">
+            {{ s.name }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="density-tight full-width">
+        <mat-label>Sub Sub Classification</mat-label>
+        <input matInput [(ngModel)]="subSubClassification" [matAutocomplete]="subSubAuto" (ngModelChange)="onSubSubClassificationChange($event)" />
+
+        <mat-autocomplete #subSubAuto="matAutocomplete" [displayWith]="displayName">
+          <mat-option *ngFor="let s of filteredSubSubClassifications" [value]="s">
+            {{ s.name }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" (click)="addFullClassification()" *ngIf="isPermissionFolderAdd">
+        Add Folder
+      </button>
+      <button mat-raised-button color="accent" (click)="openSubfolderMaster()" *ngIf="isPermissionSubFolderAdd">
+        Manage Subfolder Master
+      </button>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width" *ngIf="isMasterUser">
+      <mat-label>Block Users</mat-label>
+      <mat-chip-grid #chipGrid>
+        <mat-chip-row *ngFor="let userId of selectedContacts" (removed)="removeUser(userId)">{{ getUserName(userId) }}
+          <button matChipRemove>
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-chip-row>
+        <input placeholder="Select users" [matMenuTriggerFor]="contactsMenu" [matChipInputFor]="chipGrid" readonly />
+      </mat-chip-grid>
+      <button mat-icon-button matSuffix [matMenuTriggerFor]="contactsMenu">
+        <mat-icon>filter_alt</mat-icon>
+      </button>
+    </mat-form-field>
+    <mat-menu #contactsMenu="matMenu" class="contacts-menu">
+      <div class="menu-search" (click)="$event.stopPropagation()">
+        <mat-form-field appearance="outline" class="full-width small-field">
+          <input matInput placeholder="Search user" [(ngModel)]="contactsSearch" (input)="filterContacts()" (keydown)="$event.stopPropagation()" />
+        </mat-form-field>
+      </div>
+      <button mat-menu-item (click)="$event.stopPropagation(); toggleSelectAll()">
+        <mat-checkbox [checked]="isAllSelected()">
+          {{ isAllSelected() ? 'Deselect All' : 'Select All' }}
+        </mat-checkbox>
+      </button>
+      <mat-divider></mat-divider>
+      <div class="menu-list">
+        <button mat-menu-item *ngFor="let contact of filteredContactOptions; trackBy: trackById" (click)="$event.stopPropagation(); toggleSelection(contact)">
+          <mat-checkbox [checked]="selectedContacts.includes(contact.id)">
+            {{ contact.name }}
+          </mat-checkbox>
+        </button>
+      </div>
+
+    </mat-menu>
+
+    <div class="tags-input">
+      <mat-form-field appearance="fill">
+        <mat-label>Tags</mat-label>
+        <input matInput [(ngModel)]="tagInput" placeholder="Enter tag and press Enter Key" (keydown.enter)="addTag($event)" (keydown.comma)="addTag($event)" />
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="button" (click)="addTag($event)">
+        Add Tag
+      </button>
+    </div>
+
+    <div class="tag-chips">
+      <span class="tag-chip" *ngFor="let t of tags">
+        {{ t }}
+        <button mat-icon-button (click)="removeTag(t)">
+          <mat-icon>close</mat-icon>
+        </button>
+      </span>
+    </div>
+
+    <div class="upload-container" [class.has-file]="selectedFiles.length" [class.dragging]="isDragging">
+      <input type="file" #fileDrop (change)="onFilesSelected($event)" multiple hidden />
+      <div class="upload-trigger" (click)="!isDragging && fileDrop.click()" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
+        <mat-icon>upload_file</mat-icon>
+        <div class="upload-text" *ngIf="!selectedFiles.length">
+          <strong>Click to upload</strong> or drag and drop
+        </div>
+        <div class="upload-text" *ngIf="selectedFiles.length">
+          <div class="preview-grid">
+            <div class="preview-card" *ngFor="let file of selectedFiles">
+              <button mat-icon-button class="remove-btn" (click)="removeFile(file); $event.stopPropagation()">
+                <mat-icon>close</mat-icon>
+              </button>
+
+              <ng-container *ngIf="file.type.startsWith('image/'); else fileIcon">
+                <img [src]="getPreviewUrl(file)" class="preview-image" />
+              </ng-container>
+
+              <ng-template #fileIcon>
+                <!-- <mat-icon class="file-icon">insert_drive_file</mat-icon> -->
+                <mat-icon class="file-icon"> {{ getFileIcon(file) }} </mat-icon>
+              </ng-template>
+
+              <div class="file-info">
+                <span class="file-name" [title]="file.name">{{ file.name }}</span>
+                <span class="file-size">
+                  {{ (file.size / 1024).toFixed(1) }} KB
+                </span>
+              </div>
+            </div>
+          </div>
+          <small class="change-text">Click to change files</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">
+      <span>Target Location</span>
+    </div>
+    <div class="explorer-container">
+      <ng-container *ngTemplateOutlet="treeTemplate; context: { nodes: folderTree }"></ng-container>
+    </div>
+
+   
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dms-footer">
+    <button mat-button (click)="onCancel()" class="cancel-btn">Discard</button>
+    <button mat-raised-button color="primary" class="save-btn" [disabled]="!selectedFiles.length || (!folderType && !selectedNode)" (click)="onCreate()">
+      <mat-icon>check_circle</mat-icon> Finalize & Save
+    </button>
+  </mat-dialog-actions>
+</div>
+
+<ng-template #treeTemplate let-nodes="nodes">
+  <div class="tree-item" *ngFor="let node of nodes">
+    <div class="tree-row" [class.is-selected]="selectedNode === node">
+      <mat-icon class="expand-icon" *ngIf="node.children?.length || node.files?.length" (click)="node.expanded = !node.expanded; $event.stopPropagation()">
+        {{ node.expanded ? "expand_more" : "chevron_right" }}
+      </mat-icon>
+
+      <mat-icon class="folder-icon" (click)="selectFolder(node)">
+        {{ selectedNode === node ? "folder_open" : "folder" }}
+      </mat-icon>
+
+      <ng-container *ngIf="node.isNew; else normalNode">
+        <mat-form-field *ngIf="currentNewNode === node && showSubFolderDropdown" appearance="outline">
+          <mat-select [(ngModel)]="selectedSubFolderOption" (selectionChange)="onSubFolderSelect($event.value, node)" (closed)="onSubFolderClosed(node)">
+            <mat-option *ngFor="let f of subFolderOptions" [value]="f">
+              {{ f }}
+            </mat-option>
+            <mat-option value="others">Others...</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <input *ngIf="showCustomFolderInput && currentNewNode === node" matInput [(ngModel)]="node.name" (blur)="finalizeFolderName(node)" (keydown.enter)="finalizeFolderName(node)" placeholder="Enter folder name..." />
+      </ng-container>
+      <ng-template #normalNode>
+        <span class="node-label" (click)="selectFolder(node)">
+          {{ node.name }}
+        </span>
+      </ng-template>
+
+      <button mat-icon-button class="add-sub-btn" *ngIf="node.level >= 2" (click)="addFolder(node); $event.stopPropagation()" matTooltip="Add sub-folder">
+        <mat-icon>add</mat-icon>
+      </button>
+      <button mat-icon-button class="delete-btn" (click)="removeFolder(node); $event.stopPropagation()" matTooltip="Remove folder" [disabled]="(node.children?.length || 0) > 0 || (node.files?.length || 0) > 0">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+
+    <div class="tree-files" *ngIf="node.expanded && node.files?.length">
+      <div class="file-item" *ngFor="let file of node.files">
+        <mat-icon>insert_drive_file</mat-icon>
+        <a href="javascript:void(0)" (click)="downloadFile(file)">
+          {{ file.filename || file.fileName }}
+        </a>
+      </div>
+    </div>
+
+    <div class="tree-children" *ngIf="node.expanded && node.children?.length">
+      <ng-container *ngTemplateOutlet="treeTemplate; context: { nodes: node.children }"></ng-container>
+    </div>
+  </div>
+</ng-template>

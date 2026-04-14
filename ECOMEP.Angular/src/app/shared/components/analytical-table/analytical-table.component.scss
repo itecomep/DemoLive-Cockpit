@@ -1,0 +1,225 @@
+@import 'variables';
+@import 'theme';
+::ng-deep .mat-mdc-menu-panel {
+  max-height: 30rem !important;
+  overflow-y: auto;
+}   
+::ng-deep .mat-pseudo-checkbox {
+    display: none !important;
+}
+
+::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled):not(.mat-mdc-option-multiple) {
+    background-color: transparent !important;
+}
+.mat-mdc-menu-item,
+.mat-mdc-icon-button,
+.mat-mdc-menu-item,
+.mdc-button {
+
+  img {
+    width: 24px;
+    height: 24px;
+    background-size: cover;
+  }
+}
+.analytical-wrapper {
+   position: relative;
+    width: 100%;
+    overflow: auto;
+    
+    height: calc(100vh - 9rem);
+   
+    .data-filter-row {
+    .filter-header {
+      display: flex;
+        align-items: start;
+        justify-content: left;
+        padding: 0rem 0.1rem;
+    
+    }
+    // padding: 0.2rem 0.4rem 0.3rem 0.4rem;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem; // Spacing between items
+
+    h6 {
+      padding: 0.2rem;
+        margin: 0;
+        font-size: 0.8rem;
+        background: rgba(124, 124, 124, 0.1);
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        cursor: pointer;
+
+        b {
+            font-weight: 600;
+            color: mat-color($mcv-primary,500);// Highlighting filter type
+        }
+
+
+      .clear-icon {
+         cursor: pointer;
+            font-size: 0.75rem;
+            margin-left: 0.3rem;
+            transition: opacity 0.3s;
+            opacity: 0.6;
+
+            &:hover {
+                opacity: 1;
+      }
+
+      &:last-child {
+        cursor: pointer;
+        color: $blue-600;
+        
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+    }}
+  .analytical-table-wrapper{
+      position: relative;
+      width: 100%;
+
+    table {
+      min-width: 100%;
+        font-size: 0.8rem;
+        cursor: pointer;
+      
+      thead {
+        background-color: $gray-400;
+        position: sticky ;
+        position: -webkit-sticky;
+        top: 0 ;
+        z-index: 10;
+        tr{   
+          td,
+        th {
+          // border-bottom: 1px solid $gray-400;
+          border-right: 1px solid $gray-300;
+          padding: 0.4rem 0.3rem;
+          text-align: center;
+          
+          &.text-left {
+            text-align: left;
+          }
+          
+          &.text-right {
+            text-align: right;
+          }
+          
+          &.sort {
+            background-color: $gray-500;
+            color: white;
+            
+            .table-header {
+              mat-icon {
+                color: white;
+              }
+              
+              h6 {
+                color: white;
+              }
+            }
+          }
+          .table-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            gap: 0.25rem;
+
+              mat-icon {
+              font-size: 1rem;
+              width: 1rem;
+              height: 1rem;
+            }
+          }
+            
+            &.filter {
+                background-color: mat-color($mcv-primary, 500);
+                color: white;
+                
+                .analysis-table-header {
+                  mat-icon {
+                    color: white;
+                  }
+                  
+                  h6 {
+                    color: white;
+                  }
+                }
+              }
+
+            
+            h6 {
+              font-weight: 600;
+                font-size: 0.8rem !important;
+            } 
+          }
+        }
+      }
+      
+      .total-row {
+        background-color: #e7e7e78b;
+        td {
+          border-bottom: 1px solid $gray-400;
+            border-right: 1px solid $gray-300;
+            padding: 0.4rem 0.3rem;
+            
+            // &.text-left {
+            //   text-align: left;
+            // }
+            
+            // &.text-right {
+            //   text-align: right;
+            // }
+        }
+      }
+      
+      tbody {
+        tr {
+          td{
+            border-bottom: 1px solid $gray-400;
+              border-right: 1px solid $gray-300;
+              padding: 0.6rem 0.3rem;
+              text-align: center;
+              
+              &.text-left {
+                text-align: left;
+              }
+              
+              &.text-right {
+                text-align: right;
+              }
+
+              &:nth-child(-n+4) {
+                text-align: left;
+              }
+
+              &:nth-last-child(-n+6) {
+                text-align: right;
+              }
+
+              &.text-nowrap {
+                white-space: nowrap;
+              }
+          
+            }
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width:767px) {
+    .analytical-table-wrapper{
+      overflow: auto !important;
+    }
+    
+  }
+}

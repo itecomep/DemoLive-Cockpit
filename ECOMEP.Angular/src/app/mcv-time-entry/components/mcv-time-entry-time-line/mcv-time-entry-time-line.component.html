@@ -1,0 +1,5 @@
+<div class="mcv-timeline-wrapper" [style.height.px]="timelineHeight">
+  <mcv-time-line [start]="'00:00'" [end]="'24:00'" #mcvTimeline [events]="events" [resources]="resources"
+    (eventUpdate)="onEventUpdate($event)" (eventGroupHeightChange)="onUpdateHeight($event)"
+    (rangeChange)="onRangeChange($event)" (slotSelection)="onSlotSelection($event)"></mcv-time-line>
+</div>

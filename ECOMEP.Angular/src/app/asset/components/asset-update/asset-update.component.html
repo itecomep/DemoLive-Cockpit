@@ -1,0 +1,929 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">{{currentEntity.code}} | {{currentEntity.title}} {{currentEntity.subtitle}}</h5>
+    <div class="d-flex align-items-center">
+        <button mat-raised-button color='primary' (click)="onSubmit()">Save</button>
+        <button mat-icon-button aria-label="close" (click)="onClose(null)">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+<mat-dialog-content>
+    <div class="row p-2 asset-wrapper">
+        <div class="col-md-6">
+            <div class="row left-column">
+                <div class="category-title-subtitle-wrapper col-12 row" [formGroup]="form">
+                    <mat-form-field appearance="outline" class="col-md-6 col-12">
+                        <mat-label>Asset Category</mat-label>
+                        <mat-select formControlName="category">
+                            <mat-option *ngFor="let item of categoryOptions" [value]="item">
+                                {{item}}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error>{{ getErrorMessage(f.category)}}</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="col-md-6 col-12">
+                        <mat-label>Status</mat-label>
+                        <mat-select formControlName="statusFlag">
+                            <mat-option *ngFor="let item of statusOptions" [value]="item.value">
+                                {{item.title}}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error>{{ getErrorMessage(f.statusFlag)}}</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="col-md-6 col-12">
+                        <mat-label>Title</mat-label>
+                        <input placeholder="Title" aria-label="Title" matInput formControlName="title">
+                        <mat-error>{{getErrorMessage(f.title)}}</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="col-md-6 col-12">
+                        <mat-label>Subtitle</mat-label>
+                        <input placeholder="Subtitle" aria-label="Subtitle" matInput formControlName="subtitle">
+                        <mat-error>{{getErrorMessage(f.subtitle)}}</mat-error>
+                    </mat-form-field>
+
+                  
+                    <mat-form-field appearance="outline" class="col-md-6 col-12">
+                        <mat-label>Quantity</mat-label>
+                        <input type="number" placeholder="quantity" aria-label="quantity" matInput
+                            formControlName="quantity">
+                        <mat-error>{{getErrorMessage(f.quantity)}}</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="col-md-6 col-12">
+                        <mat-label>Cost</mat-label>
+                        <input class="text-right" type="number" placeholder="Cost" aria-label="Cost" matInput
+                            formControlName="cost">
+                        <span matSuffix class="pl-1">&#8377;&nbsp;</span>
+                        <mat-error>{{getErrorMessage(f.cost)}}</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="col-md-6 col-12">
+                        <mat-label>Purchase Date</mat-label>
+                        <input placeholder="Purchase Date" aria-label="Purchase Date" matInput
+                            formControlName="purchaseDate" [matDatepicker]="purchaseDatePicker" />
+                        <mat-datepicker-toggle matSuffix
+                            [for]="purchaseDatePicker"></mat-datepicker-toggle>
+                        <mat-datepicker [touchUi]="isMobileView"
+                            #purchaseDatePicker></mat-datepicker>
+                        <mat-error>{{getErrorMessage(f.purchaseDate)}}</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="col-md-6 col-12">
+                        <mat-label>Warranty Date</mat-label>
+                        <input placeholder="Warranty Date" aria-label="Warranty Date" matInput
+                            formControlName="warrantyDate" [matDatepicker]="warrantyDatePicker" />
+                        <mat-datepicker-toggle matSuffix
+                            [for]="warrantyDatePicker"></mat-datepicker-toggle>
+                        <mat-datepicker [touchUi]="isMobileView"
+                            #warrantyDatePicker></mat-datepicker>
+                        <mat-error>{{getErrorMessage(f.warrantyDate)}}</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="col-md-6 col-12">
+                        <mat-label>Validity Date</mat-label>
+                        <input placeholder="Validity Date" aria-label="Validity Date" matInput
+                            formControlName="validityDate" [matDatepicker]="validityDatePicker" />
+                        <mat-datepicker-toggle matSuffix
+                            [for]="validityDatePicker"></mat-datepicker-toggle>
+                        <mat-datepicker [touchUi]="isMobileView"
+                            #validityDatePicker></mat-datepicker>
+                        <mat-error>{{getErrorMessage(f.validityDate)}}</mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="description-wrapper col-md-12" [formGroup]=" form" autocomplete="off">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Description</mat-label>
+                        <textarea placeholder="Enter Description here" aria-label="Description" matInput
+                            formControlName="description" cdkTextareaAutosize #autosize="cdkTextareaAutosize"
+                            cdkAutosizeMinRows="3"></textarea>
+                        <mat-error>{{ getErrorMessage(f.description)}}</mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="link-wrapper col-md-12 col-12">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h6>Linked Assets</h6>
+                        <button mat-icon-button matTooltip="Link Assets"
+                            (click)="onOpenLinkDialog()"><mat-icon>link</mat-icon></button>
+                    </div>
+                    <ul class="asset-link-ul">
+                        <li *ngFor="let item of currentEntity.secondaryAssets">
+                            <div class="img-wrapper">
+                                <img *ngIf="item.secondaryAsset && item.secondaryAsset.attachments && item.secondaryAsset.attachments.length > 0"
+                                    src="{{item.secondaryAsset.attachments[0].url || item.secondaryAsset.attachments[0].thumbUrl || 'assets/images/file-not-found.png'}}" />
+                                <img *ngIf="item.secondaryAsset && item.secondaryAsset.attachments && item.secondaryAsset.attachments.length == 0"
+                                    src="assets/images/file-not-found.png" />
+                            </div>
+                            <div class="asset-details-wrapper">
+                                <div class="property-wrapper">
+                                    <div class="property-label">Code</div>
+                                    <div class="property-value">{{item.secondaryAsset?.code}}</div>
+                                </div>
+                                <div class="property-wrapper">
+                                    <div class="property-label">Title</div>
+                                    <div class="property-value">{{item.secondaryAsset?.title}}</div>
+                                </div>
+                                <div class="property-wrapper">
+                                    <div class="property-label">SubTitle</div>
+                                    <div class="property-value">{{item.secondaryAsset?.subtitle}}</div>
+                                </div>
+                                <div class="property-wrapper">
+                                    <div class="property-label">Created On</div>
+                                    <div class="property-value">{{item.secondaryAsset?.created | date:'dd MMM y'}}
+                                    </div>
+                                </div>
+                            </div>
+                            <button matTooltip="Unlink Assets" mat-icon-button (click)="onUnlink(item)">
+                                <mat-icon>
+                                    link_off
+                                </mat-icon>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="vendor-wrapper col-md-12 row" [formGroup]=" form"
+                    autocomplete="off">
+                    <h6 class="col-12">Vendors</h6>
+                    <div class="col-md-6 col-12 mt-2">
+                        <h6>Purchased From</h6>
+                        <mat-form-field *ngIf="purchasedVendorlist.length == 0" appearance="outline">
+                            <mat-label>Purchased From</mat-label>
+                            <input placeholder="Enter name of contact to select from the list"
+                                aria-label="Select Contact" matInput formControlName="vendor"
+                                [matAutocomplete]="autoContact2" />
+                            <mat-autocomplete #autoContact2="matAutocomplete" [displayWith]="displayFnContact"
+                                (optionSelected)="onVendorSelect($event,'Purchased From')">
+                                <mat-option *ngFor="let option of filteredVendorOptions$ | async" [value]="option">
+                                    {{ option.name }}
+                                </mat-option>
+                            </mat-autocomplete>
+                            <span matSuffix>
+                                <mat-icon>person</mat-icon>
+                            </span>
+                            <mat-error>{{ getErrorMessage(f.vendor) }}</mat-error>
+                        </mat-form-field>
+                        <ul class="simple-list-hover">
+                            <li *ngFor="let vendor of purchasedVendorlist">
+                                <div class="d-flex justify-content-between">
+                                    <div class="flex-grow-1 flex-shrink-1">
+                                        <div class="d-flex">
+                                            <div class="flex-grow-0 flex-shrink-0">
+                                                <img src="{{'assets/images/person-icon.svg' }}"
+                                                    class="user-thumbnail float-left mr-2" alt="" />
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-0 font-focused">{{ vendor.contact?.name }}</h6>
+
+                                                <span class="badge mr-1" [ngClass]="{
+                                                  'badge-secondary': vendor.contact?.typeFlag == 1,
+                                                  'badge-primary': vendor.contact?.typeFlag == 2,
+                                                  'badge-danger': vendor.contact?.typeFlag == 3
+                                                }" *ngIf="vendor.contact?.typeFlag!=0">{{ vendor.contact?.typeValue
+                                                    }}</span>
+
+
+                                                <div class="category-tag-wrapper">
+                                                    <span class="badge badge-warning mr-1 h-100"
+                                                        *ngFor="let cat of vendor.contact?.categories">
+                                                        {{cat}}
+                                                    </span>
+
+                                                    <span>
+                                                        <ul class="search-tags">
+                                                            <li *ngFor="let searchTags of vendor.contact?.searchTags"
+                                                                class="search-tags-tag">
+                                                                {{searchTags}}
+                                                            </li>
+                                                        </ul>
+                                                    </span>
+                                                </div>
+
+                                                <!-- <small *ngIf="vendor.contact?.phone1">
+                                                    {{vendor.contact?.phone1}}
+                                                </small>
+
+                                                <small *ngIf="vendor.contact?.email1">{{vendor.contact?.email1}}
+                                                </small> -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-item-center flex-grow-0 flex-shrink-0">
+                                        <button mat-icon-button (click)="onDeleteVendor(vendor)" matTooltip="Remove"
+                                            aria-label="Remove">
+                                            <mat-icon>cancel</mat-icon>
+                                        </button>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6 col-12  mt-2">
+                        <h6>Maintenance By</h6>
+                        <mat-form-field *ngIf="maintenanceVendorlist.length == 0" appearance="outline">
+                            <mat-label>Maintenance By</mat-label>
+                            <input placeholder="Enter name of contact to select from the list"
+                                aria-label="Select Contact" matInput formControlName="vendor"
+                                [matAutocomplete]="autoContact1" />
+                            <mat-autocomplete #autoContact1="matAutocomplete" [displayWith]="displayFnContact"
+                                (optionSelected)="onVendorSelect($event,'Maintenance By')">
+                                <mat-option *ngFor="let option of filteredVendorOptions$ | async" [value]="option">
+                                    {{ option.name }}
+                                </mat-option>
+                            </mat-autocomplete>
+                            <span matSuffix>
+                                <mat-icon>person</mat-icon>
+                            </span>
+                            <mat-error>{{ getErrorMessage(f.vendor) }}</mat-error>
+                        </mat-form-field>
+                        <ul class="simple-list-hover">
+                            <li *ngFor="let vendor of maintenanceVendorlist">
+                                <div class="d-flex justify-content-between">
+                                    <div class="flex-grow-1 flex-shrink-1">
+                                        <div class="d-flex">
+                                            <div class="flex-grow-0 flex-shrink-0">
+                                                <img src="{{'assets/images/person-icon.svg' }}"
+                                                    class="user-thumbnail float-left mr-2" alt="" />
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-0 font-focused">{{ vendor.contact?.name }}</h6>
+
+                                                <span class="badge mr-1" [ngClass]="{
+                                                  'badge-secondary': vendor.contact?.typeFlag == 1,
+                                                  'badge-primary': vendor.contact?.typeFlag == 2,
+                                                  'badge-danger': vendor.contact?.typeFlag == 3
+                                                }" *ngIf="vendor.contact?.typeFlag!=0">{{ vendor.contact?.typeValue
+                                                    }}</span>
+
+
+                                                <div class="category-tag-wrapper">
+                                                    <span class="badge badge-warning mr-1 h-100"
+                                                        *ngFor="let cat of vendor.contact?.categories">
+                                                        {{cat}}
+                                                    </span>
+
+                                                    <span>
+                                                        <ul class="search-tags">
+                                                            <li *ngFor="let searchTags of vendor.contact?.searchTags"
+                                                                class="search-tags-tag">
+                                                                {{searchTags}}
+                                                            </li>
+                                                        </ul>
+                                                    </span>
+                                                </div>
+
+                                                <!-- <small *ngIf="vendor.contact?.phone1">
+                                                    {{vendor.contact?.phone1}}
+                                                </small>
+
+                                                <small *ngIf="vendor.contact?.email1">{{vendor.contact?.email1}}
+                                                </small> -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-item-center flex-grow-0 flex-shrink-0">
+                                        <button mat-icon-button (click)="onDeleteVendor(vendor)" matTooltip="Remove"
+                                            aria-label="Remove">
+                                            <mat-icon>cancel</mat-icon>
+                                        </button>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="vendor-wrapper col-md-12 row" [formGroup]=" form"
+                    autocomplete="off">
+                    <h6 class="col-12">User</h6>
+                    <div class="col-md-6 col-12">
+                        <mat-form-field *ngIf="userVendorlist.length == 0" appearance="outline">
+                            <mat-label>User</mat-label>
+                            <input placeholder="Enter name of contact to select from the list"
+                                aria-label="Select Contact" matInput formControlName="vendor"
+                                [matAutocomplete]="autoContact3" />
+                            <mat-autocomplete #autoContact3="matAutocomplete" [displayWith]="displayFnContact"
+                                (optionSelected)="onVendorSelect($event,'User')">
+                                <mat-option *ngFor="let option of filteredVendorOptions$ | async" [value]="option">
+                                    {{ option.name }}
+                                </mat-option>
+                            </mat-autocomplete>
+                            <span matSuffix>
+                                <mat-icon>person</mat-icon>
+                            </span>
+                            <mat-error>{{ getErrorMessage(f.vendor) }}</mat-error>
+                        </mat-form-field>
+                        <h6></h6>
+                        <ul class="simple-list-hover">
+                            <li *ngFor="let vendor of userVendorlist">
+                                <div class="d-flex justify-content-between">
+                                    <div class="flex-grow-1 flex-shrink-1">
+                                        <div class="d-flex">
+                                            <div class="flex-grow-0 flex-shrink-0">
+                                                <img src="{{'assets/images/person-icon.svg' }}"
+                                                    class="user-thumbnail float-left mr-2" alt="" />
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-0 font-focused">{{ vendor.contact?.name }}</h6>
+
+                                                <span class="badge mr-1" [ngClass]="{
+                                                  'badge-secondary': vendor.contact?.typeFlag == 1,
+                                                  'badge-primary': vendor.contact?.typeFlag == 2,
+                                                  'badge-danger': vendor.contact?.typeFlag == 3
+                                                }" *ngIf="vendor.contact?.typeFlag!=0">{{ vendor.contact?.typeValue
+                                                    }}</span>
+
+
+                                                <div class="category-tag-wrapper">
+                                                    <span class="badge badge-warning mr-1 h-100"
+                                                        *ngFor="let cat of vendor.contact?.categories">
+                                                        {{cat}}
+                                                    </span>
+
+                                                    <span>
+                                                        <ul class="search-tags">
+                                                            <li *ngFor="let searchTags of vendor.contact?.searchTags"
+                                                                class="search-tags-tag">
+                                                                {{searchTags}}
+                                                            </li>
+                                                        </ul>
+                                                    </span>
+                                                </div>
+
+                                                <!-- <small *ngIf="vendor.contact?.phone1">
+                                                    {{vendor.contact?.phone1}}
+                                                </small>
+
+                                                <small *ngIf="vendor.contact?.email1">{{vendor.contact?.email1}}
+                                                </small> -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-item-center flex-grow-0 flex-shrink-0">
+                                        <button mat-icon-button (click)="onDeleteVendor(vendor)" matTooltip="Remove"
+                                            aria-label="Remove">
+                                            <mat-icon>cancel</mat-icon>
+                                        </button>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-12 col-12 attachment-wrapper">
+                    <div class="asset-attachment-wrapper">
+                        <h6>Images</h6>
+                        <app-mcv-file-upload [uploaderConfig]="blobConfig" [showDrop]="false" [showPaste]="true"
+                            (upload)="onUpload($event,0)" *ngIf="blobConfig">
+                        </app-mcv-file-upload>
+                        <ul class="asset-file-list">
+                            <li *ngFor="let item of imagesAttachments">
+                                <app-asset-file [size]="item.size" [filename]="item.filename" [showRemove]="true"
+                                    [url]="item.thumbUrl || item.url" [files]="currentEntity.attachments"
+                                    [tags]="item.searchTags" [contentType]="item.contentType" [showPreview]="true"
+                                    [showRemove]="true" [downloadUrl]="item.url" [singlePreview]="true"
+                                    [showEditor]="true" [isVerticalThumb]="true"
+                                    (delete)="onDeleteAttachment(item)"></app-asset-file>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="asset-attachment-wrapper">
+                        <h6>Attachments</h6>
+                        <app-mcv-file-upload [uploaderConfig]="blobConfig" [showDrop]="false" [showPaste]="true"
+                            (upload)="onUpload($event,1)" *ngIf="blobConfig">
+                        </app-mcv-file-upload>
+                        <ul class="asset-file-list">
+                            <li *ngFor="let item of otherAttachments">
+                                <mcv-file [filename]="item.filename" [size]="item.size" [showRemove]="true"
+                                    [allowTagging]="false" [downloadUrl]="item.url" [showPreview]="false"
+                                    [singlePreview]="false" [url]="item.url" [showEditor]="false"
+                                    (delete)="onDeleteAttachment(item)">
+                                </mcv-file>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="row" style="gap:0.2rem">
+              
+                <div class="specification-wrapper col-md-12" [formGroup]="form" autocomplete="off">
+                    <h6>Attributes</h6>
+                    <table>
+                        <thead>
+                            <th>Attribute Key</th>
+                            <!-- <th>InputType</th> -->
+                            <th>Attribute Value</th>
+                            <!-- <th>Is Required</th> -->
+                            <th></th>
+                            <!-- <th></th> -->
+                        </thead>
+                        <tbody cdkDropList [cdkDropListData]="currentAttr" (cdkDropListDropped)="onDrop($event)">
+                            <ng-container *ngFor="let item of currentAttr;let i = index">
+                                <tr cdkDrag>
+                                    <td>
+                                        <div class="cell-content">
+                                            <mat-icon
+                                                *ngIf="getFormControl(attributeFA,i,'attributeKey').value && getFormControl(attributeFA,i,'attributeKey').invalid"
+                                                [matTooltip]="getErrorMessage(getFormControl(attributeFA,i,'attributeKey'))">
+                                                report_problem
+                                            </mat-icon>
+
+                                            <div class="cell-input">
+                                                <form>
+                                                    <input matInput (input)="onInput(attributeFA,i,'attributeKey')"
+                                                        [formControl]="getFormControl(attributeFA,i,'attributeKey')"
+                                                        (change)="onCellChange(attributeFA,i,'attributeKey',item)">
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <!-- <td>
+                                        <div class="cell-content">
+                                            <mat-icon
+                                                *ngIf="getFormControl(attributeFA,i,'inputType').value && getFormControl(attributeFA,i,'inputType').invalid"
+                                                [matTooltip]="getErrorMessage(getFormControl(attributeFA,i,'inputType'))">
+                                                report_problem
+                                            </mat-icon>
+
+                                            <div class="cell-input">
+                                                <form>
+                                                    <mat-select
+                                                        [formControl]="getFormControl(attributeFA,i,'inputType')"
+                                                        (selectionChange)="onCellChange(attributeFA,i,'inputType',item)">
+                                                        <mat-option *ngFor="let opt of updateInputOptions"
+                                                            [value]="opt">
+                                                            {{opt}}
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </td> -->
+                                    <td>
+                                        <div class="cell-content">
+                                            <div class="cell-input">
+                                                <form>
+                                                    <form>
+                                                        <input *ngIf="item.inputType == 'SINGLE-LINE'" matInput
+                                                            [formControl]="getFormControl(attributeFA,i,'attributeValue')"
+                                                            (change)="onCellChange(attributeFA,i,'attributeValue',item)" />
+
+                                                        <input *ngIf="item.inputType == 'NUMBER'" matInput
+                                                            [formControl]="getFormControl(attributeFA,i,'attributeValue')"
+                                                            (change)="onCellChange(attributeFA,i,'attributeValue',item)" />
+
+                                                        <div *ngIf="item.inputType == 'CURRENCY'" class="currency-input-wrapper">
+                                                            <input matInput
+                                                                [formControl]="getFormControl(attributeFA,i,'attributeValue')"
+                                                                (change)="onCellChange(attributeFA,i,'attributeValue',item)" />
+                                                            <span>&#8377;</span>
+                                                        </div>
+
+                                                        <textarea *ngIf="item.inputType == 'MULTI-LINE'" matInput
+                                                            [formControl]="getFormControl(attributeFA,i,'attributeValue')"
+                                                            (change)="onCellChange(attributeFA,i,'attributeValue',item)"
+                                                            cdkTextareaAutosize
+                                                            #autosize="cdkTextareaAutosize"></textarea>
+
+                                                        <mat-form-field *ngIf="item.inputType == 'DATE'">
+                                                            <input matInput
+                                                                [formControl]="getFormControl(attributeFA,i,'attributeValue')"
+                                                                (dateChange)="onCellChange(attributeFA,i,'attributeValue',item)"
+                                                                [matDatepicker]="validityDatePicker"
+                                                                placeholder="Select Date" />
+                                                            <mat-datepicker-toggle matSuffix
+                                                                [for]="validityDatePicker"></mat-datepicker-toggle>
+                                                            <mat-datepicker [touchUi]="isMobileView"
+                                                                #validityDatePicker></mat-datepicker>
+                                                        </mat-form-field>
+
+                                                        <mat-form-field *ngIf="item.inputType == 'SINGLE-CHOICE'">
+                                                            <mat-select
+                                                                [formControl]="getFormControl(attributeFA,i,'attributeValue')"
+                                                                (selectionChange)="onCellChange(attributeFA,i,'attributeValue',item)">
+                                                                <mat-option *ngFor="let opt of singleChoiceOptions"
+                                                                    [value]="opt">
+                                                                    {{opt}}
+                                                                </mat-option>
+                                                            </mat-select>
+                                                        </mat-form-field>
+                                                        <mat-form-field *ngIf="item.inputType == 'MULTI-CHOICE'">
+                                                            <mat-select multiple
+                                                                [formControl]="getFormControl(attributeFA,i,'attributeValue')"
+                                                                (selectionChange)="onCellChange(attributeFA,i,'attributeValue',item)">
+                                                                <mat-option
+                                                                    *ngFor="let choice of optionsArray(item.inputOptions)"
+                                                                    [value]="choice">
+                                                                    {{choice}}
+                                                                </mat-option>
+                                                            </mat-select>
+                                                        </mat-form-field>
+                                                    </form>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <!-- <td>
+                                        <div class="cell-content">
+                                            <div class="cell-input">
+                                                <form>
+                                                    <mat-checkbox
+                                                        [formControl]="getFormControl(attributeFA,i,'isRequired')"
+                                                        (change)="onCellChange(attributeFA,i,'isRequired',item)">
+                                                        isRequired
+                                                    </mat-checkbox>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </td> -->
+                                    <td>
+                                        <button mat-icon-button cdkDragHandle>
+                                            <mat-icon>drag_handle</mat-icon>
+                                        </button>
+                                    </td>
+                                    <!-- <td (click)="onDeleteAssetAttribute(item,i)">
+                                        <div class="cell-content justify-content-center">
+                                            <div class="cell-action">
+                                                <mat-icon>close</mat-icon>
+                                            </div>
+                                        </div>
+                                    </td> -->
+                                </tr>
+                            </ng-container>
+                            <!-- <tr>
+                                <td>
+                                    <div class="cell-content">
+                                        <mat-icon
+                                            *ngIf="getFormControl(attributeFA,currentAttr.length,'attributeKey').value && getFormControl(attributeFA,currentAttr.length,'attributeKey').invalid"
+                                            [matTooltip]="getErrorMessage(getFormControl(attributeFA,currentAttr.length,'attributeKey'))">
+                                            report_problem
+                                        </mat-icon>
+
+                                        <div class="cell-input text-left">
+                                            <form>
+                                                <input matInput [disabled]="true"
+                                                    (input)="onInput(attributeFA,currentAttr.length,'attributeKey')"
+                                                    placeholder="Enter Attribute Key"
+                                                    [formControl]="getFormControl(attributeFA,currentAttr.length,'attributeKey')"
+                                                    (change)="onCellChange(attributeFA,currentAttr.length,'attributeKey')">
+                                            </form>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cell-content">
+                                        <mat-icon
+                                            *ngIf="getFormControl(attributeFA,currentAttr.length,'inputType').value && getFormControl(attributeFA,currentAttr.length,'inputType').invalid"
+                                            [matTooltip]="getErrorMessage(getFormControl(attributeFA,currentAttr.length,'inputType'))">
+                                            report_problem
+                                        </mat-icon>
+
+                                        <div class="cell-input text-left">
+                                            <form>
+                                                <mat-select
+                                                    [formControl]="getFormControl(attributeFA,currentAttr.length,'inputType')"
+                                                    (selectionChange)="onCellChange(attributeFA,currentAttr.length,'inputType')">
+                                                    <mat-option *ngFor="let item of inputOptions" [value]="item">
+                                                        {{item}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cell-content">
+                                        <mat-icon
+                                            *ngIf="getFormControl(attributeFA,currentAttr.length,'attributeValue').value && getFormControl(attributeFA,currentAttr.length,'attributeValue').invalid"
+                                            [matTooltip]="getErrorMessage(getFormControl(attributeFA,currentAttr.length,'attributeValue'))">
+                                            report_problem
+                                        </mat-icon>
+
+                                        <div class="cell-input text-left">
+                                            <form>
+                                                <input
+                                                    *ngIf="getFormControl(attributeFA,currentAttr.length,'inputType').value == 'SINGLE-LINE'"
+                                                    matInput
+                                                    [formControl]="getFormControl(attributeFA,currentAttr.length,'attributeValue')"
+                                                    (change)="onCellChange(attributeFA,currentAttr.length,'attributeValue')" />
+
+                                                <input
+                                                    *ngIf="getFormControl(attributeFA,currentAttr.length,'inputType').value == 'NUMBER'"
+                                                    matInput
+                                                    [formControl]="getFormControl(attributeFA,currentAttr.length,'attributeValue')"
+                                                    (change)="onCellChange(attributeFA,currentAttr.length,'attributeValue')" />
+
+                                                <input
+                                                    *ngIf="getFormControl(attributeFA,currentAttr.length,'inputType').value == 'CURRENCY'"
+                                                    matInput
+                                                    [formControl]="getFormControl(attributeFA,currentAttr.length,'attributeValue')"
+                                                    (change)="onCellChange(attributeFA,currentAttr.length,'attributeValue')" />
+
+                                                <span
+                                                    *ngIf="getFormControl(attributeFA,currentAttr.length,'inputType').value == 'CURRENCY'"
+                                                    matSuffix class="pl-1">&#8377;&nbsp;</span>
+
+                                                <textarea
+                                                    *ngIf="getFormControl(attributeFA,currentAttr.length,'inputType').value == 'MULTI-LINE'"
+                                                    matInput
+                                                    [formControl]="getFormControl(attributeFA,currentAttr.length,'attributeValue')"
+                                                    (change)="onCellChange(attributeFA,currentAttr.length,'attributeValue')"
+                                                    cdkTextareaAutosize #autosize="cdkTextareaAutosize"></textarea>
+
+                                                <mat-form-field
+                                                    *ngIf="getFormControl(attributeFA,currentAttr.length,'inputType').value == 'DATE'">
+                                                    <input matInput
+                                                        [formControl]="getFormControl(attributeFA,currentAttr.length,'attributeValue')"
+                                                        [matDatepicker]="validityDatePicker"
+                                                        placeholder="Select Date" />
+                                                    <mat-datepicker-toggle matSuffix
+                                                        [for]="validityDatePicker"></mat-datepicker-toggle>
+                                                    <mat-datepicker [touchUi]="isMobileView"
+                                                        #validityDatePicker></mat-datepicker>
+                                                </mat-form-field>
+
+                                                <mat-form-field
+                                                    *ngIf="getFormControl(attributeFA,currentAttr.length,'inputType').value == 'SINGLE-CHOICE'">
+                                                    <mat-select
+                                                        [formControl]="getFormControl(attributeFA,currentAttr.length,'attributeValue')">
+                                                        <mat-option *ngFor="let item of singleChoiceOptions"
+                                                            [value]="item">
+                                                            {{item}}
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cell-content">
+                                        <div class="cell-input">
+                                            <form>
+                                                <mat-checkbox
+                                                    [formControl]="getFormControl(attributeFA,currentEntity.attributes.length,'isRequired')"
+                                                    (change)="onCellChange(attributeFA,currentEntity.attributes.length,'isRequired')">
+                                                    isRequired
+                                                </mat-checkbox>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td></td>
+                                <td>
+                                    <div class="cell-content justify-content-center">
+                                        <div class="cell-action">
+                                            <mat-icon (click)="onAddAttribute()">add</mat-icon>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr> -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Custom Attributes -->
+                <div class="specification-wrapper col-md-12" [formGroup]="form" autocomplete="off">
+                    <h6>Custom Attributes</h6>
+                    <table>
+                        <thead>
+                            <th>Attribute Key</th>
+                            <!-- <th>InputType</th> -->
+                            <th>Attribute Value</th>
+                            <!-- <th>Is Required</th> -->
+                            <th></th>
+                            <th></th>
+                        </thead>
+                        <tbody cdkDropList [cdkDropListData]="customAttributes" (cdkDropListDropped)="onDrop($event)">
+                            <ng-container *ngFor="let item of customAttributes;let i = index">
+                                <tr cdkDrag>
+                                    <td>
+                                        <div class="cell-content">
+                                            <mat-icon
+                                                *ngIf="getFormControl(customAttributeFA,i,'attributeKey').value && getFormControl(customAttributeFA,i,'attributeKey').invalid"
+                                                [matTooltip]="getErrorMessage(getFormControl(customAttributeFA,i,'attributeKey'))">
+                                                report_problem
+                                            </mat-icon>
+
+                                            <div class="cell-input">
+                                                <form>
+                                                    <input matInput
+                                                        (input)="onInput(customAttributeFA,i,'attributeKey')"
+                                                        [formControl]="getFormControl(customAttributeFA,i,'attributeKey')"
+                                                        (change)="onCellChange(customAttributeFA,i,'attributeKey',item)">
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <!-- <td>
+                                        <h6>{{item.inputType}}</h6>
+                                    </td> -->
+                                    <td>
+                                        <div class="cell-content">
+                                            <div class="cell-input">
+                                                <form>
+                                                    <form>
+                                                        <input *ngIf="item.inputType == 'SINGLE-LINE'" matInput
+                                                            [formControl]="getFormControl(customAttributeFA,i,'attributeValue')"
+                                                            (change)="onCellChange(customAttributeFA,i,'attributeValue',item)" />
+
+                                                        <input *ngIf="item.inputType == 'NUMBER'" matInput
+                                                            [formControl]="getFormControl(customAttributeFA,i,'attributeValue')"
+                                                            (change)="onCellChange(customAttributeFA,i,'attributeValue',item)" />
+
+                                                        <div *ngIf="item.inputType == 'CURRENCY'" class="currency-input-wrapper">
+                                                            <input matInput
+                                                                [formControl]="getFormControl(customAttributeFA,i,'attributeValue')"
+                                                                (change)="onCellChange(customAttributeFA,i,'attributeValue',item)" />
+                                                            <span>&#8377;</span>
+                                                        </div>
+
+                                                        <textarea *ngIf="item.inputType == 'MULTI-LINE'" matInput
+                                                            [formControl]="getFormControl(customAttributeFA,i,'attributeValue')"
+                                                            (change)="onCellChange(customAttributeFA,i,'attributeValue',item)"
+                                                            cdkTextareaAutosize
+                                                            #autosize="cdkTextareaAutosize"></textarea>
+
+                                                        <mat-form-field *ngIf="item.inputType == 'DATE'">
+                                                            <input matInput
+                                                                [formControl]="getFormControl(customAttributeFA,i,'attributeValue')"
+                                                                (dateChange)="onCellChange(customAttributeFA,i,'attributeValue',item)"
+                                                                [matDatepicker]="validityDatePicker"
+                                                                placeholder="Select Date" />
+                                                            <mat-datepicker-toggle matSuffix
+                                                                [for]="validityDatePicker"></mat-datepicker-toggle>
+                                                            <mat-datepicker [touchUi]="isMobileView"
+                                                                #validityDatePicker></mat-datepicker>
+                                                        </mat-form-field>
+
+                                                        <mat-form-field *ngIf="item.inputType == 'SINGLE-CHOICE'">
+                                                            <mat-select
+                                                                [formControl]="getFormControl(customAttributeFA,i,'attributeValue')"
+                                                                (selectionChange)="onCellChange(customAttributeFA,i,'attributeValue',item)">
+                                                                <mat-option *ngFor="let opt of singleChoiceOptions"
+                                                                    [value]="opt">
+                                                                    {{opt}}
+                                                                </mat-option>
+                                                            </mat-select>
+                                                        </mat-form-field>
+                                                        <mat-form-field *ngIf="item.inputType == 'MULTI-CHOICE'">
+                                                            <mat-select multiple
+                                                                [formControl]="getFormControl(customAttributeFA,i,'attributeValue')"
+                                                                (selectionChange)="onCellChange(customAttributeFA,i,'attributeValue',item)">
+                                                                <mat-option
+                                                                    *ngFor="let choice of optionsArray(item.inputOptions)"
+                                                                    [value]="choice">
+                                                                    {{choice}}
+                                                                </mat-option>
+                                                            </mat-select>
+                                                        </mat-form-field>
+                                                    </form>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <!-- <td>
+                                    </td> -->
+                                    <td>
+                                        <button mat-icon-button cdkDragHandle>
+                                            <mat-icon>drag_handle</mat-icon>
+                                        </button>
+                                    </td>
+                                    <td (click)="onDeletCustomAttribute(item,i)">
+                                        <div class="cell-content justify-content-center">
+                                            <div class="cell-action">
+                                                <mat-icon>close</mat-icon>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </ng-container>
+                            <tr>
+                                <td>
+                                    <div class="cell-content">
+                                        <mat-icon
+                                            *ngIf="getFormControl(customAttributeFA,customAttributes.length,'attributeKey').value && getFormControl(customAttributeFA,customAttributes.length,'attributeKey').invalid"
+                                            [matTooltip]="getErrorMessage(getFormControl(customAttributeFA,customAttributes.length,'attributeKey'))">
+                                            report_problem
+                                        </mat-icon>
+
+                                        <div class="cell-input text-left">
+                                            <form>
+                                                <input matInput [disabled]="true"
+                                                    (input)="onInput(customAttributeFA,customAttributes.length,'attributeKey')"
+                                                    placeholder="Enter Attribute Key"
+                                                    [formControl]="getFormControl(customAttributeFA,customAttributes.length,'attributeKey')"
+                                                    (change)="onCellChange(customAttributeFA,customAttributes.length,'attributeKey')">
+                                            </form>
+                                        </div>
+                                    </div>
+                                </td>
+                                <!-- <td>
+                                    <div class="cell-content">
+                                        <mat-icon
+                                            *ngIf="getFormControl(customAttributeFA,customAttributes.length,'inputType').value && getFormControl(customAttributeFA,customAttributes.length,'inputType').invalid"
+                                            [matTooltip]="getErrorMessage(getFormControl(customAttributeFA,customAttributes.length,'inputType'))">
+                                            report_problem
+                                        </mat-icon>
+
+                                        <div class="cell-input text-left">
+                                            <form>
+                                                <mat-select
+                                                    [formControl]="getFormControl(customAttributeFA,customAttributes.length,'inputType')"
+                                                    (selectionChange)="onCellChange(customAttributeFA,customAttributes.length,'inputType')">
+                                                    <mat-option *ngFor="let item of inputOptions" [value]="item">
+                                                        {{item}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </td> -->
+                                <td>
+                                    <div class="cell-content">
+                                        <mat-icon
+                                            *ngIf="getFormControl(customAttributeFA,customAttributes.length,'attributeValue').value && getFormControl(customAttributeFA,customAttributes.length,'attributeValue').invalid"
+                                            [matTooltip]="getErrorMessage(getFormControl(customAttributeFA,customAttributes.length,'attributeValue'))">
+                                            report_problem
+                                        </mat-icon>
+
+                                        <div class="cell-input text-left">
+                                            <form>
+                                                <input matInput
+                                                    [formControl]="getFormControl(customAttributeFA,customAttributes.length,'attributeValue')"
+                                                    (change)="onCellChange(customAttributeFA,customAttributes.length,'attributeValue')" />
+                                                <!-- 
+                                                <input
+                                                    *ngIf="getFormControl(customAttributeFA,customAttributes.length,'inputType').value == 'NUMBER'"
+                                                    matInput
+                                                    [formControl]="getFormControl(customAttributeFA,customAttributes.length,'attributeValue')"
+                                                    (change)="onCellChange(customAttributeFA,customAttributes.length,'attributeValue')" />
+
+                                                <input
+                                                    *ngIf="getFormControl(customAttributeFA,customAttributes.length,'inputType').value == 'CURRENCY'"
+                                                    matInput
+                                                    [formControl]="getFormControl(customAttributeFA,customAttributes.length,'attributeValue')"
+                                                    (change)="onCellChange(customAttributeFA,customAttributes.length,'attributeValue')" />
+
+                                                <span
+                                                    *ngIf="getFormControl(customAttributeFA,customAttributes.length,'inputType').value == 'CURRENCY'"
+                                                    matSuffix class="pl-1">&#8377;&nbsp;</span>
+
+                                                <textarea
+                                                    *ngIf="getFormControl(customAttributeFA,customAttributes.length,'inputType').value == 'MULTI-LINE'"
+                                                    matInput
+                                                    [formControl]="getFormControl(customAttributeFA,customAttributes.length,'attributeValue')"
+                                                    (change)="onCellChange(customAttributeFA,customAttributes.length,'attributeValue')"
+                                                    cdkTextareaAutosize #autosize="cdkTextareaAutosize"></textarea>
+
+                                                <mat-form-field
+                                                    *ngIf="getFormControl(customAttributeFA,customAttributes.length,'inputType').value == 'DATE'">
+                                                    <input matInput
+                                                        [formControl]="getFormControl(customAttributeFA,customAttributes.length,'attributeValue')"
+                                                        [matDatepicker]="validityDatePicker"
+                                                        placeholder="Select Date" />
+                                                    <mat-datepicker-toggle matSuffix
+                                                        [for]="validityDatePicker"></mat-datepicker-toggle>
+                                                    <mat-datepicker [touchUi]="isMobileView"
+                                                        #validityDatePicker></mat-datepicker>
+                                                </mat-form-field>
+
+                                                <mat-form-field
+                                                    *ngIf="getFormControl(customAttributeFA,customAttributes.length,'inputType').value == 'SINGLE-CHOICE'">
+                                                    <mat-select
+                                                        [formControl]="getFormControl(customAttributeFA,customAttributes.length,'attributeValue')">
+                                                        <mat-option *ngFor="let item of singleChoiceOptions"
+                                                            [value]="item">
+                                                            {{item}}
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </mat-form-field> -->
+                                            </form>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cell-content justify-content-center">
+                                        <div class="cell-action">
+                                            <mat-icon (click)="onAddAttribute()">add</mat-icon>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="link-wrapper col-md-12 col-12">
+                    <h6>Activity</h6>
+                    <mcv-activity-list #activity [entity]="'Asset'" [entityID]="currentEntity.id">
+                    </mcv-activity-list>
+                </div>
+              
+               
+            </div>
+        </div>
+    </div>
+</mat-dialog-content>

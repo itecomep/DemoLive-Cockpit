@@ -1,0 +1,226 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">New WorkOrder</h5>
+    <div class="d-flex align-items-center">
+        <button mat-raised-button color="primary" (click)="onAddFromMaster()" *ngIf="!isMobileView">
+            Add From Master
+        </button>
+        <button mat-icon-button color="primary" (click)="onAddFromMaster()" matTooltip="Add From Master" *ngIf="isMobileView">
+            <mat-icon>library_add</mat-icon>
+        </button>
+        <button mat-raised-button color="primary" (click)="onSubmit()" *ngIf="!isMobileView">
+            Save
+        </button>
+        <button mat-icon-button color="primary" (click)="onSubmit()" matTooltip="Save" *ngIf="isMobileView">
+            <mat-icon>save</mat-icon>
+        </button>
+        <button mat-icon-button aria-label="close" (click)="onClose()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+<mat-dialog-content>
+    <div class="row">
+        <div class="col-md-8">
+            <mat-expansion-panel [expanded]="true">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>Details</mat-panel-title>
+                </mat-expansion-panel-header>
+                <div class="row" [formGroup]="form">
+                    <mat-form-field appearance="outline" class="col-md-6">
+                        <mat-label>Company</mat-label>
+                        <mat-select placeholder="Type" formControlName="company">
+                            <mat-option *ngFor="let company of companyOptions"
+                                [value]="company">{{company.title}}</mat-option>
+                        </mat-select>
+                        <mat-error>{{ getErrorMessage(f.company) }}</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="col-md-6">
+                        <mat-label>Typology</mat-label>
+                        <mat-select placeholder="Type" formControlName="typology">
+                            <mat-option *ngFor="let title of typologyOptions" [value]="title">{{title}}</mat-option>
+                        </mat-select>
+                        <mat-error>{{ getErrorMessage(f.typology) }}</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="col-md-6">
+                        <mat-label>WorkOrder Number</mat-label>
+                        <input placeholder="WorkOrder Number" aria-label="WorkOrder Number" matInput
+                            formControlName="workOrderNo" />
+                        <mat-error>{{ getErrorMessage(f.workOrderNo) }}
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="col-md-6">
+                        <mat-label>WorkOrder Date</mat-label>
+                        <input matInput formControlName="workOrderDate" [matDatepicker]="workOrderDatePicker"
+                            placeholder="Select Date" />
+                        <mat-error>{{ getErrorMessage(f.workOrderDate) }}</mat-error>
+                        <mat-datepicker-toggle matSuffix [for]="workOrderDatePicker"></mat-datepicker-toggle>
+                        <mat-datepicker [touchUi]="isMobileView" #workOrderDatePicker></mat-datepicker>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="col-md-6">
+                        <mat-label>Due Date</mat-label>
+                        <input matInput formControlName="dueDate" [matDatepicker]="dueDatePicker"
+                            placeholder="Select Date" />
+                        <mat-error>{{ getErrorMessage(f.dueDate) }}</mat-error>
+                        <mat-datepicker-toggle matSuffix [for]="dueDatePicker"></mat-datepicker-toggle>
+                        <mat-datepicker [touchUi]="isMobileView" #dueDatePicker></mat-datepicker>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="col-md-4">
+                        <mat-label>Area</mat-label>
+                        <input placeholder="Area" aria-label="Area" matInput formControlName="area" />
+                        <mat-error>{{ getErrorMessage(f.area) }}
+                        </mat-error>
+                    </mat-form-field>
+
+                    <div class="col-md-2">
+                        <mat-checkbox formControlName="isLumpSum">isLumpSum
+                        </mat-checkbox>
+                    </div>
+
+                    <mat-form-field appearance="outline" class="col-md-6">
+                        <mat-label>Rate</mat-label>
+                        <input placeholder="Rate" aria-label="Rate" matInput formControlName="rate" />
+                        <mat-error>{{ getErrorMessage(f.rate) }}
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="col-md-6">
+                        <mat-label>Amount</mat-label>
+                        <input placeholder="Amount" aria-label="Amount" matInput formControlName="amount" />
+                        <mat-error>{{ getErrorMessage(f.amount) }}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </mat-expansion-panel>
+        </div>
+        <div class="col-md-4">
+            <mat-expansion-panel [expanded]="true">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>Attachments</mat-panel-title>
+                </mat-expansion-panel-header>
+                <app-mcv-file-upload class="pt-1" [uploaderConfig]="blobConfig" [showPaste]="true"
+                    (upload)="onUpload($event)" *ngIf="blobConfig">
+                </app-mcv-file-upload>
+
+                <div class="col-12" *ngIf="workOrder.attachments">
+                    <ul class="mcv-file-list">
+                        <li *ngFor="let file of workOrder.attachments">
+                            <mcv-file [filename]="file.filename" [size]="file.size" [downloadUrl]="file.url"
+                                [showPreview]="true" [url]="file.url || file.thumbUrl" [singlePreview]="true"
+                                [showRemove]="true" (delete)="onDeleteAttachment(file)">
+                            </mcv-file>
+                        </li>
+                    </ul>
+                </div>
+            </mat-expansion-panel>
+        </div>
+    </div>
+    <div class="stages">
+        <div class="stages-header">
+            <h6>Stages</h6>
+            <button mat-raised-button color="primary" (click)="onAddStage()">
+                Add Stage
+            </button>
+        </div>
+        <div class="stages-container">
+            <h6 *ngIf="workOrderStages.length == 0">No Stages</h6>
+            <table *ngIf="workOrderStages.length > 0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th></th>
+                        <th>Stage</th>
+                        <th>Value</th>
+                        <th>Amount</th>
+                        <th>Target Date</th>
+                        <th>Billing Date</th>
+                        <th>Payment Received Date</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                    <tr class="total">
+                        <th colspan="2"></th>
+                        <th></th>
+                        <th></th>
+                        <th colspan="6"></th>
+                    </tr>
+                </thead>
+                <tbody [formGroup]="stageForm" cdkDropList [cdkDropListData]="workOrderStages" (cdkDropListDropped)="onDrop($event)">
+                    <ng-container *ngFor="let item of workOrderStages; let i = index">
+                        <tr cdkDrag>
+                            <td class="align-center">
+                                {{i + 1}}
+                            </td>
+                            <td class="align-center">
+                                <span matTooltip="sort" aria-label="sort" cdkDragHandle>
+                                    <mat-icon>drag_handle</mat-icon>
+                                </span>
+                            </td>
+                            <td>
+                                <div class="cell-content">
+                                    <mat-icon
+                                        *ngIf="getFormControl(fa,i,'title').value && getFormControl(fa,i,'title').invalid"
+                                        [matTooltip]="getErrorMessage(getFormControl(fa,i,'title'))">
+                                        report_problem
+                                    </mat-icon>
+                                    <div class="cell-input">
+                                        <form>
+                                            <input matInput [formControl]="getFormControl(fa,i,'title')"
+                                                (change)="onCellChange(fa,i,'title',item)">
+                                        </form>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="align-center">
+                                <div class="cell-content">
+                                    <mat-icon
+                                        *ngIf="getFormControl(fa,i,'percentage').value && getFormControl(fa,i,'percentage').invalid"
+                                        [matTooltip]="getErrorMessage(getFormControl(fa,i,'percentage'))">
+                                        report_problem
+                                    </mat-icon>
+                                    <div class="cell-input">
+                                        <form>
+                                            <input matInput [formControl]="getFormControl(fa,i,'percentage')"
+                                                (change)="onCellChange(fa,i,'percentage',item)"
+                                                (keypress)="keyPressNumbers($event)">
+                                        </form>
+                                        <span class="cell-input-suffix">%</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="align-center">
+                                <div class="cell-content">
+                                    <mat-icon
+                                        *ngIf="getFormControl(fa,i,'amount').value && getFormControl(fa,i,'amount').invalid"
+                                        [matTooltip]="getErrorMessage(getFormControl(fa,i,'amount'))">
+                                        report_problem
+                                    </mat-icon>
+                                    <div class="cell-input">
+                                        <form>
+                                            <input matInput [formControl]="getFormControl(fa,i,'amount')"
+                                                (change)="onCellChange(fa,i,'amount',item)"
+                                                (keypress)="keyPressNumbers($event)">
+                                        </form>
+                                        <!-- <span class="cell-input-suffix">%</span> -->
+                                    </div>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>WORK PENDING</td>
+                            <td>
+                                <button mat-icon-button (click)="onDeleteStage(i)">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </td>
+                    </ng-container>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</mat-dialog-content>

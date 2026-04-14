@@ -1,0 +1,183 @@
+<div class="timeline">
+  <div class="timeline-header">
+    <div class="timeline-header-left">
+      <div class="timeline-header-item" *ngIf="selectedGroup">
+        <button mat-icon-button aria-label="back" matTooltip="back" (click)="clearResourceGroup()"
+          *ngIf="viewMode === 'Resource' && eventGroups.length > 1">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <img class="timeline-avatar" src="{{ selectedGroup.avatarUrl || 'assets/images/user.png' }}"
+          [matTooltip]="selectedGroup.title" alt="" />
+      </div>
+
+      <div class="timeline-header-item">
+        <button mat-icon-button aria-label="previous" (click)="toggleView(-1)" matTooltip="previous"
+          *ngIf="showPrevious">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <button mat-icon-button aria-label="next" (click)="toggleView(1)" matTooltip="next" *ngIf="showNext">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+        <h5 class="view-toggle font-bold" *ngIf="viewMode === 'Day'">{{viewStart | date: "EEEE, dd MMM y" }}</h5>
+        <h5 class="view-toggle font-bold" *ngIf="viewMode === 'Resource' || selectedGroup">
+          {{ rangeStartDate | date: "dd MMM y" }} - {{ rangeEndDate | date: "dd MMM y" }}</h5>
+        <h5 class="view-toggle font-bold" *ngIf="viewMode === 'Month' || viewMode === 'Week'">{{ rangeStartDate | date:
+          "MMMM y" }}</h5>
+      </div>
+    </div>
+
+    <div class="timeline-header-right">
+      <button *ngIf="viewMode === 'Week' || viewMode === 'Month'" (click)="onClickToday()">Today</button>
+      <div class="timeline-header-item" *ngIf="!selectedGroup">
+        <button [matMenuTriggerFor]="menu">
+          <mat-icon>today</mat-icon> {{viewMode}} <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item *ngFor="let item of viewModeOptions" (click)="viewModeChange(item)">{{item}}</button>
+        </mat-menu>
+      </div>
+    </div>
+  </div>
+
+  <div class="mcv-time-line-root-panel">
+    <div class="event-group-panel" #eventGroupPanel>
+      <div class="eventGroup-header"></div>
+      <ul class="eventGroup-list">
+        <li *ngFor="let eventGroup of eventGroups; let i = index" mcvTimeLineEventGroup [events]="eventGroup.events"
+          [overlappingEventHeight]="eventHeightSlim" (click)="onClickResource(eventGroup)">
+
+          <img class="timeline-avatar" *ngIf="!selectedGroup"
+            src="{{ eventGroup.avatarUrl || 'assets/images/user.png' }}" alt="" [matTooltip]="eventGroup.title" />
+
+          <div *ngIf="selectedGroup" matTooltip="click for week view">
+            <span class="group-title">{{ eventGroup.title }}</span>
+            <div *ngIf="eventGroup.subTitle && eventGroup.subTitle.length > 0">
+              <small class="group-subTitle">{{ eventGroup.subTitle }}</small>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="event-panel" mcvTimeLineEventPanel [config]="eventPanelConfig" (scroll)="updateScroll(eventPanel)"
+      #eventPanel>
+      <!-- Class changes according to viewmode changes  -->
+      <div class="grid-container"
+        [ngClass]="{'day-grid':viewMode==='Day' || viewMode==='Resource','month-grid':viewMode==='Month', 'week-grid': viewMode==='Week'}">
+        <div [mcvTimeLineNow]="timeLineNowConfig" #timeLineNow>
+        </div>
+        <!-- Day and Date displayed  -->
+        <div class="grid-header" #gridHeader>
+          <ul>
+            <ng-container *ngFor="let item of gridLabels;let ci = index;">
+              <li mcvTimeLineGridColumnHeader [config]="{
+      width: (viewMode == 'Day' || viewMode == 'Resource') ? hourWidth : dayWidth,
+      index: ci,
+      length: gridLabels.length
+    }">
+                <div class="time-label">
+                  <span>{{ item.label }} </span>
+                  <small *ngIf="item.isHoliday">{{item.holidayTitle}}</small>
+                </div>
+              </li>
+            </ng-container>
+          </ul>
+        </div>
+        <!-- Actual Parent div of the whole cell -->
+        <ul class="grid-rows" #gridRows>
+          <li *ngFor="let eventGroup of eventGroups" mcvTimeLineEventGroup [events]="eventGroup.events"
+            [overlappingEventHeight]="eventHeightSlim" (heightChange)="onGroupHeightChange($event)">
+
+            <!-- TimeLine Grid -->
+            <div class="grid-columns">
+              <!-- Timeline grid column per slot -->
+              <div class="grid-colums-minor" mcvTimeLineGridColumns [width]="slotWidth">
+              </div>
+              <!-- Timeline grid column per hour -->
+              <div class="grid-colums-major" mcvTimeLineGridColumns [width]="hourWidth"
+                *ngIf="viewMode=='Day' || viewMode == 'Resource'">
+              </div>
+              <!-- Timeline grid column per day -->
+              <div class="grid-colums-major" mcvTimeLineGridColumns [width]="dayWidth"
+                *ngIf="viewMode=='Month' || viewMode=='Week'">
+              </div>
+            </div>
+
+            <!-- TimeLine Selection cells -->
+            <div class="tl-selection-cells">
+
+              <!-- TimeLine Selection cell content (created using directive) -->
+              <div [mcvTimeLineCell]="cell" [groupID]="eventGroup.guid" [disabled]="isResizeActive"
+                (selectionEnd)="onCellSelectionEnd($event)" *ngFor="let cell of cells"
+                [ngClass]="{'holiday-cell':viewMode!=='Resource' && cell.isHoliday}"></div>
+            </div>
+
+            <!-- Events  -->
+            <ng-container *ngFor="let event of eventGroup.events">
+              <div [mcvTimeLineEvent]="event.guid" [overlappingEventHeight]="eventHeightSlim"
+                [rowIndex]="event.rowIndex" [allowResize]="allowEventResize(event)"
+                [moveDirection]="event.moveDirection" [snapToGrid]="'both'"
+                [horizontalResizeDirection]="event.resizeDirection" [minHeight]="eventHeightSlim" [minWidth]="1"
+                [width]="event.width" [height]="getEventHeight(event, eventGroup.events)"
+                [top]="getEventTop(event, eventGroup.events)" [left]="event.position"
+                (resizeEnd)="onResizeEnd($event, event)" (resizeStart)="onResizeStart($event, event)"
+                [ngClass]="{'live-event':event.isLive}">
+
+                <div *ngIf="
+                    event.editMode !== 'none' &&
+                    (event.resizeDirection === 'both' ||
+                      event.resizeDirection == 'left')
+                  " ElasticResizeLeft [id]="event.guid"></div>
+
+                <div *ngIf="
+                    event.editMode !== 'none' &&
+                    (event.resizeDirection === 'both' ||
+                      event.resizeDirection == 'right')
+                  " ElasticResizeRight [id]="event.guid"></div>
+
+                <div [ngClass]="'bg-'+event.colorClass" class="timeline-event-wrapper"
+                  (click)="onEventClick($event,event)">
+                  <div class="timeline-event-content">
+                    <div class="timeline-event-left-content">
+                      <mat-icon [ngClass]="{'show':earlyStart(event)}" class="time-line-content-arrow"
+                        [matTooltip]="getDateString(event.start)">
+                        arrow_back_ios
+                      </mat-icon>
+                      <div class="flex-grow-1 flex-shrink-1" [matTooltip]="event.title +' | '+ event.subTitle">
+                        <span class="event-title">{{ event.title }}</span>
+                        <span class="event-subTitle">{{ event.subTitle }}</span>
+                      </div>
+                    </div>
+                    <div class="timeline-event-right-content">
+                      <mat-icon [ngClass]="{'show':lateEnd(event)}" class="time-line-content-arrow"
+                        [matTooltip]="getDateString(event.end)">
+                        arrow_forward_ios
+                      </mat-icon>
+                    </div>
+                  </div>
+                </div>
+
+                <ng-container *ngIf="event.children.length!==0">
+                  <div [mcvTimeLineEvent]="child.guid" [overlappingEventHeight]="eventHeightSlim"
+                    *ngFor="let child of event.children" [rowIndex]="event.rowIndex" [allowResize]="false"
+                    style="z-index: 21;" [moveDirection]="child.moveDirection" [snapToGrid]="'both'"
+                    [horizontalResizeDirection]="child.resizeDirection" [minHeight]="eventHeightSlim"
+                    [minWidth]="slotWidth" [width]="child.width"
+                    [height]="getChildEventHeight(event, eventGroup.events)"
+                    [top]="getChildEventTop(event,eventGroup.events)" [left]="getChildPosition(event,child)"
+                    class="child-event" [ngClass]="{'live-event':child.isLive}"
+                    [matTooltip]="child.title + ' | ' + child.subTitle">
+
+                    <div [ngClass]="'bg-'+child.colorClass" class="timeline-event-wrapper"
+                      (click)="onEventClick($event,child)">
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </ng-container>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

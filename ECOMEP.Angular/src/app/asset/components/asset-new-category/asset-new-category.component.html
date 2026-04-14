@@ -1,0 +1,20 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">New Category</h5>
+    <div>
+        <button mat-icon-button (click)="onSubmit()" [disabled]="disableSave">
+            <mat-icon>done</mat-icon>
+        </button>
+        <button mat-icon-button aria-label="close" (click)="onClose(null)">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+<mat-dialog-content >
+    <div class="p-2" [formGroup]="form">
+        <mat-form-field appearance="outline">
+            <mat-label>Category</mat-label>
+            <input placeholder="Category" aria-label="Category" matInput formControlName="category" (input)="onInput('category')">
+            <mat-error>{{getErrorMessage(f.category)}}</mat-error>
+        </mat-form-field>
+    </div>
+</mat-dialog-content>

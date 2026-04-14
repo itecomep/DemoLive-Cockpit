@@ -1,0 +1,18 @@
+<div class="row" *ngIf="isExpanded[i]">
+    <div class="col-sm-4">
+
+        <div class="d-flex align-items-center justify-content-between" *ngFor="let details of item.assessments">
+            <small class="pl-2">{{details.category}}: </small>
+
+            <div>
+                <span *ngFor="let rating of getAssessmentScore(details.scoredPoints)">
+                    <mat-icon style="color:#ffc107;font-size:1rem">star</mat-icon>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <small>Assessment Remark: </small>
+        <p>{{item.assessmentRemark}}</p>
+    </div>
+</div>

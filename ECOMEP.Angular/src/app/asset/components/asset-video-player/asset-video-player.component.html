@@ -1,0 +1,14 @@
+<div class="asset-video-wrapper" [ngClass]="{'asset-video-wrapper-cover':fit=='cover'}">
+    <video id="video1" *ngIf="url && autoplay && showControls" autoplay controls>
+        <source src="{{url}}" type="video/mp4">
+    </video>
+    <video id="video1" *ngIf="url && !autoplay && showControls" controls>
+        <source src="{{url}}" type="video/mp4">
+    </video>
+    <video id="video1" *ngIf="url && autoplay && !showControls" autoplay>
+        <source src="{{url}}" type="video/mp4">
+    </video>
+    <video id="video1" *ngIf="url && !autoplay && !showControls">
+        <source src="{{url}}" type="video/mp4">
+    </video>
+</div>

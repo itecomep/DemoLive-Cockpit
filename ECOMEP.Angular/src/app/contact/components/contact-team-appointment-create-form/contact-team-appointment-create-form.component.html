@@ -1,0 +1,124 @@
+<!-- Reusable template for your form -->
+<ng-template #headerActionTemplate>
+    <!-- <form [formGroup]="form" autocomplete="off">
+        <mat-radio-group formControlName="isCompany">
+            <mat-radio-button [value]="false">
+                Person
+            </mat-radio-button>
+            <mat-radio-button [value]="true">
+                Company
+            </mat-radio-button>
+        </mat-radio-group>
+    </form> -->
+    <button mat-raised-button aria-label="Save" (click)="onSubmit()">Save</button>
+
+
+</ng-template>
+
+<div class="mat-dialog-header contact-appointment-create-dialog-header">
+    <h5 class="contact-appointment-create-dialog-header-title">{{dialogTitle}}</h5>
+    <div class="contact-appointment-create-dialog-header-actions theme-dark">
+        <ng-container *ngTemplateOutlet="headerActionTemplate"></ng-container>
+    </div>
+    <button mat-icon-button aria-label="close" (click)="onClose(null)">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+<div class="contact-appointment-create-dialog-mobile-actions">
+    <ng-container *ngTemplateOutlet="headerActionTemplate"></ng-container>
+</div>
+<mat-dialog-content>
+    <div class="contact-appointment-create-form">
+        <form [formGroup]="form" autocomplete="off">
+
+            <div class="row m-0">
+                <div class="col-md-12">
+                    <mat-radio-group formControlName="typeFlag">
+                        <mat-radio-button *ngFor="let type of typeOptions" [value]="type.value">
+                            {{ type.title }}
+                        </mat-radio-button>
+                    </mat-radio-group>
+                    <mat-error>{{ getErrorMessage(f.typeFlag) }}</mat-error>
+                </div>
+
+                <mat-form-field appearance="outline" class="col-md-6">
+                    <mat-label>Status</mat-label>
+                    <mat-select formControlName="statusFlag">
+                        <mat-option *ngFor="let status of statusOptions" [value]="status.value">
+                            {{ status.title }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error>{{ getErrorMessage(f.statusFlag) }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="col-md-6">
+                    <mat-label>Company</mat-label>
+                    <mat-select formControlName="companyID">
+                        <mat-option *ngFor="let company of companyOptions" [value]="company.id">
+                            {{ company.title }} ({{ company.initials }})
+                        </mat-option>
+                    </mat-select>
+                    <mat-error>{{ getErrorMessage(f.companyID) }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="col-md-6">
+                    <mat-label>Designation</mat-label>
+                    <input placeholder="Designation" aria-label="Designation" matInput formControlName="designation" />
+                    <mat-error>{{ getErrorMessage(f.designation) }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="col-md-6">
+                    <mat-label>Employee Code</mat-label>
+                    <input placeholder="Employee Code" aria-label="Employee Code" matInput formControlName="employeeCode" />
+                    <mat-error>{{ getErrorMessage(f.employeeCode) }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="col-md-4">
+                    <mat-label>Joining Date</mat-label>
+                    <input matInput formControlName="joiningDate" [matDatepicker]="joiningDatePicker"
+                        placeholder="Select Date" />
+                    <mat-error>{{ getErrorMessage(f.joiningDate) }}</mat-error>
+                    <mat-datepicker-toggle matSuffix [for]="joiningDatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker [touchUi]="isMobileView" #joiningDatePicker></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="col-md-4">
+                    <mat-label>Resignation Date</mat-label>
+                    <input matInput formControlName="resignationDate" [matDatepicker]="resignationDatePicker"
+                        placeholder="Select Date" />
+                    <mat-error>{{ getErrorMessage(f.resignationDate) }}</mat-error>
+                    <mat-datepicker-toggle matSuffix [for]="resignationDatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker [touchUi]="isMobileView" #resignationDatePicker></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="col-md-4">
+                    <mat-label>Location</mat-label>
+                    <input placeholder="Location" aria-label="Location" matInput formControlName="location" />
+                    <mat-error>{{ getErrorMessage(f.location) }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="col-md-12">
+                    <mat-label>Reporting To</mat-label>
+                    <mat-select formControlName="managerContact" placeholder="Search Contact" #singleSelect>
+                        <mat-option>
+                            <ngx-mat-select-search [formControl]="clientContactFC" placeholderLabel="Search here"
+                                noEntriesFoundLabel="No matching value found"></ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let option of filteredManagerContacts$ | async" [value]="option">
+                            {{option?.name}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error>{{getErrorMessage(f.managerContact)}}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="col-md-12"
+                    *ngIf="f['statusFlag'].value === TEAM_APPOINTMENT_STATUS_LEFT_WIHOUT_INFORMING">
+                    <mat-label>Comment</mat-label>
+                    <textarea placeholder="Comment" aria-label="Comment" matInput formControlName="description"
+                        cdkTextareaAutosize #autosize="cdkTextareaAutosize"></textarea>
+                    <mat-error>{{ getErrorMessage(f.description) }}</mat-error>
+                </mat-form-field>
+            </div>
+        </form>
+    </div>
+</mat-dialog-content>

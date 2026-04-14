@@ -1,0 +1,69 @@
+<div class="todo-header">
+  <h5 class="font-focused">Email</h5>
+  <div class="d-flex align-items-center flex-wrap">
+    <div class="mv-list-search-filter">
+      <mat-icon matPrefix>search</mat-icon>
+      <input aria-label="Type to Search" [formControl]="searchFC" matInput />
+    </div>
+    <div *ngIf="statusOptions && statusOptions.length > 0">
+      <mat-form-field appearance="outline">
+        <mat-select [formControl]="statusFC" multiple placeholder="Status">
+          <mat-option *ngFor="let item of statusOptions" [value]="item">{{
+            item.title
+            }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <mat-paginator [length]="totalRecordsCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
+      (page)="handlePageEvent($event)" aria-label="Select page">
+    </mat-paginator>
+  </div>
+</div>
+<div class="project-request-ticket-view">
+  <ul class="project-request-ticket-ul" *ngIf="requestTickets && requestTickets.length > 0">
+    
+    <li *ngFor="let item of requestTickets">
+      <div class="d-flex align-items-center w-100 justify-content-between">
+
+
+        <div class="d-flex align-items-center flex-grow-1" (click)="openRequestTicket(item)">
+          <img [src]="item.assignerContact?.photoUrl || 'assets/images/user.png'" (click)="openPhotoDialog(item.assignerContact); $event.stopPropagation()" style="cursor: pointer;"
+            [matTooltip]="item.assignerContact?.name || ''" class="user-thumbnail float-left mr-2" />
+          <div>
+            <h6 class="mb-0">{{ item.title }}</h6>
+       
+            <div class="d-flex align-items-center">
+              <h5 class="mr-1 mb-0">#{{ item.code }}</h5>
+              <span>{{ item.subtitle }}</span>
+              <span class="mb-0">
+                <small class="pl-2">on</small> {{ item.created | date:'dd MMM y' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="d-flex align-items-end flex-column text-center px-3" (click)="openRequestTicket(item)">
+          <span *ngIf="item.statusFlag == 0" class="badge badge-primary">{{ item.statusValue }}</span>
+          <span *ngIf="item.statusFlag == 1" class="badge badge-dark">{{ item.statusValue }}</span>
+          <span *ngIf="item.statusFlag == 0">
+            <small>Next Reminder: </small>{{ item.nextReminderDate | date: "dd MMM y" }}
+          </span>
+        </div>
+
+
+        <div class="d-flex flex-column">
+          <button mat-icon-button matTooltip="Open in new tab" (click)="openRequestTicket(item)">
+            <mat-icon>open_in_new</mat-icon>
+          </button>
+        </div>
+      </div>
+    </li>
+
+  </ul>
+  <ul class="no-rt-list" *ngIf="requestTickets.length == 0">
+    <li>
+      <h6 class="mt-2">No Request Ticket Found!!</h6>
+    </li>
+  </ul>
+</div>

@@ -1,0 +1,222 @@
+
+<app-header [title]="headerTitle" [titleCount]="headerTitleCount">
+    <!-- <div class="mv-list-search-filter" *ngIf="isMobileView">
+      <mat-icon matPrefix>search</mat-icon>
+      <input aria-label="Type to Search" [formControl]="searchFC" matInput />
+    </div> -->
+</app-header>
+
+<div class="app-setting-wrapper">
+    <form [formGroup]="form">
+        <table>
+            <thead>
+                <tr>
+                    <!-- <th>Type</th> -->
+                    <th>Sr No</th>
+                    <th (click)="sort('title')">
+                        <div class="sort-header">
+                            Title
+                        <mat-icon *ngIf="sortColumn === 'title'">
+                            {{ sortDirection === 'asc' ? 'arrow_drop_down' : 'arrow_drop_up' }}
+                          </mat-icon>
+                        </div>      
+                    </th>
+                    <th (click)="sort('initials')">
+                        <div class="sort-header">
+                            Initials
+                        <mat-icon *ngIf="sortColumn === 'initials'">
+                            {{ sortDirection === 'asc' ? 'arrow_drop_down' : 'arrow_drop_up' }}
+                          </mat-icon>
+                        </div>      
+                    </th>
+                    <th>GSTIN</th>
+                    <th>GST State Code</th>
+                    <th>Pan</th>
+                    <th>Tan</th>
+                    <th>Udhyam</th>
+                    <th>Logo Url</th>
+                    <th>Bank</th>
+                    <th>Bank Branch</th>
+                    <th>Bank IFSC Code</th>
+                    <th>Swift Code</th>
+                    <th>Bank Account</th>
+                    <th>Address</th>
+                    <th>Sign Stamp Url</th>
+                    <th>VHr Rate</th>
+                    <th></th>
+                </tr>
+
+            </thead>
+            <tbody formArrayName="presets">
+                <ng-container *ngFor="let item of companyPresets; let i=index" [formGroupName]="i">
+                    <tr>
+                        <td class="text-wrap">
+                            <h6>{{i+1}}</h6>
+                        </td>
+                        <td class="text-wrap">
+                            <div class="cell-content">
+                                <div class="cell-input">
+
+                                    <textarea aria-label="Preset Key" matInput
+                                        [formControl]="getFormControl(fa,i,'title')" cdkTextareaAutosize
+                                        #autosize="cdkTextareaAutosize" [cdkAutosizeMinRows]="1" (change)="updatePreset($event,i,'title')"></textarea>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-wrap">
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <textarea aria-label="Preset Value" matInput
+                                        [formControl]="getFormControl(fa,i,'initials')" cdkTextareaAutosize
+                                        #autosize="cdkTextareaAutosize" [cdkAutosizeMinRows]="0" (change)="updatePreset($event,i,'initials')"></textarea>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-wrap">
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <textarea aria-label="Preset Value" matInput
+                                        [formControl]="getFormControl(fa,i,'gstin')" cdkTextareaAutosize
+                                        #autosize="cdkTextareaAutosize" [cdkAutosizeMinRows]="0" (change)="updatePreset($event,i,'gstin')"></textarea>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-wrap">
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <textarea aria-label="Preset Value" matInput
+                                        [formControl]="getFormControl(fa,i,'gstStateCode')" cdkTextareaAutosize
+                                        #autosize="cdkTextareaAutosize" [cdkAutosizeMinRows]="0" (change)="updatePreset($event,i,'gstStateCode')"></textarea>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-wrap">
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <textarea aria-label="Preset Value" matInput
+                                        [formControl]="getFormControl(fa,i,'pan')" cdkTextareaAutosize
+                                        #autosize="cdkTextareaAutosize" [cdkAutosizeMinRows]="0" (change)="updatePreset($event,i,'pan')"></textarea>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-wrap">
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <textarea aria-label="Preset Value" matInput
+                                        [formControl]="getFormControl(fa,i,'tan')" cdkTextareaAutosize
+                                        #autosize="cdkTextareaAutosize" [cdkAutosizeMinRows]="0" (change)="updatePreset($event,i,'tan')"></textarea>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-wrap">
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <textarea aria-label="Preset Value" matInput
+                                        [formControl]="getFormControl(fa,i,'udhyam')" cdkTextareaAutosize
+                                        #autosize="cdkTextareaAutosize" [cdkAutosizeMinRows]="0" (change)="updatePreset($event,i,'udhyam')"></textarea>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-wrap">
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <textarea aria-label="Preset Value" matInput
+                                        [formControl]="getFormControl(fa,i,'logoUrl')" cdkTextareaAutosize
+                                        #autosize="cdkTextareaAutosize" [cdkAutosizeMinRows]="0" (change)="updatePreset($event,i,'logoUrl')"></textarea>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-wrap">
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <textarea aria-label="Preset Value" matInput
+                                        [formControl]="getFormControl(fa,i,'bank')" cdkTextareaAutosize
+                                        #autosize="cdkTextareaAutosize" [cdkAutosizeMinRows]="0" (change)="updatePreset($event,i,'bank')"></textarea>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-wrap">
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <textarea aria-label="Preset Value" matInput
+                                        [formControl]="getFormControl(fa,i,'bankBranch')" cdkTextareaAutosize
+                                        #autosize="cdkTextareaAutosize" [cdkAutosizeMinRows]="0" (change)="updatePreset($event,i,'bankBranch')"></textarea>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-wrap">
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <textarea aria-label="Preset Value" matInput
+                                        [formControl]="getFormControl(fa,i,'bankIFSCCode')" cdkTextareaAutosize
+                                        #autosize="cdkTextareaAutosize" [cdkAutosizeMinRows]="0" (change)="updatePreset($event,i,'bankIFSCCode')"></textarea>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-wrap">
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <textarea aria-label="Preset Value" matInput
+                                        [formControl]="getFormControl(fa,i,'swiftCode')" cdkTextareaAutosize
+                                        #autosize="cdkTextareaAutosize" [cdkAutosizeMinRows]="0" (change)="updatePreset($event,i,'swiftCode')"></textarea>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-wrap">
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <textarea aria-label="Preset Value" matInput
+                                        [formControl]="getFormControl(fa,i,'bankAccount')" cdkTextareaAutosize
+                                        #autosize="cdkTextareaAutosize" [cdkAutosizeMinRows]="0" (change)="updatePreset($event,i,'bankAccount')"></textarea>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-wrap">
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <textarea aria-label="Preset Value" matInput
+                                        [formControl]="getFormControl(fa,i,'address')" cdkTextareaAutosize
+                                        #autosize="cdkTextareaAutosize" [cdkAutosizeMinRows]="0" (change)="updatePreset($event,i,'address')"></textarea>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-wrap">
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <textarea aria-label="Preset Value" matInput
+                                        [formControl]="getFormControl(fa,i,'signStampUrl')" cdkTextareaAutosize
+                                        #autosize="cdkTextareaAutosize" [cdkAutosizeMinRows]="0" (change)="updatePreset($event,i,'signStampUrl')"></textarea>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-wrap">
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <input aria-label="Preset Value" matInput
+                                        [formControl]="getFormControl(fa,i,'vHrRate')"  (change)="updatePreset($event,i,'vHrRate')">
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <mat-icon (click)="onDeletePreset(i)">delete</mat-icon>
+                        </td>
+                    </tr>
+                </ng-container>
+                <tr (click)="addPreset()">
+                    <td colspan="9">
+                        <div class="d-flex justify-content-center" >
+                            <mat-icon>add</mat-icon>
+                        </div>
+                    </td>
+                    <td colspan="9">
+                        <div class="d-flex justify-content-center" >
+                            <mat-icon>add</mat-icon>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+
+<app-footer></app-footer>

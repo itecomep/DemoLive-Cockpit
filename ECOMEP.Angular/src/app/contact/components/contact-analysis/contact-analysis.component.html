@@ -1,0 +1,181 @@
+<div class="contact-analysis">
+
+    <div class="contact-analysis-table-wrapper">
+
+        <table>
+            <thead>
+                <tr>
+                    <!-- <th>Type</th> -->
+                    <th>Name</th>
+                    <th>Note</th>
+                    <th>Action On</th>
+                    <th>Action By</th>
+                    <th>Relationship Manager</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Area</th>
+                    <th>City</th>
+                    <!-- <th>Source</th>
+                    <th>Grade</th> -->
+                    <th>Category</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+                <ng-container *ngFor="let item of dataList; let i=index">
+                    <tr>
+                        <td class="text-wrap">{{item.name}}</td>
+
+                        <td class="text-wrap">{{item.note}}</td>
+                        <td>{{item.actionOn | date:'dd MMM y HH:mm'}}</td>
+                        <td class="text-wrap">{{item.actionBy}}</td>
+                        <td class="text-wrap">{{item.relationshipManager}}</td>
+                        <td>{{item.phone}}</td>
+                        <td>{{item.email}}</td>
+                        <td class="text-wrap">{{item.area}}</td>
+                        <td class="text-wrap">{{item.city}}</td>
+                        <!-- <td class="text-wrap">{{item.source}}</td>
+                                            <td class="text-wrap">{{item.grade}}</td> -->
+                        <td class="text-wrap">{{item.category}}</td>
+                    </tr>
+                </ng-container>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="contact-analysis-reports-wrapper" [@toggleTrigger]="isShowReports ? 'on' : 'off'"
+        [ngClass]="isShowReports ? '' : 'hidden'">
+
+        <div>
+            <h3>Reports</h3>
+        </div>
+
+        <!-- <div class="report-options">
+            <h6>Options: </h6>
+            <div class="property">
+                <div class="property-label">
+                    Show Rate & Quantity
+                </div>
+                <mat-checkbox [checked]="isShowRateQuantity" (change)="setShowRateQuantity($event.checked)"></mat-checkbox>
+            </div>
+    
+    
+        </div> -->
+        <div class="report-buttons">
+            <!-- <button mat-raised-button (click)="onExportReport('analysis','a4','PDF')" aria-label="Detail"
+                *ngIf="isPermissionExcel">
+                <img src="assets/icons/file-pdf.png" alt="pdf" /> Detail
+            </button>
+
+            <button mat-raised-button (click)="onExportReport('analysis','a4','EXCELOPENXML')" aria-label="Detail"
+                *ngIf="isPermissionExcel">
+                <img src="assets/icons/file-excel.png" alt="xlsx" /> Detail
+            </button>
+            <button mat-raised-button (click)="onExportReport('analysis-compact','a4','PDF')" aria-label="Compact"
+                *ngIf="isPermissionExcel">
+                <img src="assets/icons/file-pdf.png" alt="pdf" /> Compact
+            </button>
+            <button mat-raised-button (click)="onExportReport('analysis-compact','a4','EXCELOPENXML')"
+                aria-label="Compact" *ngIf="isPermissionExcel">
+                <img src="assets/icons/file-excel.png" alt="xlsx" /> Compact
+            </button>
+            <button mat-raised-button (click)="onExportReport('overdue-contact-list','a4','PDF')" aria-label="Overdue"
+                *ngIf="isPermissionExcel">
+                <img src="assets/icons/file-pdf.png" alt="pdf" /> Overdue
+            </button> -->
+
+        </div>
+    </div>
+</div>
+
+<app-footer>
+    <div class="mcv-footer-actions">
+        <div class="search-filter">
+            <mat-icon matPrefix>search</mat-icon>
+            <input aria-label="Enter contact name and select" [formControl]="searchFC" matInput />
+        </div>
+        <!-- <div>
+             <mat-form-field appearance="outline">
+                <mat-select [formControl]="statusFC" multiple placeholder="Status">
+                    <mcv-select-all [model]="statusFC" [values]="statusOptions">
+                    </mcv-select-all>
+                    <mat-option *ngFor="let item of statusOptions" [value]="item">{{item.title}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div> -->
+        <!-- <div>
+             <mat-form-field appearance="outline">
+                <mat-select [formControl]="typeFC" multiple placeholder="Type">
+                    <mcv-select-all [model]="typeFC" [values]="typeOptions">
+                    </mcv-select-all>
+                    <mat-option *ngFor="let item of typeOptions" [value]="item">{{item.title}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div> -->
+
+        <div>
+            <mat-form-field appearance="outline">
+                <mat-date-range-input [formGroup]="dateFC" [rangePicker]="rangePicker1">
+                    <input matStartDate placeholder="Select Range" formControlName="start" />
+                    <input matEndDate placeholder="End date" formControlName="end" />
+                </mat-date-range-input>
+                <mat-datepicker-toggle matSuffix [for]="rangePicker1"></mat-datepicker-toggle>
+                <mat-date-range-picker [touchUi]="isMobileView" #rangePicker1></mat-date-range-picker>
+            </mat-form-field>
+        </div>
+        <!-- <button mat-raised-button (click)="onToggleShowAll()" *ngIf="isPermissionShowAll && !showAll"
+            matTooltip="Show All" aria-label="Show All">
+            Show All
+        </button>
+        <button mat-raised-button color="primary" (click)="onToggleShowAll()" *ngIf="isPermissionShowAll && showAll"
+            matTooltip="Show All" aria-label="Show All">
+            Show All
+        </button> -->
+        <button mat-icon-button (click)="refresh()" matTooltip="Refresh" aria-label="Refresh">
+            <mat-icon>refresh</mat-icon>
+        </button>
+        <!-- <button mat-icon-button (click)="openReports()"><mat-icon>picture_as_pdf</mat-icon></button> -->
+
+    </div>
+
+    <div class="mcv-footer-mobile-actions">
+
+        <button mat-icon-button appFilterToggle matTooltip="Filters" aria-label="Filters">
+            <mat-icon>filter_list</mat-icon>
+        </button>
+        <button mat-icon-button (click)="refresh()" matTooltip="Refresh" aria-label="Refresh">
+            <mat-icon>refresh</mat-icon>
+        </button>
+        <!-- <button mat-icon-button (click)="openReports()"><mat-icon>picture_as_pdf</mat-icon></button> -->
+
+    </div>
+
+    <div class="mcv-footer-mobile-filters">
+        <div class="search-filter">
+            <mat-icon matPrefix>search</mat-icon>
+            <input aria-label="Enter contact name and select" [formControl]="searchFC" matInput />
+        </div>
+        <!-- <div>
+             <mat-form-field appearance="outline">
+                <mat-select [formControl]="statusFC" multiple placeholder="Status">
+                    <mcv-select-all [model]="statusFC" [values]="statusOptions">
+                    </mcv-select-all>
+                    <mat-option *ngFor="let item of statusOptions" [value]="item">{{item.title}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div> -->
+        <!-- <div>
+             <mat-form-field appearance="outline">
+                <mat-select [formControl]="typeFC" multiple placeholder="Type">
+                    <mcv-select-all [model]="typeFC" [values]="typeOptions">
+                    </mcv-select-all>
+                    <mat-option *ngFor="let item of typeOptions" [value]="item">{{item.title}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div> -->
+
+
+    </div>
+
+</app-footer>

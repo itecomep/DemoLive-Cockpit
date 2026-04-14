@@ -1,0 +1,26 @@
+<div class="contact-list-item" *ngIf="item">
+  <div class="list-item-details">
+    <img class="contact-icon" src="{{ item.photoUrl || 'assets/images/person-icon.svg' }}" alt=""
+      *ngIf="!item.isCompany" />
+    <img class="contact-icon" src="{{ item.photoUrl || 'assets/images/company-icon.svg' }}" alt=""
+      *ngIf="item.isCompany" />
+
+    <div>
+      <h6 class="font-focused">{{item.name}}</h6>
+      <div class="category-list">
+        <span *ngFor="let category of item.categories" class="category-tag">{{category}}
+        </span>
+      </div>
+      <div class="appointment-list">
+        <span *ngFor="let app of item.appointments" class="appointment-tag">{{app.code}} |
+          {{app.designation}}</span>
+      </div>
+    </div>
+  </div>
+  <!-- <div class="list-item-actions">
+    <mat-checkbox [checked]="isSelected" *ngIf="showCheckBox" (change)="onCheckboxChange($event)"></mat-checkbox>
+    <button mat-icon-button (click)="onRemove()" matTooltip="Remove" aria-label="Remove" *ngIf="showRemove">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div> -->
+</div>

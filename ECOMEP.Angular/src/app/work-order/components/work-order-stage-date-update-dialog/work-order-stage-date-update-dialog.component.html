@@ -1,0 +1,57 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused" *ngIf="stage">Update | {{stage.title}}</h5>
+    <div class="d-flex align-items-center">
+        <button mat-raised-button color="primary" (click)="onSubmit()"
+            *ngIf="stage.children.length <= 5 || (stage.children.length >= 5 && isPermissionStagesSpecialEdit)">
+            Save
+        </button>
+        <button mat-icon-button aria-label="close" (click)="onClose()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+<mat-dialog-content>
+    <div class="row form-wrapper" [formGroup]="form">
+        <mat-form-field class="col-md-12" appearance="outline">
+            <mat-label>Target Date</mat-label>
+            <input matInput formControlName="dueDate" [matDatepicker]="dueDateDatePicker" placeholder="Select Date" />
+            <mat-datepicker-toggle matSuffix [for]="dueDateDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker [touchUi]="isMobileView" #dueDateDatePicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field class="col-md-12" appearance="outline">
+            <mat-label>Comment</mat-label>
+            <textarea aria-label="description" matInput formControlName="description" cdkTextareaAutosize
+                #autosize="cdkTextareaAutosize" [cdkAutosizeMinRows]="3"></textarea>
+        </mat-form-field>
+    </div>
+
+    <table class="nested-table">
+        <thead>
+            <tr>
+                <th>Previous Date</th>
+                <th>Comment</th>
+                <th>Modified By</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let children of stage.children">
+                <td class="align-center">
+                    <div>
+                        {{children.dueDate | date:"dd MMM yyyy"}}
+                    </div>
+                </td>
+                <td class="align-center">
+                    <div>
+                        {{children.description}}
+                    </div>
+                </td>
+                <td class="align-center">
+                    <div>
+                        {{children.modifiedBy}}
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</mat-dialog-content>

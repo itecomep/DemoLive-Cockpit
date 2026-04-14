@@ -1,0 +1,88 @@
+@import 'variables';
+
+.property-collection {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+
+    .property {
+        display: flex;
+        gap: 0.3rem;
+        justify-content: space-between;
+        border: 1px solid $gray-300;
+        border-radius: 4px;
+        cursor: pointer;
+        padding: 0.3rem;
+        flex-grow: 1;
+        flex-shrink: 1;
+        min-width: 10rem;
+        min-height: 2.5rem;
+
+        .property-details {
+            flex-grow: 1;
+            flex-shrink: 1;
+            max-width: 100%;
+        }
+
+        .property-label {
+            font-size: 0.7rem;
+            color: $gray-600;
+        }
+
+        .property-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+    }
+}
+
+.todo-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+}
+
+.todo-details,
+.todo-attachments,
+.todo-checklist {
+    border: 1px solid $gray-300;
+    border-radius: $border-radius;
+    padding: 0.3rem;
+}
+
+.todo-details {
+    width: 48%;
+    flex-grow: 1;
+}
+
+.todo-checklist {
+    width: 46%;
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+            border: 1px solid $gray-300;
+            border-radius: $border-radius;
+            margin-bottom: 0.2rem;
+            padding: 0.3rem;
+        }
+    }
+}
+
+.todo-attachments {
+    width: 50%;
+    flex-grow: 1;
+}
+
+@media only screen and (max-width:768px) {
+
+    .todo-details,
+    .todo-attachments,
+    .todo-checklist {
+        width: 100% !important;
+    }
+}

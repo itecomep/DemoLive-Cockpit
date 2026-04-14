@@ -1,0 +1,3 @@
+<mcv-time-line [start]="TIMELINE_START_TIME" [end]="TIMELINE_END_TIME" #mcvTimeline [events]="events"
+  [resources]="resources" (eventUpdate)="onEventUpdate($event)" (slotSelection)="onEventCreate($event)"
+  (rangeChange)="onRangeChange($event)" (eventGroupHeightChange)="updateHeight($event)"></mcv-time-line>

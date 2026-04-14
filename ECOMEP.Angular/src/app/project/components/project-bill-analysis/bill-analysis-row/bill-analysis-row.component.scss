@@ -1,0 +1,284 @@
+.followup-container {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  max-height: 80vh;   // ✅ restrict dialog height
+  overflow: hidden;
+}
+
+/* LEFT PANEL */
+.left-panel {
+  flex: 1;
+  background: #ffffff;
+  padding: 12px;
+  border-radius: 10px;
+  overflow-y: auto;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+}
+
+/* RIGHT PANEL */
+.right-panel {
+  flex: 1;
+  background: #ffffff;
+  padding: 12px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+}
+
+/* HEADINGS */
+h2 {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+h3 {
+  font-size: 14px;
+  margin: 10px 0 6px;
+}
+
+/* CARDS */
+.card {
+  background: #fafafa;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* PREVIEW STYLE */
+.preview {
+  border-left: 3px solid #4caf50;
+}
+
+/* FORM FIELDS */
+.full-width {
+  width: 100%;
+}
+
+/* Reduce material field spacing */
+::ng-deep .mat-mdc-form-field {
+  margin-bottom: 6px;
+}
+
+/* BUTTON */
+.save-btn {
+  align-self: flex-start;
+  padding: 6px 16px;
+  font-size: 13px;
+}
+.preview-img {
+  width: 120px;
+  margin-top: 8px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+
+
+
+
+.file-name {
+  cursor: pointer;
+  color: #1976d2;
+  text-decoration: underline;
+  margin-bottom: 5px;
+}
+
+/* 🔥 BACKDROP */
+.preview-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* 🔥 MODAL BOX */
+.preview-modal {
+  position: relative;
+  background: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  max-width: 70%;
+  max-height: 80%;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* IMAGE */
+.modal-img {
+  max-width: 100%;
+  max-height: 70vh;
+  border-radius: 6px;
+}
+
+/* PDF / DOC */
+.modal-frame {
+  width: 800px;
+  height: 500px;
+  border: none;
+}
+
+/* CLOSE BUTTON */
+.close-btn {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #000;
+  color: #fff;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  border: none;
+  cursor: pointer;
+}
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 5px;
+}
+
+// .row {
+//  display: flex;
+//   justify-content: space-between;
+//   gap: 10px;
+// }
+
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+
+// .row p {
+//   margin: 4px 0;
+//   flex: 1;
+//   white-space: nowrap;       /* 🔥 prevents breaking */
+//   overflow: hidden;          
+//   /* adds ... if too long */
+//   font-size: 13px;  
+// }
+
+.row p {
+  margin: 4px 0;
+  flex: 1;
+  font-size: 13px;
+  line-height: 1.4;
+  word-break: break-word;   /* ✅ allows clean wrapping */
+}
+
+/* LEFT SIDE (NAME / TO) → MORE SPACE */
+.row p:first-child {
+  flex: 2;   /* takes more width */
+}
+
+/* RIGHT SIDE (DATE / FOLLOW-UP) → LESS SPACE */
+.row p:last-child {
+  flex: 1;   /* smaller width */
+  font-size: 12px; /* slightly smaller */
+  white-space: nowrap; /* keep date in one line */
+}
+
+
+
+
+
+
+.file-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+
+
+.file-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.file-chip {
+  background: #e3f2fd;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+
+.file-link {
+  cursor: pointer;
+  color: #1976d2;
+  // text-decoration: underline;
+   text-decoration: none;
+}
+
+.label {
+  font-weight: 600;
+  margin-right: 4px;
+  // white-space: nowrap; /* label stays in one line */
+}
+
+.value {
+  word-break: break-word; /* value wraps nicely */
+}
+
+.text-red {
+  color: #e53935;
+  font-weight: 600;
+}
+
+.text-green {
+  color: #43a047;
+  font-weight: 600;
+}
+
+
+
+.followup-container {
+  position: relative;
+}
+
+/* TOP RIGHT CLOSE BUTTON */
+.dialog-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+
+  border: none;
+  // background: #f44336;
+  color: white;
+
+  font-size: 18px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: 0.2s ease;
+}
+
+.dialog-close-btn:hover {
+  // background: #d32f2f;
+  transform: scale(1.05);
+}

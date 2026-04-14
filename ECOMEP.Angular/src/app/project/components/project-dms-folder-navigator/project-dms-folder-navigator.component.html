@@ -1,0 +1,124 @@
+<div class="dms-folder-navigator">
+  <!-- Header -->
+  <div class="dms-folder-navigator-header">
+    <div>
+      <button mat-icon-button *ngIf="currentParent" (click)="navigateBack()"><mat-icon>arrow_back</mat-icon></button>
+      <button mat-icon-button *ngIf="!currentParent"><mat-icon>home</mat-icon></button>
+    </div>
+    <div class="dms-folder-title">
+
+      <small class="dms-folder-path" *ngIf="currentParent">{{ currentParent.folderPath }}</small>
+      <h5 class="dms-folder-name" *ngIf="currentParent">{{ currentParent.filename }}</h5>
+    </div>
+    <div class="actions" *ngIf="isPermissionEdit">
+      <!-- <div class="search-filter" >
+            <mat-icon matPrefix>search</mat-icon>
+            <input aria-label="search" [formControl]="searchFC" matInput />
+          </div> -->
+      <button mat-icon-button (click)="removeCopied()" *ngIf="projectAttachmentService.copied.length > 0"
+        matTooltip="Remove Copied">
+        <mat-icon>refresh</mat-icon>
+      </button>
+      <button mat-raised-button color="accent" (click)="onCreateFolder()"><mat-icon>add</mat-icon> Folder</button>
+      <button mat-raised-button (click)="uploadFile()" *ngIf="currentParent"><mat-icon>add</mat-icon> Upload
+        Files</button>
+    </div>
+  </div>
+  <!-- File Table -->
+  <div class="dms-table-wrapper">
+
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Created</th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of currentLevelItems">
+          <td (click)="navigateToChildren(item)">
+            <div class="dms-list-item">
+              <div class="dms-list-item-icon">
+                <mat-icon *ngIf="item.isFolder">folder</mat-icon>
+                <mat-icon *ngIf="!item.isFolder">insert_drive_file</mat-icon>
+              </div>
+              <div class="dms-list-item-name">
+                <h6>{{ item.filename }}</h6>
+                <div>
+                  <small *ngIf="!item.isFolder">{{ getSize(item) | mcvFileSize }}</small>
+                  <small *ngIf="item.isFolder">{{ item.children?.length }} items</small>
+
+                </div>
+              </div>
+              <div class="dms-list-item-lock">
+                <mat-icon *ngIf="item.isReadOnly">lock</mat-icon>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="cell">
+              <span>{{ item.created | date: 'dd MMM y HH:mm' }}</span>
+              <small>{{ item.createdBy }} </small>
+            </div>
+          </td>
+
+          <td>
+            <button mat-icon-button aria-label="context-menu" *ngIf="!item.isFolder && isPermissionEdit"
+              [ngClass]="{'selected':isCopied(item)}" (click)="onToggleCopy(item)">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+
+            <button mat-icon-button aria-label="context-menu" matTooltip="Paste"
+              *ngIf="item.isFolder && projectAttachmentService.copied.length > 0 && isPermissionEdit"
+              (click)="onPaste(item)">
+              <mat-icon>content_paste</mat-icon>
+            </button>
+          </td>
+
+          <td class="align-right">
+            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="context-menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+
+              <button mat-menu-item (click)="onOpen(item)" *ngIf="!item.isFolder">
+                <mat-icon>open_in_new</mat-icon>
+                <span>Open</span>
+              </button>
+
+              <button mat-menu-item (click)="onDownload(item)" *ngIf="!item.isFolder">
+                <mat-icon>download</mat-icon>
+                <span>Download</span>
+              </button>
+
+              <!-- <button mat-menu-item (click)="onPaste(item)" *ngIf="item.isFolder">
+                <mat-icon>content_paste</mat-icon>
+                <span>Paste</span>
+              </button> -->
+
+              <!-- <button mat-menu-item (click)="onCopy(item)" *ngIf="!item.isFolder">
+                <mat-icon>file_copy</mat-icon>
+                <span>Copy</span>
+              </button> -->
+
+              <button mat-menu-item (click)="onEdit(item)" *ngIf="item.isFolder && isPermissionEdit"
+                [disabled]="!isPermissionEdit || item.isReadOnly">
+                <mat-icon>edit</mat-icon>
+                <span>Edit</span>
+              </button>
+
+              <button mat-menu-item (click)="onDelete(item)" *ngIf="isPermissionDelete"
+                [disabled]="!isPermissionDelete || item.isReadOnly">
+                <mat-icon>delete</mat-icon>
+                <span>Delete</span>
+              </button>
+
+            </mat-menu>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

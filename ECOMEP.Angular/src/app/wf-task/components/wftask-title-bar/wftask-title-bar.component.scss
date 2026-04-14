@@ -1,0 +1,42 @@
+@import 'variables';
+// @import "/src/app/wf-task/styles/variables";
+
+.title-bar {
+  // height: 45px;
+  padding: 0.2rem !important;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  justify-content: space-between;
+  padding: 0 10px;
+  box-shadow: $box-shadow;
+  color: $title-bar-color;
+  background-color: $title-bar-background;
+  margin: 3px 6px;
+  border-radius: $border-radius;
+
+  &>* {
+    max-width: 40%;
+  }
+}
+
+
+// .task-title-bar {
+//   background-color: $task-title-bar-background;
+//   color: $task-title-bar-color;
+
+//   & small {
+//     color: $task-title-bar-label-color;
+//   }
+
+//   &.delayed-task {
+//     background: $red !important;
+//     color: $white !important;
+
+//     small {
+//       color: $white !important;
+//     }
+//   }
+// }

@@ -1,0 +1,28 @@
+<div class="d-flex">
+  <div class="d-flex align-items-center">
+
+    <div class="flex-grow-1">
+      <div>
+        <span class="font-focused">{{ item.title }} </span> | <small>{{item.subTitle}}</small>
+      </div>
+
+      <div *ngIf="showAll">
+        <span><small>Assigner: </small>{{ item.assigner.name }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="d-flex justify-content-between">
+  <div>
+    <small>Due: </small><span>{{ item.dueDate | date: "dd MMM y HH:mm" }}</span>
+  </div>
+  <div>
+    <span class="badge mr-1" [ngClass]="{
+      'red':item.priority == PRIORITY_HIGH,
+     'green':item.priority == PRIORITY_LOW,
+      'yellow':item.priority == PRIORITY_NORMAL}">{{ item.priority }}</span>
+    <span *ngIf="item.statusFlag == 0" class="badge green">{{ item.statusValue }}</span>
+    <span *ngIf="item.statusFlag == 1" class="badge gray-700">{{item.statusValue}}</span>
+    <span *ngIf="item.statusFlag == 2" class="badge gray-500">{{item.statusValue}}</span>
+  </div>
+</div>

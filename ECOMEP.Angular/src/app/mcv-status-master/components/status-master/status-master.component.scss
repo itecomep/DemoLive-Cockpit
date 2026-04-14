@@ -1,0 +1,163 @@
+@import 'variables';
+
+.status-wrapper{
+    width: 100%;
+    background-color: $page-background;
+    // overflow: hidden !important;
+    position: absolute;
+    top: $app-header-height;
+    left: 0;
+    // padding: 0.5rem;
+    height: calc(100% - 5.5rem);
+    overflow: hidden auto;
+    table {
+
+
+        thead {
+            background-color: $gray-400;
+            position: sticky;
+            position: -webkit-sticky;
+            top: 0;
+            font-size: 0.75rem;
+
+            tr {
+                &.total {
+                    background-color: $gray-600;
+                    color: $white;
+                }
+
+                td,
+                th {
+                    // display: flex;
+                    //     align-items: center;
+                    //     justify-content: center;
+                    border-bottom: 1px solid $gray-400;
+                    // white-space: nowrap;
+                    border-right: 1px solid $gray-300;
+                    padding: 0.4rem 0.3rem;
+
+                    text-align: center;
+
+                    &.align-right {
+                        text-align: right;
+                    }
+
+                    &.text-pre-wrap {
+                        white-space: pre-wrap;
+                    }
+
+                    &.collapsed {
+                        padding: 0 !important;
+                    }
+                    .sort-header{
+                        display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        mat-icon{
+                            font-size: large;
+                        }
+    
+                    }
+                 
+                }
+
+            }
+
+        }
+        tbody {
+            tr {
+                &:hover {
+                    background-color: $gray-200;
+                }
+    
+                td {
+                    white-space: pre-wrap;
+                    border: 1px solid $gray-300;
+                    padding: 0.3rem;
+                    text-align: left;
+    
+                    .cell-content {
+                        display: flex;
+                        align-items: center;
+    
+    
+                        .cell-action,
+                        .cell-input,
+                        .cell-value {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            // text-align: right;
+                            max-width: 100%;
+                            margin: 0;
+                            border: none;
+                            padding: 0.3rem;
+    
+                            &.text-left {
+                                justify-content: flex-start;
+                            }
+    
+                            &.text-right {
+                                justify-content: flex-end;
+                            }
+    
+                            mat-icon {
+                                // font-size: 1rem;
+                                // font-weight: 600;
+                                display: flex;
+                                align-items: center;
+                                justify-content: flex-start;
+                            }
+
+                            input, textarea {
+                                border: none;
+                                padding: 0;
+                                width: 100%;
+                             
+                                background:$page-background;
+                            }
+                        }
+    
+                        .cell-input,
+                        .cell-value {
+                            flex-grow: 1;
+                            flex-shrink: 1;
+                        }
+    
+                        .cell-value,
+                        .cell-action {
+                            cursor: pointer;
+                        }
+    
+                        .cell-action {
+                            flex-grow: 0;
+                            flex-shrink: 0;
+                            display: flex;
+                            align-items: center;
+                            justify-content: flex-end;
+                            cursor: pointer;
+                        }
+    
+                        .cell-input {
+                            form {
+                                flex-grow: 1;
+                                flex-shrink: 1;
+    
+                                &>* {
+                                    border: none;
+                                    padding: 0;
+                                    width: 100%;
+                                    text-align: center;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.delete-preset{
+    cursor: pointer;
+}

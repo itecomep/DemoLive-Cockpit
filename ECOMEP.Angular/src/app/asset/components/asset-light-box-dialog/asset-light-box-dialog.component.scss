@@ -1,0 +1,18 @@
+@import 'variables';
+
+:host {
+    height: 100%;
+    display: block;
+
+    .mat-dialog-content {
+        max-height: 100vh !important;
+        height: 100%;
+        padding: 0 !important;
+    }
+}
+
+.asset-light-box-close {
+    position: absolute;
+    right: 0.3rem;
+    top: 0.2rem;
+}

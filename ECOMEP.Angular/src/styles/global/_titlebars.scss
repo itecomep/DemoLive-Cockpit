@@ -1,0 +1,68 @@
+/* ---------------------------------------------------
+    Title Bar
+----------------------------------------------------- */
+.title-bar {
+  // height: 45px;
+  padding: 0.2rem !important;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  justify-content: space-between;
+  padding: 0 10px;
+  box-shadow: $box-shadow;
+  color: $title-bar-color;
+  background-color: $title-bar-background;
+  margin: 3px 6px;
+  border-radius: $border-radius;
+
+  &>* {
+    max-width: 40%;
+  }
+}
+
+.action-bar {
+  height: 45px;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  justify-content: flex-end;
+  padding: 0 10px;
+  box-shadow: $box-shadow;
+  color: $action-bar-color;
+  background-color: $action-bar-background;
+  margin: 3px 6px;
+  border-radius: $border-radius;
+}
+
+.title-bar * {
+  font-weight: 400;
+  margin: 0;
+}
+
+// .title-bar small {
+//   color: $title-bar-label-color;
+// }
+
+
+
+@media (max-width: 768px) {
+  .title-bar {
+    min-height: 45px;
+    height: auto;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: start;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .title-bar * {
+    width: 100%;
+  }
+}
+
+/*==========================*/

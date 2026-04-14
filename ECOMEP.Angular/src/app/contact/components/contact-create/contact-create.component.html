@@ -1,0 +1,453 @@
+<!-- Reusable template for your form -->
+<ng-template #headerActionTemplate>
+  <form [formGroup]="form" autocomplete="off">
+    <mat-radio-group formControlName="isCompany">
+      <mat-radio-button [value]="false">
+       <div class="contact-type-label">
+         <img class="contact-icon" src="assets/images/person-icon.svg" alt="" /> Person
+       </div>
+      </mat-radio-button>
+      <mat-radio-button [value]="true">
+     <div class="contact-type-label">
+         <img class="contact-icon" src="assets/images/company-icon.svg" alt="" /> Company
+     </div>
+      </mat-radio-button>
+    </mat-radio-group>
+  </form>
+  <button mat-raised-button aria-label="Save" (click)="onSubmit()">Save</button>
+
+
+</ng-template>
+
+<div class="mat-dialog-header contact-create-dialog-header">
+  <h5 class="contact-create-dialog-header-title">{{dialogTitle}}</h5>
+  <div class="contact-create-dialog-header-actions theme-dark">
+    <ng-container *ngTemplateOutlet="headerActionTemplate"></ng-container>
+  </div>
+  <button mat-icon-button aria-label="close" (click)="onClose(null)">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+<div class="contact-create-dialog-mobile-actions">
+  <ng-container *ngTemplateOutlet="headerActionTemplate"></ng-container>
+</div>
+<mat-dialog-content>
+
+  <div class="contact-create-form">
+
+
+    <div class="contact-alert-bar" *ngIf="isShowAlert" (click)="onOpenMerge()">
+      <mat-icon>warning</mat-icon>
+      <div>
+        <h6>{{this.existingContacts.length}} Duplicate Contacts Found !</h6>
+        <small> Contact(s) already exists with same name. Click here to merge.</small>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-8">
+        <div class="form-collection">
+          <h5 class="form-collection-title">Name</h5>
+          <form [formGroup]="form" autocomplete="off">
+            <div class="row m-0">
+              <ng-container *ngIf="!isCompany">
+                <mat-form-field appearance="outline" class="col-md-3">
+                  <mat-label>Gender</mat-label>
+                  <!-- <input placeholder="Enter gender" aria-label="Gender" matInput formControlName="gender" /> -->
+                  <mat-select formControlName="gender" placeholder="Gender">
+                    <mat-option *ngFor="let item of genderOptions" [value]="item">{{item}}</mat-option>
+                  </mat-select>
+                  <mat-error>{{ getErrorMessage(f.gender) }}</mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="col-md-3">
+                  <mat-label>Prefix/Title</mat-label>
+                  <input placeholder="Enter prefix eg. Mr/Ms" aria-label="Prefix" matInput formControlName="title" />
+                  <mat-error>{{ getErrorMessage(f.title) }}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="col-md-6">
+                  <mat-label>First Name</mat-label>
+                  <input placeholder="First Name" aria-label="First Name" matInput formControlName="firstName" />
+                  <mat-error>{{ getErrorMessage(f.firstName) }}</mat-error>
+                </mat-form-field>
+
+                <!-- Middle Name -->
+                <mat-form-field appearance="outline" class="col-md-6">
+                  <mat-label>Middle Name</mat-label>
+                  <input placeholder="Middle Name" aria-label="Middle Name" matInput formControlName="middleName" />
+                  <mat-error>{{ getErrorMessage(f.middleName) }}</mat-error>
+                </mat-form-field>
+
+                <!-- Last Name -->
+                <mat-form-field appearance="outline" class="col-md-6">
+                  <mat-label>Last Name</mat-label>
+                  <input placeholder="Last Name" aria-label="Last Name" matInput formControlName="lastName" />
+                  <mat-error>{{ getErrorMessage(f.lastName) }}</mat-error>
+                </mat-form-field>
+
+              </ng-container>
+
+              <ng-container *ngIf="isCompany">
+                <mat-form-field appearance="outline" class="col-md-12">
+                  <mat-label>Company Name</mat-label>
+                  <input placeholder="First Name" aria-label="First Name" matInput formControlName="firstName" />
+                  <mat-error>{{
+                    getErrorMessage(f.firstName)
+                    }}</mat-error>
+                </mat-form-field>
+              </ng-container>
+
+
+              <mat-form-field appearance="outline" class="col-md-12">
+                <mat-label>Website</mat-label>
+                <input placeholder="https://myecomep.com" aria-label="Website" matInput formControlName="website" />
+                <mat-error>{{ getErrorMessage(f.website) }}
+                </mat-error>
+              </mat-form-field>
+
+            </div>
+          </form>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-6" [formGroup]="form">
+            <div class="form-collection" formArrayName="phones">
+              <h5 class="form-collection-title">Phone Numbers</h5>
+              <ng-container *ngFor="let item of phones().controls;let i = index">
+                <div class="contact-phone-form-wrapper" [formGroupName]="i">
+                  <div class="contact-phone-form-actions">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Type</mat-label>
+                      <mat-select placeholder="Type" formControlName="title">
+                        <mat-option *ngFor="let title of phoneTitleOptions" [value]="title">{{title}}</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    <div>
+                      <mat-checkbox formControlName="isPrimary" (change)="onPhonePrimaryChange(i)">Primary
+                      </mat-checkbox>
+                    </div>
+                    <button mat-icon-button (click)="onRemovePhone(i)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                  <div class="contact-phone-form-fields">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Phone</mat-label>
+                    <input placeholder="Phone" aria-label="Phone" matInput formControlName="phone" />
+                    <mat-error *ngIf="item.get('phone')?.hasError('required')">Phone is required</mat-error>
+                    <mat-error *ngIf="item.get('phone')?.hasError('pattern')">Please enter a valid input</mat-error>
+                  </mat-form-field>
+
+                  </div>
+                </div>
+              </ng-container>
+            
+              <div class="form-collection-actions">
+                <button mat-raised-button color="primary" (click)="onAddPhone()" [disabled]="phones().invalid"><mat-icon>add</mat-icon>
+                  More</button>
+                </div>
+            </div>
+          </div>
+
+          <div class="col-sm-6" [formGroup]="form">
+            <div class="form-collection" formArrayName="emails">
+              <h5 class="form-collection-title">Email Addresses</h5>
+              <ng-container *ngFor="let item of emails().controls;let i = index">
+                <div class="contact-phone-form-wrapper" [formGroupName]="i">
+                  <div class="contact-phone-form-actions">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Type</mat-label>
+                      <mat-select placeholder="Type" formControlName="title">
+                        <mat-option *ngFor="let title of emailTitleOptions" [value]="title">{{title}}</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    <div>
+                      <mat-checkbox formControlName="isPrimary" (change)="onEmailPrimaryChange(i)">Primary
+                      </mat-checkbox>
+                    </div>
+                    <button mat-icon-button (click)="onRemoveEmail(i)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+
+                  <div class="contact-phone-form-fields">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Email</mat-label>
+                      <input placeholder="Email" aria-label="Email" matInput formControlName="email" />
+                      <mat-error *ngIf="item.get('email')?.hasError('required')">Email is required</mat-error>
+                      <mat-error *ngIf="item.get('email')?.hasError('pattern')">Please enter a valid input</mat-error>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </ng-container>
+              <div class="form-collection-actions">
+                <button mat-raised-button color="primary" (click)="onAddEmail()" [disabled]="emails().invalid"><mat-icon>add</mat-icon>
+                  More</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div [formGroup]="form">
+          <div class="form-collection" formArrayName="addresses">
+            <h5 class="form-collection-title">Addresses</h5>
+            <ng-container *ngFor="let item of addresses().controls;let i = index">
+              <div class="contact-phone-form-wrapper" [formGroupName]="i">
+                <div class="contact-phone-form-actions">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Type</mat-label>
+                    <mat-select placeholder="Type" formControlName="title">
+                      <mat-option *ngFor="let title of addressTitleOptions" [value]="title">{{title}}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <div>
+                    <mat-checkbox formControlName="isPrimary" (change)="onAddressPrimaryChange(i)">Primary
+                    </mat-checkbox>
+                  </div>
+                  <button mat-icon-button (click)="onRemoveAddress(i)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+
+                <div class="contact-phone-form-fields">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Street</mat-label>
+                    <input placeholder="Street" aria-label="Street" matInput formControlName="street" />
+                  </mat-form-field>
+                </div>
+
+                <div class="contact-phone-form-fields">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Area</mat-label>
+                    <input placeholder="Area" aria-label="Area" matInput formControlName="area" />
+                  </mat-form-field>
+                </div>
+
+                <div class="row">
+                  <mat-form-field appearance="outline" class="contact-phone-form-fields col-md-6 col-12">
+                    <mat-label>City</mat-label>
+                    <input placeholder="City" aria-label="City" matInput formControlName="city"
+                      [matAutocomplete]="autoCity" />
+                    <mat-autocomplete #autoCity="matAutocomplete" [displayWith]="displayFnCity"
+                      (optionSelected)="onSelectCity($event,i)">
+                      <mat-option *ngFor="let option of filteredCityOptions$[i] | async" [value]="option">
+                        {{ option }}
+                      </mat-option>
+                    </mat-autocomplete>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="contact-phone-form-fields col-md-6 col-12">
+                    <mat-label>State</mat-label>
+                    <input placeholder="State" aria-label="State" matInput formControlName="state"
+                      [matAutocomplete]="autoState" />
+                    <mat-autocomplete #autoState="matAutocomplete" [displayWith]="displayFnState"
+                      (optionSelected)="onSelectState($event,i)">
+                      <mat-option *ngFor="let option of filteredStateOptions$[i] | async" [value]="option">
+                        {{ option }}
+                      </mat-option>
+                    </mat-autocomplete>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="contact-phone-form-fields col-md-6 col-12">
+                    <mat-label>Country</mat-label>
+                    <input placeholder="Country" aria-label="Country" matInput formControlName="country"
+                      [matAutocomplete]="autoCountry" />
+                    <mat-autocomplete #autoCountry="matAutocomplete" [displayWith]="displayFnCountry"
+                      (optionSelected)="onSelectCountry($event,i)">
+                      <mat-option *ngFor="let option of filteredCountryOptions$[i] | async" [value]="option">
+                        {{ option }}
+                      </mat-option>
+                    </mat-autocomplete>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="contact-phone-form-fields col-md-6 col-12">
+                    <mat-label>Pin Code</mat-label>
+                    <input placeholder="Pin Code" aria-label="Pin Code" matInput formControlName="pinCode" />
+                  </mat-form-field>
+                </div>
+
+              </div>
+            </ng-container>
+            <div class="form-collection-actions">
+              <button mat-raised-button color="primary" (click)="onAddAddress()"><mat-icon>add</mat-icon>
+                More</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="form-collection">
+          <h5 class="form-collection-title">
+            Category & Tags
+          </h5>
+          <form [formGroup]="form" autocomplete="off">
+            <mat-form-field appearance="outline">
+              <mat-label>Category</mat-label>
+              <mat-select formControlName="categories" multiple placeholder="Select Categories">
+                <mat-option *ngFor="let item of categoryOptions" [value]="item">{{item}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </form>
+
+          <app-mcv-tag-editor [tags]="currentEntity.searchTags" [tagOptions]="tagOptions" [isPermissionEdit]="true"
+            (update)="onTagsChange($event)">
+          </app-mcv-tag-editor>
+        </div>
+
+        <div class="form-collection" *ngIf="!isCompany">
+          <h5 class="form-collection-title">Personal Details</h5>
+          <form [formGroup]="form" autocomplete="off">
+            <div class="row m-0">
+              <mat-form-field appearance="outline" class="col-sm-12" *ngIf="!isCompany ">
+                <mat-label>Birth Date</mat-label>
+                <input matInput formControlName="birth" [matDatepicker]="birthDatePicker" placeholder="Select Date" />
+                <mat-error>{{ getErrorMessage(f.birth) }}</mat-error>
+                <mat-datepicker-toggle matSuffix [for]="birthDatePicker"></mat-datepicker-toggle>
+                <mat-datepicker [touchUi]="isMobileView" #birthDatePicker></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-sm-12" *ngIf="!isCompany ">
+                <mat-label>Marital Status</mat-label>
+                <mat-select placeholder="Marital Status" formControlName="maritalStatus">
+                  <mat-option [value]="'Single'">Single</mat-option>
+                  <mat-option [value]="'Married'">Married</mat-option>
+                </mat-select>
+                <mat-error>{{
+                  getErrorMessage(f.maritalStatus)
+                  }}</mat-error>
+
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-sm-12" *ngIf="!isCompany ">
+                <mat-label>Anniversary</mat-label>
+                <input matInput formControlName="anniversary" [matDatepicker]="anniversaryDatePicker"
+                  placeholder="Select Date" />
+                <mat-error>{{
+                  getErrorMessage(f.anniversary)
+                  }}</mat-error>
+                <mat-datepicker-toggle matSuffix [for]="anniversaryDatePicker"></mat-datepicker-toggle>
+                <mat-datepicker [touchUi]="isMobileView" #anniversaryDatePicker></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-sm-12">
+                <mat-label>PAN Number</mat-label>
+                <input placeholder="PAN Number" aria-label="PAN Number" matInput formControlName="pan" />
+                <mat-error>{{ getErrorMessage(f.pan) }}
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-sm-12">
+                <mat-label>Aadhaar Number</mat-label>
+                <input placeholder="Aadhaar Number" aria-label="Aadhaar Number" matInput formControlName="aadhaar" />
+                <mat-error>{{ getErrorMessage(f.aadhaar) }}
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </form>
+        </div>
+
+        <div class="form-collection" *ngIf="isCompany ">
+          <h5 class="form-collection-title">
+            Business Details
+          </h5>
+          <form [formGroup]="form" autocomplete="off">
+            <div class="row m-0">
+
+              <mat-form-field appearance="outline" class="col-sm-12">
+                <mat-label>PAN Number</mat-label>
+                <input placeholder="PAN Number" aria-label="PAN Number" matInput formControlName="pan" />
+                <mat-error>{{ getErrorMessage(f.pan) }}
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-sm-12">
+                <mat-label>Aadhaar Number</mat-label>
+                <input placeholder="Aadhaar Number" aria-label="Aadhaar Number" matInput formControlName="aadhaar" />
+                <mat-error>{{ getErrorMessage(f.aadhaar) }}
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-sm-12" *ngIf="isCompany ">
+                <mat-label>TAN Number</mat-label>
+                <input placeholder="TAN Number" aria-label="TAN Number" matInput formControlName="tan" />
+                <mat-error>{{ getErrorMessage(f.tan) }}
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-sm-12" *ngIf="isCompany ">
+                <mat-label>GST Number</mat-label>
+                <input placeholder="GSTIN" aria-label="GSTIN" matInput formControlName="gstin" />
+                <mat-error>{{ getErrorMessage(f.gstin) }}
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-sm-12" *ngIf="isCompany ">
+                <mat-label>HSN Number</mat-label>
+                <input placeholder="HSN Number" aria-label="HSN Number" matInput formControlName="hsn" />
+                <mat-error>{{ getErrorMessage(f.hsn) }}
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="col-sm-12" *ngIf="isCompany ">
+                <mat-label>ARN Number</mat-label>
+                <input placeholder="ARN Number" aria-label="ARN Number" matInput formControlName="arn" />
+                <mat-error>{{ getErrorMessage(f.arn) }}
+                </mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="col-sm-12" *ngIf="isCompany ">
+                <mat-label>UDHYAM Number</mat-label>
+                <input placeholder="UDHYAM Number" aria-label="UDHYAM Number" matInput formControlName="udhyam" />
+                <mat-error>{{ getErrorMessage(f.udhyam) }}
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </form>
+        </div>
+
+        <div class="form-collection">
+
+          <h5 class="form-collection-title">
+            Comments/Remarks
+          </h5>
+          <form [formGroup]="form" autocomplete="off">
+            <mat-form-field appearance="outline" appearance="outline">
+              <mat-label></mat-label>
+              <textarea aria-label="description" matInput formControlName="description" cdkTextareaAutosize
+                #autosize="cdkTextareaAutosize" [cdkAutosizeMinRows]="3"></textarea>
+              <mat-error>{{ getErrorMessage(f.description) }}</mat-error>
+            </mat-form-field>
+          </form>
+        </div>
+
+
+      </div>
+    </div>
+
+    <!-- <mat-tab-group>
+
+      <mat-tab label="Contact Details">
+        <ng-template matTabContent>
+       
+        </ng-template>
+      </mat-tab>
+
+      <mat-tab label="Associations">
+        <ng-template matTabContent>
+
+          <app-contact-association [isEditMode]="true" [config]="{
+              contact: currentEntity,
+              associations: currentEntity.associatedCompanies,
+              contactOptions: contactOptions,
+              updateDatabase: false
+            }" (update)="updateAssociation($event)"></app-contact-association>
+
+        </ng-template>
+      </mat-tab>
+
+    </mat-tab-group> -->
+
+
+
+  </div>
+</mat-dialog-content>

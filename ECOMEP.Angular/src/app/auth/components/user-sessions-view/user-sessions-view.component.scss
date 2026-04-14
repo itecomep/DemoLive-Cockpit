@@ -1,0 +1,113 @@
+@import 'variables';
+
+.mcv-data-list-header {
+    position: sticky;
+    position: -webkit-sticky;
+
+    top: 0;
+    width: 100%;
+    overflow: hidden;
+    z-index: 100;
+    background-color: $mcv-data-list-header-bg-color;
+    color: $mcv-data-list-header-color;
+    font-size: $mcv-data-list-header-font-size;
+    box-shadow: $box-shadow;
+
+    &.mcv-data-list-header-dark {
+        background-color: $mcv-data-list-header-dark-bg-color;
+        color: $mcv-data-list-header-dark-color;
+    }
+
+    &.mcv-data-list-inner-header {
+        background-color: $mcv-data-list-inner-header-bg-color;
+        color: $mcv-data-list-inner-header-color;
+        font-size: $mcv-data-list-inner-header-font-size;
+        z-index: 90;
+    }
+
+    & .mcv-data-list-header-row {
+        overflow: hidden;
+        padding: 0 10px;
+
+
+        & .mcv-data-list-header-cell {
+            box-sizing: border-box;
+            flex-grow: 0;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            font-weight: 300;
+
+        }
+    }
+
+    & .mcv-data-list-total {
+        font-size: $mcv-data-list-total-font-size;
+        background-color: $mcv-data-list-total-bg-color;
+        color: $mcv-data-list-total-color;
+    }
+}
+
+.mcv-data-list {
+    width: 100%;
+    overflow: hidden;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+
+
+    &>li {
+        width: 100%;
+        padding: 0 10px;
+        overflow: hidden;
+        cursor: pointer;
+        border-bottom: $mcv-data-list-row-border-bottom;
+    }
+
+    &.mcv-data-list-dark {
+        background-color: $mcv-data-list-dark-bg-color;
+        color: $mcv-data-list-dark-color;
+
+        &>li {
+            border-bottom: $mcv-data-list-dark-row-border-bottom;
+        }
+    }
+
+    &.mcv-data-list-inner {
+        background-color: $mcv-data-list-inner-bg-color;
+        color: $mcv-data-list-inner-color;
+        font-size: $mcv-data-list-inner-font-size;
+
+        &>li {
+            border-bottom: $mcv-data-list-inner-row-border-bottom;
+        }
+    }
+}
+
+.mcv-data-list-cell {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    padding: $mcv-data-list-cell-padding;
+
+    &.mcv-data-list-cell-align-right {
+        justify-content: flex-end;
+
+        &>* {
+            text-align: right;
+        }
+    }
+
+    &.mcv-data-list-cell-align-center {
+        justify-content: center;
+    }
+}
+
+.location {
+    display: flex;
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    background-color: $green;
+}

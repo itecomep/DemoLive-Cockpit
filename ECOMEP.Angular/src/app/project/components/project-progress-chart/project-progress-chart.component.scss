@@ -1,0 +1,183 @@
+@import 'variables';
+
+$progress-bar-height: 0.9rem !default;
+
+.sort-dropdown {
+    display: flex;
+    align-items: center;
+
+    mat-icon {
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+    }
+}
+
+.mat-mdc-form-field-icon-suffix {
+
+    .mat-icon {
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+    }
+}
+
+.sort-select-icon {
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    display: inline;
+}
+
+.project-progress-chart {
+    height: 100%;
+    overflow: hidden auto;
+
+    .header {
+        position: sticky;
+        position: -webkit-sticky;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        top: 0;
+        z-index: 100;
+        padding: 3px 15px;
+        background-color: $white;
+        box-shadow: $box-shadow;
+
+        .header-filters {
+            display: flex;
+            align-items: center;
+            //   justify-content: space-between;
+
+            &>* {
+                margin: 0 5px;
+            }
+
+            .mat-mdc-form-field {
+                width: 100%;
+                margin-bottom: 0;
+            }
+        }
+    }
+
+
+
+    .legend-wrapper {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        flex-grow: 1;
+
+        .legend {
+            display: flex;
+            align-items: center;
+            // padding: 0.3rem;
+
+            .legend-color {
+                width: 1rem;
+                height: 1rem;
+                margin: 0.3rem;
+            }
+
+            small {
+                padding-right: 0.5rem;
+            }
+        }
+    }
+
+    .project-total-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        padding: 0.2rem;
+
+        .total-container {
+            width: 2.5rem;
+            height: 0.8rem;
+            margin-right: 0.2rem;
+        }
+    }
+
+    .project-progress-bar-wrapper {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        margin-bottom: 0.5rem;
+        padding: 0 0.2rem 0 0.2rem;
+
+        .project-details {
+            // display: flex;
+            // align-items: center;
+            // justify-content: flex-start;
+            width: 20rem;
+            border-bottom: 1px solid $gray-300;
+        }
+
+        .project-progress-bars {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            padding-left: 0.5rem;
+
+            .progress-bar {
+                line-height: 0;
+                font-size: 0.65625rem;
+                background-color: #e9ecef;
+                border-radius: 0px;
+                height: $progress-bar-height;
+                position: relative;
+                margin-bottom: 0.1rem;
+
+                .progress-bar-segment {
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    overflow: hidden;
+                    color: #fff;
+                    text-align: right;
+                    white-space: nowrap;
+                    transition: width 0.6s ease;
+                }
+            }
+        }
+    }
+
+
+}
+
+@media only screen and (max-width: 768px) {
+    .project-progress-chart {
+        .header {
+            flex-direction: column;
+
+            .header-filters {
+                flex-direction: column;
+            }
+        }
+
+        .project-progress-bar-wrapper {
+            flex-direction: column;
+            align-items: unset;
+            padding-bottom: 0.2rem;
+            border-bottom: 1px solid $gray-300;
+
+            .project-details {
+                // display: flex;
+                // align-items: center;
+                // justify-content: flex-start;
+                width: 100%;
+                border-bottom: none;
+            }
+
+            .project-progress-bars {
+                padding: 0 !important;
+            }
+        }
+    }
+}

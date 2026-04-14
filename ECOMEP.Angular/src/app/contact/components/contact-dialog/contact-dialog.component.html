@@ -1,0 +1,9 @@
+<div class="mat-dialog-header mcv-dialog-header">
+  <h5 class="font-focused">Contact Details | {{contact.fullName}}</h5>
+  <button mat-icon-button aria-label="close" (click)="onClose(null)">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+<mat-dialog-content>
+  <app-contact-details [currentEntity]="contact"></app-contact-details>
+</mat-dialog-content>

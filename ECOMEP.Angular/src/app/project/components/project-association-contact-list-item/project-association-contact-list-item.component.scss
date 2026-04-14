@@ -1,0 +1,62 @@
+@import 'variables';
+@import 'theme';
+
+.contact-list-item {
+  display: flex;
+  // gap: 0.3rem;
+
+  .list-item-details {
+    flex-grow: 1;
+    flex-shrink: 1;
+    display: flex;
+    gap: 0.3rem;
+    align-items: flex-start;
+
+    .category-list {
+      display: flex;
+      gap: 0.3rem;
+      flex-wrap: wrap;
+
+      .category-tag {
+        background-color: $gray-700;
+        color: $white;
+        font-size: 0.6rem;
+        padding: 2px 4px;
+        border-radius: $border-radius;
+      }
+    }
+
+    .appointment-list {
+      display: flex;
+      gap: 0.3rem;
+      flex-wrap: wrap;
+
+      .appointment-tag {
+        background-color: mat-color($mcv-primary, 500);
+        color: $white;
+        font-size: 0.6rem;
+        padding: 2px 4px;
+        border-radius: $border-radius;
+      }
+    }
+
+    img.contact-icon {
+      width: 40px;
+      height: 40px;
+      -o-object-fit: cover;
+      object-fit: cover;
+      border-radius: $border-radius;
+    }
+
+  }
+
+  .list-item-actions {
+    flex-grow: 0;
+    flex-shrink: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.3rem;
+
+  }
+
+}

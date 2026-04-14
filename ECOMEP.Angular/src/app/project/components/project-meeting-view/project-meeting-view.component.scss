@@ -1,0 +1,57 @@
+@import "variables";
+
+.todo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  padding: 0.3rem;
+  position: sticky;
+  top: 0;
+
+  .mv-list-search-filter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid $gray-300;
+    border-radius: 5px;
+    height: 2.5rem;
+    margin-right: 0.2rem;
+
+    input {
+      border: none;
+    }
+  }
+}
+
+.project-meeting-view-wrapper {
+  .project-meeting-ul {
+    list-style: none;
+    margin: 0;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+
+    li {
+      border-bottom: 1px solid $gray-300;
+      padding: 0.3rem;
+      cursor: pointer;
+      background-color: $white;
+    }
+  }
+}
+
+.no-meeting-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    text-align: center;
+
+    h6 {
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
+  }
+}

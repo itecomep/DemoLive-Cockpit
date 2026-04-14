@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round");
+
+@import "variables";
+@import "bootstrap/scss/bootstrap";
+@import "reset";
+
+@import "@angular/material/prebuilt-themes/indigo-pink.css";
+@import "theme";
+@import "sweetalert2/src/sweetalert2";
+@import "styles/global/common";
+@import "styles/global/activity";
+@import "styles/global/aspect-ratio-box";
+@import "styles/global/badges";
+@import "styles/global/buttons";
+@import "styles/global/forms";
+@import "styles/global/mcv-lists";
+@import "styles/global/loader";
+@import "styles/global/mcv-dialogs";
+@import "styles/global/mat-progress";
+@import "styles/global/mat-tables";
+@import "styles/global/mcv-tabs";
+@import "styles/global/mcv-tags";
+@import "styles/global/ngx-timepicker";
+@import "styles/global/mcv-panels";
+@import "styles/global/sweetalerts";
+@import "styles/global/user-thumbnail";
+@import "styles/global/wrappers";
+@import "styles/global/ngx-bar-rating";
+@import "styles/global/mcv-text";
+@import "app/shared/styles/mcv-header";
+@import "app/shared/styles/mcv-footer";
+@import "app/shared/styles/mcv-menu-sidebars";
+@import "app/contact/styles/mcv-contact";
+@import "app/mcv-file/styles/mcv-file";
+@import "app/mcv-time-line/styles/mcv-time-line";
+
+
+.mcv-entity-history-header {
+  background-color: $gray-200;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+/* TODO(mdc-migration): The following rule targets internal classes of option that may no longer apply for the MDC version.*/
+.mat-option-text {
+  font-size: 0.85rem !important;
+}
+
+.mat-mdc-option-text {
+  font-size: 12px;
+}
+
+.mat-mdc-list-base .mat-mdc-list-item,
+.mat-mdc-list-base .mat-mdc-list-option {
+  height: 40px !important;
+  border-bottom: 1px solid $gray-200;
+}
+
+
+.mat-mdc-paginator-container {
+  min-height: 30px !important;
+}
+
+.sunday-cell {
+  background-color: #fbe6e6cf !important;
+}
+
+.holiday-cell {
+  background-color: #ff6868cf !important;
+}

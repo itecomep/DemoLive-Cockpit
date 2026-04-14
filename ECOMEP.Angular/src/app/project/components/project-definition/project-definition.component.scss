@@ -1,0 +1,54 @@
+@import 'variables';
+@import 'theme';
+
+.project-definition {
+
+  .property-collection {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+
+    .property {
+      display: flex;
+      gap: 0.3rem;
+      justify-content: space-between;
+      border: 1px solid $gray-300;
+      border-radius: 4px;
+      cursor: pointer;
+      padding: 0.3rem;
+      flex-grow: 1;
+      flex-shrink: 1;
+      min-width: 10rem;
+      min-height: 2.5rem;
+
+      .property-details {
+        flex-grow: 1;
+        flex-shrink: 1;
+        max-width: 100%;
+      }
+
+      .property-label {
+        font-size: 0.7rem;
+        color: $gray-600;
+      }
+
+      .property-actions {
+        display: flex;
+        justify-content: flex-end;
+        // gap: 0.5rem;
+
+        // mat-icon {
+        //   height: 20px;
+        //   width: 20px;
+        //   font-size: 20px;
+        //   // padding: 0.3rem;
+        // }
+      }
+
+    }
+
+
+  }
+}
+

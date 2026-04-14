@@ -1,0 +1,124 @@
+@import 'variables';
+@import 'theme';
+
+mat-dialog-content {
+    min-height: 65vh;
+    min-width: 65vw;
+
+    .team-container {
+        display: flex;
+        gap: 0.3rem;
+        padding: 0.5rem;
+        max-height: inherit;
+
+        .team-list-container,
+        .team-member-list-container {
+            border: 1px solid $gray-300;
+            border-radius: $border-radius;
+
+            .header {
+                position: sticky;
+                position: -webkit-sticky;
+                z-index: 19;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 10%;
+                padding: 0 0.5rem;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background-color: mat-color($mcv-primary, 500);
+                cursor: pointer;
+                border-radius: 4px 4px 0 0;
+                min-height: 2.8rem;
+            }
+
+            ul {
+                padding: 0;
+                margin: 0;
+                list-style: none;
+                height: 90%;
+                overflow: hidden auto;
+
+                li {
+                    border-bottom: 1px solid $gray-300;
+                    padding: 0 0.3rem;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    height: 3rem;
+                    cursor: pointer;
+
+                    &:hover {
+                        background-color: $gray-300;
+                    }
+
+                    &.selected {
+                        background-color: #def;
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
+.team-contact-list-item {
+    display: flex;
+
+    .list-item-details {
+        flex-grow: 1;
+        flex-shrink: 1;
+        display: flex;
+        gap: 0.3rem;
+        align-items: flex-start;
+
+        .category-tag {
+            background-color: $gray-700;
+            color: $white;
+            font-size: 0.7rem;
+            padding: 2px 4px;
+            border-radius: $border-radius;
+        }
+
+        img.contact-icon {
+            width: 40px;
+            height: 40px;
+            -o-object-fit: cover;
+            object-fit: cover;
+            border-radius: $border-radius;
+        }
+    }
+
+    .list-item-actions {
+        flex-grow: 0;
+        flex-shrink: 0;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.3rem;
+
+    }
+}
+
+.team-list-container {
+    width: 40%;
+}
+
+.team-member-list-container {
+    width: 50%;
+    flex-grow: 1;
+}
+
+
+@media only screen and (max-width:768px) {
+    .team-container {
+        flex-direction: column;
+    }
+
+    .team-list-container,
+    .team-member-list-container {
+        width: 100%;
+    }
+}

@@ -1,0 +1,70 @@
+<div class="summary-header-wrapper d-flex align-items-center justify-content-between">
+  <div class="d-flex align-items-center pb-2">
+    <!-- <button mat-icon-button (click)="onPrevClick()"><mat-icon>arrow_back_ios</mat-icon></button> -->
+    <div>
+      <!-- <small>Leave Cycle: </small> -->
+      <h6>{{totalSummary?.leaveCycle}}</h6>
+    </div>
+    <!-- <button mat-icon-button (click)="onNextClick()"
+      [disabled]="year>=currentYear"><mat-icon>arrow_forward_ios</mat-icon></button> -->
+  </div>
+
+  <div class="summary-data d-flex align-items-center pb-2" *ngIf="totalSummary">
+    <div class="pl-2 pr-2">
+      <small>Total: </small>
+      <h3 class="font-focused">{{totalSummary?.allowed}}</h3>
+    </div>
+    <div class="pl-2 pr-2">
+      <small>Used: </small>
+      <h3 class="font-focused">{{totalSummary?.total}}</h3>
+    </div>
+    <div class="pl-2 pr-2">
+      <small>Balance: </small>
+      <h3 class="font-focused">{{totalSummary.allowed - totalSummary.total}}</h3>
+    </div>
+  </div>
+</div>
+<div class="leave-summary-table-wrapper" *ngIf="totalSummary">
+  <table class="mb-2">
+    <thead>
+      <tr>
+        <th>Casual</th>
+        <th>Emergency/Sick</th>
+        <th>First Half</th>
+        <th>Second Half</th>
+        <th>Emergency First Half</th>
+        <th>Emergency Second Half</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{totalSummary.approvedLeave}}</td>
+        <td>{{totalSummary.emergencyLeave}}</td>
+        <td>{{totalSummary.approvedFirstHalf}}</td>
+        <td>{{totalSummary.approvedSecondHalf}}</td>
+        <td>{{totalSummary.emergencyFirstHalf}}</td>
+        <td>{{totalSummary.emergencySecondHalf}}</td>
+      </tr>
+    </tbody>
+  </table>
+  <table>
+    <thead>
+      <tr>
+        <th>Month</th>
+        <th>Eligible</th>
+        <th>Utilitzed</th>
+        <th>Balance</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let item of yearlySummary">
+        <tr>
+          <td> {{(item.label + ' ' + item.year)}}</td>
+          <td>{{item.leaveEligible}}</td>
+          <td>{{item.total}}</td>
+          <td *ngIf="shouldShowPending(item)">{{item.leavePending}}</td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</div>

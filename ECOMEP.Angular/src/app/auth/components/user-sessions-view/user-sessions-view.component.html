@@ -1,0 +1,235 @@
+<app-header [title]="headerTitle"></app-header>
+<app-footer></app-footer>
+<div class="page-wrapper">
+  <div class="container-fluid">
+    <div class="d-flex align-items-center justify-content-between">
+
+
+      <div>
+        <mat-form-field>
+          <mat-label>Search</mat-label>
+          <input placeholder="Enter text to search" aria-label="Search" matInput [formControl]="searchFilter" />
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </div>
+      <div>
+        <mat-form-field>
+          <mat-label>Select Range</mat-label>
+          <mat-date-range-input [formGroup]="dateFilters" [rangePicker]="rangePicker1">
+            <input matStartDate placeholder="Start date" formControlName="start">
+            <input matEndDate placeholder="End date" formControlName="end">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matSuffix [for]="rangePicker1"></mat-datepicker-toggle>
+          <mat-date-range-picker #rangePicker1></mat-date-range-picker>
+        </mat-form-field>
+      </div>
+      <div class="d-flex align-items-center justify-content-end">
+
+        <button mat-raised-button (click)="refresh()" matTooltip="Refresh" aria-label="Refresh">Refresh</button>
+        <!-- <button mat-raised-button (click)="onGetReport('PDF')" matTooltip="PDF" aria-label="PDF">PDF</button>
+        <button mat-raised-button (click)="onGetReport('EXCEL')" matTooltip="EXCEL" aria-label="Excel">Excel</button> -->
+
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <div class="mcv-data-list-header ">
+          <div class="mcv-data-list-header-row">
+            <div class="row">
+              <div class="col-md-3">
+                <div class="row">
+                  <div class="col-md-6 col-6">
+                    <div class="mcv-data-list-cell">
+                      <span>Login</span>
+                    </div>
+                  </div>
+                  <div class="col-md-6 col-6">
+                    <div class="mcv-data-list-cell" [ngClass]="{'mcv-data-list-cell-align-right':isMobileView}">
+                      <span>User</span>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="row">
+                  <div class="col-md-4 col-4">
+                    <div class="mcv-data-list-cell">
+                      <span>IP</span>
+                    </div>
+                  </div>
+                  <div class="col-md-4 col-4">
+                    <div class="mcv-data-list-cell">
+                      <span>Device</span>
+                    </div>
+                  </div>
+                  <div class="col-md-4 col-4">
+                    <div class="mcv-data-list-cell" [ngClass]="{'mcv-data-list-cell-align-right':isMobileView}">
+                      <span>Device Type</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="row">
+                  <div class="col-md-4 col-4">
+                    <div class="mcv-data-list-cell">
+                      <span>OS</span>
+                    </div>
+                  </div>
+                  <div class="col-md-4 col-4">
+                    <div class="mcv-data-list-cell">
+                      <span>Browser</span>
+                    </div>
+                  </div>
+                  <div class="col-md-4 col-4">
+                    <div class="mcv-data-list-cell" [ngClass]="{'mcv-data-list-cell-align-right':isMobileView}">
+                      <span>OTP</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="row">
+                  <div class="col-md-3 col-3">
+                    <div class="mcv-data-list-cell">
+                      <span>Action By</span>
+                    </div>
+                  </div>
+                  <div class="col-md-3 col-3">
+                    <div class="mcv-data-list-cell">
+                      <span>Location</span>
+                    </div>
+                  </div>
+                  <div class="col-md-3 col-3">
+                    <div class="mcv-data-list-cell">
+                      <span>Lattitude</span>
+                    </div>
+                  </div>
+                  <div class="col-md-3 col-3">
+                    <div class="mcv-data-list-cell">
+                      <span>Longitude</span>
+                    </div>
+                  </div>
+                  <!-- <div class="col-md-7 col-6">
+                    <div class="mcv-data-list-cell mcv-data-list-cell-align-right">
+                      <span>Logout</span>
+                    </div>
+                  </div> -->
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <ul class="mcv-data-list ">
+          <li *ngFor="let item of dataList">
+            <div class="row" [ngClass]="{'text-primary': item.currentSessionisActive}">
+              <div class="col-md-3">
+                <div class="row">
+                  <div class="col-md-6 col-6">
+                    <div class="mcv-data-list-cell">
+                      <span>{{item.created | date:'dd MMM y HH:mm'}}</span>
+                    </div>
+                  </div>
+                  <div class="col-md-6 col-6">
+                    <div class="mcv-data-list-cell" [ngClass]="{'mcv-data-list-cell-align-right':isMobileView}">
+                      <span>{{item?.contact?.firstName}} {{item?.contact?.lastName}}</span>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="row">
+                  <div class="col-md-4 col-4">
+                    <div class="mcv-data-list-cell">
+                      <span>{{item.ipAddress}}</span>
+                    </div>
+                  </div>
+                  <div class="col-md-4 col-4">
+                    <div class="mcv-data-list-cell">
+                      <span>{{item.device}}</span>
+                    </div>
+                  </div>
+                  <div class="col-md-4 col-4">
+                    <div class="mcv-data-list-cell" [ngClass]="{'mcv-data-list-cell-align-right':isMobileView}">
+                      <span>{{item.deviceType}}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="row">
+                  <div class="col-md-4 col-4">
+                    <div class="mcv-data-list-cell">
+                      <span>{{item.os}}</span>
+                    </div>
+                  </div>
+                  <div class="col-md-4 col-4">
+                    <div class="mcv-data-list-cell">
+                      <span>{{item.browserName}}</span>
+                    </div>
+                  </div>
+                  <div class="col-md-4 col-4">
+                    <div class="mcv-data-list-cell" [ngClass]="{'mcv-data-list-cell-align-right':isMobileView}">
+                      <span>{{item.otp}}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="row">
+                  <div class="col-md-3 col-3">
+                    <div class="mcv-data-list-cell">
+                      <span *ngIf="!item.currentSessionisActive">{{item.modifiedBy}}</span>
+                      <span *ngIf="item.currentSessionisActive">Session Active</span>
+                    </div>
+                  </div>
+                  <div class="col-md-3 col-3">
+                    <div class="mcv-data-list-cell">
+                      <span *ngIf="item.geoLocation && item.geoLocation !== ''">
+                        <div class="location"></div>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="col-md-3 col-3">
+                    <div class="mcv-data-list-cell">
+                      <span *ngIf="item.geoLocation && item.geoLocation !== ''">{{item.geoLocation.coords?.latitude}}</span>
+                    </div>
+                  </div>
+                  <div class="col-md-3 col-3">
+                    <div class="mcv-data-list-cell">
+                      <span *ngIf="item.geoLocation && item.geoLocation !== ''">{{item.geoLocation.coords?.longitude}}</span>
+                    </div>
+                  </div>
+                  <!-- <div class="col-md-7 col-6">
+                    <div class="mcv-data-list-cell mcv-data-list-cell-align-right">
+                      <span *ngIf="!item.currentSessionisActive">{{item.logoutDateTime | date:'dd MMM y HH:mm'}}</span>
+                      <button *ngIf="item.currentSessionisActive" mat-icon-button aria-label="Logout"
+                        matTooltip="Logout" (click)="logoutUser(item.userName,item.token)">
+                        <mat-icon>logout</mat-icon>
+                      </button>
+                    </div>
+                  </div> -->
+
+                </div>
+              </div>
+            </div>
+          </li>
+          <li *ngIf="!isLoading && dataList.length == 0">
+            <div class="mcv-data-list-cell mcv-data-list-cell-align-center">
+              <span>No items found</span>
+            </div>
+          </li>
+
+          <li *ngIf="!isLoading && totalRecordsCount > 0 && currentPage + 1 < totalPages" (click)="loadMoreRecords()">
+            <div class="mcv-data-list-cell mcv-data-list-cell-align-center">
+              <h5 style="cursor:pointer;">Show More</h5>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

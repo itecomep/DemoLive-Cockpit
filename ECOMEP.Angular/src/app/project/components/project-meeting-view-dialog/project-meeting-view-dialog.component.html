@@ -1,0 +1,175 @@
+<div class="mat-dialog-header mcv-dialog-header">
+  <div>
+    <h5 class="font-focused">{{data.currentEntity.title}}</h5>
+    <h6>{{data.currentEntity.subtitle}}</h6>
+  </div>
+
+  <button mat-icon-button aria-label="close" (click)="onClose()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<mat-dialog-content class="dialog-wrapper" *ngIf="currentEntity">
+    <div class="dialog-data-wrapper">
+        <div class="detail-data-wrapper">
+            <h5 class="mb-2">DETAILS</h5>
+            <div class="meeting-property-wrapper">
+                <div class="meeting-property">
+                    <small class="property-label">
+                        Purpose
+                    </small>
+                    <div class="property-value">
+                        <h6>{{currentEntity.purpose}}</h6>
+                    </div>
+                </div>
+                <div class="meeting-property">
+                    <small class="property-label">
+                        Remark
+                    </small>
+                    <div class="property-value">
+                        <h6>{{currentEntity.remark}}</h6>
+                    </div>
+                </div>
+                <div class="meeting-property">
+                    <small class="property-label">
+                        Followup Remark
+                    </small>
+                    <div class="property-value">
+                        <h6>{{currentEntity.followupRemark}}</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-data-wrapper" *ngIf="currentEntity.gmaps && currentEntity.gmaps.length > 0">
+            <h5 class="mb-2">GMAPS</h5>
+            <div class="meeting-property-wrapper" *ngFor="let gmap of currentEntity.gmaps">
+                <div class="meeting-property">
+                    <small class="property-label">
+                        Title
+                    </small>
+                    <div class="property-value">
+                        <h6>{{gmap.title}}</h6>
+                    </div>
+                </div>
+                <div class="meeting-property">
+                    <small class="property-label">
+                        URL
+                    </small>
+                    <div class="property-value">
+                        <h6><a href="{{gmap.url}}" target="_blank">{{gmap.url}}</a></h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="currentEntity.agendas && currentEntity.agendas.length > 0">
+            <h5 class="mb-2">AGENDA</h5>
+            <div class="meeting-property-wrapper agenda-item" *ngFor="let item of currentEntity.agendas; let last = last" [class.agenda-separator]="!last">
+                <div class="meeting-property">
+                    <small class="property-label">
+                        {{item.typeFlag === 0 ? 'Agenda' : 'Discussion'}}
+                    </small>
+
+                    <div class="title-subtitle-row">
+                        <div class="meeting-property">
+                            <small class="property-label">Title</small>
+                            <div class="property-value">
+                                <h6>{{item.title}}</h6>
+                            </div>
+                        </div>
+                        <div class="meeting-property">
+                            <small class="property-label">SubTitle</small>
+                            <div class="property-value">
+                                <h6>{{item.subtitle}}</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="title-subtitle-row">
+                        <div class="meeting-property">
+                            <small class="property-label">Action By</small>
+                            <div class="property-value">
+                                <h6>{{item.actionBy}}</h6>
+                            </div>
+                        </div>
+                        <div class="meeting-property">
+                            <small class="property-label">Due Date</small>
+                            <div class="property-value">
+                                <h6>{{item.dueDate}}</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="meeting-property" *ngIf="item.attachments && item.attachments.length > 0">
+                        <small class="property-label">
+                            Attachments
+                        </small>
+                        <div class="property-value">
+                            <ul class="mcv-file-list">
+                            <li class="mb-1" *ngFor="let file of item.attachments">
+                                    <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="false"
+                                        [tags]="file.searchTags" [allowTagging]="false" [downloadUrl]="file.url" [showPreview]="true"
+                                        [singlePreview]="true" [url]="file.url">
+                                    </mcv-file>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dialog-data-wrapper">
+        <div class="attendees-data-wrapper">
+            <h5>ATTENDEES</h5>
+
+            <div class="attendee-group">
+                <div class="attendee-block" *ngIf="toExternal.length > 0">
+                    <div class="attendee-type">External:</div>
+                    <div *ngFor="let attendee of toExternal" class="attendee-item">
+                    <span class="name">{{ attendee.name }}</span>
+                    <span class="email">{{ attendee.email }}</span>
+                    </div>
+                </div>
+
+                <div class="attendee-block" *ngIf="toInternal.length > 0">
+                    <div class="attendee-type">Internal:</div>
+                    <div *ngFor="let attendee of toInternal" class="attendee-item">
+                    <span class="name">{{ attendee.name }}</span>
+                    <span class="email">{{ attendee.email }}</span>
+                    </div>
+                </div>
+
+                <div class="attendee-block" *ngIf="toContactPerson.length > 0">
+                    <div class="attendee-type">Contact Person:</div>
+                    <div *ngFor="let attendee of toContactPerson" class="attendee-item">
+                    <span class="name">{{ attendee.name }}</span>
+                    <span class="email">{{ attendee.email }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="attendees-data-wrapper" *ngIf="currentEntity.attachments && currentEntity.attachments.length > 0">
+                <h5>ATTACHMENTS</h5>
+                <div class="meeting-property-wrapper" *ngFor="let item of currentEntity.attachments">
+                    <div class="meeting-property">
+                        <small class="property-label">
+                            {{item.typeFlag === 0 ? 'Meeting Attachment' : item.typeFlag === 1 ? 'Reports' : item.typeFlag === 2 ? 'Photos' : 'Drawing'}}
+                        </small>
+                        <div class="property-value">
+                            <ul class="mcv-file-list">
+                                <li class="mb-1">
+                                    <mcv-file [filename]="item.filename" [size]="item.size" [showRemove]="false"
+                                        [tags]="item.searchTags" [allowTagging]="false" [downloadUrl]="item.url" [showPreview]="true"
+                                        [singlePreview]="true" [url]="item.url">
+                                    </mcv-file>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+
+</mat-dialog-content>

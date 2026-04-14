@@ -1,0 +1,100 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">Todo</h5>
+    <button mat-icon-button (click)="onClose()">
+        <mat-icon>clear</mat-icon>
+    </button>
+</div>
+<mat-dialog-content>
+    <div class="todo-wrapper p-1" *ngIf="todo">
+        <div class="todo-details">
+            <h6 class="font-focused mb-1">Todo Details</h6>
+            <div class="property-collection">
+                <!-- <div class="property">
+                    <div class="property-details">
+                        <small class="property-label">Type</small>
+                        <div class="property-value">
+                            <h6 *ngIf="todo.typeFlag == 0">Project</h6>
+                            <h6 *ngIf="todo.typeFlag == 1">Custom</h6>
+                        </div>
+                    </div>
+                </div> -->
+
+                <div class="property">
+                    <div class="property-details">
+                        <small class="property-label">Assign To</small>
+                        <div class="property-value">
+                            <h6>{{todo.assigner.fullName}}</h6>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="property">
+                    <div class="property-details">
+                        <small class="property-label">Due Date</small>
+                        <div class="property-value">
+                            <h6>{{todo.dueDate | date:'dd MMM y'}}</h6>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="property">
+                    <div class="property-details">
+                        <small class="property-label">Due Time</small>
+                        <div class="property-value">
+                            <h6>{{todo.dueDate | date:'HH:mm a'}}</h6>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="property">
+                    <div class="property-details">
+                        <small class="property-label">Hour Assigned</small>
+                        <div class="property-value">
+                            <h6>{{todo.mHrAssigned}}</h6>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="property">
+                    <div class="property-details">
+                        <small class="property-label">Priority</small>
+                        <div class="property-value">
+                            <span class="badge mr-1" [ngClass]="{
+                                'red':todo.priority == PRIORITY_HIGH,
+                               'green':todo.priority == PRIORITY_LOW,
+                                'yellow':todo.priority == PRIORITY_NORMAL}">{{ todo.priority }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="property">
+                    <div class="property-details">
+                        <small class="property-label">Description</small>
+                        <div class="property-value">
+                            <h6>{{todo.description}}</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="todo-attachments col-md-6 col-12">
+            <h6 class="font-focused">Attachments</h6>
+            <ul class="mcv-file-list">
+                <li *ngFor="let file of todo.attachments">
+                    <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="false"
+                        [downloadUrl]="file.url" [showPreview]="true" [singlePreview]="true" [url]="file.url"
+                        [thumbUrl]="file.thumbUrl">
+                    </mcv-file>
+                </li>
+            </ul>
+        </div>
+        <div class="todo-checklist col-md-6 col-12">
+            <h6 class="font-focused mb-1">Checklist</h6>
+            <ul>
+                <li *ngFor="let item of todo.agendas">
+                    <h6>{{item.title}}</h6>
+                </li>
+            </ul>
+        </div>
+    </div>
+</mat-dialog-content>

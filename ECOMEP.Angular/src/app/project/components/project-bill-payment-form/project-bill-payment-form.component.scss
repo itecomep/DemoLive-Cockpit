@@ -1,0 +1,18 @@
+@import "variables";
+
+.bill-payment-form-wrapper {
+    max-width: 500px;
+
+    .mat-mdc-form-field-input-control.mat-mdc-form-field-input-control {
+        font-size: 1rem !important;
+      }
+  
+      .mdc-text-field--outlined.mdc-text-field--disabled .mdc-text-field__input {
+        color: $gray-900 !important;
+      }
+  
+      .mdc-text-field--outlined.mdc-text-field--disabled .mdc-floating-label,
+      .mdc-text-field--outlined.mdc-text-field--disabled .mdc-floating-label--float-above {
+        color: $gray-900 !important;
+      }
+}

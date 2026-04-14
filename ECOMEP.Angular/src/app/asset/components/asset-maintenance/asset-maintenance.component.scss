@@ -1,0 +1,83 @@
+@import 'variables';
+@import 'theme';
+.mcv-dialog-header{
+    background-color: mat-color($mcv-primary, 500);
+    color: $white;
+}
+.asset-maintenance-wrapper {
+    position: relative;
+    height: 100%;
+    overflow: hidden auto;
+    // height: calc(100% - 3rem);
+}
+
+.search-filter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 80%;
+    border: 1px solid $gray-300;
+    border-radius: 5px;
+    height: 2.1rem;
+}
+
+table {
+    width: 100%;
+    border: 1px solid $gray-300;
+    border-collapse: collapse;
+
+    thead {
+        position: sticky;
+        position: -webkit-sticky;
+        z-index: 99;
+        position: -webkit-sticky;
+        top: 0;
+
+        tr {
+
+            th {
+                white-space: pre-wrap;
+                border: 1px solid $gray-300;
+                padding: 0.3rem;
+                text-align: center;
+                top: -1px;
+                background-color: $gray-500;
+                color: $white;
+            }
+        }
+    }
+
+    tbody {
+        tr {
+            &:hover {
+                background-color: $gray-200;
+            }
+
+            td {
+                white-space: pre-wrap;
+                border: 1px solid $gray-300;
+                padding: 0.3rem;
+                text-align: center;
+
+            }
+        }
+    }
+}
+
+.pending {
+    color: $yellow;
+}
+
+.approved {
+    color: $green;
+}
+
+.verified {
+    color: $blue;
+}
+
+@media only screen and (max-width:768px) {
+    .asset-maintenance-wrapper {
+        overflow: auto auto;
+    }
+}

@@ -1,0 +1,173 @@
+<app-header [title]="headerTitle" [titleCount]="headerTitleCount">
+
+  <div class="search-filter" *ngIf="isMobileView">
+    <mat-icon matPrefix>search</mat-icon>
+    <input aria-label="search" [formControl]="searchFC" matInput />
+  </div>
+</app-header>
+<div class="sitevisit-page-wrapper no-overflow">
+  <!-- List -->
+  <div class="list-wrapper" *ngIf="isShowList" (scroll)="onContainerScroll($event)">
+    <app-site-visit-paged-list [config]="pagedListConfig" (listLoad)="onListLoad($event)"></app-site-visit-paged-list>
+  </div>
+
+  <!-- Details -->
+  <div class="sitevisit-detail-wrapper" *ngIf="isShowDetail">
+    <app-site-visit [config]="componentConfig" *ngIf="componentConfig && componentConfig.entityID"></app-site-visit>
+  </div>
+
+  <div class="sitevisit-detail-wrapper no-overflow"
+    *ngIf="isShowDetail && (!componentConfig || !componentConfig.entityID)">
+    <div class="detail-wrapper-message">
+      <mat-icon class="icon-xl light">vertical_split</mat-icon>
+      <h3>Select an item from list to see details</h3>
+      <h2 *ngIf="isPermissionEdit">OR</h2>
+      <div class="d-flex align-items-end" *ngIf="isPermissionEdit">
+        <h3>Click </h3>
+        <button mat-raised-button color="primary" (click)="onShowNewDialog()" matTooltip="New"
+          aria-label="New">New</button>
+        <h3> to create new item</h3>
+      </div>
+    </div>
+  </div>
+</div>
+<app-footer>
+
+  <div class="mcv-footer-actions">
+    <div class="search-filter">
+      <mat-icon matPrefix>search</mat-icon>
+      <input aria-label="search" [formControl]="searchFC" matInput />
+    </div>
+    <button mat-icon-button (click)="refresh()" matTooltip="Refresh" aria-label="Refresh">
+      <mat-icon>refresh</mat-icon>
+    </button>
+
+    <button mat-raised-button color="primary" (click)="onToggleShowAll()"
+      *ngIf="isPermissionSpecialShowAll && pagedListConfig.showAll" matTooltip="Show All" aria-label="Show All">
+      Show All
+    </button>
+    <button mat-raised-button (click)="onToggleShowAll()" *ngIf="isPermissionSpecialShowAll && !pagedListConfig.showAll"
+      matTooltip="Show All" aria-label="Show All">
+      Show All
+    </button>
+
+    <!-- <div *ngIf="sortProjectOptions && sortProjectOptions.length > 0">
+       <mat-form-field appearance="outline">
+        <mat-select [formControl]="sortProjectFC" placeholder="Sort">
+          <mat-select-trigger>
+            <mat-icon class="sort-project-select-icon">{{sortProjectFC.value ? sortProjectFC.value.icon :
+              ''}}</mat-icon>
+            {{sortProjectFC.value ? sortProjectFC.value.label : ''}}
+          </mat-select-trigger>
+          <mat-option *ngFor="let item of sortProjectOptions" [value]="item">
+            <div class="sort-project-dropdown">
+              <mat-icon>{{item.icon}}</mat-icon>
+              {{item.label}}
+            </div>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div> -->
+
+    <div *ngIf="statusOptions && statusOptions.length > 0">
+      <mat-form-field appearance="outline">
+        <mat-select [formControl]="statusFC" multiple placeholder="Status">
+          <mat-option *ngFor="let item of statusOptions" [value]="item">{{
+            item.title
+            }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div *ngIf="typeOptions && typeOptions.length > 0">
+      <mat-form-field appearance="outline">
+        <mat-select [formControl]="typeFC" multiple placeholder="Type">
+          <mat-option *ngFor="let item of typeOptions" [value]="item">{{
+            item.title
+            }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <!-- <div *ngIf="companyAccountOptions && companyAccountOptions.length > 0">
+       <mat-form-field appearance="outline">
+        <mat-select [formControl]="companyAccountFC" multiple placeholder="Company">
+          <mat-option *ngFor=" let item of companyAccountOptions" [value]="item">{{
+            item.title
+            }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div> -->
+    <!-- <div *ngIf="segmentOptions && segmentOptions.length > 0">
+       <mat-form-field appearance="outline">
+        <mat-select [formControl]="segmentFC" multiple placeholder="Segment">
+          <mat-option *ngFor=" let item of segmentOptions" [value]="item">{{
+            item
+            }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div> -->
+  </div>
+
+  <div class="mcv-footer-mobile-actions" *ngIf="isShowList">
+    <button mat-icon-button (click)="refresh()" matTooltip="Refresh" aria-label="Refresh">
+      <mat-icon>refresh</mat-icon>
+    </button>
+
+    <button mat-icon-button appFilterToggle matTooltip="Filters" aria-label="Filters">
+      <mat-icon>filter_list</mat-icon>
+    </button>
+    <button mat-raised-button color="primary" (click)="onToggleShowAll()"
+      *ngIf="isPermissionSpecialShowAll && pagedListConfig.showAll" matTooltip="Show All" aria-label="Show All">
+      Show All
+    </button>
+    <button mat-raised-button (click)="onToggleShowAll()" *ngIf="isPermissionSpecialShowAll && !pagedListConfig.showAll"
+      matTooltip="Show All" aria-label="Show All">
+      Show All
+    </button>
+  </div>
+  <div class="mcv-footer-mobile-actions" *ngIf="!isShowList">
+    <button mat-icon-button (click)="back()" matTooltip="Back" aria-label="Back">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+  </div>
+
+  <div class="mcv-footer-filters">
+    <div class="inline-list">
+      <div *ngIf="statusOptions && statusOptions.length > 0">
+        <mat-form-field appearance="outline">
+          <mat-select [formControl]="statusFC" multiple placeholder="Status">
+            <mat-option *ngFor="let item of statusOptions" [value]="item">{{
+              item.title
+              }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div *ngIf="typeOptions && typeOptions.length > 0">
+        <mat-form-field appearance="outline">
+          <mat-select [formControl]="typeFC" multiple placeholder="Type">
+            <mat-option *ngFor="let item of typeOptions" [value]="item">{{
+              item.title
+              }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <!-- <div *ngIf="companyAccountOptions && companyAccountOptions.length > 0">
+         <mat-form-field appearance="outline">
+          <mat-select [formControl]="companyAccountFC" multiple placeholder="Company">
+            <mat-option *ngFor="let item of companyAccountOptions" [value]="item">{{
+              item.title
+              }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div> -->
+      <!-- <div *ngIf="segmentOptions && segmentOptions.length > 0">
+         <mat-form-field appearance="outline">
+          <mat-select [formControl]="segmentFC" multiple placeholder="Segment">
+            <mat-option *ngFor=" let item of segmentOptions" [value]="item">{{
+              item
+              }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div> -->
+    </div>
+  </div>
+</app-footer>

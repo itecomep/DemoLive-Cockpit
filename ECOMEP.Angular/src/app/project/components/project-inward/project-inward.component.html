@@ -1,0 +1,192 @@
+<div class="row">
+  <div class="col-md-7">
+    <ng-container *ngFor="let item of inwards | mcvGroupBy: ['category']">
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>{{item.key}} <small>({{item.values.length }}) Items</small></mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <ul class="inward-list">
+          <li *ngFor="let item of item.values">
+            <div class="d-flex">
+              <div class="flex-grow-1">
+                <h6 class="font-focused">{{item.title }}</h6>
+                <div class="d-flex flex-wrap flex-grow-1">
+
+                  <div class="pr-2">
+                    <small>Received Date</small>
+                    <div>
+                      <span>{{item.receivedDate | date:'dd MMM y'}}</span>
+                    </div>
+                  </div>
+                  <div class="pr-2">
+                    <small>Files</small>
+                    <div>
+                      <span>{{item.attachments.length | number:'2.0-2'}}</span>
+                    </div>
+                  </div>
+                  <div class="pr-2">
+                    <small>Received From</small>
+                    <div>
+                      <span>{{item.contact.name}}</span>
+                    </div>
+                  </div>
+
+                  <div class="d-flex justify-content-end flex-grow-1">
+                    <div class="pr-2 text-right">
+                      <small>Uploaded by</small>
+                      <div>
+                        <span>{{item.createdBy }}</span>
+                      </div>
+                    </div>
+                    <div class="pr-2 text-right">
+                      <small>Uploaded on</small>
+                      <div>
+                        <span>{{item.created | date:'dd MMM y HH:mm' }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+              <button mat-icon-button aria-label="view files" matTooltip="View Files" (click)="onView(item)">
+                <mat-icon>open_in_new</mat-icon>
+              </button>
+            </div>
+
+            <ul class="inward-photos">
+              <li *ngFor="let file of getPhotos(item.attachments); let i = index">
+                <img alt="" [src]="file.thumbUrl">
+              </li>
+              <li *ngIf="item.attachments.length > 4">
+                <h6>+ {{item.attachments.length - 4}} more..</h6>
+              </li>
+            </ul>
+
+          </li>
+        </ul>
+
+      </mat-expansion-panel>
+
+    </ng-container>
+
+  </div>
+
+  <div class="col-md-5">
+
+    <mat-expansion-panel [expanded]="true" class="theme-dark" *ngIf="isPermissionEdit">
+      <mat-expansion-panel-header>
+        <mat-panel-title>New </mat-panel-title>
+        <mat-panel-description>
+
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div class="project-inward-action-wrapper">
+        <form [formGroup]="form">
+          <div class="row m-0">
+
+
+            <mat-form-field appearance="outline" class="col-sm-12">
+              <mat-label>Received Date</mat-label>
+              <input placeholder="Received Date" aria-label="Received Date" matInput formControlName="receivedDate"
+                [matDatepicker]="pickerExpectedCompletionDate">
+              <mat-datepicker-toggle matSuffix [for]="pickerExpectedCompletionDate"></mat-datepicker-toggle>
+              <mat-datepicker [touchUi]="isMobileView" #pickerExpectedCompletionDate></mat-datepicker>
+              <mat-error>{{getErrorMessage(f['receivedDate'])}}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-sm-12">
+              <mat-label>Received From</mat-label>
+              <input placeholder="Enter name of contact to select from the list" aria-label="Received From" matInput
+                formControlName="contact" [matAutocomplete]="autoContact" />
+              <mat-autocomplete #autoContact="matAutocomplete" [displayWith]="displayFnContact">
+                <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
+                  {{ option.name }} <small>({{ option.email }})</small>
+                </mat-option>
+              </mat-autocomplete>
+              <span matSuffix>
+                <mat-icon>person</mat-icon>
+              </span>
+              <mat-error>{{ getErrorMessage(f['contact']) }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-sm-12">
+              <mat-label>Category</mat-label>
+              <mat-select placeholder="Category" formControlName="category">
+                <mat-option *ngFor="let category of inwardCategories" [value]="category">{{category}}</mat-option>
+              </mat-select>
+              <mat-error>{{ getErrorMessage(f['category']) }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-sm-12">
+              <mat-label>Title/Subject</mat-label>
+              <input id="title" placeholder="Title/Subject" aria-label="Tite/Subject" matInput formControlName="title">
+              <mat-error>{{getErrorMessage(f['title'])}}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-sm-12">
+              <mat-label>Message/Comment</mat-label>
+              <textarea aria-label="message" matInput formControlName="message" cdkTextareaAutosize
+                #autosize="cdkTextareaAutosize" placeholder="Message/Comment" rows="3"></textarea>
+              <mat-error>{{ getErrorMessage(f['message'])}}</mat-error>
+            </mat-form-field>
+          </div>
+
+        </form>
+
+        <div class="inward-documents-wrapper">
+
+
+          <div class="col-sm-12">
+            <div class="view-property">
+
+
+              <app-mcv-file-upload class="pt-1" [uploaderConfig]="blobConfig" [showPaste]="true"  [showDrop]="true"
+                (upload)="onUpload($event)" *ngIf="blobConfig && isPermissionEdit">
+              </app-mcv-file-upload>
+
+              <div>
+                <small class="label-text">Files ({{inward.attachments.length}})</small>
+              </div>
+              <ul class="mcv-file-list">
+
+                <li *ngFor="let file of getFilteredAttachments(inward.attachments,false); let i = index">
+                  <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="isPermissionEdit"
+                    (delete)="onDeleteAttachment(file,i)" [allowTagging]="isPermissionEdit" [downloadUrl]="file.url"
+                    [showPreview]="true" [singlePreview]="true" [url]="file.url" [thumbUrl]="file.thumbUrl">
+                  </mcv-file>
+                </li>
+                <li *ngFor="let file of getFilteredAttachments(inward.attachments,true); let i = index">
+                  <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="isPermissionEdit"
+                    (delete)="onDeleteAttachment(file,i)" [allowTagging]="isPermissionEdit" [downloadUrl]="file.url"
+                    [showPreview]="true" [singlePreview]="true" [url]="file.url" [thumbUrl]="file.thumbUrl">
+                  </mcv-file>
+                </li>
+              </ul>
+
+            </div>
+          </div>
+
+        </div>
+        <div class="action-buttons">
+          <button mat-raised-button color="primary" aria-label="Add" (click)="onCreate()"
+            [disabled]="!form.valid">Add</button>
+        </div>
+      </div>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Activity </mat-panel-title>
+        <mat-panel-description>
+
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div class="mcv-activity-list-wrapper">
+        <mcv-activity-list #activity [entity]="'Project'" [entityID]="project.id">
+        </mcv-activity-list>
+      </div>
+    </mat-expansion-panel>
+
+  </div>
+</div>

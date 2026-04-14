@@ -1,0 +1,52 @@
+<div class="mat-dialog-header mcv-dialog-header">
+  <h5 class="font-focused">Update Permission Group</h5>
+  <div class="d-flex align-items-center">
+    <button mat-raised-button color="primary" aria-label="Save" (click)="onSave()">Save</button>
+    <button mat-icon-button aria-label="close" (click)="onClose()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+</div>
+<mat-dialog-content>
+  <div class="panel-box">
+    <form [formGroup]="form" class="form-container">
+      <div class="row-1">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Title</mat-label>
+          <input matInput formControlName="title" placeholder="Enter title">
+          <mat-error>{{getErrorMessage(form.get('title'))}}</mat-error>
+        </mat-form-field>
+      </div>
+      <div formArrayName="permissions">
+        <div *ngFor="let permGroup of permissions.controls; let i = index" [formGroupName]="i" class="row-2">
+          <mat-form-field appearance="outline">
+            <mat-label>Module</mat-label>
+            <mat-select formControlName="module">
+              <mat-option *ngFor="let mod of moduleOptions" [value]="mod">
+                {{mod}}
+              </mat-option>
+            </mat-select>
+            <mat-error>{{getErrorMessage(permGroup.get('module'))}}</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Permission</mat-label>
+            <mat-select formControlName="permission" [disabled]="!permGroup.get('module')?.value">
+              <mat-option *ngFor="let permission of getPermissionOptions(i)" [value]="permission">
+                {{permission}}
+              </mat-option>
+            </mat-select>
+            <mat-error>{{getErrorMessage(permGroup.get('permission'))}}</mat-error>
+          </mat-form-field>
+          <div class="button-container">
+            <button mat-icon-button color="accent" (click)="addPermission()" *ngIf="i === permissions.length - 1">
+              <mat-icon>add</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="removePermission(i)" *ngIf="permissions.length > 1">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</mat-dialog-content>

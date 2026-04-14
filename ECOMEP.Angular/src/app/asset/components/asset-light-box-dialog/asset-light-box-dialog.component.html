@@ -1,0 +1,7 @@
+<button class="asset-light-box-close" mat-icon-button aria-label="close" (click)="onClose(null)">
+    <mat-icon>close</mat-icon>
+</button>
+<mat-dialog-content>
+    <app-asset-light-box [thumbUrlArray]="attachmentArray"
+        [activeAttachment]="currentAttachment"></app-asset-light-box>
+</mat-dialog-content>

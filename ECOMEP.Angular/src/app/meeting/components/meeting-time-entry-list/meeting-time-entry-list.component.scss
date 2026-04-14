@@ -1,0 +1,39 @@
+@import 'variables';
+
+.time-entry-container {
+    border: 1px solid $gray-300;
+    border-radius: $border-radius;
+    margin-left: 0.3rem;
+    margin-right: 0.3rem;
+    padding: 0.2rem;
+}
+
+.time-entry-save-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+@import 'variables';
+@import 'theme';
+
+.simple-list {
+    list-style: none;
+    margin: 0;
+    max-width: 100%;
+    padding: 5px 0;
+
+    &>li {
+        box-sizing: border-box;
+        padding: 5px;
+        margin: 5px 3px;
+        border: 1px solid $gray-300;
+        border-radius: $border-radius;
+
+        &.active,
+        &.selected {
+            border: 3px solid mat-color($mcv-primary, 500);
+        }
+    }
+}

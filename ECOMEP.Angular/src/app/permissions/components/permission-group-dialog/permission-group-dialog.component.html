@@ -1,0 +1,92 @@
+<div class="mat-dialog-header mcv-dialog-header">
+  <h5 class="font-focused">Permission Group</h5>
+  <div class="group-dialog-header-actions">
+      <button mat-raised-button color="primary" (click)="openCreateDialog()">
+       Add
+      </button>
+      <button mat-icon-button aria-label="close" (click)="onClose()">
+        <mat-icon>close</mat-icon>
+      </button>
+  </div>
+</div>
+<mat-dialog-content>
+  <div class="columns-container">
+    <div class="column panel-box">
+      <div class="column-header">
+        <h6>Permission Groups List ({{permissionGroups.length}})</h6>
+      </div>
+      <div class="group-list">
+        <div *ngIf="permissionGroups.length === 0" class="empty-message">
+          No permission groups available
+        </div>
+        <div *ngFor="let group of permissionGroups" 
+             class="group-item" 
+             [class.selected]="selectedGroup?.id === group.id"
+             (click)="selectGroup(group)">
+          <span>{{group.title}}</span>
+          <div class="group-item-actions">
+            <button mat-icon-button (click)="editGroup($event, group)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button class="delete-btn" (click)="deleteGroup($event, group)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="column panel-box">
+      <div class="column-header">
+        <h6>Permissions List ({{roleCodes.length}})</h6>
+      </div>
+      <div class="group-list">
+        <div *ngIf="roleCodes.length === 0" class="empty-message">
+          No permissions present
+        </div>
+        <div *ngFor="let code of roleCodes" class="group-item">
+          {{getRoleModule(code) }} | {{ getRoleDescription(code)}}
+        </div>
+      </div>
+    </div>
+    <div class="column panel-box">
+      <div class="column-header">
+        <h6>Permission Group Members List ({{selectedMembers.length}})</h6>
+      </div>
+      <div class="group-list">
+        <mat-form-field appearance="outline" *ngIf="selectedGroup">
+          <mat-label>Select Member</mat-label>
+          <input placeholder="Enter name of person to select from the list"
+              aria-label="Select Member" matInput [formControl]="contactFC" [matAutocomplete]="autoContact" />
+          <mat-autocomplete #autoContact="matAutocomplete" [displayWith]="displayFnContact" (optionSelected)="onSelectContact($event)">
+            <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
+              {{ option.name }}
+            </mat-option>
+          </mat-autocomplete>
+          <span matSuffix>
+            <mat-icon>person</mat-icon>
+          </span>
+        </mat-form-field>
+        <div *ngIf="selectedMembers.length === 0" class="empty-message">
+          No members present
+        </div>
+        <ul>
+          <li *ngFor="let member of selectedMembers">
+            <div class="team-contact-list-item">
+              <div class="list-item-details">
+                <img class="contact-icon" [src]="member.photoUrl || 'assets/images/person-icon.svg'" alt="" (click)="openPhotoDialog(member)" style="cursor: pointer;"/>
+                <div class="flex-grow-1">
+                  <h6 class="font-focused">{{member.name}}</h6>
+                </div>
+                <div class="list-item-actions">
+                  <button mat-icon-button class="delete-btn" (click)="removeMemberFromList(member)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>

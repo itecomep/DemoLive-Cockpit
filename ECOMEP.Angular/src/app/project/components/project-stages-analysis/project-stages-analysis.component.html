@@ -1,0 +1,168 @@
+<app-footer>
+    <div class="mcv-footer-actions">
+        <div class="search-filter">
+            <mat-icon matPrefix>search</mat-icon>
+            <input aria-label="search" [formControl]="searchFC" matInput />
+        </div>
+
+        <div *ngIf="teamOptions && teamOptions.length > 0">
+            <mat-form-field appearance="outline">
+                <mat-label>Team</mat-label>
+                <mat-select [formControl]="teamFC" placeholder="Team">
+                    <mat-option *ngFor=" let item of teamOptions" [value]="item">{{ item.title
+                        }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <div *ngIf="projectStatusOptions && projectStatusOptions.length > 0">
+            <mat-form-field appearance="outline">
+                <mat-label>Status</mat-label>
+                <mat-select [formControl]="statusFC" multiple placeholder="Status">
+                    <mat-option *ngFor="let item of projectStatusOptions" [value]="item">{{
+                        item.title
+                        }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <button mat-icon-button (click)="onRefresh()" matTooltip="Refresh" aria-label="Refresh">
+            <mat-icon>refresh</mat-icon>
+        </button>
+    </div>
+
+    <div class="mcv-footer-mobile-actions">
+        <button mat-icon-button appFilterToggle matTooltip="Filters" aria-label="Filters">
+            <mat-icon>filter_list</mat-icon>
+        </button>
+        <button mat-icon-button (click)="onRefresh()" matTooltip="Refresh" aria-label="Refresh">
+            <mat-icon>refresh</mat-icon>
+        </button>
+    </div>
+
+    <div class="mcv-footer-filters">
+        <div class="inline-list">
+        <div *ngIf="teamOptions && teamOptions.length > 0">
+            <mat-form-field appearance="outline">
+            <mat-label>Team</mat-label>
+            <mat-select [formControl]="teamFC" placeholder="Team">
+                <mat-option *ngFor="let item of teamOptions" [value]="item">{{
+                item.title
+                }}</mat-option>
+            </mat-select>
+            </mat-form-field>
+        </div>
+
+        <div *ngIf="projectStatusOptions && projectStatusOptions.length > 0">
+            <mat-form-field appearance="outline">
+            <mat-label>Status</mat-label>
+            <mat-select [formControl]="statusFC" multiple placeholder="Status">
+                <mat-option *ngFor="let item of projectStatusOptions" [value]="item">{{
+                item.title
+                }}</mat-option>
+            </mat-select>
+            </mat-form-field>
+        </div>
+        </div>
+
+        <div class="search-filter">
+        <mat-icon matPrefix>search</mat-icon>
+        <input aria-label="Enter project name and select" [formControl]="searchFC" matInput />
+    </div>
+    </div>
+
+</app-footer>
+<div class="project-stages-analysis-table-wrapper">
+    <table>
+        <thead class="project-header">
+            <tr>
+                <th></th>
+                <th>Title</th>
+                <th>Code</th>
+                <th>Status</th>
+                <th>Typology</th>
+                <th>ContractStart Date</th>
+                <th>ContractCompletion Date</th>
+                <th>Client</th>
+                <th>Fee</th>
+                <ng-container *ngFor="let item of statusOptions">
+                    <th>{{item.title}}</th>
+                </ng-container>
+            </tr>
+        </thead>
+        <tbody>
+            <ng-container *ngFor="let item of dataList; let i = index">
+                <tr class="project-details-tr">
+                    <td>
+                        <button mat-icon-button (click)="toggleRow(i)" class="expand-btn">
+                            <mat-icon>{{isRowExpanded(i) ? 'expand_less' : 'expand_more'}}</mat-icon>
+                        </button>
+                    </td>
+                    <td>{{item.title}}</td>
+                    <td>{{item.code}}</td>
+                    <td>
+                        <span class="badge {{getStatusColor(item.statusFlag)}}">{{item?.statusValue}}</span>
+                    </td>
+                    <td>{{item.typology}}</td>
+                    <td>{{item.contractStartDate | date: "dd MMM y"}}</td>
+                    <td>{{item.contractCompletionDate | date: "dd MMM y"}}</td>
+                    <td>{{item.clientContact}}</td>
+                    <td>{{item.fee | currency: 'INR' }}</td>
+                    <td>
+                        <div>
+                            <div class="amount-border">{{item.billedPercentage}}%</div>
+                            <div>{{item.billedAmount | currency: 'INR'}}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <div class="amount-border">{{item.paymentReceivedPercentage}}%</div>
+                            <div>{{item.paymentReceivedAmount | currency: 'INR'}}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <div class="amount-border">{{item.workCompletedPercentage}}%</div>
+                            <div>{{item.workCompletedAmount | currency: 'INR'}}</div>
+                        </div>
+
+                    </td>
+                    <td>
+                        <div>
+                            <div class="amount-border">{{item.workPendingPercentage}}%</div>
+                            <div>{{item.workPendingAmount | currency: 'INR'}}</div>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="stages-tr" *ngIf="item.stages.length > 0 && isRowExpanded(i)">
+                    <td colspan="13">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Stage</th>
+                                    <th>Percentage</th>
+                                    <th>Target Date</th>
+                                    <th>Billing Date</th>
+                                    <th>Payment Received Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ng-container *ngFor="let stage of item.stages">
+                                    <tr>
+                                        <td class="align-left">{{stage.title}}</td>
+                                        <td>{{stage.percentage}}%</td>
+                                        <td>{{stage.targetDate | date: "dd MMM y"}}</td>
+                                        <td>{{stage.billingDate | date: "dd MMM y"}}</td>
+                                        <td>{{stage.paymentReceivedDate | date: "dd MMM y"}}</td>
+                                        <td>{{stage.statusValue}}</td>
+                                    </tr>
+                                </ng-container>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </ng-container>
+        </tbody>
+    </table>
+</div>

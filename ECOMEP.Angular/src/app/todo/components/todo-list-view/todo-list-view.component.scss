@@ -1,0 +1,125 @@
+@import 'variables';
+
+.todo-page-wrapper {
+    width: 100%;
+    background-color: $page-background;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: absolute;
+    top: $app-header-height;
+    left: 0;
+    bottom: 50px;
+
+    &.page-wrapper-no-footer {
+        bottom: 0;
+    }
+}
+
+.todo-detail-wrapper {
+    position: absolute;
+    left: $list-width;
+    top: 0;
+    height: 100%;
+    width: $detail-width;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.todo-detail-wrapper-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.todo-list-wrapper {
+    display: inline-block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: $list-width;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-shadow: $box-shadow; // 3px 3px 3px rgba(0, 0, 0, 0.2);
+    background-color: $white;
+    z-index: 3;
+}
+
+.inline-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: -webkit-box;
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 100%;
+
+
+    &.inline-list-justify-right {
+        -webkit-box-pack: end;
+        justify-content: flex-end;
+    }
+
+    &>li {
+        // -webkit-box-flex: 1;
+        //         flex-grow: 1;
+        // flex-shrink: 0;
+        max-width: 100%;
+    }
+
+    &>li:only-child {
+        -webkit-box-flex: 0;
+        flex-grow: 0;
+    }
+
+    &.inilne-50>li {
+        min-width: 48%;
+    }
+
+    &.inilne-25>li {
+        min-width: 24%;
+    }
+}
+
+.mv-list-search-filter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 80%;
+    border: 1px solid $gray-300;
+    border-radius: 5px;
+    height: 2.1rem;
+
+    input {
+        border: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .detail-wrapper {
+        width: 100%;
+        left: 0;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .todo-page-wrapper,
+    .scroll-wrapper {
+        top: 92px;
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .todo-list-wrapper {
+        width: 100%;
+    }
+
+    .todo-detail-wrapper {
+        width: 100%;
+        left: 0;
+    }
+}

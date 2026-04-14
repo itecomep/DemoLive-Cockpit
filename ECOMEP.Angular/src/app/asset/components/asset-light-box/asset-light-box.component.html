@@ -1,0 +1,33 @@
+<div class="asset-light-box-wrapper">
+    <div class="asset-light-box-image-container" [ngClass]="{'no-reviewer':thumbUrlArray.length == 0}">
+        <img src="{{activeAttachment.url || activeAttachment.thumbUrl || activeAttachment.activeUrl}}"
+            *ngIf="mediaType==='image' && activeAttachment.url || activeAttachment.thumbUrl">
+        <app-asset-video-player [url]="activeAttachment.url || activeAttachment.thumbUrl" [autoplay]="true"
+            [showControls]="true" [contentType]="activeAttachment.contentType"
+            *ngIf="activeAttachment.contentType == 'video/mp4'">
+        </app-asset-video-player>
+    </div>
+    <div class="asset-item-detail-footer">
+        <button mat-raised-button class="btn btn-circle btn-primary" (click)="onPreviousClick()" matTooltip="previous"
+            aria-label="previous" [disabled]="selectedIndex == 0">
+            <mat-icon>chevron_left</mat-icon>
+        </button>
+        <div>
+            <div class="asset-light-box-image-reviewer" *ngIf="thumbUrlArray.length != 0">
+                <div class="asset-light-box-image-reviewer-container"
+                    [ngClass]="{'scale-image':activeAttachment===image}" *ngFor="let image of thumbUrlArray"
+                    (click)="onClick(image)">
+                    <img src="{{getVideoThumbUrl(image.url || image.thumbUrl) || 'assets/images/file-not-found.png'}}">
+                    <div class="asset-file-thumbnail-icon" *ngIf="image
+                    .contentType =='video/mp4'">
+                        <mat-icon>play_circle_filled</mat-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button mat-raised-button class="btn btn-circle btn-primary" (click)="onNextClick()" matTooltip="next"
+            aria-label="next" [disabled]="selectedIndex == this.thumbUrlArray.length-1">
+            <mat-icon>chevron_right</mat-icon>
+        </button>
+    </div>
+</div>

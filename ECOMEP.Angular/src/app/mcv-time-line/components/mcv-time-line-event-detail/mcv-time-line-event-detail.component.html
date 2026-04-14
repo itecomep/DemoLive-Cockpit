@@ -1,0 +1,63 @@
+<div class="mcv-timeline-event-detail">
+  <div class="event-heading">
+    <div class="event-resource">
+      <img class="timeline-avatar" src="{{ event.avatarUrl || 'assets/images/user.png' }}" />
+      <h5 class="resource-title">{{ event.resourceTitle }}</h5>
+    </div>
+    <div [ngClass]="'bg-'+event.colorClass" class="event-label color-white">
+      {{ event.entityLabel }}
+    </div>
+  </div>
+  <div class="event-field">
+    <span class="event-field-label">Title</span>
+    <h6 class="event-field-value">{{ event.title }}</h6>
+  </div>
+  <div class="event-field">
+    <span class="event-field-label">SubTitle</span>
+    <h6 class="event-field-value">{{ event.subTitle }}</h6>
+  </div>
+  <div class="event-field">
+    <span class="event-field-label">Start</span>
+    <h6 class="event-field-value">{{ event.actualStart | date: "dd MMM y HH:mm" }}</h6>
+  </div>
+  <div class="event-field" *ngIf="event.eventType=='Time'">
+    <span class="event-field-label">End</span>
+    <h6 class="event-field-value">{{ event.actualEnd | date: "dd MMM y HH:mm" }}</h6>
+  </div>
+  <div class="event-field" *ngIf="event.eventType=='Task'">
+    <span class="event-field-label">Due</span>
+    <h6 class="event-field-value">{{ event.taskDue | date: "dd MMM y HH:mm" }}</h6>
+  </div>
+  <div class="event-field" *ngIf="event.eventType=='Task'">
+    <span class="event-field-label">Completed</span>
+    <h6 class="event-field-value">{{ event.taskCompleted | date: "dd MMM y HH:mm" }}</h6>
+  </div>
+  <div class="event-field" *ngIf="event.eventType=='Task'">
+    <span class="event-field-label">Assigned By</span>
+    <h6 class="event-field-value">{{ event.eventData?.assigner?.name }}</h6>
+  </div>
+  <div class="event-field" *ngIf="event.eventType=='Time'">
+    <span class="event-field-label" *ngIf="event.eventType=='Time'">Recorded By</span>
+    <h6 class="event-field-value">{{ event.eventData?.createdBy }}</h6>
+  </div>
+  <div class="event-field">
+    <span class="event-field-label">Status</span>
+    <h6 class="event-field-value">{{ event.status }}</h6>
+  </div>
+  <div class="event-field">
+    <span class="event-field-label">Description</span>
+    <h6 class="event-field-value">{{ event.eventData?.description }}</h6>
+  </div>
+  <!-- <div class="event-field">
+    <span class="event-field-label"></span>
+    <h6 class="event-field-value">{{ event.resourceSubTitle }}</h6>
+  </div> -->
+  <div class="event-field" *ngIf="event.eventType=='Task' && event.eventData.timeEntries.length!==0">
+    <span class="event-field-label">Time Entries</span>
+    <div class="event-field-value">
+      <ng-container *ngFor="let item of event.eventData.timeEntries">
+        <h6>{{ item.startDate | date: "dd MMM y HH:mm" }} - {{ item.endDate | date: "HH:mm" }} {{item.taskTitle}}</h6>
+      </ng-container>
+    </div>
+  </div>
+</div>

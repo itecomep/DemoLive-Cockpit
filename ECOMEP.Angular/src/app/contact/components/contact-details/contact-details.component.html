@@ -1,0 +1,508 @@
+<div class="contact-detail">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-8">
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Details
+            </mat-panel-title>
+            <button mat-icon-button (click)="onEditContact($event)" *ngIf="isPermissionEdit && !isActiveAppointment">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </mat-expansion-panel-header>
+
+          <div class="property-collection">
+
+            <div class="property" *ngIf="isCompany">
+              <div class="property-details">
+                <small class="property-label">Company Name</small>
+                <div class="property-value">
+                  <h6>{{currentEntity.fullName}}</h6>
+                </div>
+              </div>
+            </div>
+
+            <!-- <div class="property" *ngIf="isCompany">
+              <div class="property-details">
+                <small class="property-label">Source</small>
+                <div class="property-value">
+                  <h6>{{currentEntity.source}}</h6>
+                </div>
+              </div>
+            </div>
+
+            <div class="property" *ngIf="isCompany">
+              <div class="property-details">
+                <small class="property-label">Grade</small>
+                <div class="property-value">
+                  <h6>{{currentEntity.grade}}</h6>
+                </div>
+              </div>
+            </div>
+
+            <div class="property" *ngIf="isCompany">
+              <div class="property-details">
+                <small class="property-label">Employee Count</small>
+                <div class="property-value">
+                  <h6>{{currentEntity.employeeCount}}</h6>
+                </div>
+              </div>
+            </div> -->
+
+            <!-- <div class="property" *ngIf="isCompany">
+              <div class="property-details">
+                <small class="property-label">Relationship Manager</small>
+                <div class="property-value">
+                  <h6>{{currentEntity.relationshipManager?.name}}</h6>
+                </div>
+              </div>
+            </div> -->
+            <div class="property" *ngIf="!isCompany">
+              <div class="property-details">
+
+                <small class="property-label">Gender</small>
+                <div class="property-value">
+                  <h6>{{currentEntity.gender}}</h6>
+                </div>
+              </div>
+            </div>
+            <div class="property" *ngIf="!isCompany">
+              <div class="property-details">
+
+                <small class="property-label">Prefix/Title</small>
+                <div class="property-value">
+                  <h6>{{currentEntity.title}}</h6>
+                </div>
+              </div>
+            </div>
+
+            <div class="property" *ngIf="!isCompany">
+              <div class="property-details">
+
+                <small class="property-label">First Name</small>
+                <div class="property-value">
+                  <h6>{{currentEntity.firstName}}</h6>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="property-collection">
+
+
+            <div class="property" *ngIf="!isCompany">
+              <div class="property-details">
+
+                <small class="property-label">Middle Name</small>
+                <div class="property-value">
+                  <h6>{{currentEntity.middleName}}</h6>
+                </div>
+              </div>
+            </div>
+
+            <div class="property" *ngIf="!isCompany">
+              <div class="property-details">
+
+                <small class="property-label">Last Name</small>
+                <div class="property-value">
+                  <h6>{{currentEntity.lastName}}</h6>
+                </div>
+              </div>
+            </div>
+
+
+
+          </div>
+
+          <div class="property-collection">
+
+            <div class="property">
+              <div class="property-details">
+                <small class="property-label">Website</small>
+                <h6>{{currentEntity.website}} </h6>
+              </div>
+              <div class="property-actions">
+                <mat-icon *ngIf="currentEntity.website" (click)="onCopyToClipboard(currentEntity.website)"
+                  matTooltip="Click to copy number">content_copy</mat-icon>
+                <mat-icon *ngIf="currentEntity.website"
+                  (click)="onOpenWebsite(currentEntity.website)">open_in_new</mat-icon>
+              </div>
+            </div>
+          </div>
+          <div class="property-collection">
+
+            <ng-container *ngFor="let item of currentEntity.phones">
+              <div class="property">
+                <div class="property-details">
+                  <small class="property-label">Phone | {{item.title}} {{item.isPrimary?'(Primary)' : ''
+                    }}</small>
+                  <h6>
+                    {{item.phone}}
+                  </h6>
+                </div>
+                <div class="property-actions">
+                  <button mat-icon-button (click)="onCopyToClipboard(item.phone)" matTooltip="Click to copy">
+                    <mat-icon>content_copy</mat-icon>
+                  </button>
+                  <button mat-icon-button (click)="callTo(item.phone)" matTooltip="Click to open">
+                    <mat-icon>phone</mat-icon>
+                  </button>
+
+                </div>
+              </div>
+            </ng-container>
+          </div>
+          <div class="property-collection">
+
+            <ng-container *ngFor="let item of currentEntity.emails">
+              <div class="property">
+                <div class="property-details">
+                  <small class="property-label">Email | {{item.title}} {{item.isPrimary?'(Primary)' : ''
+                    }}</small>
+                  <h6>
+                    {{item.email}}
+                  </h6>
+                </div>
+                <div class="property-actions">
+                  <button mat-icon-button (click)="onCopyToClipboard(item.email)" matTooltip="Click to copy">
+                    <mat-icon>content_copy</mat-icon>
+                  </button>
+                  <button mat-icon-button (click)="mailTo(item.email)" matTooltip="Click to open">
+                    <mat-icon>mail</mat-icon>
+                  </button>
+
+                </div>
+              </div>
+            </ng-container>
+          </div>
+
+
+
+
+          <div class="property-collection">
+            <ng-container *ngFor="let item of currentEntity.addresses">
+              <div class="property">
+                <div class="property-details">
+                  <small class="property-label">Address | {{item.title}} {{item.isPrimary?'(Primary)' :
+                    ''
+                    }}</small>
+                  <div class="property-collection">
+                    <div class="property">
+                      <div class="property-details">
+                        <small class="property-label">Street</small>
+                        <h6>
+                          {{item.street}}
+                        </h6>
+                      </div>
+                    </div>
+                    <div class="property">
+                      <div class="property-details">
+                        <small class="property-label">Area</small>
+                        <h6>
+                          {{item.area}}
+                        </h6>
+                      </div>
+                    </div>
+                    <div class="property">
+                      <div class="property-details">
+                        <small class="property-label">City</small>
+                        <h6>
+                          {{item.city}}
+                        </h6>
+                      </div>
+                    </div>
+                    <div class="property">
+                      <div class="property-details">
+                        <small class="property-label">State</small>
+                        <h6>
+                          {{item.state}}
+                        </h6>
+                      </div>
+                    </div>
+                    <div class="property">
+                      <div class="property-details">
+                        <small class="property-label">Country</small>
+                        <h6>
+                          {{item.country}}
+                        </h6>
+                      </div>
+                    </div>
+                    <div class="property">
+                      <div class="property-details">
+                        <small class="property-label">Pin Code</small>
+                        <h6>
+                          {{item.pinCode}}
+                        </h6>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="property-actions">
+                  <button mat-icon-button (click)="onCopyToClipboard(getAddressString(item))"
+                    matTooltip="Click to copy">
+                    <mat-icon>content_copy</mat-icon>
+                  </button>
+                  <button mat-icon-button (click)="onAddressClick(getAddressString(item))" matTooltip="Click to open">
+                    <mat-icon>location_on</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </ng-container>
+
+          </div>
+
+        </mat-expansion-panel>
+        <!-- <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Associations
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <ul class="contact-association-list">
+            <li *ngFor="let item of currentEntity.associatedCompanies; let i=index"
+              (click)="onOpenContactDialog(isCompany? item.person: item.company)">
+              <div class="contact-association-list-item">
+                <div class="contact-association-details">
+                  <app-contact-list-item [item]="isCompany? item.person: item.company"
+                    [showPhoto]="true"></app-contact-list-item>
+                  <div class="d-flex justify-content-between">
+                    <span><small>Designation:</small> {{item.designation}}</span>
+                    <span><small>Department:</small> {{item.department}}</span>
+                  </div>
+                </div>
+              </div>
+
+            </li>
+            <li *ngFor="let item of currentEntity.associatedContacts; let i=index"
+              (click)="onOpenContactDialog(isCompany? item.person: item.company)">
+              <div class="contact-association-list-item">
+                <div class="contact-association-details">
+                  <app-contact-list-item [item]="isCompany? item.person: item.company"
+                    [showPhoto]="true"></app-contact-list-item>
+                  <div class="d-flex justify-content-between">
+                    <span><small>Designation:</small> {{item.designation}}</span>
+                    <span><small>Department:</small> {{item.department}}</span>
+                  </div>
+                </div>
+              </div>
+
+            </li>
+          </ul>
+        </mat-expansion-panel> -->
+
+        <mat-expansion-panel [expanded]="true" *ngIf="!isCompany">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Personal Details
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <div class="property-collection">
+            <div class="property" *ngIf="!isCompany">
+              <div class="property-details">
+
+                <small class="property-label">Birth Date</small>
+                <div class="property-value">
+                  <h6>{{currentEntity.birth | date:'dd MMM y'}}</h6>
+
+                </div>
+
+              </div>
+              <!-- <div class="property-actions">
+                          <mat-icon *ngIf="currentEntity.birth">calendar_month</mat-icon>
+                        </div> -->
+            </div>
+
+            <div class="property" *ngIf="!isCompany">
+              <div class="property-details">
+
+                <small class="property-label">Anniversary Date</small>
+                <div class="property-value">
+                  <h6>{{currentEntity.anniversary | date:'dd MMM y'}}</h6>
+                </div>
+
+              </div>
+              <!-- <div class="property-actions">
+                                            <mat-icon *ngIf="currentEntity.anniversary">calendar_month</mat-icon>
+                                          </div> -->
+            </div>
+
+            <div class="property" *ngIf="!isCompany">
+              <div class="property-details">
+
+                <small class="property-label">Marital Status</small>
+                <div class="property-value">
+                  <h6>{{currentEntity.maritalStatus }}</h6>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <div class="property-collection">
+
+            <div class="property">
+              <div class="property-details">
+
+                <small class="property-label">PAN</small>
+                <div class="property-value">
+                  <h6>{{currentEntity.pan}}</h6>
+                </div>
+              </div>
+            </div>
+
+            <div class="property">
+              <div class="property-details">
+
+                <small class="property-label">Aadhaar</small>
+                <div class="property-value">
+                  <h6>{{currentEntity.aadhaar}}</h6>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+        </mat-expansion-panel>
+        <mat-expansion-panel [expanded]="true" *ngIf="isCompany">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Business Details
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+
+          <div class="property-collection">
+
+            <div class="property">
+              <div class="property-details">
+
+                <small class="property-label">PAN</small>
+                <div class="property-value">
+                  <h6>{{currentEntity.pan}}</h6>
+                </div>
+              </div>
+            </div>
+
+            <div class="property">
+              <div class="property-details">
+
+                <small class="property-label">Aadhaar</small>
+                <div class="property-value">
+                  <h6>{{currentEntity.aadhaar}}</h6>
+                </div>
+              </div>
+            </div>
+
+            <div class="property" *ngIf="isCompany">
+              <div class="property-details">
+
+                <small class="property-label">TAN</small>
+                <div class="property-value">
+                  <h6>{{currentEntity.tan}}</h6>
+                </div>
+              </div>
+            </div>
+
+            <div class="property" *ngIf="isCompany">
+              <div class="property-details">
+
+                <small class="property-label">GSTIN</small>
+                <div class="property-value">
+                  <h6>{{currentEntity.gstin}}</h6>
+                </div>
+              </div>
+            </div>
+
+            <div class="property" *ngIf="isCompany">
+              <div class="property-details">
+
+                <small class="property-label">HSN</small>
+                <div class="property-value">
+                  <h6>{{currentEntity.hsn}}</h6>
+                </div>
+              </div>
+            </div>
+
+            <div class="property" *ngIf="isCompany">
+              <div class="property-details">
+
+                <small class="property-label">ARN</small>
+                <div class="property-value">
+                  <h6>{{currentEntity.arn}}</h6>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-expansion-panel>
+
+
+      </div>
+      <div class="col-md-4">
+
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title> Activity </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="mcv-activity-list-wrapper">
+            <mcv-activity-list #activity [entity]="nameOfEntity" [entityID]="currentEntity.id">
+            </mcv-activity-list>
+          </div>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Categories & Tags
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="property-collection">
+
+            <div class="property">
+              <div class="property-details">
+
+                <small class="property-label">Categories</small>
+                <div class="property-value">
+                  <div class="category-tag-list">
+                    <span *ngFor="let category of currentEntity.categories" class="category-tag">{{category}}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="property">
+              <div class="property-details">
+
+                <small class="property-label">Tags</small>
+                <div class="property-value">
+                  <mat-chip-set>
+                    <mat-chip *ngFor="let tag of currentEntity.searchTags">
+                      {{tag}}
+                    </mat-chip>
+                  </mat-chip-set>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Comments/Remarks
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>{{currentEntity.description}}</p>
+        </mat-expansion-panel>
+
+
+
+
+
+      </div>
+    </div>
+
+  </div>
+</div>

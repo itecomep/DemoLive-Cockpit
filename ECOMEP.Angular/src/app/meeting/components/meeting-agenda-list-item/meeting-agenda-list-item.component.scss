@@ -1,0 +1,17 @@
+@import 'variables';
+
+.agenda {
+    padding: 0.3rem;
+    &.delayed {
+        background-color: $light-red;
+
+    }
+
+    small {
+        font-size: 0.6rem;
+    }
+
+    .agenda-subtitle {
+        font-size: 0.8rem;
+    }
+}

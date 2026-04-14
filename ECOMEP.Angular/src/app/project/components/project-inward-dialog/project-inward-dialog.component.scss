@@ -1,0 +1,126 @@
+@import 'variables';
+@import 'theme';
+.project-inward-dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: mat-color($mcv-primary, 500);
+    color: $white;
+
+    .project-inward-dialog-header-title {
+        font-weight: 600;
+        padding: 12px;
+    }
+
+    .project-inward-dialog-header-actions {
+        flex-grow: 1;
+        flex-shrink: 0;
+        display: flex;
+        gap: 0.3rem;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0 15px;
+    }
+}
+
+.project-inward-dialog-mobile-actions {
+    display: none;
+}
+
+.project-inward-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.5rem;
+
+
+    .project-inward-form-wrapper {
+        flex-grow: 0;
+        flex-shrink: 0;
+        // width: 30rem;
+    }
+
+    .project-inward-detail-wrapper {
+        flex-grow: 0;
+        flex-shrink: 0;
+        // width: 30rem;
+        // border: 1px solid $gray-200;
+        // border-radius: $border-radius;
+        // padding: 0.3rem;
+
+    }
+
+    .project-inward-documents-wrapper {
+        flex-grow: 1;
+        flex-shrink: 1;
+        // padding: 0.3rem;
+    }
+
+
+    .property-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3rem;
+        margin-bottom: 0.3rem;
+
+
+        .property {
+            border-radius: $border-radius;
+            border: 1px solid $gray-200;
+            padding: 0 0.2rem;
+            // margin: 0.1rem;
+            min-width: 5rem;
+            flex-grow: 1;
+            flex-shrink: 1;
+
+            &.property-0x {
+                min-width: 0;
+                flex-grow: 0;
+            }
+
+            &.property-2x {
+                min-width: 32rem;
+            }
+
+            .property-label {
+                font-size: 0.7rem;
+                color: $gray-600;
+
+                // &::after {
+                //     content: ': ';
+                // }
+            }
+
+            .property-value {
+
+                // line-height: 1;
+                padding-bottom: 0.3rem;
+
+                &.wrap {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 0.2rem;
+                }
+
+
+            }
+        }
+
+    }
+
+
+}
+
+@media screen and (max-width: 768px) {
+    // .project-inward-wrapper {
+    //     flex-direction: column;
+
+    //     .project-inward-form-wrapper {
+    //         width: 100%;
+    //     }
+
+    //     .project-inward-detail-wrapper {
+    //         width: 100%;
+    //     }
+    // }
+}

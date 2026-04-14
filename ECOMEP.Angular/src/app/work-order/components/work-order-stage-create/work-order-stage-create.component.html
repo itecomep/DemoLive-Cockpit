@@ -1,0 +1,27 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">New Stage</h5>
+    <div class="d-flex align-items-center">
+        <button mat-raised-button color="primary" (click)="onSubmit()">
+            Save
+        </button>
+        <button mat-icon-button aria-label="close" (click)="onClose()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+<mat-dialog-content>
+    <div class="work-order-stage-container" [formGroup]="form">
+        <mat-form-field appearance="outline">
+            <mat-label>Stage Title</mat-label>
+            <input placeholder="Stage Title" aria-label="Stage Title" matInput formControlName="title">
+            <mat-error>{{getErrorMessage(f.title)}}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Stage Percentage</mat-label>
+            <input placeholder="Stage Percentage" aria-label="Stage Percentage" matInput formControlName="percentage" />
+            <mat-error>{{ getErrorMessage(f.percentage) }}
+            </mat-error>
+        </mat-form-field>
+    </div>
+</mat-dialog-content>

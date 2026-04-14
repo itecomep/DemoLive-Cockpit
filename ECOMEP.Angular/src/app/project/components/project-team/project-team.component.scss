@@ -1,0 +1,118 @@
+@import 'variables';
+
+mat-icon {
+    cursor: pointer;
+}
+
+.project-team-wrapper {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+
+    .project-team-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.3rem;
+        // background-color: $gray-500;
+        // color: $white;
+        // border-radius: $border-radius;
+        padding: 0.3rem;
+
+        .project-team-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+    }
+
+    .project-team-editor {
+        background-color: $gray-200;
+    }
+}
+
+.teams-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+}
+
+.project-team-container {
+    flex: 1 1 calc(50% - 0.5rem); //Takes half width minus the gap
+    border: 1px solid $gray-400;
+    border-radius: $border-radius;
+    padding: 0.5rem;
+    box-sizing: border-box;
+    min-width: 15rem;
+
+    .team-title {
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 0.3rem;
+    }
+}
+
+.team-member-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    &>li.team-member {
+        display: flex;
+        gap: 0.3rem;
+        padding: 0.5rem;
+        border-radius: $border-radius;
+        border: 1px solid $gray-300;
+        padding: 0.3rem;
+        // justify-content: space-between;
+        align-items: center;
+
+        .member-detail-container {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        img.member-image {
+            width: 40px;
+            height: 40px;
+            -o-object-fit: cover;
+            object-fit: cover;
+            border-radius: $border-radius;
+        }
+
+        .member-name {
+            font-weight: 600;
+        }
+    }
+}
+
+.project-manager-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid $gray-300;
+    border-radius: $border-radius;
+    padding: 0.3rem;
+
+    .details {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    img.image {
+        width: 40px;
+        height: 40px;
+        -o-object-fit: cover;
+        object-fit: cover;
+        border-radius: $border-radius;
+    }
+
+    .name {
+        font-weight: 600;
+    }
+}

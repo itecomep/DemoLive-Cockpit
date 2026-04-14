@@ -1,0 +1,36 @@
+<mat-expansion-panel [expanded]="true" *ngIf="!isReadonly">
+    <mat-expansion-panel-header>
+      <mat-panel-title> Task Action </mat-panel-title>
+    </mat-expansion-panel-header>
+    
+    <form [formGroup]="form" autocomplete="off">
+     
+      <mat-form-field appearance="outline" class="col-md-12">
+        <mat-label>Comment</mat-label>
+        <textarea id="comment" aria-label="comment" matInput formControlName="comment" cdkTextareaAutosize
+          #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="2" cdkAutosizeMaxRows="5"></textarea>
+        <mat-error>{{ getErrorMessage(f.comment) }}</mat-error>
+      </mat-form-field>
+  
+
+          <div class="inline-list inline-list-justify-right" *ngIf="stage">
+
+              <ng-container *ngFor="let item of stage.actions">
+                <button [disabled]="
+                    (item.taskStatusFlag == 1  && disableComplete) ||
+                    task.statusFlag == 1 ||
+                    loading
+                  " mat-raised-button color="{{item.buttonClass}}" class="flex-grow-1" [matTooltip]="item.buttonTooltip"
+                  [attr.aria-label]="item.buttonText" (click)="onTaskAction(item)">
+                  {{ item.buttonText }}
+                </button>
+              </ng-container>
+      </div>
+     
+      <span *ngIf="!stage || !stage.actions || stage.actions.length === 0">
+        Task Actions not available!
+      </span>
+      <span *ngIf="task.statusFlag==1">Task already submitted!</span>
+    </form>
+    <small *ngIf="disableComplete">{{ disableCompleteMessage }}</small>
+  </mat-expansion-panel>

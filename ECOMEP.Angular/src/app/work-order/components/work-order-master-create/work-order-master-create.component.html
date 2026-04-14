@@ -1,0 +1,54 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">Typology Stage Master</h5>
+    <div class="d-flex align-items-center">
+        <button mat-raised-button color="primary" (click)="AddFromMaster()" *ngIf="isShowAddButton">
+            Add
+        </button>
+        <button mat-icon-button aria-label="close" (click)="onClose()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+
+<mat-dialog-content>
+    <div class="tab-header-scroll">
+        <div class="tab-header-container">
+            <div class="custom-tab-item" *ngFor="let item of workOrderMasters; let i = index"
+                [class.active]="i === selectedTabIndex" (click)="onTabChange(i)">
+                {{ item.typologyTitle }}
+            </div>
+
+            <div class="custom-tab-item new-btn"
+                (click)="onHideAddButton(); selectedTabIndex = workOrderMasters.length">
+                + New
+            </div>
+        </div>
+    </div>
+
+    <div class="work-order-master-wrapper">
+        <div class="custom-tab-content">
+            <ng-container *ngIf="selectedTabIndex < workOrderMasters.length">
+                <div class="work-order-master-tab">
+                    <app-work-order-master-update [workOrderMaster]="workOrderMasters[selectedTabIndex]">
+                    </app-work-order-master-update>
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="selectedTabIndex === workOrderMasters.length">
+                <div class="p-2">
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Template Title</mat-label>
+                        <input type="text" [formControl]="typologyTitle" matInput required />
+                    </mat-form-field>
+
+                    <div class="d-flex align-items-center justify-content-end">
+                        <button mat-raised-button color="primary" (click)="onWorkOrderMasterCreate()">
+                            Create
+                        </button>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</mat-dialog-content>

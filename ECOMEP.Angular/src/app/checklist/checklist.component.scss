@@ -1,0 +1,1125 @@
+/* --- SHARED GREEN HEADER STYLES --- */
+.top-header {
+  background-color: #4caf50;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 20px;
+  align-items: center;
+
+  .left-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .title-block {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    h3 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    small {
+      background: white;
+      color: #4caf50;
+      border-radius: 50%;
+      padding: 2px 8px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+  }
+
+  .icon-button {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+}
+
+
+
+
+
+/* ============================================= */
+/* ✅ GLOBAL FONT + TYPOGRAPHY SYSTEM             */
+/* ============================================= */
+
+/* ===== GLOBAL FONT BASE ===== */
+:host {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ===== STAGE ===== */
+.stage-title {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px !important;
+  font-weight: 600;
+}
+
+/* ===== CATEGORY ===== */
+.category-title {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px !important;
+  font-weight: 500;
+}
+
+/* ===== HEADINGS ===== */
+.tree-header,
+.label,
+.detail-header h1 {
+  font-size: 14px !important;
+ font-weight: 500;
+}
+
+/* ===== CHECKLIST ITEMS ===== */
+.item-title {
+  font-size: 12px !important;
+  font-weight: 500;
+}
+
+/* ===== DESCRIPTION ===== */
+.detail-section p {
+  font-size: 13px !important;   /* slightly bigger */
+  font-weight: 500;            /* 🔥 makes content stronger */
+  color: #333;                 /* darker for better readability */
+  line-height: 1.6;            /* improves readability */
+}
+
+
+/* ===== FILE TEXT ===== */
+.file-name,
+.file-date {
+  font-size: 12px !important;
+}
+
+/* ===== SEARCH BOX ===== */
+.search-box {
+  font-size: 12px !important;
+}
+
+/* ===== LAST MODIFIED ===== */
+.last-modified-box {
+  font-size: 12px !important;
+}
+
+.file-name {
+  font-size: 11px;
+  text-align: center;
+
+  width: 100%;
+  max-width: 100%;
+
+  white-space: nowrap;        /* 🔥 single line */
+  overflow: hidden;
+  text-overflow: ellipsis;    /* 🔥 ... */
+
+  margin-top: 4px;
+}
+.file-date {
+  font-size: 10px;
+  color: #777;
+  margin-top: 2px;
+}
+
+
+/* ===== PAGE WRAPPER ===== */
+:host {
+  display: block;
+  background: #f5f7fb;
+  min-height: 100vh;
+  padding-top: 70px;
+  //  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ===== HEADER ===== */
+app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+/* ===== TOP ACTION ===== */
+.container {
+  margin-top: 20px;
+}
+
+.top-actions {
+  max-width: 900px;
+  margin: 0 auto 15px auto;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ===== MAIN LAYOUT ===== */
+.layout {
+  display: flex;
+  width: 100%;
+  height: calc(100vh - 70px);
+  overflow: hidden;
+}
+
+/* ===== LEFT PANEL ===== */
+.left-panel {
+  width: 40%;
+  background: #f9fafb;
+  border-right: 1px solid #e5e7eb;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+/* ===== RIGHT PANEL ===== */
+
+
+/* 🔥 LAST MODIFIED (TOP RIGHT FIXED) */
+.last-modified-box {
+  position: absolute;
+  top: 15px;
+  right: 25px;
+
+  font-size: 12px;
+  color: #666;
+
+  background: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  z-index: 10;
+}
+
+
+/* prevent overlap with title */
+.right-panel {
+   width: 60%;
+  background: #ffffff;
+  position: relative;
+  padding: 24px;
+  padding-top: 70px; /* 🔥 increase space for modified date */
+  overflow-y: auto;
+}
+
+.right-panel .label {
+  font-size: 18px !important;
+}
+
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.last-modified {
+  font-size: 12px;
+  color: #666;
+}
+
+
+/* ===== TREE CONTAINER ===== */
+.tree-container {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 20px;
+}
+
+.tree-header {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+/* ===== STAGE ===== */
+.stage-card {
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #f0f0f0;
+  background: #fff;
+}
+
+.stage-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #fafafa;
+  transition: 0.2s ease;
+}
+
+.stage-header:hover {
+  background: #f1f5f9;
+}
+
+.stage-title {
+  font-size: 15px;
+}
+
+/* ===== CATEGORY ===== */
+.category-container {
+  padding-left: 10px;
+}
+
+.category-card {
+  margin-top: 6px;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  margin-left: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.category-header:hover {
+  background: #f9fafb;
+}
+
+.category-title {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ===== CHECKLIST ===== */
+.checklist-container {
+  margin-left: 30px;
+  margin-top: 5px;
+}
+
+.checklist-card {
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.checklist-card:hover {
+  background: #f8fafc;
+}
+
+.checklist-card.active {
+  background: #e8f0fe;
+  border-left: 3px solid #1976d2;
+}
+
+.item-title {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ===== FILES (LEGACY) ===== */
+.file-section {
+  margin-top: 10px;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 4px 0;
+}
+
+.file-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  cursor: pointer;
+  color: #333;
+}
+
+.file-link:hover {
+  opacity: 0.7;
+}
+
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.file-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  height: 130px;        /* 🔥 fixed height */
+  width: 100%;          /* 🔥 equal width */
+
+  border-right: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+
+  cursor: pointer;
+  background: #fff;
+  padding: 8px;
+
+  overflow: hidden;     /* 🔥 prevents stretching */
+}
+
+.file-card:hover {
+  background-color: #f8fafc;
+  border-color: #1976d2;
+  transform: translateY(-2px);
+}
+
+.file-icon {
+  color: #1976d2;
+  margin-right: 12px;
+}
+
+.file-info {
+  display: flex;
+  flex-direction: column;
+}
+
+
+.file-action {
+  font-size: 11px;
+  color: #1976d2;
+  text-decoration: underline;
+}
+
+/* ===== ARROW ===== */
+.arrow {
+  font-size: 14px;
+  width: 16px;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+ padding: 10px 0;
+  color: #374151;
+  font-size: 13px;
+  text-align: left; 
+  font-style: italic;
+}
+
+/* ===== DETAIL PANEL ===== */
+.detail-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.detail-section {
+  margin-bottom: 30px;
+}
+
+.detail-desc {
+  color: #555;
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+.top-actions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.search-box {
+  flex: 1;
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  outline: none;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+.search-box:focus {
+  border-color: #1976d2;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+}
+
+.inner-search-wrapper {
+  padding: 5px 10px;
+  background: #fff;
+  margin-bottom: 8px;
+}
+
+.inner-search-box {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #666;
+  outline: none;
+}
+
+.inner-search-box:focus {
+  border-color: #1976d2;
+}
+
+.empty-category {
+  padding: 10px;
+  font-size: 12px;
+  color: #999;
+  font-style: italic;
+  text-align: center;
+}
+
+.checklist-container {
+  margin-left: 20px;
+  border-left: 1px solid #eee;
+  padding-left: 10px;
+}
+
+.label {
+  font-weight: 800;
+  font-size: 14px;
+  // color: #333;
+  color: #4caf50 !important;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ============================================= */
+/* ✅ ADDED: SEGREGATED ATTACHMENTS GRID STYLE   */
+/* ============================================= */
+
+.attachments-container {
+  margin-top: 24px;
+}
+
+.file-group-box {
+  border: 1px solid #e5e7eb;       /* softer border */
+  border-radius: 10px;             /* rounded corners */
+  margin-bottom: 20px;
+  background: #fff;
+
+  overflow: hidden;                /* clean edges */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+
+.group-header {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;                 /* spacing between items */
+  padding: 10px 14px;
+
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+.group-header span {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.group-icon {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+  color: #333;
+}
+
+.group-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #000;
+}
+
+.file-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;                      /* 🔥 spacing instead of borders */
+  padding: 12px;
+}
+
+.file-chip {
+  padding: 8px 12px;
+  border-right: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  min-height: 38px;
+  transition: background 0.15s;
+}
+
+.file-chip:hover {
+  background-color: #f0f7ff;
+}
+
+.file-chip:nth-child(5n) {
+  border-right: none; /* Clean edge for the 5th column */
+}
+
+.file-name {
+  color: #0056b3;
+  text-decoration: underline;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+   font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+
+.item-icon {
+  font-size: 14px;     // 🔥 smaller size
+  width: 14px;
+  height: 14px;
+  line-height: 14px;
+  color: #64748b;      // soft professional color
+}
+
+
+
+
+/* ===== IMAGE GRID (Lighthouse Style) ===== */
+.file-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+}
+
+/* ===== FILE CARD ===== */
+.file-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  height: 120px;
+  padding: 10px;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.file-card:hover {
+  background-color: #f5f9ff;
+}
+
+/* remove right border for last column */
+.file-card:nth-child(5n) {
+  border-right: none;
+}
+
+/* ===== IMAGE PREVIEW ===== */
+.file-preview {
+  width: 100%;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+
+/* ===== FILE ICON ===== */
+.file-icon {
+  font-size: 36px;
+  color: #1976d2;
+  margin-bottom: 6px;
+}
+
+/* ===== FILE NAME ===== */
+.file-name {
+  font-size: 11px;
+  text-align: center;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+//files
+.file-card.select-mode {
+  border: 1px dashed #999;
+  cursor: pointer;
+}
+
+.file-card.selected {
+  background: #000;
+  color: #fff;
+  transform: scale(0.98);
+}
+
+.group-actions {
+  margin-left: auto;
+}
+
+.confirm-delete {
+  background: red;
+  color: white;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+
+/* ===== LIGHTBOX ===== */
+.lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.lightbox-content {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+}
+
+.lightbox img {
+  max-width: 100%;
+  max-height: 80vh;
+  border-radius: 6px;
+}
+
+.lightbox-title {
+  text-align: center;
+  color: #fff;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.close-btn {
+  position: absolute;
+  top: -30px;
+  right: 0;
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+
+/* ===== ACTION CONTAINER (PERFECT ALIGNMENT) ===== */
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* ===== SMALL CLEAN ICON ===== */
+.action-icon {
+  font-size: 14px;      /* 🔥 smaller & cleaner */
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  border-radius: 4px;
+  opacity: 0.65;
+  transition: all 0.2s ease;
+}
+
+/* ===== HOVER EFFECT ===== */
+.action-icon:hover {
+  opacity: 1;
+  transform: scale(1.15);
+  background: #f1f5f9;   /* subtle background */
+}
+
+/* ===== EDIT (PRIMARY STYLE) ===== */
+.action-icon.edit:hover {
+  color: #4f46e5;   /* classy indigo */
+}
+
+/* ===== DELETE (DANGER STYLE) ===== */
+.action-icon.delete:hover {
+  color: #dc2626;   /* clean red */
+}
+
+
+
+
+
+
+
+// for all icons 
+.attachments-header {
+  display: flex;
+  // justify-content: space-between;
+  align-items: center;
+}
+.action-icon {
+  color: #000;
+  transform: scale(1.15);
+  -webkit-text-stroke: 0.3px #000;
+  font-size: 18px;
+}
+
+//file attachment icon 
+.add-icon {
+  background: #000;
+  color: #fff;
+  border-radius: 50%;
+  padding: 6px;
+  font-size: 22px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: all 0.2s ease;
+}
+
+.add-icon:hover {
+  background: #333;
+  transform: scale(1.1);
+}
+
+//images attachments
+
+.image-viewer {
+  position: fixed;
+  inset: 0;
+  display: flex;              /* ✅ IMPORTANT FIX */
+  background: rgba(0,0,0,0.92);
+  z-index: 9999;
+}
+
+
+.viewer-main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+}
+
+.viewer-main img {
+  width: auto;
+  height: auto;
+
+  max-width: 600px;     /* 🔥 HARD WIDTH LIMIT */
+  max-height: 70vh;     /* 🔥 HARD HEIGHT LIMIT */
+
+  object-fit: contain;
+
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+}
+
+
+.viewer-sidebar {
+  width: 320px;
+  background: #111;
+  color: white;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.viewer-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.viewer-header .close {
+  cursor: pointer;
+}
+
+.viewer-title {
+  font-size: 14px;
+  word-break: break-word;
+}
+
+.open-link {
+  color: #4da3ff;
+  text-decoration: none;
+}
+
+
+.nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  
+  font-size: 60px !important;   /* bigger */
+  width: 60px;
+  height: 60px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #fff;
+  cursor: pointer;
+  z-index: 10000;
+
+  background: rgba(0, 0, 0, 0.4);  /* 🔥 visible button */
+  border-radius: 50%;
+
+  transition: all 0.2s ease;
+}
+
+.nav-arrow.left {
+  left: 25px;
+}
+
+.nav-arrow.right {
+  right: 25px;
+}
+
+.nav-arrow:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.nav-arrow.disabled {
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+
+
+/* Generic icon reset */ 
+.item-icon,
+.group-icon,
+.file-icon,
+.action-icon {
+  color: inherit !important;
+  -webkit-text-stroke: 0 !important;
+  background: transparent !important;
+}
+
+/* Action icons */
+.action-icon {
+  font-size: 14px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 4px;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+}
+
+.action-icon:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  background: #f1f5f9;
+}
+
+/* Add icon (restored natural style) */
+.add-icon {
+  background: transparent;
+  color: inherit;
+  border-radius: 50%;
+  padding: 6px;
+  font-size: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+
+/* ============================================= */
+/* ✅ EDIT TEXTAREA (BIG + PREMIUM UX)            */
+/* ============================================= */
+
+.edit-textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 12px 14px;
+
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1.6;
+
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+
+  outline: none;
+  resize: vertical; /* 👈 user can resize */
+
+  transition: all 0.2s ease;
+}
+
+/* ✨ Focus state (premium feel) */
+.edit-textarea:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+}
+
+
+/* ===== BIG TITLE EDIT ===== */
+.big-edit {
+  min-height: 120px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+
+/* ===== TITLE AREA (RIGHT PANEL) ===== */
+.detail-header textarea {
+  min-height: 70px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+
+/* ===== DESCRIPTION AREA ===== */
+.detail-section textarea {
+  min-height: 140px;
+  font-size: 14px;
+}
+
+
+/* ===== STAGE / CATEGORY INLINE EDIT ===== */
+.stage-header textarea,
+.category-header textarea {
+  min-height: 40px;
+  font-size: 14px;
+  padding: 6px 8px;
+}
+
+
+/* ===== SMOOTH SCROLL WHILE TYPING ===== */
+textarea {
+  overflow-y: auto;
+}
+
+
+/* OPTIONAL: cleaner scrollbar */
+textarea::-webkit-scrollbar {
+  width: 6px;
+}
+
+textarea::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+
+
+:host ::ng-deep mark.highlight {
+  background-color: #d9f318 !important;
+  color: black;
+}
+
+
+
+
+/* ============================================= */
+/* ✅ TASK DETAIL BOX UI (CLEAN + PREMIUM)        */
+/* ============================================= */
+
+.detail-box {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
+}
+
+.detail-box:hover {
+  border-color: #d1d5db;
+}
+
+/* Label inside box */
+.detail-box .label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+/* Title text */
+.detail-box h1 {
+  font-size: 20px;
+  margin: 0;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Description text */
+.detail-box p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #374151;
+  font-style: italic;
+}
+
+
+
+
+/* ============================================= */
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 992px) {
+  .layout {
+    flex-direction: column;
+    height: 100vh;         
+    overflow-y: auto;      
+  }
+
+  .left-panel,
+  .right-panel {
+    width: 100%;
+    height: auto;
+    overflow: visible;      
+  }
+  .file-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on small screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .file-grid {
+    grid-template-columns: 1fr; /* 1 column on mobile */
+  }
+}
+

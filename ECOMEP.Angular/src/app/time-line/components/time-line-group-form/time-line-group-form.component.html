@@ -1,0 +1,58 @@
+<div class="time-line-wrapper row">
+  <div class="col-md-4 time-line-newform">
+    <h6 class="font-focused">Add New Group</h6>
+    <form [formGroup]="form" class="row" autocomplete="off" novalidate>
+      <mat-form-field appearance="outline" class="col-md-12">
+        <mat-label>Group Name</mat-label>
+        <input id="inputLabel" placeholder="Input Label" aria-label="Input Label" matInput
+          formControlName="inputLabel" />
+        <mat-error>{{ getErrorMessage(f.inputLabel) }}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="col-md-12">
+        <mat-select formControlName="group" multiple>
+          <mat-option *ngFor="let item of contactOptions" [value]="item">
+            {{item.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </form>
+    <div class="mcv-dialog-actions">
+      <div class="row m-0">
+        <div class="col-12">
+          <button (click)="onSubmit()" mat-raised-button class=" float-right" matTooltip="Save" aria-label="save">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <ul class="time-line-group-ul row">
+      <li class="time-line-group-li col-md-6 col-sm-6" *ngFor="let item of groupData;let i = index"
+        (click)="selectGroup(item)" [ngClass]="{'time-line-group-li-expand':showMoreContact[i]}">
+        <div class="d-flex justify-content-between align-item-center">
+          <div class="font-focused">{{item.inputLabel}} | {{item.group.length}}</div>
+          <mat-icon (click)="deleteGroup(item.inputLabel)" matTooltip="Delete Group">delete</mat-icon>
+        </div>
+        <ul class="time-line-user-ul row p-0">
+          <li class="time-line-user-li col-4 py-1 row" *ngFor="let userData of item.group">
+            <div class="time-line-user">
+              <img src="{{userData.photoUrl || 'assets/images/person-icon.svg'}}" class="user-thumbnail"
+                matTooltip="{{userData.name}}" />
+              <mat-icon matTooltip="Remove User" (click)="removeUser(item.inputLabel,userData.id)">
+                close
+              </mat-icon>
+            </div>
+          </li>
+        </ul>
+        <div class="time-line-dropdown" matTooltip="{{item.group.length - 8}} more contact"
+          *ngIf="item.group.length > 8 && !showMoreContact[i]" (click)="toggleUserUL(i)">
+          <mat-icon *ngIf="!showMoreContact[i]">expand_more</mat-icon>
+        </div>
+        <div class="time-line-dropdown" matTooltip="Hide contact" *ngIf="showMoreContact[i]" (click)="toggleUserUL(i)">
+          <mat-icon *ngIf="showMoreContact[i]">expand_less</mat-icon>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>

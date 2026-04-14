@@ -1,0 +1,95 @@
+<div class="sidebar-wrapper" [ngClass]="{'active':showMenu}"></div>
+
+<nav class="menu-sidebar" [ngClass]="{'active':showMenu}" (click)="onCloseMenu()">
+  <ul class="menu-list">
+    <!-- <li *ngIf="isPermissionProjectList">
+      <a [routerLinkActive]="['active']" [routerLink]="['/wftask-list']">
+        <h5>Task List</h5>
+      </a>
+    </li> -->
+
+    <li *ngIf="isPermissionTodoList">
+      <a [routerLinkActive]="['active']" [routerLink]="['/todo-list']">
+        <h5>Todo List</h5>
+      </a>
+    </li>
+
+    <li *ngIf="isPermissionContactList">
+      <a [routerLinkActive]="['active']" [routerLink]="['/contact-list']">
+        <h5>Contact List</h5>
+      </a>
+    </li>
+
+    <li *ngIf="isPermissionTeamList">
+      <a [routerLinkActive]="['active']" [routerLink]="['/team-list']">
+        <h5>Team List</h5>
+      </a>
+    </li>
+
+    <li *ngIf="isPermissionProjectList">
+      <a [routerLinkActive]="['active']" [routerLink]="['/project-list']">
+        <h5>Project List</h5>
+      </a>
+    </li>
+
+    <li *ngIf="isPermissionRequestTicketList">
+      <a [routerLinkActive]="['active']" [routerLink]="['/request-ticket-list']">
+        <h5>Request Ticket List</h5>
+      </a>
+    </li>
+
+    <li *ngIf="isPermissionLeaveList">
+      <a [routerLinkActive]="['active']" [routerLink]="['/leave-list']">
+        <h5>Leave List</h5>
+      </a>
+    </li>
+
+    <li *ngIf="isPermissionMeetingList">
+      <a [routerLinkActive]="['active']" [routerLink]="['/meeting-list']">
+        <h5>Meeting List</h5>
+      </a>
+    </li>
+
+    <li *ngIf="isPermissionMeetingList">
+      <a [routerLinkActive]="['active']" [routerLink]="['/sitevisit-list']">
+        <h5>Sitevisit List</h5>
+      </a>
+    </li>
+
+    <li *ngIf="isPermissionAllowedIpView">
+      <a [routerLinkActive]="['active']" [routerLink]="['/allowed-ip']">
+        <h5>Allowed IP List</h5>
+      </a>
+    </li>
+
+    <li *ngIf="isPermissionMaster">
+      <a [routerLinkActive]="['active']" [routerLink]="['/permissions']">
+        <h5>Permissions</h5>
+      </a>
+    </li>
+
+     <li *ngIf="isPermissionAssetList">
+      <a [routerLinkActive]="['active']" [routerLink]="['/asset-view']">
+        <h5>Assets</h5>
+      </a>
+    </li>
+
+    <!-- <li *ngIf="isPermissionAnalysisListView">
+      <a [routerLinkActive]="['active']" [routerLink]="['/analysis']">
+        <h5>Analysis</h5>
+      </a>
+    </li> -->
+
+    <li *ngIf="isPermissionTaskView">
+      <a (click)="openTask()">
+        <h5>Task</h5>
+      </a>
+    </li>
+
+    <li>
+      <a [routerLink]="['/checklist']" target="_blank">
+        <h5>Checklist</h5>
+      </a>
+    </li>
+  </ul>
+</nav>

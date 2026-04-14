@@ -1,0 +1,151 @@
+<app-header [title]="headerTitle" [titleCount]="headerTitleCount">
+    <div class="search-filter" *ngIf="isMobileView && isShowList">
+        <mat-icon matPrefix>search</mat-icon>
+        <input aria-label="search" [formControl]="searchFC" matInput />
+    </div>
+</app-header>
+
+<div class="team-page-wrapper no-overflow">
+    <div class="team-list-wrapper" *ngIf="isShowList" (scroll)="onContainerScroll($event)">
+        <ul class="team-list">
+            <li *ngFor="let item of dataList; let i = index;" [routerLinkActive]="['active']"
+                [routerLink]="[pagedListConfig.route,item.id]">
+                <div class="team-list-item">
+                    <div class="list-item-details">
+                        <img class="contact-icon" src="{{ item.photoUrl || 'assets/images/person-icon.svg' }}" alt="" (click)="openPhotoDialog(item); $event.stopPropagation()" style="cursor: pointer;"
+                            *ngIf="!item.isCompany" />
+                        <img class="contact-icon" src="{{ item.photoUrl || 'assets/images/company-icon.svg' }}" alt="" (click)="openPhotoDialog(item); $event.stopPropagation()" style="cursor: pointer;"
+                            *ngIf="item.isCompany" />
+
+                        <div>
+                            <h6 class="font-focused">{{item.name}}</h6>
+                            <div class="appointment-list">
+                                <span *ngFor="let app of item.appointments" class="appointment-tag">{{app.code}} |
+                                    {{app.designation}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="list-item-actions">
+                <mat-checkbox [checked]="isSelected(item)" *ngIf="showCheckBox" (change)="onCheckboxChange($event)"></mat-checkbox>
+                <button mat-icon-button (click)="onRemove()" matTooltip="Remove" aria-label="Remove" *ngIf="showRemove">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div> -->
+                </div>
+            </li>
+
+            <li *ngIf="!isLoading && dataList.length == 0">
+                <div class="row">
+                    <div class="col-12">
+                        <span>No items found</span>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </div>
+
+    <div class="team-detail-wrapper" *ngIf="isShowDetail && componentConfig && componentConfig.entityID ">
+        <app-contact-team [config]="componentConfig"></app-contact-team>
+    </div>
+
+    <div class="team-detail-wrapper no-overflow"
+        *ngIf="isShowDetail && (!componentConfig || !componentConfig.entityID)">
+        <div class="team-detail-wrapper-message">
+            <mat-icon class="icon-xl light">vertical_split</mat-icon>
+            <h3>Select an item from list to see details</h3>
+            <h2 *ngIf="isPermissionEdit">OR</h2>
+            <div class="d-flex align-items-end" *ngIf="isPermissionEdit">
+                <h3>Click </h3>
+                <button mat-raised-button color="primary" (click)="onShowNewDialog()" matTooltip="New"
+                    aria-label="New">New</button>
+                <h3> to create new item</h3>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<app-footer>
+
+    <div class="mcv-footer-actions">
+        <div class="search-filter">
+            <mat-icon matPrefix>search</mat-icon>
+            <input aria-label="search" [formControl]="searchFC" matInput />
+        </div>
+
+        <button mat-icon-button (click)="refresh()" matTooltip="Refresh" aria-label="Refresh">
+            <mat-icon>refresh</mat-icon>
+        </button>
+
+        <button mat-icon-button (click)="sidenav.toggleSidenav()" matTooltip="Filters" aria-label="Filters">
+            <mat-icon>filter_list</mat-icon>
+        </button>
+
+        <button mat-icon-button (click)="onEditDocumentCategory()" *ngIf="isPermissionTeamDocumentsSettings">
+            <mat-icon>settings</mat-icon>
+        </button>
+
+
+        <button mat-raised-button color="primary" (click)="onOpenTeamDialog()" *ngIf="isPermissionTeamManagement">
+            Team Management
+            <mat-icon>groups</mat-icon>
+        </button>
+    </div>
+
+    <div class="mcv-footer-mobile-actions" *ngIf="isShowList">
+
+        <!-- <button mat-icon-button appFilterToggle matTooltip="Filters" aria-label="Filters">
+            <mat-icon>filter_list</mat-icon>
+        </button> -->
+
+        <button mat-icon-button (click)="refresh()" matTooltip="Refresh" aria-label="Refresh">
+            <mat-icon>refresh</mat-icon>
+        </button>
+
+        <button mat-icon-button (click)="sidenav.toggleSidenav()" matTooltip="Filters" aria-label="Filters">
+            <mat-icon>filter_list</mat-icon>
+        </button>
+
+        <button mat-icon-button (click)="onEditDocumentCategory()" *ngIf="isPermissionTeamDocumentsSettings">
+            <mat-icon>settings</mat-icon>
+        </button>
+
+        <button mat-raised-button matTooltip="Team Management" color="primary" (click)="onOpenTeamDialog()"
+            *ngIf="isPermissionTeamManagement">
+            TM
+            <mat-icon>groups</mat-icon>
+        </button>
+    </div>
+
+    <div class="mcv-footer-mobile-actions" *ngIf="!isShowList">
+        <button mat-icon-button (click)="back()" matTooltip="Back" aria-label="Back">
+            <mat-icon>arrow_back</mat-icon>
+        </button>
+    </div>
+
+</app-footer>
+
+
+<app-mcv-filter-sidenav #sidenav (refreshFiltersEvent)="refreshFilters()">
+    <div *ngIf="statusOptions && statusOptions.length > 0">
+        <mat-form-field appearance="outline">
+            <mat-label>Appointment Status</mat-label>
+            <mat-select [formControl]="statusFC" multiple placeholder="Status">
+                <mat-option *ngFor="let item of statusOptions" [value]="item">{{
+                    item.title
+                    }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div *ngIf="typeOptions && typeOptions.length > 0">
+        <mat-form-field appearance="outline">
+            <mat-label>Type</mat-label>
+            <mat-select [formControl]="typeFC" multiple placeholder="Type">
+                <mat-option *ngFor="let item of typeOptions" [value]="item">{{
+                    item.title
+                    }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+</app-mcv-filter-sidenav>

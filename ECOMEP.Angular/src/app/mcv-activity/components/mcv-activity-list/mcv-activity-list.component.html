@@ -1,0 +1,12 @@
+<ul class="smart-list-item">
+  <li *ngFor="let item of dataList">
+    <mcv-activity-list-item [item]="item"></mcv-activity-list-item>
+  </li>
+  <li *ngIf="dataList.length==0">
+    <div class="row">
+      <div class="col-12">
+        <span>No items found</span>
+      </div>
+    </div>
+  </li>
+</ul>

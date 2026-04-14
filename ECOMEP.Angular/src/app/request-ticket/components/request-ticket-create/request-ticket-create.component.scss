@@ -1,0 +1,332 @@
+@import 'variables';
+@import 'theme';
+
+.request-ticket-create-dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: mat-color($mcv-primary, 400);
+
+    .request-ticket-create-dialog-header-title {
+        font-weight: 600;
+        padding: 12px;
+    }
+
+    .request-ticket-create-dialog-header-actions {
+        flex-grow: 1;
+        flex-shrink: 0;
+        display: flex;
+        gap: 0.3rem;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 15px;
+    }
+}
+
+.request-ticket-create-dialog-mobile-actions {
+    display: none;
+}
+
+.request-ticket-create-form {
+    .contact-alert-bar {
+        margin: 0.5rem;
+        padding: 0.5rem;
+        border-radius: $border-radius;
+        background-color: $red;
+        color: $white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .request-ticket-create-form-section {
+        display: flex;
+        gap: 0.3rem;
+
+        .request-ticket-create-form-panel {
+            min-width: 50%;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            // flex-basis: 50%;
+
+            &>* {
+                flex-grow: 1;
+            }
+        }
+
+        .request-ticket-previous-tickets-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: max-content;
+            min-width: 50%;
+           
+            overflow: auto;
+            transition: height 0.3s ease;
+
+            &.expanded {
+                height:fit-content;
+                
+            } 
+
+            .previous-ticket-ul,
+            .assignee-ul {
+                margin: 0;
+                padding: 0;
+                list-style: none;
+
+                li {
+                    // border: 1px solid $gray-300;
+                    border-radius: $border-radius;
+                    padding: 0.2rem;
+                    // margin-bottom: 0.2rem;
+                    cursor: pointer;
+                    font-size: 0.8rem;
+
+                    .list-header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        padding: 0.2rem;
+                        background-color: $gray-300;
+                        border-radius: $border-radius;
+                    }
+
+                    &.selected {
+                        background-color: $gray-100;
+                    }
+                }
+            }
+            .project-association-list {
+                list-style: none;
+                padding: 0.3rem;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.3rem;
+
+                &>li {
+                    width: calc(50% - 0.3rem);
+                    min-width: 300px;
+                    border: 1px solid $gray-300;
+                    border-radius: $border-radius;
+                    padding: 0.3rem;
+                    // margin-bottom: 0.3rem;
+
+                    &.added {
+                        background-color: $gray-200;
+                    }
+                }
+            }
+            .association-contact {
+                display: flex;
+                width: 227px;
+            }
+
+            .association-details {
+                .mat-icon {
+                    height: 17px;
+                    width: 15px;
+                }
+
+                .material-icons {
+                    font-size: 15px;
+                    line-height: inherit;
+                }
+            }
+
+            .association-actions {
+                display: flex;
+                gap: 0.1rem;
+                align-items: flex-start;
+                justify-content: flex-end;
+                max-width: 110px;
+
+                button {
+                    height: 28px;
+                    min-width: 28px;
+                    font-size: 0.65rem;
+                    padding: 0 6px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+                    &.active {
+                        background-color: mat-color($mcv-primary, 400);
+                        color: #000;
+                    }
+                }
+            }
+        }
+    }
+
+    .request-ticket-assignee-input {
+        display: flex;
+        flex-direction: column;
+        // align-items: center;
+        gap: 0.3rem;
+
+        .request-ticket-assignee-input-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            justify-content: flex-end;
+        }
+    }
+}
+
+.request-ticket-assignee-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.3rem;
+
+    &>li {
+        border-bottom: 1px solid $gray-200;
+    }
+}
+
+.request-ticket-assignee {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.3rem;
+    padding: 0.3rem;
+
+    .request-ticket-assignee-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.3rem;
+    }
+}
+
+
+cdk-drag-animating {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drop-dragging .cdk-drag {
+    transition: transform 500ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drag-animating {
+    transition: transform 550ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drag-placeholder {
+    list-style: none;
+    // padding: 0.5rem;
+    // margin: 0.3rem;
+    border-radius: $border-radius;
+    border: dotted 2px $gray-700;
+    min-height: 50px;
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drag-handle {
+    color: $gray-400;
+    cursor: move;
+    height: 43px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cdk-drag-preview {
+    list-style: none;
+    padding: 0.5rem;
+    margin: 0.3rem;
+    // border: 1px solid $gray-300;
+    border-radius: $border-radius;
+    border-bottom: 1px $gray-400 solid;
+    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+        0 8px 10px 1px rgba(0, 0, 0, 0.14),
+        0 3px 14px 2px rgba(0, 0, 0, 0.12);
+    background-color: $gray-100;
+}
+
+@media only screen and (max-width: 768px) {
+    .mat-mdc-dialog-content {
+        height: calc(85vh - 60px) !important;
+        padding-bottom: 3rem !important;
+    }
+
+    .request-ticket-create-dialog-mobile-actions {
+        background-color: mat-color($mcv-primary, 400);
+        display: flex;
+        gap: 0.3rem;
+        align-items: center;
+        justify-content: space-between;
+        padding: 5px 15px;
+    }
+
+    .request-ticket-create-dialog-header {
+
+        .request-ticket-create-dialog-header-actions {
+            display: none;
+        }
+    }
+
+    .request-ticket-create-form-section {
+        flex-direction: column;
+
+        .request-ticket-create-form-panel {
+            width: 100%;
+        }
+    }
+
+    .request-ticket-assignee-input {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.3rem;
+
+        .request-ticket-assignee-input-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            justify-content: flex-end;
+        }
+    }
+
+    .request-ticket-previous-tickets-panel {
+        .project-association-list {
+            &>li {
+                width: 100%;
+                min-width: unset;
+                padding-bottom: 19px;
+
+                .association-contact {
+                    width: 100%;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 0.2rem;
+
+                    .flex-grow-1 {
+                        width: 100%;
+                    }
+                }
+
+                .association-actions {
+                    max-width: unset;
+                    width: 100%;
+                    justify-content: center;
+                    margin-top: 0.3rem;
+
+                    button {
+                        flex: 1;
+                        min-width: 60px;
+                    }
+                }
+
+                .association-details {
+                    margin-top: 0.3rem;
+                    
+                    .mat-icon {
+                        vertical-align: middle;
+                    }
+                }
+            }
+        }
+    }
+}

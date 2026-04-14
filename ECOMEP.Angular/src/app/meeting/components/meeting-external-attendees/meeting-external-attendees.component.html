@@ -1,0 +1,38 @@
+<div class="row" [formGroup]="form">
+    <mat-form-field appearance="outline" class="col-md-6">
+        <mat-label>Name</mat-label>
+        <input placeholder="Enter name of person to select from the list" aria-label="name"
+            matInput formControlName="name" [matAutocomplete]="externalAttendeeAuto" />
+
+        <mat-autocomplete #externalAttendeeAuto="matAutocomplete" [displayWith]="displayFnContactName"
+            (optionSelected)="onSelectExternalContact($event.option.value)">
+            <mat-option *ngFor="let option of filteredContactsForExternal$ | async" [value]="option">
+                <h6>
+                    {{option.name}}
+                </h6>
+                <span>{{option.email}} <small
+                        *ngIf="option.company">({{option.company}})</small></span>
+            </mat-option>
+        </mat-autocomplete>
+        <span matSuffix>
+            <mat-icon>person</mat-icon>
+        </span>
+        <mat-error>{{getErrorMessage(f.name)}}</mat-error>
+        <mat-hint align="end">Enter name of person to select from the list</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="col-md-6">
+        <mat-label>Phone</mat-label>
+        <input type="number" aria-label="phone" matInput formControlName="phone">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="col-md-11">
+        <mat-label>Email</mat-label>
+        <input aria-label="email" type="email" matInput formControlName="email">
+    </mat-form-field>
+    <div class="col-md-1">
+        <button mat-icon-button (click)="onCreate()" [disabled]="!f.name.value">
+            <mat-icon>add</mat-icon>
+        </button>
+    </div>
+</div>

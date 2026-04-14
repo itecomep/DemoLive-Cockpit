@@ -1,0 +1,94 @@
+/* ---------------------------------------------------
+    Sidebar
+----------------------------------------------------- */
+@import 'variables';
+@import 'theme';
+
+.sidebar-wrapper {
+  height: $mcv-menu-sidebar-height;
+  top: 40px;
+  left: 0;
+  right: 100%;
+  position: fixed;
+  z-index: 9999;
+  -webkit-transition: all 0.8s;
+  transition: all 0.8s;
+  background-color: #000;
+  opacity: 0.6;
+
+  &.active {
+    right: 0;
+  }
+}
+
+.menu-sidebar {
+  width: $mcv-menu-width;
+  height: $mcv-menu-sidebar-height;
+  position: fixed;
+  top: 40px;
+  left: -($mcv-menu-width);
+  z-index: 99999;
+  background-color: $gray-100;
+  -webkit-transition: all 0.8s;
+  transition: all 0.8s;
+  box-shadow: $box-shadow;
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  &.active {
+    left: 0;
+  }
+}
+
+.menu-sidebar .mCSB_inside>.mCSB_container {
+  margin: 0;
+}
+
+.menu-sidebar .menu-list {
+  list-style: none;
+  padding: 0;
+}
+
+.menu-sidebar .menu-list>li {
+  border-bottom: 1px solid #e4e5e7;
+  height: 45px;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+}
+
+.menu-sidebar .menu-list>li a {
+  text-decoration: none;
+  padding: 10px;
+  -webkit-box-flex: 1;
+  flex-grow: 1;
+  height: 100%;
+}
+
+.menu-sidebar .menu-list>li a:hover {
+  border-left: 4px solid mat-color($mcv-primary, 500);
+  background: $gray-300;
+
+  // box-shadow: inset 0 0 20px -10px #000;
+}
+
+.menu-sidebar .menu-list>li.active>a {
+  background: #fff;
+  border-left: 4px solid mat-color($mcv-primary, 500);
+  // box-shadow: inset 0 0 20px -10px #000;
+}
+
+@media (max-width: 768px) {
+  .menu-sidebar {
+    width: 100%;
+    left: -(100%);
+
+    &.active {
+      left: 0;
+
+    }
+  }
+}
+
+/*==========================*/

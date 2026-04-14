@@ -1,0 +1,131 @@
+
+  <app-header [title]="headerTitle"></app-header>
+  <div class="module-tab-wrapper">
+    <mat-tab-group (selectedIndexChange)="onTabChange($event)">
+      <mat-tab *ngFor="let module of headerList; let i = index" [label]="module.name"></mat-tab>
+    </mat-tab-group>
+  </div>
+<div class=" permission-wrapper">
+ 
+  <table class="permission-table" *ngIf="selectedModule">
+    <thead class="permission-table-header">
+      <!-- <tr>
+        <th></th>
+        <th [attr.colspan]="getModuleColspan(selectedModule)">
+          {{ selectedModule.name }}
+        </th>
+      </tr> -->
+      
+      <tr>
+        <th></th>
+        <ng-container *ngFor="let group of selectedModule.children">
+          <th [attr.colspan]="group.permissions.length">{{ group.name }}</th>
+        </ng-container>
+      </tr>
+
+      <tr>
+        <th>
+         <!-- Filter Button -->
+         <button mat-icon-button [matMenuTriggerFor]="contactsMenu">
+          <mat-icon>filter_alt</mat-icon>
+        </button>
+      <!-- Filter Menu -->
+      <mat-menu #contactsMenu="matMenu">
+        <!-- <div class="search-container p-1">
+          <mat-form-field appearance="outline" (click)="$event.stopPropagation();">
+              <input
+              matInput
+              placeholder="Search"
+              [(ngModel)]="contactsSearch"
+              (input)="filterDistinctContacts()"
+            />
+            <mat-icon class="clear-icon"
+            matSuffix
+            (click)="clearFilterSearch()">close</mat-icon>
+          </mat-form-field>
+        </div> -->
+        <button mat-menu-item (click)="$event.stopPropagation(); toggleSelectAll()">
+          {{ isAllSelected() ? 'Deselect All' : 'Select All' }}
+        </button>
+    
+        <mat-option class="menu-mat-option" *ngFor="let contact of filteredContactOptions" 
+                    (click)="$event.stopPropagation(); toggleSelection(contact)">
+          <mat-checkbox [checked]="selectedContacts.includes(contact.id)">
+            {{ contact.name }}
+          </mat-checkbox>
+        </mat-option>
+      </mat-menu>
+        </th>
+       
+  
+        <ng-container *ngFor="let group of selectedModule.children">
+          <ng-container *ngFor="let permission of group.permissions">
+            <th><span>{{ permission }}</span></th>
+          </ng-container>
+        </ng-container>
+      </tr>
+    </thead>
+   
+    
+    <tbody>
+      <tr *ngFor="let user of permissionsList">
+        <td class="team-member">
+          <img matTooltip="{{ user.fullName }}" 
+               [src]="user.photoUrl || 'assets/images/user.png'" (click)="openPhotoDialog(user); $event.stopPropagation()" style="cursor: pointer;"
+               class="team-member-photo" />
+        </td>
+      
+        <!-- Loop through selectedModule's groups -->
+        <ng-container *ngFor="let group of selectedModule.children">
+          <ng-container *ngFor="let permission of group.permissions">
+            <td>
+              <mat-checkbox 
+                     [checked]="checkPermission(user, selectedModule.name, group.name, permission)" 
+                     (change)="onPermissionChange( $event.checked, user, selectedModule.name, group.name, permission)"></mat-checkbox>
+            </td>
+          </ng-container>
+        </ng-container>
+      </tr>
+      
+    </tbody>
+  </table>
+
+</div>
+
+<app-footer>
+  <div class="mcv-footer-actions">
+    <div >
+      <mat-form-field appearance="outline" >
+        <input
+        matInput
+        placeholder="Search"
+        [formControl]="search"
+       
+      />
+      <mat-icon class="clear-icon"
+      matSuffix
+      (click)="clearSearch()">close</mat-icon>
+    </mat-form-field>
+    </div>
+    <div >
+      <mat-form-field appearance="outline">
+        <mat-select [formControl]="designation"  placeholder="Designation">
+          <mat-option *ngFor="let item of designationOptions" [value]="item">{{
+            item
+            }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div >
+      <button mat-icon-button (click)="onClearFilters()" matTooltip="Refresh"
+      aria-label="Refresh"><mat-icon>refresh</mat-icon></button>
+    </div>
+    <div >
+      <button mat-raised-button color="primary" (click)="openPermissionGroupsDialog()" matTooltip="Refresh"
+      aria-label="Refresh">Permission Groups</button>
+    </div>
+
+   
+     
+  </div>
+</app-footer>

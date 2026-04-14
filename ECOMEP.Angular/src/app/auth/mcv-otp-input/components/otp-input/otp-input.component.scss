@@ -1,0 +1,33 @@
+.mcv-otp-input-wrapper {
+    padding: 2.5rem 0 1.5rem 0;
+
+    .mcv-otp-input {
+        width: 40px;
+        height: 40px;
+        border-radius: 4px;
+        border: solid 1px #c5c5c5;
+        text-align: center;
+        font-size: 32px;
+    }
+
+    .mcv-otp-input:not(:last-child) {
+        margin-right: 8px;
+    }
+}
+
+@media screen and (max-width:767px) {
+    .mcv-otp-input {
+        width: 40px;
+        font-size: 24px;
+        height: 40px;
+    }
+}
+
+
+@media screen and (max-width:420px) {
+    .mcv-otp-input {
+        width: 30px;
+        font-size: 18px;
+        height: 30px;
+    }
+}

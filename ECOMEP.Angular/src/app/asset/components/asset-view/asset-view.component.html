@@ -1,0 +1,496 @@
+<app-header [title]="headerTitle"></app-header>
+<div class="asset-view-wrapper">
+    <mat-tab-group [selectedIndex]="selectedTabIndex" (selectedIndexChange)="onSelectedTabIndexChange($event)">
+        <ng-container *ngFor="let item of categoryOptions; let i = index">
+            <mat-tab label="{{item}}">
+                <ng-template matTabContent>
+                    <div class="asset-category-wrapper">
+                        <div class="asset-table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Title</th>
+                                        <th>SubTitle</th>
+                                        <th>Purchase Date</th>
+                                        <th>Warranty Date</th>
+                                        <th>Validity Date</th>
+                                        <th>Quantity</th>
+                                        <th>Cost</th>
+                                        <th>Status</th>
+                                    </tr>
+                                    <tr class="total">
+                                        <th colspan="6"></th>
+                                        <th><span>{{total.quantity}}</span></th>
+                                        <th>
+                                            <span>{{total.cost | currency:'INR':'symbol':'1.0'}}</span>
+                                        </th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <ng-container *ngFor="let asset of dataList">
+                                        <tr (click)="onShowAssetDetails(asset)"
+                                            [ngClass]="{'selected':asset.id == selectedAsset?.id}">
+                                            <td><span class="asset-code">{{asset.code}}</span></td>
+                                            <td>{{asset.title}}</td>
+                                            <td>{{asset.subtitle}}</td>
+                                            <td><span>{{asset.purchaseDate | date:'dd MMM y'}}</span></td>
+                                            <td><span
+                                                    [ngClass]="{'expired': asset.isWarrantyExpired}">{{asset.warrantyDate
+                                                    | date:'dd MMM y'}}</span></td>
+                                            <td><span
+                                                    [ngClass]="{'expired': asset.isValidityExpired}">{{asset.validityDate
+                                                    | date:'dd MMM y'}}</span></td>
+                                            <td>{{asset.quantity}}</td>
+                                            <td>{{asset.cost | currency:'INR':'symbol':'1.0'}}</td>
+                                            <td>
+                                                <span class="in-use"
+                                                    *ngIf="asset.statusFlag == ASSET_STATUS_FLAG_INUSE">
+                                                    <mat-icon matTooltip="In-Use">verified</mat-icon>
+                                                </span>
+                                                <span class="un-published"
+                                                    *ngIf="asset.statusFlag == ASSET_STATUS_FLAG_DISCARDED">
+                                                    <mat-icon matTooltip="Un-Published">unpublished</mat-icon>
+                                                </span>
+                                                <span class="repair"
+                                                    *ngIf="asset.statusFlag == ASSET_STATUS_FLAG_FORREPAIRS">
+                                                    <mat-icon matTooltip="Repairs">construction</mat-icon>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </ng-container>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="asset-detail-wrapper" *ngIf="selectedAsset" [ngClass]="{'asset-detail-open': selectedAsset}">
+                            <div class="asset-detail-header">
+                                <h6 class="title">{{selectedAsset?.code}} | {{selectedAsset?.title}}
+                                    <span class="in-use" matTooltip="In Use"
+                                        *ngIf="selectedAsset?.statusFlag == ASSET_STATUS_FLAG_INUSE"><mat-icon>verified</mat-icon></span>
+                                    <span class="un-published" matTooltip="UnPublished"
+                                        *ngIf="selectedAsset?.statusFlag == ASSET_STATUS_FLAG_DISCARDED"><mat-icon>unpublished</mat-icon></span>
+                                    <span class="repair" matTooltip="Repair"
+                                        *ngIf="selectedAsset?.statusFlag == ASSET_STATUS_FLAG_FORREPAIRS"><mat-icon>construction</mat-icon></span>
+                                </h6>
+                                <div class="asset-detail-action" *ngIf="selectedAsset">
+                                    <!-- <button mat-icon-button (click)="onExportDetail(selectedAsset)"
+                                        matTooltip="Detail PDF" aria-label="Detail">
+                                        <img src="assets/icons/file-pdf.png" alt="pdf" />
+                                    </button> -->
+                                    <!-- <mat-icon matTooltip="Issues" (click)="onIssue()">build</mat-icon> -->
+                                    <mat-icon *ngIf="isPermissionMaintenanceEdit" matTooltip="Maintenance"
+                                        (click)="onMaintainanceSchedule()">handyman</mat-icon>
+                                    <mat-icon *ngIf="isPermissionEdit" (click)="onEditAsset()">edit</mat-icon>
+                                    <mat-icon *ngIf="isPermissionDelete" (click)="onDeleteAsset()">delete</mat-icon>
+                                    <mat-icon (click)="onCloseAsset()">close</mat-icon>
+                                </div>
+                            </div>
+                            <div class="asset-detail-property-wrapper">
+                                <div class="asset-detail-content details">
+                                    <div class="property-wrapper">
+                                        <div class="property-label">Title</div>
+                                        <div class="property-value">{{selectedAsset?.code}}</div>
+                                    </div>
+
+                                    <div class="property-wrapper">
+                                        <div class="property-label">Subtitle</div>
+                                        <div class="property-value">{{selectedAsset?.subtitle}}</div>
+                                    </div>
+
+                                    <div class="property-wrapper">
+                                        <div class="property-label">Purchase Date</div>
+                                        <div class="property-value">{{selectedAsset?.purchaseDate |
+                                            date:'dd MMM y'}}</div>
+                                    </div>
+
+                                    <div class="property-wrapper">
+                                        <div class="property-label">Warranty Date</div>
+                                        <div class="property-value">{{selectedAsset?.warrantyDate |
+                                            date:'dd MMM y'}}</div>
+                                    </div>
+                                    <div class="property-wrapper">
+                                        <div class="property-label">Validity Date</div>
+                                        <div class="property-value">{{selectedAsset?.validityDate |
+                                            date:'dd MMM y'}}</div>
+                                    </div>
+                                    <div class="property-wrapper">
+                                        <div class="property-label">Quantity</div>
+                                        <div class="property-value">{{selectedAsset?.quantity}}</div>
+                                    </div>
+                                    <div class="property-wrapper">
+                                        <div class="property-label">Cost</div>
+                                        <div class="property-value">{{selectedAsset?.cost |
+                                            currency:'INR':'symbol':'1.2'}}</div>
+                                    </div>
+
+                                    <div class="property-wrapper">
+                                        <div class="property-label">Description/Notes</div>
+                                        <p class="property-value">{{selectedAsset?.description}}</p>
+                                    </div>
+                                </div>
+                                <div class="asset-detail-content">
+                                    <h6 class="heading">Attributes</h6>
+                                    <ul class="attributes">
+                                        <li *ngFor="let item of selectedAsset?.attributes">
+                                            <div class="key">{{item.attributeKey}}</div>
+                                            <div class="property-value" *ngIf="item.inputType.toLowerCase() == 'date'">
+                                                {{item.attributeValue | date:'dd MMM y'}}</div>
+                                            <div class="property-value" *ngIf="item.inputType.toLowerCase() !== 'date'">
+                                                {{item.attributeValue}}</div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="asset-detail-content">
+                                    <h6 class="heading">Images</h6>
+                                    <ul class="attachments">
+                                        <li *ngFor="let item of imagesAttachments">
+                                            <app-asset-file [size]="item.size" [filename]="item.filename"
+                                                [url]="item.thumbUrl || item.url"
+                                                [files]="selectedAsset?.attachments || []" [tags]="item.searchTags"
+                                                [contentType]="item.contentType" [showPreview]="true"
+                                                [showRemove]="false" [downloadUrl]="item.url" [singlePreview]="true"
+                                                [isVerticalThumb]="true"></app-asset-file>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="asset-detail-content">
+                                    <h6 class="heading">Attachments</h6>
+                                    <ul class="attachments">
+                                        <li *ngFor="let item of otherAttachments">
+                                            <mcv-file [filename]="item.filename" [size]="item.size" [showRemove]="false"
+                                                [allowTagging]="false" [downloadUrl]="item.url" [showPreview]="true"
+                                                [singlePreview]="true" [url]="item.url" [showEditor]="false">
+                                            </mcv-file>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="asset-detail-content">
+                                    <h6 class="heading">Linked Assets ({{selectedAsset?.secondaryAssets?.length}})</h6>
+                                    <ul class="linked-assets">
+                                        <li *ngFor="let item of selectedAsset?.secondaryAssets">
+                                            <div class="property-wrapper">
+                                                <div class="property-label">Code</div>
+                                                <div class="property-value">{{item?.secondaryAsset?.code}}</div>
+                                            </div>
+                                            <div class="property-wrapper">
+                                                <div class="property-label">Title</div>
+                                                <div class="property-value">{{item?.secondaryAsset?.title}}</div>
+                                            </div>
+                                            <div class="property-wrapper">
+                                                <div class="property-label">Subtitle</div>
+                                                <div class="property-value">{{item?.secondaryAsset?.subtitle}}</div>
+                                            </div>
+                                            <div class="property-wrapper">
+                                                <div class="property-label">Created On</div>
+                                                <div class="property-value">
+                                                    {{item?.secondaryAsset?.created | date:'dd MMM y'}}</div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="asset-detail-content">
+                                    <h6 class="heading">Purchased From</h6>
+                                    <ul class="simple-list-hover">
+                                        <li *ngFor="let vendor of purchasedBy">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <div class="flex-grow-1 flex-shrink-1">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-grow-0 flex-shrink-0">
+                                                            <img src="{{'assets/images/person-icon.svg' }}"
+                                                                class="user-thumbnail float-left mr-2" alt="" />
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <h6 class="mb-0 font-focused">{{ vendor.contact?.name }}
+                                                            </h6>
+
+                                                            <span class="badge mr-1" [ngClass]="{
+                                                              'badge-secondary': vendor.contact?.typeFlag == 1,
+                                                              'badge-primary': vendor.contact?.typeFlag == 2,
+                                                              'badge-danger': vendor.contact?.typeFlag == 3
+                                                            }" *ngIf="vendor.contact?.typeFlag!=0">{{
+                                                                vendor.contact?.typeValue }}</span>
+
+
+                                                            <div class="category-tag-wrapper">
+                                                                <span class="badge badge-warning mr-1 h-100"
+                                                                    *ngFor="let cat of vendor.contact?.categories">
+                                                                    {{cat}}
+                                                                </span>
+
+                                                                <span>
+                                                                    <ul class="search-tags">
+                                                                        <li *ngFor="let searchTags of vendor.contact?.searchTags"
+                                                                            class="search-tags-tag">
+                                                                            {{searchTags}}
+                                                                        </li>
+                                                                    </ul>
+                                                                </span>
+                                                            </div>
+
+                                                            <!-- <small *ngIf="vendor.contact?.phones?.length > 0">
+                                                                {{vendor.contact?.phones[0]?.number}}
+                                                            </small>
+
+                                                            <small *ngIf="vendor.contact?.emails?.length > 0">
+                                                                {{vendor.contact?.emails[0]?.address}}
+                                                            </small> -->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="asset-detail-content">
+                                    <h6 class="heading">Maintenance By</h6>
+                                    <ul class="simple-list-hover">
+                                        <li *ngFor="let vendor of maintainBy">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <div class="flex-grow-1 flex-shrink-1">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-grow-0 flex-shrink-0">
+                                                            <img src="{{'assets/images/person-icon.svg' }}"
+                                                                class="user-thumbnail float-left mr-2" alt="" />
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <h6 class="mb-0 font-focused">{{ vendor.contact?.name }}
+                                                            </h6>
+
+                                                            <span class="badge mr-1" [ngClass]="{
+                                                              'badge-secondary': vendor.contact?.typeFlag == 1,
+                                                              'badge-primary': vendor.contact?.typeFlag == 2,
+                                                              'badge-danger': vendor.contact?.typeFlag == 3
+                                                            }" *ngIf="vendor.contact?.typeFlag!=0">{{
+                                                                vendor.contact?.typeValue }}</span>
+
+
+                                                            <div class="category-tag-wrapper">
+                                                                <span class="badge badge-warning mr-1 h-100"
+                                                                    *ngFor="let cat of vendor.contact?.categories">
+                                                                    {{cat}}
+                                                                </span>
+
+                                                                <span>
+                                                                    <ul class="search-tags">
+                                                                        <li *ngFor="let searchTags of vendor.contact?.searchTags"
+                                                                            class="search-tags-tag">
+                                                                            {{searchTags}}
+                                                                        </li>
+                                                                    </ul>
+                                                                </span>
+                                                            </div>
+
+                                                            <!-- <small *ngIf="vendor.contact?.phones?.length > 0">
+                                                                {{vendor.contact?.phones[0]?.number}}
+                                                            </small>
+
+                                                            <small *ngIf="vendor.contact?.emails?.length > 0">
+                                                                {{vendor.contact?.emails[0]?.address}}
+                                                            </small> -->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="asset-detail-content">
+                                    <h6 class="heading">User</h6>
+                                    <ul class="simple-list-hover">
+                                        <li *ngFor="let vendor of users">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <div class="flex-grow-1 flex-shrink-1">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-grow-0 flex-shrink-0">
+                                                            <img src="{{'assets/images/person-icon.svg' }}"
+                                                                class="user-thumbnail float-left mr-2" alt="" />
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <h6 class="mb-0 font-focused">{{ vendor.contact?.name }}
+                                                            </h6>
+
+                                                            <span class="badge mr-1" [ngClass]="{
+                                                              'badge-secondary': vendor.contact?.typeFlag == 1,
+                                                              'badge-primary': vendor.contact?.typeFlag == 2,
+                                                              'badge-danger': vendor.contact?.typeFlag == 3
+                                                            }" *ngIf="vendor.contact?.typeFlag!=0">{{
+                                                                vendor.contact?.typeValue }}</span>
+
+
+                                                            <div class="category-tag-wrapper">
+                                                                <span class="badge badge-warning mr-1 h-100"
+                                                                    *ngFor="let cat of vendor.contact?.categories">
+                                                                    {{cat}}
+                                                                </span>
+
+                                                                <span>
+                                                                    <ul class="search-tags">
+                                                                        <li *ngFor="let searchTags of vendor.contact?.searchTags"
+                                                                            class="search-tags-tag">
+                                                                            {{searchTags}}
+                                                                        </li>
+                                                                    </ul>
+                                                                </span>
+                                                            </div>
+
+                                                            <!-- <small *ngIf="vendor.contact?.phones?.length > 0">
+                                                                {{vendor.contact?.phones[0]?.number}}
+                                                            </small>
+
+                                                            <small *ngIf="vendor.contact?.emails?.length > 0">
+                                                                {{vendor.contact?.emails[0]?.address}}
+                                                            </small> -->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div class="asset-detail-content">
+                                    <h6 class="heading">Activity</h6>
+                                    <mcv-activity-list #activity [entity]="'Asset'" [entityID]="selectedAsset.id">
+                                     </mcv-activity-list>
+                                </div>
+
+                                <div class="asset-detail-content asset-schedule-component"
+                                    *ngIf="allComponentsList.length!=0">
+                                    <h6 class="heading">Components</h6>
+
+
+                                    <table>
+                                        <thead>
+                                            <tr>
+
+                                                <th>Component</th>
+                                                <th>Warranty Date</th>
+                                                <th>Cost</th>
+                                            </tr>
+                                            <tr class="total">
+
+                                                <th colspan="2"></th>
+
+                                                <th>
+                                                    <span>{{totalComponentCostCount |
+                                                        currency:'INR':'symbol':'1.0'}}</span>
+                                                </th>
+
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <tr *ngFor="let item of allComponentsList">
+                                                <td>{{item.component}}</td>
+                                                <td>{{item.warrantyDate | date:'dd MMM y'}}</td>
+                                                <td>{{item.cost | currency:'INR':'symbol':'1.0-2'}}</td>
+                                            </tr>
+                                        </tbody>
+
+                                    </table>
+                                    <!-- <div class="key">{{item.attributeKey}}</div>
+                                            <div class="property-value" *ngIf="item.inputType.toLowerCase() == 'date'">
+                                                {{item.attributeValue | date:'dd MMM y'}}</div>
+                                            <div class="property-value" *ngIf="item.inputType.toLowerCase() !== 'date'">
+                                                {{item.attributeValue}}</div> -->
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+            </mat-tab>
+        </ng-container>
+    </mat-tab-group>
+</div>
+<app-footer>
+    <div class="mcv-footer-actions">
+        <div class="search-filter">
+            <mat-icon matPrefix>search</mat-icon>
+            <input aria-label="Enter project name and select" [formControl]="searchFC" matInput />
+        </div>
+        <button mat-icon-button (click)="onRefresh()" matTooltip="Refresh" aria-label="Refresh">
+            <mat-icon>refresh</mat-icon>
+        </button>
+        <button mat-icon-button (click)="onUpdateMaster()" *ngIf="isPermissionMaster">
+            <mat-icon>settings</mat-icon>
+        </button>
+        <mat-paginator [length]="totalRecordsCount" [pageIndex]="selectedConfig.pageIndex" [hidePageSize]="true"
+            [pageSize]="selectedConfig.pageSize" (page)="handlePageEvent($event)" aria-label="Select page">
+        </mat-paginator>
+        <div>
+            <mat-form-field appearance="outline" class="footer-form-field">
+                <mat-select [formControl]="statusFC" multiple placeholder="Status">
+                    <mat-option *ngFor="let item of statusOptions" [value]="item">
+                        <div class="d-flex align-items-center justify-content-between"><span>{{item.title}}</span>
+                        </div>
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <!-- <button mat-icon-button (click)="onExportReport('asset-summary','a3','PDF')" aria-label="Detail">
+            <img src="assets/icons/file-pdf.png" alt="pdf" />
+        </button>
+
+        <button mat-icon-button (click)="onExportReport('asset-summary','a3','EXCELOPENXML')" aria-label="Detail">
+            <img src="assets/icons/file-excel.png" alt="xlsx" />
+        </button>
+
+        <button mat-raised-button color="primary" (click)="onExportExcel('Computer')" aria-label="Computer sheet">
+
+            Computer Sheet
+        </button> -->
+
+    </div>
+    <div class="mcv-footer-mobile-actions">
+        <button mat-icon-button appFilterToggle matTooltip="Filters" aria-label="Filters">
+            <mat-icon>filter_list</mat-icon>
+        </button>
+        <button mat-icon-button (click)="onRefresh()" matTooltip="Refresh" aria-label="Refresh">
+            <mat-icon>refresh</mat-icon>
+        </button>
+        <button mat-icon-button (click)="onUpdateMaster()">
+            <mat-icon>settings</mat-icon>
+        </button>
+        <mat-paginator [length]="totalRecordsCount" [pageIndex]="selectedConfig.pageIndex" [hidePageSize]="true"
+            [pageSize]="selectedConfig.pageSize" (page)="handlePageEvent($event)" aria-label="Select page">
+        </mat-paginator>
+        <!-- <button mat-icon-button (click)="onExportReport('asset-list','a4','PDF')" aria-label="Detail">
+            <img src="assets/icons/file-pdf.png" alt="pdf" />
+        </button>
+
+        <button mat-icon-button (click)="onExportReport('asset-list','a4','EXCELOPENXML')" aria-label="Detail">
+            <img src="assets/icons/file-excel.png" alt="xlsx" />
+        </button> -->
+        <!-- <div class="search-filter">
+                <mat-icon matPrefix>search</mat-icon>
+                <input aria-label="Enter project name and select" [formControl]="searchFC" matInput />
+            </div> -->
+    </div>
+     
+    <div class="mcv-footer-filters">
+    <div class="inline-list">
+      <div *ngIf="statusOptions && statusOptions.length > 0">
+        <mat-form-field appearance="outline">
+          <mat-label>Status</mat-label>
+          <mat-select [formControl]="statusFC" multiple placeholder="Status">
+            <mat-option *ngFor="let item of statusOptions" [value]="item">
+              <div class="d-flex align-items-center justify-content-between"><span>{{item.title}}</span>
+              </div>
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+    </div>
+    <div class="search-filter">
+        <mat-icon matPrefix>search</mat-icon>
+        <input aria-label="Enter project name and select" [formControl]="searchFC" matInput />
+    </div>
+    </div>
+
+    
+</app-footer>

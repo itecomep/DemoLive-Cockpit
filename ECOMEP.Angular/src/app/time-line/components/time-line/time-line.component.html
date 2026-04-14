@@ -1,0 +1,33 @@
+<app-header [title]="headerTitle"></app-header>
+<div class="page-wrapper" style="overflow: hidden;">
+  <mcv-time-line [start]="TIMELINE_START_TIME" [end]="TIMELINE_END_TIME" [events]="events" [resources]="resources"
+    (rangeChange)="onRangeChange($event)" (eventClick)="onEventClick($event)" (slotSelection)="onSlotSelection($event)">
+  </mcv-time-line>
+</div>
+<app-footer>
+  <div class="mcv-footer-actions">
+    <div class="mcv-footer-filters">
+      <div class="inline-list">
+        <!-- <div>
+           <mat-form-field appearance="outline">
+            <mat-select [formControl]="groupToggle">
+              <mat-option *ngFor="let item of selectGroup" [value]="item">
+                {{item.inputLabel}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div> -->
+        <button mat-icon-button (click)="onClickRefresh()">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- <div class="nav-footer-timeline-group">
+    <div>
+      <button mat-raised-button (click)="newGroup()"  matTooltip="Remove" aria-label="Remove">
+        <mat-icon class="mr-2">groups</mat-icon>New Groups
+      </button>
+    </div>
+  </div> -->
+</app-footer>

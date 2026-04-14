@@ -1,0 +1,17 @@
+<div #popoverDiv class="bs-popover-{{ effectivePlacement }} popover-content popover {{ parentClass }}" [ngClass]="{
+                'sm': size === 'small',
+                'md-sm': size === 'medium-small',
+                'md': size === 'medium',
+                'lg': size === 'large',
+                'in': isIn
+            }" [style.top.px]="top" [style.left.px]="left"
+    [style.transition]="(transitionEnabled ? '0.15s opacity' : '')" [style.opacity]="opacity" [style.display]="'block'"
+    [attr.aria-hidden]="opacity === 0" role="popover">
+    <div [hidden]="!closeOnMouseOutside" class="virtual-area"></div>
+    <div class="arrow"></div>
+    <div class="popover-header" [hidden]="!title">{{ title }}</div>
+    <div class="popover-body">
+        <ng-content></ng-content>
+        {{ content }}
+    </div>
+</div>

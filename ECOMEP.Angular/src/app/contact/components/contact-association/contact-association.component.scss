@@ -1,0 +1,79 @@
+@import 'variables';
+
+.contact-association-list {
+  list-style: none;
+  padding: 0.3rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+
+  &>li {
+    width: calc(50% - 0.3rem);
+    min-width: 300px;
+    border: 1px solid $gray-300;
+    border-radius: $border-radius;
+    padding: 0.3rem;
+    // margin-bottom: 0.3rem;
+
+  }
+}
+
+.contact-parent-wrapper{
+  width: calc(50% - 0.3rem);
+  min-width: 300px;
+  border: 1px solid $gray-300;
+  border-radius: $border-radius;
+  padding: 0.3rem;
+}
+
+.assiociation-wrapper{
+    display: flex;
+    gap:0.3rem;
+
+    .association-contact {
+      display: flex;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 0.3rem ;
+      flex-grow: 1;
+
+      .tag{
+        padding: 0.2rem;
+        border-radius: $border-radius;
+        font-size: 0.7rem;
+        background-color: $gray-300;
+        // font-style: italic;
+      }
+    }
+
+    .association-details {
+      .mat-icon {
+        height: 15px;
+        width: 15px;
+      }
+    
+      .material-icons {
+        font-size: 15px;
+        line-height: inherit;
+      }
+    }
+}
+
+.contact-association-action-wrapper{
+  .action-buttons{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.3rem;
+  }
+}
+
+contact-icon {
+  width: 40px;
+  height: 40px;
+  -o-object-fit: cover;
+  object-fit: cover;
+  border-radius: $border-radius;
+}
+
+

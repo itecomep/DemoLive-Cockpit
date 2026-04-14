@@ -1,0 +1,143 @@
+@import 'variables';
+
+.sort-dropdown {
+    display: flex;
+    align-items: center;
+
+    mat-icon {
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+    }
+}
+
+.sort-select-icon {
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    display: inline;
+}
+
+.project-analysis {
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    .header {
+        position: sticky;
+        position: -webkit-sticky;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        top: 0;
+        z-index: 100;
+        padding: 3px 15px;
+        background-color: $gray-300;
+        box-shadow: $box-shadow;
+
+        .header-filters {
+            display: flex;
+            align-items: center;
+            //   justify-content: space-between;
+
+            &>* {
+                margin: 0 5px;
+            }
+
+            .mat-mdc-form-field {
+                width: 100%;
+                margin-bottom: 0;
+            }
+
+
+        }
+    }
+
+
+    .pra-table-wrapper {
+        // background-color: $gray-300;
+        position: relative;
+        width: 100%;
+        overflow: auto;
+
+        table {
+            min-width: 100%;
+            font-size: 0.8rem;
+            cursor: pointer;
+
+            thead {
+                background-color: $gray-400;
+                position: sticky;
+                position: -webkit-sticky;
+                top: 0;
+
+                tr {
+                    &.total {
+                        background-color: $gray-600;
+                        color: $white;
+                    }
+
+                    td,
+                    th {
+                        border-bottom: 1px solid $gray-400;
+                        // white-space: nowrap;
+                        border-right: 1px solid $gray-300;
+                        padding: 0 0.3rem;
+
+                        text-align: center;
+
+                        &.align-right {
+                            text-align: right;
+                        }
+
+                        &.text-pre-wrap {
+                            white-space: pre-wrap;
+                        }
+
+                        &.collapsed {
+                            padding: 0 !important;
+                        }
+
+                    }
+                }
+
+            }
+
+            tbody {
+                tr {
+                    td {
+                        border-bottom: 1px solid $gray-400;
+                        white-space: nowrap;
+                        border-right: 1px solid $gray-300;
+                        padding: 0.3rem;
+
+                        &.align-right {
+                            text-align: right;
+                        }
+
+                        &.text-pre-wrap {
+                            white-space: pre-wrap;
+                        }
+                    }
+
+
+                }
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .project-analysis {
+        .header {
+            position: relative;
+
+            .header-filters {
+                display: block;
+            }
+        }
+
+    }
+}

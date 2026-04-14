@@ -1,0 +1,63 @@
+@import 'variables';
+@import 'theme';
+
+.tab-header-scroll {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.tab-header-container {
+    display: inline-flex;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 5px;
+    border-bottom: 1px solid #ddd;
+    background: #fff;
+    white-space: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    ::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.tab-item {
+    flex: 0 0 auto;
+    padding: 8px 20px;
+    border: 1px solid #dcdcdc;
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+    background: #f5f5f5;
+    font-size: 14px;
+    color: #444;
+    transition: 0.2s ease-in-out;
+    white-space: nowrap;
+}
+
+.tab-item:hover {
+    background: #ececec;
+}
+
+.tab-item.active {
+    border-bottom: 3px solid mat-color($mcv-primary, 500);
+    color: mat-color($mcv-primary, 500);
+    background: #ffffff;
+    font-weight: 600;
+}
+
+.new-btn {
+    border-color: #b6e2b6;
+    color: mat-color($mcv-primary, 500);
+    background: #f8fff8;
+    font-weight: bold;
+}

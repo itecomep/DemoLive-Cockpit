@@ -1,0 +1,61 @@
+/* ---------------------------------------------------
+   Badge
+----------------------------------------------------- */
+
+.badge {
+  padding: 4px;
+  font-weight: 400 !important;
+}
+
+.badge.gray-900 {
+  background-color: $gray-900;
+  color: $white;
+}
+
+.badge.gray-700 {
+  background-color: $gray-700;
+  color: $white;
+}
+
+.badge.gray-500 {
+  background-color: $gray-300;
+  color: $white;
+}
+
+.badge.gray-300 {
+  background-color: $gray-300;
+  color: $black;
+}
+
+.badge.purple {
+  background-color: $purple;
+  color: $white;
+}
+
+.badge.orange {
+  background-color: $orange;
+  color: $white;
+}
+
+.badge.blue {
+  background-color: $blue;
+  color: $white;
+}
+
+.badge.green {
+  background-color: $green;
+  color: $white;
+}
+
+.badge.yellow {
+  background-color: $yellow;
+  color: $black;
+}
+
+.badge.red {
+  background-color: $red;
+  color: $white;
+}
+
+
+/*==========================*/

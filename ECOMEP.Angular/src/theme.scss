@@ -1,0 +1,123 @@
+@use '@angular/material' as mat;
+
+@import '@angular/material/theming';
+
+@include mat.core();
+
+$mcv-primary-palette: (
+  50 : #eaf3e8,
+  100 : #c9e0c6,
+  200 : #a6cba0,
+  300 : #82b679,
+  400 : #67a75d,
+  500 : #4c9740,
+  600 : #458f3a,
+  700 : #3c8432,
+  800 : #337a2a,
+  900 : #24691c,
+  A100 : #adffa6,
+  A200 : #7eff73,
+  A400 : #4fff40,
+  A700 : #38ff26,
+  contrast: (50 : #000000,
+    100 : #000000,
+    200 : #000000,
+    300 : #000000,
+    400 : #000000,
+    500 : #000000,
+    600 : #000000,
+    700 : #000000,
+    800 : #000000,
+    900 : #000000,
+    A100 : #000000,
+    A200 : #000000,
+    A400 : #000000,
+    A700 : #000000,
+  )
+);
+
+$mcv-secondary-palette: (
+  50 : #ececec,
+  100 : #d0d0d0,
+  200 : #b1b1b1,
+  300 : #929292,
+  400 : #7a7a7a,
+  500 : #636363,
+  600 : #5b5b5b,
+  700 : #515151,
+  800 : #474747,
+  900 : #353535,
+  A100 : #f49898,
+  A200 : #ef6b6b,
+  A400 : #ff2727,
+  A700 : #ff0e0e,
+  contrast: (50 : #000000,
+    100 : #000000,
+    200 : #000000,
+    300 : #000000,
+    400 : #ffffff,
+    500 : #ffffff,
+    600 : #ffffff,
+    700 : #ffffff,
+    800 : #ffffff,
+    900 : #ffffff,
+    A100 : #000000,
+    A200 : #000000,
+    A400 : #ffffff,
+    A700 : #ffffff,
+  )
+);
+
+$mcv-warn-palette: (
+  50 : #f5e3e3,
+  100 : #e6b9b9,
+  200 : #d68b8b,
+  300 : #c55c5c,
+  400 : #b83939,
+  500 : #ac1616,
+  600 : #a51313,
+  700 : #9b1010,
+  800 : #920c0c,
+  900 : #820606,
+  A100 : #ffb0b0,
+  A200 : #ff7d7d,
+  A400 : #ff4a4a,
+  A700 : #ff3131,
+  contrast: (50 : #000000,
+    100 : #000000,
+    200 : #000000,
+    300 : #ffffff,
+    400 : #ffffff,
+    500 : #ffffff,
+    600 : #ffffff,
+    700 : #ffffff,
+    800 : #ffffff,
+    900 : #ffffff,
+    A100 : #000000,
+    A200 : #000000,
+    A400 : #000000,
+    A700 : #ffffff,
+  )
+);
+
+$mcv-primary: mat.define-palette($mcv-primary-palette);
+$mcv-accent: mat.define-palette($mcv-secondary-palette, 400);
+$mcv-warn: mat.define-palette($mcv-warn-palette);
+$mcv-typography: mat.define-typography-config($font-family: 'Quicksand',
+    $body-1: mat.define-typography-level(0.85rem),
+    $body-2: mat.define-typography-level(0.75rem),
+    $caption: mat.define-typography-level(0.7rem),
+    $button: mat.define-typography-level(0.85rem)
+    );
+
+$mcv-theme-light: mat.define-light-theme((color: (primary: $mcv-primary, accent: $mcv-accent, warn: $mcv-warn ),
+      typography: $mcv-typography ));
+
+$mcv-theme-dark: mat.define-dark-theme((color: (primary: $mcv-primary, accent: $mcv-accent, warn: $mcv-warn ),
+      typography: $mcv-typography ));
+
+@include mat.all-component-themes($mcv-theme-light);
+
+.theme-dark {
+  @include mat.all-component-colors($mcv-theme-dark);
+}

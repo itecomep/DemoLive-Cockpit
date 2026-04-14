@@ -1,0 +1,311 @@
+/* ---------------------------------------------------
+    List
+----------------------------------------------------- */
+@import 'theme';
+
+li.no-style,
+li.no-style.active,
+li.no-style.hover {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+// SIMPLE-LIST
+.simple-list {
+  list-style: none;
+  margin: 0;
+  max-width: 100%;
+  padding: 5px 0;
+
+  &>li {
+    box-sizing: border-box;
+    padding: 5px;
+    margin: 5px 3px;
+    border: 1px solid $gray-300;
+    border-radius: $border-radius;
+
+    &.active,
+    &.selected {
+      border: 3px solid mat-color($mcv-primary, 500);
+    }
+  }
+}
+
+.simple-list-hover {
+  list-style: none;
+  margin: 0;
+  max-width: 100%;
+  padding: 5px 0;
+
+  &>li {
+    box-sizing: border-box;
+    padding: 5px;
+    margin: 5px 3px;
+    border: 1px solid $gray-300;
+    border-radius: $border-radius;
+    cursor: pointer;
+
+    &.active,
+    &.selected {
+      border: 3px solid mat-color($mcv-primary, 500);
+    }
+
+    &:hover {
+      background-color: $gray-200;
+      color: $black;
+    }
+  }
+}
+
+.mcv-dynamic-input-generator-handle {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  position: absolute;
+  right: 20px;
+}
+
+.mcv-dynamic-input-generator-placeholder {
+  box-sizing: border-box;
+  padding: 5px;
+  margin: 5px 3px;
+  border: 2px dashed $gray-600;
+  border-radius: $border-radius;
+  height: 8rem;
+}
+
+.simple-list-drag-wrapper {
+
+  padding: 0.2rem;
+  border-radius: $border-radius;
+
+
+  .simple-list-drag {
+    box-sizing: border-box;
+    padding: 5px;
+    margin: 5px 3px;
+    border: 1px solid $gray-300;
+    border-radius: $border-radius;
+    box-shadow: $box-shadow;
+    background-color: $white;
+  }
+
+}
+
+// AGILE_LIST
+.agile-list {
+  list-style: none;
+  margin: 0;
+  max-width: 100%;
+  padding: 5px 0;
+  cursor: pointer;
+}
+
+.agile-list>li,
+.agile-list-item {
+  box-sizing: border-box;
+  // margin: 5px 3px;
+  padding: 5px 8px;
+  // border-radius: $border-radius;
+  // box-shadow: $box-shadow;
+  background: $agile-background;
+  border-bottom: 1px solid $gray-300;
+}
+
+li.highlight {
+  background-color: $gray-400 !important;
+  ;
+}
+
+li.highlight-red {
+  background: $red-50;
+  border-bottom: 1px solid $white !important;
+}
+
+li.highlight-green {
+  background: $green-50;
+  border-bottom: 1px solid $white !important;
+  ;
+}
+
+li.highlight-yellow {
+  background: $yellow-50;
+  border-bottom: 1px solid $gray-300 !important;
+}
+
+li.highlight-orange {
+  background: $orange-50;
+  border-bottom: 1px solid $white !important;
+}
+
+li.highlight-purple {
+  background: $purple-50;
+  border-bottom: 1px solid $white !important;
+}
+
+li.border-right-green {
+  border-right: 0.4rem solid $green !important;
+}
+
+li.border-right-red {
+  border-right: 0.4rem solid $red;
+}
+
+li.border-right-orange {
+  border-right: 0.4rem solid $orange;
+}
+
+li.border-right-purple {
+  border-right: 0.4rem solid $purple;
+}
+
+li.active.highlight-red {
+  background: $red !important;
+  color: $white !important;
+
+  .text-danger {
+    color: $white !important;
+  }
+}
+
+li.highlight-yellow {
+  background: $yellow-50;
+  border-bottom: 1px solid $gray-300;
+}
+
+li.active.highlight-yellow {
+  background: $yellow !important;
+  color: $black !important;
+}
+
+.agile-list>li:hover,
+.agile-list-item:hover {
+  background-color: $gray-200;
+  color: $black;
+}
+
+.agile-list>li.active,
+.agile-list-item.active {
+  background-color: mat-color($mcv-primary, 500);
+  color: $white;
+}
+
+.agile-list>li:hover a {
+  color: inherit;
+}
+
+.agile-list>li.active a {
+  color: inherit;
+}
+
+
+
+//SMART-LIST
+.smart-list {
+  list-style: none;
+  margin: 0;
+  max-width: 100%;
+  padding: 0;
+
+  &>li {
+    box-sizing: border-box;
+    padding: 0.2rem;
+    margin: 0.1rem 0 0.1rem 0;
+    border-bottom: 1px solid $gray-300;
+
+    &.active,
+    &.selected {
+      background-color: mat-color($mcv-primary, 500);
+      color: $white;
+    }
+  }
+}
+
+.smart-list-hover {
+  list-style: none;
+  margin: 0;
+  max-width: 100%;
+  padding: 0;
+
+  &>li {
+    box-sizing: border-box;
+    padding: 0.2rem;
+    margin: 0;
+    border-bottom: 1px solid $gray-300;
+
+    &:hover {
+      background-color: $gray-200;
+      color: $black;
+    }
+
+    &.active,
+    &.selected {
+      background-color: mat-color($mcv-primary, 500);
+      color: $white;
+    }
+  }
+}
+
+
+// INLINE LIST
+.inline-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: -webkit-box;
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 100%;
+
+
+  &.inline-list-justify-right {
+    -webkit-box-pack: end;
+    justify-content: flex-end;
+  }
+
+  &>li {
+    // -webkit-box-flex: 1;
+    //         flex-grow: 1;
+    // flex-shrink: 0;
+    max-width: 100%;
+  }
+
+  &>li:only-child {
+    -webkit-box-flex: 0;
+    flex-grow: 0;
+  }
+
+  &.inilne-50>li {
+    min-width: 48%;
+  }
+
+  &.inilne-25>li {
+    min-width: 24%;
+  }
+}
+
+// @media (max-width: 768px) {
+//   .inline-list > li,
+//   .inline-list.inilne-50 > li,
+//   .inline-list.inilne-25 > li {
+//     min-width: 100%;
+//   }
+// }
+
+// TREE_LIST
+.tree-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tree-list>li.root-node {
+  margin: 5px 0 5px 0;
+}
+
+.tree-list>li {
+  margin: 5px 0 5px 15px;
+}
+
+/*==========================*/

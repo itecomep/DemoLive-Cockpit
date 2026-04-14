@@ -1,0 +1,9 @@
+<div class="mat-dialog-header mcv-dialog-header">
+  <h5 class="font-focused">{{data.dialogTitle}}</h5>
+  <button mat-icon-button aria-label="close" (click)="onClose(null)">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+<mat-dialog-content style="width:70vw; height: 60vh">
+  <app-time-line-group-form [config]="data"></app-time-line-group-form>
+</mat-dialog-content>

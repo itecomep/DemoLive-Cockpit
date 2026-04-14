@@ -1,0 +1,177 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">New Sub-Todo</h5>
+    <div class="d-flex align-items-center">
+        <button mat-raised-button (click)="onSubmit()" color="primary" [disabled]="currentEntity.agendas.length > 0">
+            Save
+        </button>
+        <button mat-icon-button aria-label="close" (click)="onClose()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+<mat-dialog-content>
+    <div class="container-fluid todo-component">
+        <div class="row">
+            <div class="col-md-7">
+                <mat-expansion-panel [expanded]="true">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title> Details </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <form [formGroup]="form" autocomplete="off">
+
+                        <mat-form-field appearance="outline" class="col-sm-12">
+                            <mat-label>Type</mat-label>
+                            <mat-select formControlName="titleType" placeholder="Type">
+                                <mat-option *ngFor="let item of titleTypeOptions" [value]="item">
+                                    {{item}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="col-sm-12">
+                            <mat-label>Assign To</mat-label>
+                            <input placeholder="Enter name of person to select from the list" aria-label="Assign To"
+                                matInput formControlName="assignee" [matAutocomplete]="autoContact" />
+
+                            <mat-autocomplete #autoContact="matAutocomplete" [displayWith]="displayFnContact">
+                                <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
+                                    {{ option.name }}
+                                </mat-option>
+                            </mat-autocomplete>
+                            <span matSuffix>
+                                <mat-icon>person</mat-icon>
+                            </span>
+                            <mat-error>{{ getErrorMessage(f.assignee) }}</mat-error>
+                            <mat-hint>Enter name of person to select from the
+                                list</mat-hint>
+                        </mat-form-field>
+
+
+                        <mat-form-field appearance="outline" class="col-sm-12" *ngIf="f.titleType.value == 'Project'">
+                            <mat-label>Project</mat-label>
+                            <input placeholder="Select Project" aria-label="Project" matInput formControlName="title"
+                                [matAutocomplete]="autoProject">
+                            <mat-autocomplete #autoProject="matAutocomplete" [displayWith]="displayFnProject"
+                                (optionSelected)="onProjectSelected($event.option.value)">
+                                <mat-option *ngFor="let option of filteredProjects$ | async" [value]="option">
+                                    {{option.code}}-{{option.title}}
+                                </mat-option>
+                            </mat-autocomplete>
+                            <mat-error>{{getErrorMessage(f.title)}}</mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="col-sm-12" *ngIf="f.titleType.value == 'Custom'">
+                            <mat-label>Title</mat-label>
+                            <input placeholder="Title" aria-label="Title" matInput formControlName="title"
+                                [matAutocomplete]="autoTitle">
+                            <mat-autocomplete #autoTitle="matAutocomplete" [displayWith]="displayFnTitle">
+                                <mat-option *ngFor="let option of filteredSubjects$ | async" [value]="option">
+                                    {{option}}
+                                </mat-option>
+                            </mat-autocomplete>
+                            <mat-error>{{getErrorMessage(f.title)}}</mat-error>
+                            <mat-hint>{{f.title.value?.length}} / 256</mat-hint>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="col-sm-8">
+                            <mat-label>Task Title</mat-label>
+                            <input placeholder="Task Title" aria-label="Task Title" matInput formControlName="subTitle">
+                            <mat-error>{{getErrorMessage(f.subTitle)}}</mat-error>
+                            <mat-hint>{{f.subTitle.value?.length}} / 256</mat-hint>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="col-sm-4">
+                            <mat-label>Priority</mat-label>
+                            <mat-select formControlName="priority" placeholder="Priority">
+                                <mat-option *ngFor="let item of priorityOptions" [value]="item">
+                                    {{item}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="col-sm-4">
+                            <mat-label>Due Date</mat-label>
+                            <input placeholder="Due Date" aria-label="Due Date" matInput formControlName="dueDate"
+                                [matDatepicker]="picker" readonly>
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker [touchUi]="isMobileView" #picker></mat-datepicker>
+                            <mat-error>{{getErrorMessage(f.dueDate)}} Must be greater than current time</mat-error>
+                            <mat-hint>Must be greater than current time</mat-hint>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="col-sm-4">
+                            <mat-label>Due Time</mat-label>
+                            <input placeholder="Due Time" aria-label="Due Time" matInput formControlName="dueTime"
+                                [ngxTimepicker]="dueTime" [format]="24" readonly>
+                            <ngx-material-timepicker #dueTime
+                                [minutesGap]="timePickerMinutesGap"></ngx-material-timepicker>
+                            <mat-error>{{getErrorMessage(f.dueTime)}} 24 hour format</mat-error>
+                            <mat-hint>24 hour format</mat-hint>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="col-sm-4">
+                            <mat-label>Hours Assigned</mat-label>
+                            <input type="number" placeholder="Hours Assigned" aria-label="Hours Assigned" matInput
+                                formControlName="mHrAssigned" step="0.5" min="0.5">
+                            <span matSuffix><mat-icon>hourglass_empty</mat-icon></span>
+                            <mat-error>{{getErrorMessage(f.mHrAssigned)}}</mat-error>
+                            <mat-hint>Hours required for the work</mat-hint>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="col-md-12">
+                            <mat-label>Work Description</mat-label>
+                            <textarea aria-label="Work Description" matInput formControlName="comment"
+                                cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="2"
+                                rows="5"></textarea>
+                            <mat-error>{{getErrorMessage(f.comment)}}</mat-error>
+                        </mat-form-field>
+                        <div class="clear-fix"></div>
+                    </form>
+                </mat-expansion-panel>
+            </div>
+
+            <div class="col-md-5">
+                <mat-expansion-panel [expanded]="true">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title> Checklist </mat-panel-title>
+                    </mat-expansion-panel-header>
+
+                    <todo-agenda [config]="agendaConfig" (update)="onAgendaUpdate($event)"></todo-agenda>
+                    <small class="red" *ngIf="currentEntity.agendas.length == 0">Add at least one item in checklist to create todo.</small>
+                </mat-expansion-panel>
+
+                <mat-expansion-panel [expanded]="true">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title class="align-items-center">
+                            Attachments
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <app-mcv-file-upload [uploaderConfig]="blobConfig" [showPaste]="true" [showDrop]="true"
+                        (upload)="onUpload($event)" *ngIf="blobConfig">
+                    </app-mcv-file-upload>
+                    <ul class="mcv-file-list">
+
+                        <li *ngFor="let file of getFilteredAttachments(currentEntity.attachments,0,false)">
+
+                            <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="true"
+                                [tags]="file.searchTags" (addTag)="onAddAttachmentTag($event,file)"
+                                (delete)="onDeleteAttachment(file)" [allowTagging]="true" [downloadUrl]="file.url"
+                                [showPreview]="true" [singlePreview]="true" [url]="file.url" [thumbUrl]="file.thumbUrl">
+                            </mcv-file>
+
+                        </li>
+                        <li *ngFor="let file of getFilteredAttachments(currentEntity.attachments,0,true)">
+
+                            <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="true"
+                                [tags]="file.searchTags" (addTag)="onAddAttachmentTag($event,file)"
+                                (delete)="onDeleteAttachment(file)" [allowTagging]="true" [downloadUrl]="file.url"
+                                [showPreview]="true" [singlePreview]="true" [url]="file.url" [thumbUrl]="file.thumbUrl">
+                            </mcv-file>
+
+                        </li>
+                    </ul>
+                </mat-expansion-panel>
+            </div>
+        </div>
+    </div>
+</mat-dialog-content>

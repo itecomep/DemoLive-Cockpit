@@ -1,0 +1,27 @@
+@import 'variables';
+
+.contact-association-form-wrapper {
+    form {
+
+
+        .contact-association-form-fields {
+            flex-grow: 1;
+
+            img.contact-icon {
+                width: 40px;
+                height: 40px;
+                -o-object-fit: cover;
+                object-fit: cover;
+                border-radius: $border-radius;
+            }
+        }
+
+        .contact-association-form-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.3rem;
+            flex-grow: 0;
+        }
+    }
+}

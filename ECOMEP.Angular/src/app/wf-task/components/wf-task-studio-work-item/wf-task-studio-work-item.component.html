@@ -1,0 +1,41 @@
+<div class="d-flex align-items-center" (click)="onClick()">
+  <!-- Contact Image -->
+  <div class="flex-grow-0 flex-shrink-0">
+    <img alt="" src="{{ item.contact.photoUrl || 'assets/images/user.png'}}" [matTooltip]="item.contact.name"
+      class="user-thumbnail float-left mr-2" *ngIf="showAll">
+  </div>
+  <!-- Title,Subtitle and StageRevision  -->
+  <div class="flex-grow-1 d-flex flex-column justify-content-between">
+    <div class="d-flex justify-content-between">
+      <span class="font-bold">{{item.title}}</span>
+      <h5 class="text-danger mb-0" matTooltip="Revision" *ngIf="item.stageRevision>0">
+        R{{item.stageRevision}}
+      </h5>
+    </div>
+    <small>{{item.subtitle}}</small>
+  </div>
+</div>
+<div class="d-flex align-items-center">
+  <div class="d-flex flex-wrap flex-grow-1">
+    <div class="flex-grow-1 flex-shrink-1" (click)="onClick()">
+      <small>Start: </small>
+      <small class="font-bold">{{item.startDate | date:'EE, dd MMM y HH:mm'}}</small>
+    </div>
+    <div class="flex-grow-1 flex-shrink-1" (click)="onClick()">
+      <small>Due: </small><small class="font-bold">
+        {{item.dueDate | date:'EE, dd MMM y HH:mm'}}</small>
+    </div>
+  </div>
+  <div class="flex-grow-0 flex-shrink-0"
+    *ngIf="item.statusFlag!=WFTASK_STATUS_FLAG_COMPLETED && item.isPreAssignedTimeTask && isActionAllowed">
+    <button mat-icon-button aria-label="Start/Resume" matTooltip="Start/Resume"
+      *ngIf="item.statusFlag==WFTASK_STATUS_FLAG_PENDING || item.statusFlag==WFTASK_STATUS_FLAG_PAUSED"
+      (click)="onTaskStart()">
+      <mat-icon>play_arrow</mat-icon>
+    </button>
+    <button mat-icon-button aria-label="pause" matTooltip="Pause" *ngIf="item.statusFlag==WFTASK_STATUS_FLAG_STARTED"
+      (click)="onTaskPause()">
+      <mat-icon>pause</mat-icon>
+    </button>
+  </div>
+</div>

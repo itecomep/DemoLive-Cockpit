@@ -1,0 +1,367 @@
+<div class="dialog-header" *ngIf="isDialog">
+  <button mat-icon-button (click)="closeDialog()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div class="dms-folder-navigator">
+   <div class="left-panel" *ngIf="showProjectSelector">
+    <mat-form-field appearance="outline" class="project-select" style="width: 100%;">
+      <mat-label>Select Project</mat-label>
+      <input type="text" matInput placeholder="Search projects" [(ngModel)]="selectedProject" [matAutocomplete]="auto" (ngModelChange)="filterProjects()" (focus)="showAllProjects()" />
+      <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayProject" (optionSelected)="selectProject($event.option.value)">
+        <mat-option *ngFor="let project of filteredProjects" [value]="project">{{ project.name }}</mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  </div>
+
+  <div class="dms-folder-title">
+    <div class="breadcrumb-file">
+      <button mat-flat-button color="accent" class="new-btn" (click)="openCreateFolderDialog()">
+          <mat-icon>add</mat-icon> UPLOAD FILES
+      </button>
+      <button *ngIf="breadcrumb.length" mat-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon> Back
+      </button>
+      <span class="path-text" *ngIf="breadcrumb.length">
+        {{ getBreadcrumbPath() }}
+      </span>
+    </div>
+  </div>
+
+  <div class="dms-folder-navigator-header">
+    <div class="actions">
+      <mat-form-field appearance="outline" class="date-filter">
+        <mat-label>From Date</mat-label>
+        <input matInput [matDatepicker]="fromPicker" [(ngModel)]="fromDate" />
+        <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+        <mat-datepicker #fromPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="date-filter">
+        <mat-label>To Date</mat-label>
+        <input matInput [matDatepicker]="toPicker" [(ngModel)]="toDate" />
+        <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
+        <mat-datepicker #toPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="search-bar" subscriptSizing="dynamic">
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput placeholder="Search files, tags..." [(ngModel)]="searchText" (ngModelChange)="onSearchChange($event)" />
+        <button *ngIf="searchText" mat-icon-button matSuffix (click)="clearSearch()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <button mat-flat-button color="primary" (click)="applyFilters()">Apply Filters</button>
+      <button mat-flat-button color="warn" (click)="clearFilters()">Clear</button>
+      <div *ngIf="isSearching" class="search-indicator">
+        Results ({{ currentFiles.length }})
+      </div>
+
+      <mat-form-field appearance="outline" class="view-selector" subscriptSizing="dynamic">
+        <mat-label>View</mat-label>
+        <mat-select [(ngModel)]="viewMode" (ngModelChange)="onViewChange()">
+          <mat-option value="folder">Detail View</mat-option>
+          <mat-option value="document">Grid View</mat-option>
+          <mat-option value="folderGrid">Folder View</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-icon-button matTooltip="Refresh" (click)="loadFolders()">
+        <mat-icon>refresh</mat-icon>
+      </button>
+
+      <mat-form-field appearance="outline" class="sort-selector">
+        <mat-label>Sort by</mat-label>
+        <mat-select [(ngModel)]="selectedSortField" (selectionChange)="applySort()">
+          <mat-option *ngFor="let opt of sortOptions" [value]="opt.field">
+            {{ opt.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-icon-button (click)="sortDirection = sortDirection === 'asc' ? 'desc' : 'asc'; applySort()">
+        <mat-icon>{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <ng-container *ngIf="viewMode === 'folder'">
+    <div class="list-header">
+      <div class="col-name">Name</div>
+      <div class="col-owner">Owner</div>
+      <div class="col-size">File size</div>
+      <!-- <div class="col-tags" *ngIf="currentFiles?.length">Tags</div> -->
+      <div class="col-tags" *ngIf="hasTagsColumn()">Tags</div>
+      <div class="col-size" *ngIf="!isLastFolder() || isSearching">File Path</div>
+      <div class="col-modified">Created At</div>
+      <div class="col-modified">Action</div>
+    </div>
+
+    <div class="list-container">
+      <div class="tree-row folder" *ngFor="let folder of currentFolders" (click)="openFolder(folder)">
+        <div class="col-name">
+          <mat-icon>folder</mat-icon>
+          <span class="name-text">{{ folder.name }}</span>
+        </div>
+        <div class="col-owner">{{ getFolderOwner(folder) }}</div>
+        <div class="col-size">{{ getFolderSize(folder) }}</div>
+        <div class="col-tags" *ngIf="hasTagsColumn()"></div>
+        <div class="col-size" *ngIf="!isLastFolder()">{{ getFolderPath(folder) }}</div>
+        <div class="col-modified">{{ getFolderCreatedDate(folder) }}</div>
+        <div class="col-action">
+          <button mat-icon-button [matMenuTriggerFor]="folderMenu" (click)="$event.stopPropagation()"><mat-icon>more_vert</mat-icon></button>
+          <mat-menu #folderMenu="matMenu">
+            <button mat-menu-item (click)="downloadFolder(folder)">
+              <mat-icon>download</mat-icon><span>Download</span>
+            </button>
+            <button mat-menu-item *ngIf="breadcrumb.length > 0 && isPermissionFileDmsFolderEdit && !isDialog" (click)="editFolderName(folder)" >
+              <mat-icon>edit</mat-icon><span>Edit Folder Name</span>
+            </button>
+            <button mat-menu-item (click)="deleteFolder(folder)" *ngIf="isPermissionFileDmsDelete">
+              <mat-icon>delete</mat-icon><span>Delete</span>
+            </button>
+          </mat-menu>
+          <!-- <button mat-icon-button *ngIf="isMasterUser" (click)="$event.stopPropagation()" [matMenuTriggerFor]="fileContactsMenu" (click)="setSelectedItem(folder, 'folder')">
+            <mat-icon>filter_alt</mat-icon>
+          </button> -->
+          <button mat-icon-button *ngIf="isMasterUser && !isDialog" (click)="openUserDialog(folder, 'folder'); $event.stopPropagation()">
+            <mat-icon>filter_alt</mat-icon>
+          </button>
+        </div>
+      </div>
+      <!-- <mat-menu #fileContactsMenu="matMenu" class="contact-menu">
+        <div class="menu-search" (click)="$event.stopPropagation()">
+          <mat-form-field appearance="outline" class="full-width small-field">
+            <input matInput placeholder="Search user" [(ngModel)]="contactsSearch" (input)="filterContacts()" (keydown)="$event.stopPropagation()" />
+          </mat-form-field>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="menu-container">
+          <div class="menu-item" *ngFor="let contact of filteredContactOptions; trackBy: trackById">
+            <mat-checkbox [checked]="selectedContacts.includes(contact.id)" (change)="toggleSelection(contact)" (click)="$event.stopPropagation()">
+              {{ contact.name }}
+            </mat-checkbox>
+          </div>
+        </div>
+      </mat-menu> -->
+      <!-- <div class="tree-row file" *ngFor="let file of currentFiles"> -->
+      <div class="tree-row file" *ngFor="let file of currentFiles" (click)="toggleFileSelection(file)" [class.selected]="isDialog && isFileSelected(file)">
+        <div class="col-name">
+          <!-- <mat-icon>insert_drive_file</mat-icon> -->
+           <ng-container>
+            <mat-icon *ngIf="isImage(file.fileName)">image</mat-icon>
+            <mat-icon  *ngIf="isPdf(file.fileName)">picture_as_pdf</mat-icon>
+            <mat-icon *ngIf="isExcel(file.fileName)">table_chart</mat-icon>
+            <mat-icon *ngIf="isWord(file.fileName)">description</mat-icon>
+            <mat-icon *ngIf="isPpt(file.fileName)">slideshow</mat-icon>
+            <mat-icon *ngIf="!isImage(file.fileName) && !isPdf(file.fileName) && !isExcel(file.fileName) && !isWord(file.fileName) && !isPpt(file.fileName)">
+              insert_drive_file
+            </mat-icon>
+          </ng-container>
+          <!-- <a [href]="file.blobUrl" target="_blank" class="name-text">{{ file.fileName }}</a> -->
+          <span  *ngIf="isDialog" class="name-text file-name" (click)="isDialog ? toggleFileSelection(file) : null">
+            {{ file.fileName }}
+          </span>
+          <a *ngIf="!isDialog" [href]="file.blobUrl" target="_blank" class="name-text">
+            {{ file.fileName }}
+          </a>
+        </div>
+        <div class="col-owner">{{ file.createdBy }}</div>
+        <div class="col-size">{{ formatFileSize(file.fileSize) }}</div>
+        <div class="col-tags" (click)="$event.stopPropagation()">
+          <span *ngFor="let tag of (file.tags || []) | slice:0:1" class="tag-chip">
+            {{ tag }}
+          </span>
+          <span *ngIf="(file.tags?.length || 0) > 1"
+                class="tag-more"
+                (click)="toggleTagExpand(file)">
+            +{{ (file.tags?.length || 0) - 1 }}
+          </span>
+          <div class="tag-popup" *ngIf="file.showAllTags">
+            <span *ngFor="let tag of (file.tags || []) | slice:1" class="tag-chip">
+              {{ tag }}
+            </span>
+          </div>
+        </div>
+        <div class="col-size" *ngIf="!isLastFolder() || isSearching" [title]="getDisplayPath(file.path)">{{ getDisplayPath(file.path) }}</div>
+        <div class="col-modified">{{ formatDate(file.created) }}</div>
+        <div class="col-action">
+          <button mat-icon-button [matMenuTriggerFor]="fileMenu" (click)="$event.stopPropagation()" matTooltip="More actions"><mat-icon>more_vert</mat-icon></button>
+          <mat-menu #fileMenu="matMenu">
+            <button mat-menu-item (click)="downloadFile(file)">
+              <mat-icon>download</mat-icon><span>Download</span>
+            </button>
+            <button mat-menu-item (click)="deleteFile(file)" *ngIf="isPermissionFileDmsDelete">
+              <mat-icon>delete</mat-icon><span>Delete</span>
+            </button>
+          </mat-menu>
+          <!-- <button mat-icon-button *ngIf="isMasterUser" [matMenuTriggerFor]="fileContactsMenu" (click)="setSelectedItem(file, 'file'); $event.stopPropagation()">
+            <mat-icon>filter_alt</mat-icon>
+          </button> -->
+          <button mat-icon-button *ngIf="isMasterUser && !isDialog" (click)="openUserDialog(file, 'file'); $event.stopPropagation()">
+            <mat-icon>filter_alt</mat-icon>
+          </button>
+        </div>
+      </div>
+      <div class="empty-state" *ngIf="!currentFolders.length && !currentFiles.length">
+        <mat-icon>folder_open</mat-icon>
+        <p>This folder is empty</p>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="viewMode === 'document'">
+    <div class="document-grid">
+      <!-- <div class="doc-card" *ngFor="let file of currentFiles"> -->
+        <div class="doc-card" *ngFor="let file of currentFiles" (click)="onGridFileClick(file, $event)" [class.selected]="isDialog && isFileSelected(file)">
+        <div class="doc-preview">
+          <img *ngIf="isImage(file.fileName)" [src]="file.blobUrl" class="doc-preview-img" />
+          <mat-icon *ngIf="isPdf(file.fileName)">
+            picture_as_pdf
+          </mat-icon>
+          <mat-icon *ngIf="isExcel(file.fileName)">
+            table_chart
+          </mat-icon>
+          <mat-icon *ngIf="isWord(file.fileName)">
+            description
+          </mat-icon>
+          <mat-icon *ngIf="isPpt(file.fileName)">
+            slideshow
+          </mat-icon>
+          <mat-icon *ngIf="!isImage(file.fileName) && !isPdf(file.fileName) && !isExcel(file.fileName) && !isWord(file.fileName) && !isPpt(file.fileName)">
+            insert_drive_file
+          </mat-icon>
+        </div>
+        <div class="doc-info">
+          <a [href]="file.blobUrl" target="_blank" class="file-name" [matTooltip]="file.fileName">{{ file.fileName }}</a>
+          <span class="file-path" *ngIf="file.path" [matTooltip]="file.path" matTooltipPosition="above">
+            <mat-icon>folder_open</mat-icon>
+            <span class="path-text-clipped">{{ file.path }}</span>
+          </span>
+          <div class="doc-tags">
+            <span *ngFor="let tag of file.tags" class="tag-chip">
+              {{ tag }}
+            </span>
+          </div>
+          <div class="doc-meta">
+            <span class="doc-date">
+              <mat-icon>schedule</mat-icon>
+              {{ formatDate(file.created) }}
+            </span>
+          </div>
+        </div>
+        <div class="three-dot">
+          <button mat-icon-button [matMenuTriggerFor]="fileMenu"><mat-icon>more_vert</mat-icon></button>
+          <mat-menu #fileMenu="matMenu">
+            <button mat-menu-item (click)="downloadFile(file)">
+              <mat-icon>download</mat-icon><span>Download</span>
+            </button>
+             <button mat-menu-item (click)="deleteFile(file)" *ngIf="isPermissionFileDmsDelete">
+              <mat-icon>delete</mat-icon><span>Delete</span>
+            </button>
+          </mat-menu>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="viewMode === 'folderGrid'">
+    <div class="folder-grid">
+      <div class="folder-card" *ngFor="let folder of currentFolders" (click)="openFolder(folder)">
+        <div class="card-menu">
+          <button mat-icon-button [matMenuTriggerFor]="folderMenu" (click)="$event.stopPropagation()">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </div>
+        <mat-menu #folderMenu="matMenu">
+          <button mat-menu-item (click)="downloadFolder(folder)">
+            <mat-icon>download</mat-icon>
+            <span>Download</span>
+          </button>
+        </mat-menu>
+        <div class="card-icon folder">
+          <mat-icon>folder</mat-icon>
+        </div>
+        <div class="card-name" [title]="folder.name">
+          {{ folder.name }}
+        </div>
+        <div class="card-meta">
+          {{ getFolderCreatedDate(folder) }}
+        </div>
+      </div>
+      <div class="folder-card file-card" *ngFor="let file of currentFiles" (click)="isDialog ? toggleFileSelection(file) : null" [class.selected]="isDialog && isFileSelected(file)">
+        <div class="card-menu">
+          <button mat-icon-button [matMenuTriggerFor]="fileMenu" (click)="$event.stopPropagation()">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </div>
+        <mat-menu #fileMenu="matMenu">
+          <button mat-menu-item (click)="downloadFile(file)">
+            <mat-icon>download</mat-icon>
+            <span>Download</span>
+          </button>
+        </mat-menu>
+        <!-- <div class="card-icon file">
+          <mat-icon>description</mat-icon>
+        </div> -->
+        <div class="card-icon file">
+          <ng-container>
+          <img *ngIf="isImage(file.fileName)" [src]="file.blobUrl" class="file-preview-img" />
+          <div class="pdf-wrapper" *ngIf="isPdf(file.fileName)">
+            <embed [src]="file.safePdfUrl" type="application/pdf" class="file-preview-pdf">
+          </div>
+          <mat-icon *ngIf="isExcel(file.fileName)">table_chart</mat-icon>
+          <mat-icon *ngIf="isWord(file.fileName)">description</mat-icon>
+          <mat-icon *ngIf="isPpt(file.fileName)">slideshow</mat-icon>
+          <mat-icon *ngIf=" !isImage(file.fileName) && !isPdf(file.fileName) && !isExcel(file.fileName) && !isWord(file.fileName) && !isPpt(file.fileName)">
+            insert_drive_file
+          </mat-icon>
+        </ng-container>
+        </div>
+        <div class="card-name" [title]="file.fileName">
+          {{ file.fileName }}
+        </div>
+        <div class="card-meta">
+          <div>{{ formatDate(file.created) }}</div>
+          <div *ngIf="file.fileSize">
+            {{ formatFileSize(file.fileSize) }}
+          </div>
+          <div *ngIf="file.path">
+            {{ getDisplayPath(file.path) }}
+          </div>
+          <div class="card-tags" *ngIf="(file.tags?.length || 0) > 0">
+            <span *ngFor="let tag of (file.tags || [])" class="tag-chip">
+              {{ tag }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+<div class="dialog-footer" *ngIf="isDialog">
+  <div class="selected-files" *ngIf="selectedFiles.length">
+    <div class="selected-title">
+      <mat-icon>attach_file</mat-icon>
+      <span>{{ selectedFiles.length }} file(s) selected</span>
+    </div>
+    <div class="file-chip-container">
+      <div class="file-chip" *ngFor="let file of selectedFiles">
+        <mat-icon class="file-icon">insert_drive_file</mat-icon>
+        <span class="file-name" [matTooltip]="file.fileName">
+          {{ file.fileName }}
+        </span>
+        <button mat-icon-button class="remove-btn"
+          (click)="removeSelectedFile(file)">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <button mat-flat-button color="primary" (click)="attachSelectedFiles()">
+    Attach Selected
+  </button>
+</div>

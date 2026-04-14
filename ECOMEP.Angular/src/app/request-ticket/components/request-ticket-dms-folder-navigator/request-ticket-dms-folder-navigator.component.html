@@ -1,0 +1,69 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">DMS</h5>
+    <button mat-icon-button aria-label="close" (click)="onClose()">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+<mat-dialog-content>
+    <div class="dms-folder-navigator">
+        <!-- Header -->
+        <div class="dms-folder-navigator-header">
+            <div>
+                <button mat-icon-button *ngIf="currentParent" (click)="navigateBack()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+            </div>
+            <div class="dms-folder-title">
+                <small class="dms-folder-path" *ngIf="currentParent">{{ currentParent.folderPath }}</small>
+                <h5 class="dms-folder-name" *ngIf="currentParent">{{ currentParent.filename }}</h5>
+            </div>
+        </div>
+        <!-- File Table -->
+        <div class="dms-table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Created</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of currentLevelItems">
+                        <td (click)="navigateToChildren(item)">
+                            <div class="dms-list-item">
+                                <div class="dms-list-item-icon">
+                                    <mat-icon *ngIf="item.isFolder">folder</mat-icon>
+                                    <mat-icon *ngIf="!item.isFolder">insert_drive_file</mat-icon>
+                                </div>
+                                <div class="dms-list-item-name">
+                                    <h6>{{ item.filename }}</h6>
+                                    <div>
+                                        <small *ngIf="!item.isFolder">{{ getSize(item) | mcvFileSize }}</small>
+                                        <small *ngIf="item.isFolder">{{ item.children?.length }} items</small>
+
+                                    </div>
+                                </div>
+                                <div class="dms-list-item-lock">
+                                    <mat-icon *ngIf="item.isReadOnly">lock</mat-icon>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="cell">
+                                <span>{{ item.created | date: 'dd MMM y HH:mm' }}</span>
+                                <small>{{ item.createdBy }} </small>
+                            </div>
+                        </td>
+                        <td class="align-right">
+                            <button mat-icon-button *ngIf="!item.isFolder" (click)="toggleCopy(item)">
+                                <mat-icon *ngIf="!isCopied(item)" class="not-selected">attach_file</mat-icon>
+                                <mat-icon *ngIf="isCopied(item)" class="selected">attach_file</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</mat-dialog-content>

@@ -1,0 +1,110 @@
+@import 'variables';
+
+.asset-light-box-wrapper {
+    width: 100%;
+    height: 100%;
+}
+
+.asset-light-box-image-container {
+    height: 85vh;
+    width: 100%;
+    padding: 0.3rem;
+
+    &.no-reviewer {
+        height: 100%;
+    }
+
+    img {
+        height: 100%;
+        width: 100%;
+        object-fit: contain;
+    }
+}
+
+
+.asset-item-detail-footer {
+    position: sticky;
+    position: -webkit-sticky;
+    bottom: 0;
+    z-index: 100;
+    padding: 0 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.asset-light-box-image-reviewer {
+    height: 15vh;
+    display: flex;
+    align-items: center;
+    overflow: auto hidden;
+    overscroll-behavior: contain;
+    border: 1px solid $gray-300;
+    border-radius: $border-radius;
+    // padding: 0 2rem;
+    width: calc(100vw - 6rem);
+    // justify-content: center;
+}
+
+.asset-light-box-image-reviewer-container {
+    height: 7rem;
+    width: 7rem;
+    min-width: 7rem;
+    border: 1px solid $gray-300;
+    border-radius: $border-radius;
+    margin: 0.3rem;
+    opacity: 0.8;
+    position: relative;
+
+    .asset-file-thumbnail-icon {
+        position: absolute;
+        top: 40%;
+        left: 40%;
+
+        mat-icon {
+            color: $white;
+        }
+    }
+
+    &.scale-image {
+        border: 2px solid $gray-600;
+        border-radius: $border-radius;
+        opacity: 1;
+        // width: 10rem;
+        animation: scale-image-size 300ms ease-in-out forwards;
+    }
+
+    @keyframes scale-image-size {
+        to {
+            width: 10rem;
+        }
+    }
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+}
+
+@media only screen and (max-width:768px) {
+    .resize-image-button {
+        // top: 1rem;
+        right: 0.5rem;
+        height: 1.5rem;
+        width: 1.5rem;
+
+        mat-icon {
+            font-size: 1rem;
+        }
+    }
+
+    .asset-light-box-image-reviewer {
+        padding: 0rem;
+    }
+
+    .asset-light-box-image-reviewer-container {
+        height: 5rem;
+        margin: 0.1rem;
+    }
+}

@@ -1,0 +1,252 @@
+<div class="project-bills-wrapper" *ngIf="project">
+  
+  <mat-expansion-panel [expanded]="true" *ngIf="isPermissionView && !isPermissionEdit">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Billing Details</mat-panel-title>
+    </mat-expansion-panel-header>
+    <div class="property-collection">
+      <div class="property">
+        <div class="property-details">
+          <small class="property-label">Bill To Company/Client</small>
+          <div class="property-value">
+            <span>{{ project.clientContact?.name }}</span>
+          </div>
+        </div>
+        <div class="property-actions" *ngIf="project.clientContact">
+          <mat-icon (click)="openContactDialog(project.clientContact)"
+            matTooltip="view contact details">person</mat-icon>
+        </div>
+      </div>
+      <div class="property">
+        <div class="property-details">
+          <small class="property-label">Title on Bill</small>
+          <div class="property-value">
+            <span>{{ project.billingTitle }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="property">
+        <div class="property-details">
+          <small class="property-label">Project Fees</small>
+          <div class="property-value">
+            <span>{{
+              project.fee | currency : "INR" : "symbol" : "1.0-2"
+              }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="property">
+        <div class="property-details">
+          <small class="property-label">Project HSN/SAC </small>
+          <div class="property-value">
+            <span>{{ project.hsn }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="property">
+        <div class="property-details">
+          <small class="property-label">Project GST StateCode </small>
+          <div class="property-value">
+            <span>{{ project.stateCode }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="property">
+        <div class="property-details">
+          <small class="property-label">Client GSTIN </small>
+          <div class="property-value">
+            <span>{{ project.clientContact?.gstin }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="property">
+        <div class="property-details">
+          <small class="property-label">Client PAN </small>
+          <div class="property-value">
+            <span>{{ project.clientContact?.pan }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="property">
+        <div class="property-details">
+          <small class="property-label">Client TAN </small>
+          <div class="property-value">
+            <span>{{ project.clientContact?.tan }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-expansion-panel>
+  
+  <app-project-bill-details-edit [currentEntity]="project" (updated)="onUpdate($event)" *ngIf="isPermissionView && isPermissionEdit"
+  (formChange)="onFormChange($event)"></app-project-bill-details-edit>
+
+  <div class="scroll-container">
+  <div class="project-bills-header">
+    <div>
+      <small>Total Stage Percentage (A)</small>
+      <h6> {{workPercentage | number:'1.0-1'}}%</h6>
+    </div>
+
+    <div>
+      <small>Total Bill Percentage (B)</small>
+      <h6>{{totalBillPercentage | number:'1.0-1'}}%</h6>
+    </div>
+
+    <div>
+      <small>Total Due Percentage (A-B)</small>
+      <h6>{{ workPercentage- totalBillPercentage | number:'1.0-1'}}%</h6>
+    </div>
+
+    <!-- <div>
+      <small>Total Bill Amount</small>
+      <h6 class="text-red">
+        {{totalPendingFees | currency:'INR'}} ({{totalPendingPercentage | number:'1.0-1'}}%)
+      </h6>
+    </div>
+
+    <div>
+      <small>Amount Received (B)</small>
+      <h6 class="text-green">
+        {{totalReceivedAmount | currency:'INR'}} ({{totalReceivedPercentage | number:'1.0-1'}}%)
+      </h6>
+    </div>
+
+    <div>
+      <small>Amount Received (B)</small>
+      <h6 class="text-green">
+        {{totalReceivedAmount | currency:'INR'}} ({{totalReceivedPercentage | number:'1.0-1'}}%)
+      </h6>
+    </div>
+
+
+    <div>
+      <small>Bill Amount Pending (A-B)</small>
+      <h6 class="text-red">
+        {{totalPendingFees | currency:'INR'}} ({{totalPendingPercentage | number:'1.0-1'}}%)
+      </h6>
+    </div> -->
+
+    <div *ngIf="isPermissionEdit" class="actions">
+      <button mat-raised-button (click)="onCreate(true)">
+        <mat-icon>add</mat-icon> Proforma (pre-dated)
+      </button>
+      <button mat-raised-button (click)="onCreate(false)">
+        <mat-icon>add</mat-icon> Proforma
+      </button>
+    </div>
+  </div>
+
+  <div class="project-bills-table-wrapper">
+
+     <table>
+       <thead>
+         <tr>
+           <th>Bill Date</th>
+           <th>Bill No.</th>
+           <th>Bill %</th>
+           <th>Bill Amount</th>
+           <th>GST</th>
+           <th>TDS</th>
+           <th>Payable</th>
+           <th>Received</th>
+           <th>Amount After TDS</th>
+           <th></th>
+         </tr>
+         <tr class="total">
+           <th colspan="3">Total</th>
+           <!-- <td>{{totalBillPercentage | number:'1.0-1'}}%</td> -->
+           <td>{{totalBillAmount | currency:'INR'}}</td>
+           <td>{{totalGstAmount | currency:'INR'}}</td>     
+           <td>{{totalTdsAmount | currency:'INR'}}</td>     
+           <td>{{totalPayable | currency:'INR'}}</td>
+           <td>{{totalReceivedAmount | currency:'INR'}}</td>
+           <td>{{totalAmountAfterTDS | currency:'INR'}}</td>
+           <td></td>
+         </tr>
+       </thead>
+       <tbody>
+         <tr *ngFor="let bill of bills">
+           <td class="align-center">
+             <h6>{{bill.billDate | date:'dd MMM y'}}</h6>
+             <small *ngIf="bill.typeFlag==PROJECT_BILL_TYPEFLAG_TAX_INVOICE">{{bill.proformaDate | date:'dd MMM y'}}</small>
+           </td>
+           <td  class="align-center">
+             <h6>{{bill.typeFlag==PROJECT_BILL_TYPEFLAG_PROFORMA_INVOICE ? bill.proformaInvoiceNo : bill.taxInvoiceNo}}</h6>
+             <small *ngIf="bill.typeFlag==PROJECT_BILL_TYPEFLAG_TAX_INVOICE">{{bill.proformaInvoiceNo}}</small>
+           </td>
+           <td  class="align-center">{{bill.billPercentage |number:'1.0-1'}}%</td>
+           <td  class="align-right">{{bill.dueAmount | currency:'INR'}}</td>
+           <td  class="align-right">
+             <h6>{{(bill.sgstAmount+bill.cgstAmount+bill.igstAmount) | currency:'INR'}}</h6>
+             <small>({{getGSTPercentage(bill)}}%)</small>
+           </td>
+           <td  class="align-right">
+             <h6>{{bill.tdsAmount | currency:'INR'}}</h6>
+             <small>(10%)</small>
+           </td>
+           <td  class="align-right">
+             <h6>{{bill.payableAmount | currency:'INR'}}</h6> 
+             <!-- <small>{{getPaymentMode(bill)}} Amount: {{getPaymentWithoutTDS(bill) | currency:'INR'}}</small> -->
+           </td>
+           <td  class="align-right">
+            <h6>{{getReceivedPayment(bill) | currency:'INR'}}</h6> 
+             <small *ngIf="bill.payments.length != 0 && getPendingPayment(bill) != 0"
+               [ngClass]="{ 'text-red': getPendingPayment(bill) > 0,'text-green': getPendingPayment(bill) < 0 }">Pending
+               Amount: {{getPendingPayment(bill)
+               | currency:'INR'}}</small>
+           </td>
+           
+           <td  class="align-right">{{bill.amountAfterTDS | currency:'INR'}}</td>
+           <td  class="align-center">
+             <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="context-menu">
+               <mat-icon>more_vert</mat-icon>
+             </button>
+             <mat-menu #menu="matMenu">
+               <button mat-menu-item (click)="onDownloadPdf(bill.proformaInvoiceUrl)" *ngIf="bill.proformaInvoiceUrl">
+                 <mat-icon>download</mat-icon>
+                 <!-- <img src="assets/icons/file-pdf.png" /> -->
+                 <span>Proforma Invoice</span>
+               </button>
+               <button mat-menu-item (click)="onDownloadPdf(bill.taxInvoiceUrl)" *ngIf="bill.taxInvoiceUrl">
+                 <mat-icon>download</mat-icon>
+                 <span>Tax Invoice</span>
+               </button>
+    
+               <!-- <button mat-menu-item (click)="onDownloadPdf(bill.blobUrlWithoutLetterHead)">
+                 <mat-icon>download</mat-icon>
+                 <span>w/o Letterhead</span>
+               </button> -->
+    
+               <button mat-menu-item (click)="onEdit(bill)" *ngIf="isPermissionEdit ">
+                 <mat-icon>edit</mat-icon>
+                 <span>Edit</span>
+               </button>
+
+               <button mat-menu-item (click)="onConvert(bill)" *ngIf="isPermissionEdit && bill.typeFlag==PROJECT_BILL_TYPEFLAG_PROFORMA_INVOICE && !bill.isPreDated">
+                <mat-icon>price_check</mat-icon>
+                <span>Convert To Tax Invoice</span>
+              </button>
+
+              <!-- && bill.typeFlag==PROJECT_BILL_TYPEFLAG_TAX_INVOICE -->
+               <button mat-menu-item (click)="onEditPayments(bill)" *ngIf="isPermissionEdit">
+                <mat-icon>currency_rupee</mat-icon>
+                <span>Payments</span>
+              </button>
+    
+               <button mat-menu-item (click)="onDelete(bill)" *ngIf="isPermissionEdit">
+                 <mat-icon>delete</mat-icon>
+                 <span>Delete</span>
+               </button>
+    
+             </mat-menu>
+           </td>
+         </tr>
+       
+       </tbody>
+     </table>
+ 
+  </div>
+  </div>
+</div>

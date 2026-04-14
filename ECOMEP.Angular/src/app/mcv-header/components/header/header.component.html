@@ -1,0 +1,127 @@
+<nav class="mcv-header">
+  <div class="mcv-header-part">
+    <div class="nav-item nav-icon " appMenuToggle>
+      <mat-icon>apps</mat-icon>
+    </div>
+    <div class="navbar-page-title">
+      <h3 class="font-focused">{{ title }}</h3>
+      <small class="caption" *ngIf="titleCount > 0">{{ titleCount }}</small>
+      <ng-content select=".search-filter"></ng-content>
+    </div>
+    <ng-content select=".header-design-script-search-filter"></ng-content>
+
+    <ng-content select=".nav-header-actions"></ng-content>
+  </div>
+
+
+  <div class="mcv-header-part mcv-header-part-right">
+    <div class="nav-item">
+      <h6 class="data-bank" (click)="onClickDataBank()" *ngIf="canAccess('data-bank')">Data-Bank</h6>
+    </div>
+
+    <div class="nav-item nav-icon" mat-icon-button (click)="refresh()" matTooltip="Refresh Page"
+      aria-label="Refresh Page" *ngIf="!isMobileView">
+      <mat-icon>refresh</mat-icon>
+    </div>
+
+    <!-- <div class="nav-item nav-icon " (click)="openRoute('/library-view')" aria-label="Library"
+        matTooltip="Library" *ngIf="isPermissionLibraryView && !isMobileView">
+        <h5>L</h5>
+      </div> -->
+
+    <!-- <div class="nav-item nav-icon " (click)="openRoute('/time-line')" aria-label="Timeline" matTooltip="Timeline"
+      *ngIf="isPermissionOfficeTimelineView && !isMobileView">
+      <mat-icon>view_timeline</mat-icon>
+    </div> -->
+
+    <div class="nav-item  flex-grow-0 flex-shrink-0">
+      <div class="nav-item nav-icon " [matMenuTriggerFor]="createMenu" matTooltip="New">
+        <mat-icon>add</mat-icon>
+      </div>
+      <mat-menu #createMenu="matMenu" xPosition="before">
+
+        <button mat-menu-item (click)="openNewContact()" *ngIf="isPermissionContactEdit && canAccess('contact-edit')">Contact</button>
+
+        <button mat-menu-item (click)="openNewTeam()" *ngIf="isPermissionTeamEdit && canAccess('team-edit')">Team</button>
+
+        <button mat-menu-item (click)="openNewProject()" *ngIf="isPermissionProjectEdit && canAccess('project-edit')">Project</button>
+
+        <button mat-menu-item (click)="openNewTodo()" *ngIf="isPermissionTodoEdit && canAccess('todo-edit')">Todo</button>
+
+        <button mat-menu-item (click)="openNewLeave()" *ngIf="isPermissionLeaveEdit && canAccess('leave-edit')">Leave</button>
+
+        <button mat-menu-item (click)="openNewMeeting()" *ngIf="isPermissionMeetingEdit && canAccess('meeting-edit')">Meeting</button>
+        
+        <button mat-menu-item (click)="createAsset('New Asset')" *ngIf="isPermissionAssetEdit && canAccess('asset-edit')">Asset</button>
+        <!-- <button mat-menu-item (click)="openNewSiteVisit()" *ngIf="isPermissionSitevisitEdit">Site Visit</button> -->
+
+
+        <button mat-menu-item (click)="openNewRequestTicket()" aria-label="New Request Ticket"
+          *ngIf="IsPermissionRequestTicketEdit && canAccess('request-ticket-edit')">
+          Request Ticket
+        </button>
+      </mat-menu>
+    </div>
+    <div class="nav-item nav-icon " (click)="openRoute('/cockpit')" matTooltip="MyCockpit">
+      <mat-icon>dashboard</mat-icon>
+    </div>
+    <div class="nav-item version-update" *ngIf="isNewVersionAvailable" (click)="updateVersion()">
+      <h5 class="font-focused">New Version</h5>
+      <small>click to update</small>
+    </div>
+    <!-- <div class="nav-item nav-icon nav-item-hover" (click)="openRoute('/contact-list')" matTooltip="Contact"
+      *ngIf="isPermissionContactList">
+      <mat-icon>phone</mat-icon>
+    </div> -->
+    <!-- <div class="nav-item nav-icon " (click)="openRoute('/contact-list')" matTooltip="Contact"
+      *ngIf="isPermissionContactList">
+      <mat-icon>phone</mat-icon>
+    </div> -->
+
+    <div class="nav-item " *ngIf="!isNewVersionAvailable">
+      <div class="account-dropdown" [matMenuTriggerFor]="userAccount" *ngIf="user">
+        <img *ngIf="user.contact" src="{{ user?.contact?.photoUrl || 'assets/images/user.png' }}"
+          class="account-thumbnail" alt="" />
+
+        <div class="account-username">
+          <span *ngIf="user.contact" class="mb-0">{{ user?.contact?.name || user?.username }} </span>
+
+          <!-- <span class="text-muted">{{ user.username }}</span> -->
+        </div>
+        <mat-icon>arrow_drop_down</mat-icon>
+      </div>
+      <mat-menu #userAccount="matMenu" xPosition="before">
+        <button mat-menu-item (click)="openRoute(ROUTE_CHANGE_PASSWORD)">
+          <mat-icon>vpn_key</mat-icon>
+          <span>Change Password</span>
+        </button>
+        <button mat-menu-item (click)="changePhoto()">
+          <mat-icon>portrait</mat-icon>
+          <span>Change Photo</span>
+        </button>
+        <button mat-menu-item (click)="subscribeToPush()">
+          <mat-icon>notifications_active</mat-icon>
+          <span>Subscribe to Notifications</span>
+        </button>
+        <button mat-menu-item (click)="unsubscribeToPush()">
+          <mat-icon>notifications_off</mat-icon>
+          <span>Unsubscribe All Devices</span>
+        </button>
+        <button mat-menu-item (click)="installPWA()" [disabled]="!shouldInstall">
+          <mat-icon>install_mobile</mat-icon>
+          <span>Install App</span>
+        </button>
+        <button mat-menu-item (click)="openRoute(ROUTE_SESSIONS)" *ngIf="isRoleMaster">
+          <mat-icon>people</mat-icon>
+          <span>Login Sessions</span>
+        </button>
+        <button mat-menu-item (click)="onClickLogout()">
+          <mat-icon>exit_to_app</mat-icon>
+          <span>Log Out</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+</nav>
+
+<app-menu-sidebar></app-menu-sidebar>

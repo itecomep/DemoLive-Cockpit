@@ -1,0 +1,212 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">Category/Attribute Master</h5>
+    <div class="d-flex align-items-center">
+        <button *ngIf="isMobileView" mat-icon-button (click)="onAddCategory()">
+            <mat-icon>add_to_photos</mat-icon>
+        </button>
+        <button *ngIf="!isMobileView" mat-raised-button (click)="onAddCategory()">
+            New Category
+        </button>
+        <button mat-icon-button aria-label="close" (click)="onClose(null)">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+<mat-dialog-content>
+    <mat-tab-group [selectedIndex]="selectedTabIndex" (selectedIndexChange)="onSelectedTabIndexChange($event)">
+        <ng-container *ngFor="let category of categoryOptions">
+            <mat-tab label="{{category}}">
+                <ng-template matTabContent>
+                    <div class="master-category-attribute-wrapper">
+                        <div class="master-category-category-input-wrapper">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Category</mat-label>
+                                <input placeholder="Category" aria-label="Category" matInput
+                                    [formControl]="currentCategory">
+                            </mat-form-field>
+                            <div class="actions">
+                                <mat-icon (click)="onUpdateCategory()">done</mat-icon>
+                                <mat-icon (click)="onDeleteCategory()">close</mat-icon>
+                            </div>
+                        </div>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Attributes</th>
+                                        <th>Input Type</th>
+                                        <th>Multi Choice</th>
+                                        <th>Is Required</th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody cdkDropList [cdkDropListData]="masterAttributes"
+                                (cdkDropListDropped)="onDrop($event)">
+                                    <ng-container *ngIf="masterAttributes && masterAttributes.length > 0">
+                                        <ng-container *ngFor="let item of masterAttributes;let i = index">
+                                            <tr cdkDrag *ngIf="item.category == category">
+                                                <td>
+                                                    <div class="cell-content">
+                                                        <mat-icon
+                                                            *ngIf="getFormControl(fa,i,'attribute').value && getFormControl(fa,i,'attribute').invalid"
+                                                            [matTooltip]="getErrorMessage(getFormControl(fa,i,'attribute'))">
+                                                            report_problem
+                                                        </mat-icon>
+
+                                                        <div class="cell-input">
+                                                            <form>
+                                                                <input matInput (input)="onInput(fa,i,'attribute')"
+                                                                    [formControl]="getFormControl(fa,i,'attribute')"
+                                                                    (change)="onCellChange(fa,i,'attribute',item)">
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="cell-content">
+                                                        <mat-icon
+                                                            *ngIf="getFormControl(fa,i,'inputType').value && getFormControl(fa,i,'inputType').invalid"
+                                                            [matTooltip]="getErrorMessage(getFormControl(fa,i,'inputType'))">
+                                                            report_problem
+                                                        </mat-icon>
+
+                                                        <div class="cell-input">
+                                                            <form>
+                                                                <mat-select [formControl]="getFormControl(fa,i,'inputType')"
+                                                                    (selectionChange)="onCellChange(fa,i,'inputType',item)">
+                                                                    <mat-option *ngFor="let item of signleInputOptions"
+                                                                        [value]="item">
+                                                                        {{item}}
+                                                                    </mat-option>
+                                                                </mat-select>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="cell-content">
+                                                        <div class="cell-input">
+                                                            <form>
+                                                                <textarea *ngIf="getFormControl(fa,i,'inputType').value === 'SINGLE-CHOICE' || getFormControl(fa,i,'inputType').value === 'MULTI-CHOICE'" 
+                                                                    matInput (input)="onInput(fa,i,'inputOptions')"
+                                                                    [formControl]="getFormControl(fa,i,'inputOptions')"
+                                                                    (change)="onCellChange(fa,i,'inputOptions',item)"></textarea>
+                                                                <input *ngIf="getFormControl(fa,i,'inputType').value !== 'SINGLE-CHOICE' && getFormControl(fa,i,'inputType').value !== 'MULTI-CHOICE'" 
+                                                                    matInput (input)="onInput(fa,i,'inputOptions')"
+                                                                    [formControl]="getFormControl(fa,i,'inputOptions')"
+                                                                    (change)="onCellChange(fa,i,'inputOptions',item)">
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="cell-content">
+                                                        <div class="cell-input">
+                                                            <form>
+                                                                <mat-checkbox
+                                                                    [formControl]="getFormControl(fa,i,'isRequired')"
+                                                                    (change)="onCellChange(fa,i,'isRequired',item)">isRequired</mat-checkbox>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <button mat-icon-button cdkDragHandle>
+                                                        <mat-icon>drag_handle</mat-icon>
+                                                    </button>
+                                                </td>
+                                                <td (click)="onDelete(item)">
+                                                    <div class="cell-content justify-content-center">
+                                                        <div class="cell-action">
+                                                            <mat-icon>close</mat-icon>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </ng-container>
+                                    </ng-container>
+                                    <tr *ngIf="masterAttributes">
+                                        <td>
+                                            <div class="cell-content">
+                                                <mat-icon
+                                                    *ngIf="getFormControl(fa,masterAttributes.length,'attribute').value && getFormControl(fa,masterAttributes.length,'attribute').invalid"
+                                                    [matTooltip]="getErrorMessage(getFormControl(fa,masterAttributes.length,'attribute'))">
+                                                    report_problem
+                                                </mat-icon>
+
+                                                <div class="cell-input text-left">
+                                                    <form>
+                                                        <input matInput
+                                                            (input)="onInput(fa,masterAttributes.length,'attribute')"
+                                                            placeholder="Enter Attribute Title"
+                                                            [formControl]="getFormControl(fa,masterAttributes.length,'attribute')"
+                                                            (change)="onCellChange(fa,masterAttributes.length,'attribute')">
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="cell-content">
+                                                <mat-icon
+                                                    *ngIf="getFormControl(fa,masterAttributes.length,'inputType').value && getFormControl(fa,masterAttributes.length,'inputType').invalid"
+                                                    [matTooltip]="getErrorMessage(getFormControl(fa,masterAttributes.length,'inputType'))">
+                                                    report_problem
+                                                </mat-icon>
+
+                                                <div class="cell-input">
+                                                    <form>
+                                                        <mat-select
+                                                            [formControl]="getFormControl(fa,masterAttributes.length,'inputType')"
+                                                            (selectionChange)="onCellChange(fa,masterAttributes.length,'inputType')">
+                                                            <mat-option *ngFor="let item of signleInputOptions"
+                                                                [value]="item">
+                                                                {{item}}
+                                                            </mat-option>
+                                                        </mat-select>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="cell-content">
+                                                <div class="cell-input">
+                                                    <form>
+                                                        <input matInput
+                                                            (input)="onInput(fa,masterAttributes.length,'inputOptions')"
+                                                            placeholder="Enter Options"
+                                                            [formControl]="getFormControl(fa,masterAttributes.length,'inputOptions')"
+                                                            (change)="onCellChange(fa,masterAttributes.length,'inputOptions')">
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="cell-content">
+                                                <div class="cell-input">
+                                                    <form>
+                                                        <mat-checkbox
+                                                            [formControl]="getFormControl(fa,masterAttributes.length,'isRequired')"
+                                                            (change)="onCellChange(fa,masterAttributes.length,'isRequired')">isRequired</mat-checkbox>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            <div class="cell-content justify-content-center">
+                                                <div class="cell-action">
+                                                    <mat-icon (click)="onSubmit()">add</mat-icon>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </ng-template>
+            </mat-tab>
+        </ng-container>
+    </mat-tab-group>
+</mat-dialog-content>

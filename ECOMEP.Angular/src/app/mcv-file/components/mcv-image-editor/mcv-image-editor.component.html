@@ -1,0 +1,17 @@
+<div class="mat-dialog-header mcv-dialog-header">
+  <h5 class="font-focused">{{data.dialogTitle}}</h5>
+  <div class=d-flex>
+    <div class="edit-action-button">
+      <button mat-icon-button (click)="onEdit('crop')" matTooltip="Crop"
+        *ngIf="showCrop"><mat-icon>crop</mat-icon></button>
+      <!-- <button mat-icon-button (click)="onEdit('annotate')" matTooltip="Edit" *ngIf="showAnnotation"><mat-icon>edit</mat-icon></button> -->
+    </div>
+    <button mat-icon-button aria-label="save" (click)="onClickSave()"><mat-icon>done_all</mat-icon></button>
+    <button mat-icon-button aria-label="close" (click)="onClose(null)"><mat-icon>close</mat-icon></button>
+  </div>
+</div>
+<mat-dialog-content>
+  <div class="image-wrapper">
+    <img #sampleImage src="{{data.url}}" crossorigin="anonymous" />
+  </div>
+</mat-dialog-content>

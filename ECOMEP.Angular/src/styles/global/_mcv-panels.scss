@@ -1,0 +1,76 @@
+/* ---------------------------------------------------
+   Panel
+----------------------------------------------------- */
+@import 'theme';
+
+.mat-expansion-panel-content {
+  font-size: 1em !important;
+}
+
+.mat-expansion-panel {
+  border-radius: $border-radius;
+  margin: 5px !important;
+
+  &.mat-expansion-panel-no-shadow {
+    box-shadow: none;
+    border: 1px solid $gray-200;
+  }
+
+  & .mat-expansion-panel-header {
+    height: 45px !important;
+    // font-family: $font-family-sans-serif !important;
+    // font-size: 15px;
+    // font-weight: 400;
+    padding: 0 15px;
+    font-size: 1em !important;
+  }
+
+  & .mat-expansion-panel-body {
+    padding: 0.2rem 1rem 0.8rem !important;
+    overflow: hidden auto;
+    // overscroll-behavior: contain ;
+    // margin: 8px 0;
+  }
+
+  .mat-expansion-panel-no-margin-wrapper {
+    margin: 0 -1rem;
+  }
+
+  &.cockpit-panel .mat-expansion-panel-body,
+  &.cockpit-panel-md .mat-expansion-panel-body {
+    height: calc(100vh - 200px);
+  }
+
+  &.cockpit-panel-sm .mat-expansion-panel-body {
+    height: 300px;
+  }
+
+  &.cockpit-panel-lg .mat-expansion-panel-body {
+    height: 600px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mat-expansion-panel .mat-expansion-panel-body {
+    padding: 0.2rem 0.2rem 0.3rem !important;
+  }
+}
+
+.mat-expansion-panel-header-title {
+  font-weight: 500;
+  color: mat-color($mcv-primary, 500);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.mat-expansion-panel-header-description {
+  justify-content: flex-end;
+}
+.mat-expansion-panel-content {
+  font-size: 0.8rem !important;
+  font-weight: 400 !important;
+  line-height: 1.5 !important;
+}
+
+/*==========================*/

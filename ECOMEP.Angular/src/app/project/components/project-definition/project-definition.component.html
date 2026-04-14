@@ -1,0 +1,288 @@
+<div class="project-definition">
+  <div class="row">
+    <div class="col-md-8">
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Project Details</mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="property-collection">
+          <div class="property">
+            <div class="property-details">
+              <small class="property-label">Company</small>
+              <div class="property-value">
+                <span>{{ currentEntity.company?.initials }} |  {{ currentEntity.company?.title }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="property">
+            <div class="property-details">
+              <small class="property-label">Code</small>
+              <div class="property-value">
+                <span>{{ currentEntity.code }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="property">
+            <div class="property-details">
+              <small class="property-label">Project Name</small>
+              <div class="property-value">
+                <span>{{ currentEntity.title }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="property-collection">
+          <div class="property">
+            <div class="property-details">
+              <small class="property-label">Location</small>
+              <div class="property-value">
+                <span>{{ currentEntity.location }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="property">
+            <div class="property-details">
+              <small class="property-label">City</small>
+              <div class="property-value">
+                <span>{{ currentEntity.city }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="property">
+            <div class="property-details">
+              <small class="property-label">State</small>
+              <div class="property-value">
+                <span>{{ currentEntity.state }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="property">
+            <div class="property-details">
+              <small class="property-label">Country</small>
+              <div class="property-value">
+                <span>{{ currentEntity.country }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="property-collection">
+          <div class="property">
+            <div class="property-details">
+              <small class="property-label">Typology</small>
+
+              <div class="property-value">
+                <span>{{ currentEntity.typology }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="property">
+            <div class="property-details">
+              <small class="property-label">Segment</small>
+
+              <div class="property-value">
+                <span>{{ currentEntity.segment }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="property-collection">
+          <div class="property">
+            <div class="property-details">
+              <small class="property-label">Contract Start Date</small>
+              <div class="property-value">
+                <span>{{
+                  currentEntity.contractStartDate | date : "dd MMM y"
+                }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="property">
+            <div class="property-details">
+              <small class="property-label">Contract Completion Date</small>
+              <div class="property-value">
+                <span>{{
+                  currentEntity.contractCompletionDate | date : "dd MMM y"
+                }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="property">
+            <div class="property-details">
+              <small class="property-label">Expected Completion Date</small>
+              <div class="property-value">
+                <span>{{
+                  currentEntity.expectedCompletionDate | date : "dd MMM y"
+                }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="property-collection">
+          <div class="property">
+            <div class="property-details">
+              <small class="property-label">Expected MHr</small>
+              <div class="property-value">
+                <span>{{ currentEntity.expectedMHr | number : "1.0-0" }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="property">
+            <div class="property-details">
+              <small class="property-label">Status</small>
+              <div class="property-value">
+                <span>{{ currentEntity.statusValue }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="property-collection">
+          <div class="property">
+            <div class="property-details">
+              <small class="property-label">Bill To Company/Client</small>
+              <div class="property-value">
+                <span>{{ currentEntity.clientContact?.name }}</span>
+              </div>
+            </div>
+            <div class="property-actions" *ngIf="currentEntity.clientContact">
+              <mat-icon  (click)="openContactDialog(currentEntity.clientContact)"
+                matTooltip="view contact details">person</mat-icon>
+            </div>
+          </div>
+          <div class="property">
+            <div class="property-details">
+              <small class="property-label">Referred By</small>
+              <div class="property-value">
+                <span>{{ currentEntity.referredByContact?.name }}</span>
+              </div>
+            </div>
+            <div class="property-actions" *ngIf="currentEntity.referredByContact">
+              <mat-icon  (click)="openContactDialog(currentEntity.referredByContact)"
+                matTooltip="view contact details">person</mat-icon>
+            </div>
+          </div>
+        </div>
+         <div class="property-collection">
+          <div class="property">
+            <div class="property-details">
+              <small class="property-label">Group Company Contact</small>
+              <div class="property-value">
+                <span>{{ currentEntity.groupCompanyContact?.name }}</span>
+              </div>
+            </div>
+            <div class="property-actions" *ngIf="currentEntity.groupCompanyContact">
+              <mat-icon  (click)="openContactDialog(currentEntity.groupCompanyContact)"
+                matTooltip="view contact details">person</mat-icon>
+            </div>
+          </div>
+         
+        </div>
+      </mat-expansion-panel>
+
+   <!-- <mat-expansion-panel [expanded]="true" *ngIf="isPermissionBillingView">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Billing Details</mat-panel-title>
+    </mat-expansion-panel-header>
+    <div class="property-collection">
+      <div class="property">
+        <div class="property-details">
+          <small class="property-label">Bill To Company/Client</small>
+          <div class="property-value">
+            <span>{{ currentEntity.clientContact?.name }}</span>
+          </div>
+        </div>
+        <div class="property-actions" *ngIf="currentEntity.clientContact">
+          <mat-icon (click)="openContactDialog(currentEntity.clientContact)"
+            matTooltip="view contact details">person</mat-icon>
+        </div>
+      </div>
+      <div class="property">
+        <div class="property-details">
+          <small class="property-label">Title on Bill</small>
+          <div class="property-value">
+            <span>{{ currentEntity.billingTitle }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="property">
+        <div class="property-details">
+          <small class="property-label">Project HSN/SAC </small>
+          <div class="property-value">
+            <span>{{ currentEntity.hsn }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="property">
+        <div class="property-details">
+          <small class="property-label">Project GST StateCode </small>
+          <div class="property-value">
+            <span>{{ currentEntity.stateCode }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="property-collection">
+      
+      <div class="property">
+        <div class="property-details">
+          <small class="property-label">Client GSTIN </small>
+          <div class="property-value">
+            <span>{{ currentEntity.clientContact?.gstin }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="property">
+        <div class="property-details">
+          <small class="property-label">Client PAN </small>
+          <div class="property-value">
+            <span>{{ currentEntity.clientContact?.pan }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="property">
+        <div class="property-details">
+          <small class="property-label">Client TAN </small>
+          <div class="property-value">
+            <span>{{ currentEntity.clientContact?.tan }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="property-collection">
+      <div class="property">
+        <div class="property-details">
+          <small class="property-label">Fee</small>
+          <div class="property-value">
+            <span>{{
+              currentEntity.fee | currency : "INR" : "symbol" : "1.0-2"
+              }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-expansion-panel> -->
+
+    </div>
+
+    <div class="col-md-4">
+
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Activity </mat-panel-title>
+          <mat-panel-description> </mat-panel-description>
+        </mat-expansion-panel-header>
+        <div class="mcv-activity-list-wrapper">
+          <mcv-activity-list
+            #activity
+            [entity]="'Project'"
+            [entityID]="currentEntity.id"
+          >
+          </mcv-activity-list>
+        </div>
+      </mat-expansion-panel>
+    </div>
+  </div>
+</div>

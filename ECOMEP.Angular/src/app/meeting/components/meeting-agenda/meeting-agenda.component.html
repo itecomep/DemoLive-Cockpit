@@ -1,0 +1,165 @@
+<div class="agenda-wrapper">
+  <div class="agenda-header">
+    <div class="d-flex justify-content-between" [ngClass]="{'flex-column':isMobileView}" *ngIf="currentEntity">
+      <div class="pr-1">
+        <div class="d-flex align-items-center ">
+          <div>
+            <h4 class="index" *ngIf="!hideIndex">{{index+1 | number:'2.0'}}</h4>
+          </div>
+          <div>
+            <small>{{currentEntity.meetingTitle}}</small>
+            <div>
+              <h6 class="font-focused pr-1">{{currentEntity.title}} </h6>
+              <div>
+
+                <span> {{currentEntity.subtitle}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="isMobileView">
+        <small>Last Modified: <span>{{currentEntity.modified | date:"dd MMM yy HH:mm"}}
+            | {{currentEntity.modifiedBy}}
+            | {{currentEntity.updateFrom ||
+            (currentEntity.typeFlag==MEETING_TYPEFLAG_INSPECTION?'INSPECTION':'MEETING')}}</span></small>
+      </div>
+      <div *ngIf="!isMobileView">
+        <small>Last Modified: </small>
+        <div>
+          <span>{{currentEntity.modified | date:"dd MMM yy HH:mm"}}
+            | {{currentEntity.modifiedBy}}
+            | {{currentEntity.updateFrom ||
+            (currentEntity.typeFlag==MEETING_TYPEFLAG_INSPECTION?'INSPECTION':'MEETING')}}</span>
+        </div>
+      </div>
+
+      <div [ngClass]="{'d-flex align-items-center justify-content-between':isMobileView,'pl-1':!isMobileView}">
+        <small>Status: </small>
+        <div>
+          <span class="badge mr-1"
+            [ngClass]="{'badge-pending':!currentEntity.isDelayed, 'badge-delayed':currentEntity.isDelayed}"
+            *ngIf="currentEntity.statusFlag==MEETING_AGENDA_STATUSFLAG_PENDING && !currentEntity.isDelayed">PENDING</span>
+          <span class="badge mr-1"
+            [ngClass]="{'badge-pending':!currentEntity.isDelayed, 'badge-delayed':currentEntity.isDelayed}"
+            *ngIf="currentEntity.statusFlag==MEETING_AGENDA_STATUSFLAG_PENDING && currentEntity.isDelayed">DELAYED</span>
+          <span class="badge badge-resolved mr-1"
+            *ngIf="(currentEntity.typeFlag==MEETING_TYPEFLAG_MEETING || currentEntity.typeFlag==MEETING_TYPEFLAG_CNOTE) && currentEntity.statusFlag==1">RESOLVED</span>
+          <span class="badge badge-resolved mr-1"
+            *ngIf="(currentEntity.typeFlag==MEETING_TYPEFLAG_INSPECTION) && currentEntity.statusFlag==1">COMPLETE</span>
+        </div>
+      </div>
+
+      <div
+        [ngClass]="{'d-flex align-items-center justify-content-between pl-0 py-1':isMobileView,'pl-1':!isMobileView}">
+        <small>Reminder</small>
+        <h5> {{currentEntity.reminderCount | number:'2.0'}}</h5>
+      </div>
+
+      <!-- <div class="flex-grow-1"> -->
+      <div class="d-flex justify-content-between">
+        <div class="d-flex align-items-center justify-content-end">
+          <div *ngIf="allowEdit ||allowDelete ||allowSelection" class="pl-1">
+            <div class="d-flex align-items-center justify-content-end">
+
+              <!-- <button mat-raised-button class="btn btn-circle"
+                [ngClass]="{'btn-warning': isSelected,'btn-light': !isSelected}" (click)="onAgendaSelect()"
+                *ngIf="allowSelection && !currentEntity.packageID && !currentEntity.todoID" matTooltip="Select" aria-label="Select">
+                <mat-icon>card_giftcard</mat-icon>
+              </button> -->
+
+              <button mat-icon-button (click)="onEditClick()" *ngIf="allowEdit" matTooltip="Edit" aria-label="Edit">
+                <mat-icon>create</mat-icon>
+              </button>
+              <button mat-icon-button (click)="onDeleteClick()" *ngIf="allowDelete" matTooltip="Delete"
+                aria-label="delete">
+                <mat-icon>delete</mat-icon>
+              </button>
+              <ng-content></ng-content>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- </div> -->
+    </div>
+  </div>
+
+  <div class="agenda-body" *ngIf="currentEntity">
+    <div class="row  mb-2">
+      <div class="col-md-6">
+        <div [ngClass]="{'d-flex align-item-center justify-content-between':isMobileView}">
+          <small>Action By: </small>
+          <h6 class="font-focused">{{currentEntity.actionBy || 'No Action by'}}</h6>
+        </div>
+        <div [ngClass]="{'d-flex align-item-center justify-content-between':isMobileView}">
+          <small> Due Date: </small>
+          <h6 class="font-focused">{{(currentEntity.dueDate | date:'dd MMM y') || 'No Due Date'}}</h6>
+        </div>
+        <div>
+          <small>Comment: </small>
+          <p class="font-focused mb-2">{{currentEntity.comment}}</p>
+        </div>
+
+        <div *ngIf="currentEntity.todoID">
+          <div class="agenda-package-tag" [ngClass]="{'active':todo.statusFlag==TODO_STATUS_FLAG_ACTIVE}" *ngIf="todo"
+            matTooltip="Linked to Todo">
+            <mat-icon>task_alt</mat-icon>
+            <div>
+
+              <h6 class="mb-0 font-focused">{{ todo.title }}-{{todo.subTitle}}</h6>
+
+              <div class="d-flex align-item-center justify-content-between">
+                <h5>Todo</h5>
+                <div>
+                  <span *ngIf="todo.statusFlag == TODO_STATUS_FLAG_ACTIVE" class="badge green">{{ todo.statusValue
+                    }}</span>
+                  <span *ngIf="todo.statusFlag == TODO_STATUS_FLAG_COMPLETED"
+                    class="badge gray-700">{{todo.statusValue}}</span>
+                </div>
+                <div>
+                  <small style="line-break: anywhere;" *ngIf="todo?.statusFlag==TODO_STATUS_FLAG_ACTIVE">Due:
+                    {{todo.dueDate
+                    |
+                    date:'dd MMM yyyy'}}</small>
+                  <small style="line-break: anywhere;" *ngIf="todo?.statusFlag==TODO_STATUS_FLAG_COMPLETED">Completed: :
+                    {{todo.modified | date:'dd MMM yyyy'}}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <ul class="mcv-file-list">
+
+          <li *ngFor="let file of getFilteredAttachments(currentEntity.attachments,0,true)">
+
+            <mcv-file [filename]="file.filename" [size]="file.size" [tags]="file.searchTags" [downloadUrl]="file.url"
+              [showPreview]="true" [singlePreview]="true" [url]="file.url" [thumbUrl]="file.thumbUrl">
+            </mcv-file>
+
+          </li>
+          <li *ngFor="let file of getFilteredAttachments(currentEntity.attachments,1,true)">
+
+            <mcv-file [filename]="file.filename" [size]="file.size" [tags]="file.searchTags" [downloadUrl]="file.url"
+              [showPreview]="true" [singlePreview]="true" [url]="file.url" [thumbUrl]="file.thumbUrl">
+            </mcv-file>
+          </li>
+        </ul>
+
+      </div>
+      <div class="col-md-6">
+        <mat-expansion-panel [expanded]="false">
+          <mat-expansion-panel-header>
+            <mat-panel-title> History </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <div class="agenda-history">
+            <p class="mb-2" *ngIf="!currentEntity.previousHistory">---history not available---</p>
+            <p class="mb-2" *ngIf="currentEntity.previousHistory">{{currentEntity.previousHistory}}</p>
+          </div>
+        </mat-expansion-panel>
+      </div>
+    </div>
+  </div>
+</div>

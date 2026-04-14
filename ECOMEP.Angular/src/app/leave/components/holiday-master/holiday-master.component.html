@@ -1,0 +1,154 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h6 class="font-focused">Holiday Master</h6>
+    <button mat-icon-button aria-label="close" (click)="onClose(null)">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+<mat-dialog-content style="padding: 0 !important;">
+    <div class="holiday-master-wrapper">
+        <table *ngIf="fa">
+            <thead>
+                <tr>
+                    <th>Index</th>
+                    <!-- <th>Holiday/Working</th> -->
+                    <th>Holiday Date</th>
+                    <th>Title</th>
+                    <!-- <th>Description</th> -->
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let item of holidaysMasterArr; let i =index">
+                    <tr>
+                        <td>{{i + 1}}</td>
+                        <!-- <td>
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <form>
+                                        <mat-select (input)="onInput(fa,i,'typeFlag')"
+                                            [formControl]="getFormControl(fa,i,'typeFlag')"
+                                            (change)="onCellChange(fa,i,'typeFlag',item)"
+                                            (selectionChange)="onSelectionChange($event.value,fa,i,'typeFlag',item)">
+                                            <mat-option *ngFor="let item of holidayTypeMaster"
+                                                [value]="item.value">{{item.title}}</mat-option>
+                                        </mat-select>
+                                    </form>
+                                </div>
+                            </div>
+                        </td> -->
+                        <td>
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <form class="d-flex align-items-center">
+                                        <input matInput (input)="onInput(fa,i,'holidayDate')"
+                                            [formControl]="getFormControl(fa,i,'holidayDate')"
+                                            (change)="onCellChange(fa,i,'holidayDate',item)" aria-label="Holiday Date"
+                                            matInput [matDatepicker]="holidayDatePicker" readonly>
+                                        <mat-datepicker-toggle matSuffix
+                                            [for]="holidayDatePicker"></mat-datepicker-toggle>
+                                        <mat-datepicker [touchUi]="isMobileView" #holidayDatePicker></mat-datepicker>
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <form>
+                                        <textarea matInput (input)="onInput(fa,i,'title')"
+                                            [formControl]="getFormControl(fa,i,'title')"
+                                            (change)="onCellChange(fa,i,'title',item)" cdkTextareaAutosize
+                                            #autosize="cdkTextareaAutosize"></textarea>
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+                        <!-- <td>
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <form>
+                                        <textarea matInput (input)="onInput(fa,i,'description')"
+                                            [formControl]="getFormControl(fa,i,'description')"
+                                            (change)="onCellChange(fa,i,'description',item)" cdkTextareaAutosize
+                                            #autosize="cdkTextareaAutosize"></textarea>
+                                    </form>
+                                </div>
+                            </div>
+                        </td> -->
+                        <td>
+                            <div class="cell-content">
+                                <button mat-icon-button (click)="onDelete(item)">
+                                    <mat-icon>clear</mat-icon>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-container>
+                <tr>
+                    <td>
+                        {{holidaysMasterArr.length+1}}
+                    </td>
+                    <!-- <td>
+                        <div class="cell-content">
+                            <div class="cell-input">
+                                <form>
+                                    <mat-select (input)="onInput(fa,holidaysMasterArr.length,'typeFlag')"
+                                        [formControl]="getFormControl(fa,holidaysMasterArr.length,'typeFlag')"
+                                        (change)="onCellChange(fa,holidaysMasterArr.length,'typeFlag')">
+                                        <mat-option *ngFor="let item of holidayTypeMaster"
+                                            [value]="item.value">{{item.title}}</mat-option>
+                                    </mat-select>
+                                </form>
+                            </div>
+                        </div>
+                    </td> -->
+                    <td>
+                        <div class="cell-content">
+                            <div class="cell-input">
+                                <form class="d-flex align-items-center">
+                                    <input matInput (input)="onInput(fa,holidaysMasterArr.length,'holidayDate')"
+                                        [formControl]="getFormControl(fa,holidaysMasterArr.length,'holidayDate')"
+                                        (change)="onCellChange(fa,holidaysMasterArr.length,'holidayDate')"
+                                        aria-label="Holiday Date" matInput [matDatepicker]="holidayDatePicker" readonly>
+                                    <mat-datepicker-toggle matSuffix [for]="holidayDatePicker"></mat-datepicker-toggle>
+                                    <mat-datepicker [touchUi]="isMobileView" #holidayDatePicker></mat-datepicker>
+                                </form>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="cell-content">
+                            <div class="cell-input">
+                                <form>
+                                    <textarea matInput (input)="onInput(fa,holidaysMasterArr.length,'title')"
+                                        [formControl]="getFormControl(fa,holidaysMasterArr.length,'title')"
+                                        (change)="onCellChange(fa,holidaysMasterArr.length,'title')" cdkTextareaAutosize
+                                        #autosize="cdkTextareaAutosize"></textarea>
+                                </form>
+                            </div>
+                        </div>
+                    </td>
+                    <!-- <td>
+                        <div class="cell-content">
+                            <div class="cell-input">
+                                <form>
+                                    <textarea matInput (input)="onInput(fa,holidaysMasterArr.length,'description')"
+                                        [formControl]="getFormControl(fa,holidaysMasterArr.length,'description')"
+                                        (change)="onCellChange(fa,holidaysMasterArr.length,'description')"
+                                        cdkTextareaAutosize #autosize="cdkTextareaAutosize"></textarea>
+                                </form>
+                            </div>
+                        </div>
+                    </td> -->
+                    <td>
+                        <div class="cell-content">
+                            <button mat-icon-button (click)="onSubmit()">
+                                <mat-icon>add</mat-icon>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</mat-dialog-content>

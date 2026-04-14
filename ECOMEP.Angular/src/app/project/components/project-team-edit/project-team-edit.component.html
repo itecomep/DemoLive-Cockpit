@@ -1,0 +1,19 @@
+<form autocomplete="off">
+    <mat-form-field appearance="outline" >
+        <mat-label>Select Team</mat-label>
+        <input placeholder="Enter team title to select from the list"
+            aria-label="Select Team" matInput [formControl]="teamFC" [matAutocomplete]="autoTeam"
+            />
+    
+        <mat-autocomplete #autoTeam="matAutocomplete" [displayWith]="displayFnTeam" (optionSelected)="onSelectTeam($event)" >
+            <mat-option *ngFor="let option of filteredTeams$ | async" [value]="option">
+                {{ option.title }}
+            </mat-option>
+        </mat-autocomplete>
+        <span matSuffix>
+            <mat-icon>group</mat-icon>
+        </span>
+        <mat-error>{{ getErrorMessage(teamFC) }}</mat-error>
+        <mat-hint >Enter team title to select from the list</mat-hint>
+    </mat-form-field>
+</form >

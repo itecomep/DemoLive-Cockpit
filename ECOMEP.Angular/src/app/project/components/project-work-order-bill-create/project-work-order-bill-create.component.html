@@ -1,0 +1,281 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">New Proforma Invoice</h5>
+    <div class="d-flex align-items-center">
+        <button mat-raised-button color="primary" (click)="onSubmit()">Save</button>
+        <button mat-icon-button aria-label="close" (click)="onClose()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+<mat-dialog-content>
+
+    <div class="project-bill-wrapper">
+        <div class="row">
+            <div class="col-md-6">
+                <mat-expansion-panel [expanded]="true">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>Stages</mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div class="property-collection">
+                        <!-- <div class="property">
+             <div class="property-details">
+               <small class="property-label">Total Project Fee</small>
+               <div class="property-value">
+                 <span>{{ bill.projectFee | currency: "INR" : "symbol" : "1.2-2" }}</span>
+               </div>
+             </div>
+           </div> -->
+                        <!-- <div class="property">
+             <div class="property-details">
+               <small class="property-label">Total Stage Progress</small>
+               <div class="property-value">
+                 <span>{{ totalStageProgress | number: "1.2-2" }}%</span>
+               </div>
+             </div>
+           </div> -->
+                    </div>
+                    <div class="project-stages-table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Stage</th>
+                                    <th>Value</th>
+                                    <th>Fee</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody [formGroup]="stagesFG">
+                                <ng-container formArrayName="selected">
+                                    <ng-container *ngFor="let item of workOrderStages; let i = index">
+                                        <tr *ngIf="!item.isReadOnly">
+                                            <td>{{ item.title }}</td>
+                                            <td class="align-center">{{ item.percentage }}%</td>
+                                            <td class="align-right">
+                                                {{ getStageFee(item.percentage) | currency: "INR" : "symbol" : "1.2-2"
+                                                }}
+                                            </td>
+                                            <td class="align-right">
+                                                <span class="status-badge status-badge-yellow"
+                                                    *ngIf="item.statusFlag == PROJECT_STAGE_STATUS_FLAG_PENDING">PENDING</span>
+                                                <span class="status-badge status-badge-orange"
+                                                    *ngIf="item.statusFlag == PROJECT_STAGE_STATUS_FLAG_COMPLETED">COMPLETED</span>
+                                                <span class="status-badge status-badge-red"
+                                                    *ngIf="item.statusFlag == PROJECT_STAGE_STATUS_FLAG_BILLED">BILLING</span>
+                                                <span class="status-badge status-badge-green"
+                                                    *ngIf="item.statusFlag == PROJECT_STAGE_STATUS_FLAG_PAYMENT_RECEIVED">PAYMENT
+                                                    RECEIVED</span>
+                                            </td>
+                                            <td class="align-right">
+                                                <mat-checkbox [formControlName]="i"></mat-checkbox>
+                                            </td>
+                                        </tr>
+                                    </ng-container>
+                                </ng-container>
+                            </tbody>
+                        </table>
+                    </div>
+                </mat-expansion-panel>
+            </div>
+
+            <div class="col-md-6">
+                <mat-expansion-panel [expanded]="true" [formGroup]="form">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>Invoice Details</mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div class="project-bill-form-wrapper">
+                        <div class="property-collection">
+                            <div class="property" *ngIf="!isPreDated">
+                                <div class="property-details">
+                                    <small class="property-label">Proforma Invoice no.</small>
+                                    <div class="property-value">
+                                        <span>{{ bill.proformaInvoiceNo }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="property">
+                                <div class="property-details">
+                                    <small class="property-label">Total Project Fee</small>
+                                    <div class="property-value">
+                                        <span>{{ bill.projectFee | currency: "INR" : "symbol" : "1.2-2" }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row m-0">
+
+                            <mat-form-field appearance="outline" class="col-md-6">
+                                <mat-label>Work Order Date</mat-label>
+                                <input matInput formControlName="workOrderDate" [matDatepicker]="workOrderDatePicker"
+                                    placeholder="Select Date" />
+                                <mat-error>{{
+                                    getErrorMessage(f.workOrderDate)
+                                    }}</mat-error>
+                                <mat-datepicker-toggle matSuffix [for]="workOrderDatePicker"></mat-datepicker-toggle>
+                                <mat-datepicker [touchUi]="isMobileView" #workOrderDatePicker></mat-datepicker>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-md-6">
+                                <mat-label>Work Order No.</mat-label>
+                                <input placeholder="Work Order No." aria-label="workOrderNo" matInput
+                                    formControlName="workOrderNo" />
+                                <mat-error>{{getErrorMessage(f.workOrderNo)}}</mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-md-12" *ngIf="isPreDated">
+                                <mat-label>Proforma Invoice No.</mat-label>
+                                <input placeholder="Enter Proforma InvoiceNo" aria-label="proformaInvoiceNo" matInput
+                                    formControlName="proformaInvoiceNo" />
+                                <mat-error>{{getErrorMessage(f.proformaInvoiceNo)}}</mat-error>
+                                <mat-hint> Enter Proforma Invoice No. as per exsiting data</mat-hint>
+                            </mat-form-field>
+                            <!-- 
+            <mat-form-field appearance="outline" class="col-md-6" *ngIf="isPreDated">
+              <mat-label>Proforma Invoice No.</mat-label>
+              <input placeholder="Enter Proforma InvoiceNo" aria-label="proformaInvoiceNo" matInput formControlName="proformaInvoiceNo" />
+              <mat-error>{{getErrorMessage(f.proformaInvoiceNo)}}</mat-error>
+            </mat-form-field> -->
+
+                            <mat-form-field appearance="outline" class="col-md-6">
+                                <mat-label>Bill Date</mat-label>
+                                <input matInput formControlName="billDate" [matDatepicker]="billDatePicker"
+                                    placeholder="Select Date" />
+                                <mat-error>{{
+                                    getErrorMessage(f.billDate)
+                                    }}</mat-error>
+                                <mat-datepicker-toggle matSuffix [for]="billDatePicker"></mat-datepicker-toggle>
+                                <mat-datepicker [touchUi]="isMobileView" #billDatePicker></mat-datepicker>
+                            </mat-form-field>
+
+
+                            <mat-form-field appearance="outline" class="col-md-6">
+                                <mat-label>Bill Percentage</mat-label>
+                                <input type="number" placeholder="billPercentage" aria-label="billPercentage" matInput
+                                    formControlName="billPercentage" class="text-right" />
+                                <span matSuffix>&#37;&nbsp;</span>
+                                <mat-error>{{getErrorMessage(f.billPercentage)}}</mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-md-12 ">
+                                <mat-label>Bill Amount (A)</mat-label>
+                                <input type="number" placeholder="Bill Amount" aria-label="Bill Amount" matInput
+                                    formControlName="billAmount" class="text-right" />
+                                <span matSuffix>&#8377;&nbsp;</span>
+                                <mat-error>{{getErrorMessage(f.billAmount)}}</mat-error>
+                                <mat-hint align="end">{{f.billPercentage.value}}% of Total Project Fee</mat-hint>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-md-12 ">
+                                <mat-label>Previous Bill Amount (B)</mat-label>
+                                <input type="number" placeholder="Previous Bill Amount" aria-label="previousBillAmount"
+                                    matInput formControlName="previousBillAmount" class="text-right" />
+                                <span matSuffix>&#8377;&nbsp;</span>
+                                <mat-error>{{getErrorMessage(f.previousBillAmount)}}</mat-error>
+                                <mat-hint align="end">Total bill amount received till date</mat-hint>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-md-12 ">
+                                <mat-label>Due Amount (C)(A-B)</mat-label>
+                                <input type="number" placeholder="dueAmount" aria-label="dueAmount" matInput
+                                    formControlName="dueAmount" class="text-right" />
+                                <span matSuffix>&#8377;&nbsp;</span>
+                                <mat-error>{{getErrorMessage(f.dueAmount)}}</mat-error>
+                                <mat-hint align="end">Amount due to pay</mat-hint>
+                            </mat-form-field>
+
+                            <!-- <div class="form-property-collection">
+             <div class="property">
+               <div class="property-details">
+                 <small class="property-label">CGST {{cgstRate}}% (D)</small>
+                 <div class="property-value">
+                   <span>{{ f.cgstAmount.value }} &#8377;&nbsp;</span>
+                 </div>
+               </div>
+             </div>
+            
+             <div class="property">
+               <div class="property-details">
+                 <small class="property-label">SGST {{sgstRate}}% (E)</small>
+                 <div class="property-value">
+                   <span>{{ f.sgstAmount.value }} &#8377;&nbsp;</span>
+                 </div>
+               </div>
+             </div>
+            
+             <div class="property">
+               <div class="property-details">
+                 <small class="property-label">IGST {{igstRate}}% (F)</small>
+                 <div class="property-value">
+                   <span>{{ f.igstAmount.value }} &#8377;&nbsp;</span>
+                 </div>
+               </div>
+             </div>
+     
+             <div class="property payable-amount">
+              <div class="property-details">
+                <small class="property-label">Payable Amount (G)(C-D-E-F)</small>
+                <div class="property-value ">
+                  <span>{{ f.payableAmount.value }} &#8377;&nbsp;</span>
+                </div>
+              </div>
+            </div>
+           </div> -->
+                            <mat-form-field appearance="outline" class="col-md-12">
+                                <mat-label>CGST {{cgstRate}}% (D)</mat-label>
+                                <input type="number" placeholder="cgstAmount" aria-label="cgstAmount" matInput
+                                    formControlName="cgstAmount" class="text-right" />
+                                <span matSuffix>&#8377;&nbsp;</span>
+                                <mat-error>{{getErrorMessage(f.cgstAmount)}}</mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-md-12 ">
+                                <mat-label>SGST {{sgstRate}}% (E)</mat-label>
+                                <input type="number" placeholder="sgstAmount" aria-label="sgstAmount" matInput
+                                    formControlName="sgstAmount" class="text-right" />
+                                <span matSuffix>&#8377;&nbsp;</span>
+                                <mat-error>{{getErrorMessage(f.sgstAmount)}}</mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-md-12 ">
+                                <mat-label>IGST {{igstRate}}% (F)</mat-label>
+                                <input type="number" placeholder="igstAmount" aria-label="igstAmount" matInput
+                                    formControlName="igstAmount" class="text-right" />
+                                <span matSuffix>&#8377;&nbsp;</span>
+                                <mat-error>{{getErrorMessage(f.igstAmount)}}</mat-error>
+                                <mat-hint align="end">Applicable for interstate service</mat-hint>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-md-12">
+                                <mat-label>Payable Amount (G)(C-D-E-F)</mat-label>
+                                <input type="number" placeholder="Payable Amount" aria-label="Payable Amount" matInput
+                                    formControlName="payableAmount" class="text-right" />
+                                <span matSuffix>&#8377;&nbsp;</span>
+                                <mat-error>{{getErrorMessage(f.payableAmount)}}</mat-error>
+                                <mat-hint align="end">Total amount to be paid including GST</mat-hint>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-md-12">
+                                <mat-label>TDS {{tdsRate}}% (H)</mat-label>
+                                <input type="number" placeholder="TDS" aria-label="TDS" matInput
+                                    formControlName="tdsAmount" class="text-right" />
+                                <span matSuffix>&#8377;&nbsp;</span>
+                                <mat-error>{{getErrorMessage(f.tdsAmount)}}</mat-error>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="col-md-12">
+                                <mat-label>Amount After TDS (I)(A-H)</mat-label>
+                                <input type="number" placeholder="Amount After TDS" aria-label="Amount After TDS"
+                                    matInput formControlName="amountAfterTds" class="text-right" />
+                                <span matSuffix>&#8377;&nbsp;</span>
+                                <mat-error>{{getErrorMessage(f.amountAfterTds)}}</mat-error>
+                            </mat-form-field>
+
+                        </div>
+
+                    </div>
+                </mat-expansion-panel>
+            </div>
+        </div>
+    </div>
+</mat-dialog-content>

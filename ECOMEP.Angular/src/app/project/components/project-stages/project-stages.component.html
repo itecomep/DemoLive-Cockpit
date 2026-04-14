@@ -1,0 +1,129 @@
+<div class="project-stages-wrapper">
+  <div class="project-stages-header">
+
+    <div>
+      <small>Total Progress</small>
+      <h6>{{stageTotalProgress}}%</h6>
+    </div>
+
+    <!-- <div>
+        <small>Manual Stages</small>
+        <h6>{{stageManualProgress}} %</h6>
+      </div>
+   -->
+    <!-- <div>
+        <small>Job Stages</small>
+        <h6>{{stageJobProgress}} %</h6>
+      </div> -->
+
+    <!-- <div>
+      <small>Meeting Stages</small>
+      <h6>{{stageMeetingProgress}} %</h6>
+    </div> -->
+
+    <div>
+      <small>Pending Stages</small>
+      <h6>{{stagePendingProgress}}%</h6>
+    </div>
+
+  </div>
+
+  <div class="project-stages-table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th></th>
+          <th>Stage</th>
+          <th>Value</th>
+          <th>Target Date</th>
+          <th>Billing Date</th>
+          <th>Payment Received Date</th>
+          <th>Status</th>
+        </tr>
+        <tr class="total">
+          <th colspan="2">Total</th>
+          <th [ngClass]="{ 'bg-red': stageTotal != 100 }">
+            {{stageTotal}}%
+          </th>
+          <th colspan="5"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let item of stages;let i = index">
+          <tr>
+            <td class="align-center">{{i + 1}}</td>
+            <td *ngIf="item.children.length == 0"></td>
+            <td *ngIf="item.children.length > 0" class="align-center" (click)="toggleExpand(i)">
+              <mat-icon *ngIf="!isExpanded[i]">expand_more</mat-icon>
+              <mat-icon *ngIf="isExpanded[i]">expand_less</mat-icon>
+            </td>
+            <td>{{item.title}}</td>
+            <td class="align-center">{{item.percentage}}%</td>
+            <td class="align-center">{{item?.dueDate | date:"dd MMM yyyy"}}</td>
+            <td class="align-center">{{item?.billingDate | date:"dd MMM yyyy"}}</td>
+            <td class="align-center">{{item?.paymentReceivedDate | date:"dd MMM yyyy"}}</td>
+            <td class="align-center">
+              <span class="status-badge" [ngClass]="{
+                  'status-badge-yellow': item.statusFlag == PROJECT_STAGE_STATUS_FLAG_PENDING,
+                  'status-badge-orange': item.statusFlag == PROJECT_STAGE_STATUS_FLAG_COMPLETED,
+                  'status-badge-red': item.statusFlag == PROJECT_STAGE_STATUS_FLAG_BILLED,
+                  'status-badge-green': item.statusFlag == PROJECT_STAGE_STATUS_FLAG_PAYMENT_RECEIVED,
+                  }">
+                {{item.statusValue}}
+              </span>
+              <!-- <span class="status-badge status-badge-yellow"
+                *ngIf="item.statusFlag == PROJECT_STAGE_STATUS_FLAG_PENDING">WORK PENDING</span>
+              <span class="status-badge status-badge-orange"
+                *ngIf="item.statusFlag == PROJECT_STAGE_STATUS_FLAG_COMPLETED">WORK COMPLETED/UNBILLED</span>
+              <span class="status-badge status-badge-red"
+                *ngIf="item.statusFlag == PROJECT_STAGE_STATUS_FLAG_BILLED">BILLED</span>
+              <span class="status-badge status-badge-green"
+                *ngIf="item.statusFlag == PROJECT_STAGE_STATUS_FLAG_PAYMENT_RECEIVED">PAYMENT RECEIVED</span> -->
+            </td>
+          </tr>
+          <tr *ngIf="item.children && item.children.length > 0 && isExpanded[i]">
+            <td colspan="12">
+              <table class="nested-table">
+                <thead>
+                  <tr>
+                    <th colspan="4"></th>
+                    <!-- <th>Stage</th> -->
+                    <th>Previous Date</th>
+                    <th>Comment</th>
+                    <th>Modified By</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let children of item.children">
+                    <td colspan="4"></td>
+                    <!-- <td class="align-center">
+                      <div>
+                        {{children.title}}
+                      </div>
+                    </td> -->
+                    <td class="align-center">
+                      <div>
+                        {{children.dueDate | date:"dd MMM yyyy"}}
+                      </div>
+                    </td>
+                    <td class="align-center">
+                      <div>
+                        {{children.description}}
+                      </div>
+                    </td>
+                    <td class="align-center">
+                      <div>
+                        {{children.modifiedBy}}
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+</div>

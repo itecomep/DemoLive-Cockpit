@@ -1,0 +1,16 @@
+<div class="row">
+  <div class="col-12">
+      <h6 class="mb-0">{{item.title}}</h6>
+      <h5 class="float-left mr-1"> #{{item.orderFlag | number:'3.0'}}</h5>
+      <span class="mb-0"> <small>on</small> {{item.startDate| date:'dd MMM y' }} </span>
+
+      <span *ngIf="item.statusFlag==0" class="badge badge-primary float-right ml-1">{{item.statusValue}}</span>
+      <span *ngIf="item.statusFlag==1" class="badge badge-dark float-right ml-1">{{item.statusValue}}</span>
+      <span *ngIf="item.statusFlag==2" class="badge badge-gray float-right ml-1">{{item.statusValue}}</span>
+      <span *ngIf="item.statusFlag==3" class="badge badge-gray float-right ml-1">{{item.statusValue}}</span>
+
+      <span *ngIf="item.typeFlag!=0" class="badge badge-warning float-right ml-1">{{item.typeValue}}</span>
+
+
+  </div>
+</div>

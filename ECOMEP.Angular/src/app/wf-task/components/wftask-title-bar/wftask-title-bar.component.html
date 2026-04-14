@@ -1,0 +1,24 @@
+<div class="title-bar task-title-bar" [ngClass]="{'delayed-task':task.isDelayed}" *ngIf="task">
+  <div>
+    <h5>{{task.title}}</h5>
+    <span>{{task.subtitle}}</span>
+  </div>
+
+  <h6 *ngIf="task.entity !== NAMEOF_ENTITY_REQUEST_TICKET"><small>R</small> {{task.stageRevision}}</h6>
+  <h6 *ngIf="task.entity == NAMEOF_ENTITY_REQUEST_TICKET"><small>V</small> {{task.stageRevision}}</h6>
+
+  <div>
+    <small>Assigned MHr</small>
+    <h6 *ngIf="task.mHrAssigned!==0"> {{task.mHrAssigned | number:'2.0-2'}}</h6>
+  </div>
+
+  <div>
+    <small>Task Start </small>
+    <h6>{{task.startDate | date:'dd MMM y HH:mm'}}</h6>
+  </div>
+
+  <div>
+    <small>Task Due </small>
+    <h6> {{task.dueDate | date:'dd MMM y HH:mm'}}</h6>
+  </div>
+</div>

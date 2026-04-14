@@ -1,0 +1,48 @@
+<div class="asset-file-wrapper" [ngClass]="{'asset-file-item-small':!showPreview}" *ngIf="filename">
+    <div class="asset-file-thumbnail-wrapper"
+        *ngIf="showPreview && (mediaType=='image' || mediaType=='video' || mediaType=='audio')">
+
+        <img class="asset-file-thumbnail" src="{{ url || 'assets/images/file-not-found.png' }}" alt=""
+            *ngIf="mediaType==='image'" />
+
+        <div class="asset-file-thumbnail-icon" *ngIf="mediaType==='video'">
+            <mat-icon>play_circle_filled</mat-icon>
+        </div>
+        <div class="asset-file-thumbnail-icon" *ngIf="mediaType==='audio'">
+            <mat-icon>music_note</mat-icon>
+        </div>
+
+        <img class="asset-file-thumbnail-icon" src="assets/icons/{{extension}}.png" alt=""
+            *ngIf="mediaType!='image' && mediaType!='video' && mediaType!='audio'" />
+
+
+        <div class="asset-file-video-preview" *ngIf="mediaType=='video'">
+            <img class="asset-file-thumbnail" src="{{ (url ? getVideoThumbUrl(url) : 'assets/images/file-not-found.png') }}"
+                alt="" *ngIf="mediaType==='video'" />
+        </div>
+    </div>
+
+    <div class="asset-file-caption" *ngIf="mediaCaption">
+        <small>{{mediaCaption}}</small>
+    </div>
+
+    <div class="asset-entity-attachment-overlay">
+        <div class="asset-entity-attachment-header" *ngIf="showRemove">
+            <ul class="asset-search-tags justify-content-end" *ngIf="tags">
+                <li *ngFor="let tag of tags" style="font-size: 0.8rem;padding: 0px 4px 0 7px;">
+                    {{tag}}
+                    <span class="remove-button" (click)="onRemove(tag)" *ngIf="showRemove">
+                        <mat-icon>close</mat-icon>
+                    </span>
+                </li>
+            </ul>
+            <mat-icon (click)="onDelete()" matTooltip="Delete Attachment">
+                delete
+            </mat-icon>
+        </div>
+        <div class="asset-entity-attachment-body" [ngClass]="{'asset-entity-attachment-body-nodelete':!showRemove}"
+            (click)="onPreview()"></div>
+    </div>
+    <mat-progress-bar *ngIf="progress" class="mcv-file-progress" mode="determinate" [value]="progress">
+    </mat-progress-bar>
+</div>

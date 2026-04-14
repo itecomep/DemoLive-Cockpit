@@ -1,0 +1,59 @@
+@import 'variables';
+
+.sidenav {
+    position: fixed;
+    top: 2.5rem;
+    right: -20rem;
+    width: 20rem;
+    height: calc(100vh - 5.5rem);
+    background-color: #353535;
+    z-index: 1000;
+    transition: right 0.3s ease-in-out;
+    box-shadow: $box-shadow;
+    overflow: hidden;
+    border-radius: $border-radius;
+
+    .filter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem;
+        background-color: #dddddd;
+
+        mat-icon {
+            cursor: pointer;
+        }
+    }
+
+    .filter-body {
+        padding: 1rem;
+        height: 100%;
+        background-color: #fff;
+    }
+
+    &.sidenav-active {
+        right: 0;
+    }
+}
+
+.sidenav-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999;
+}
+
+
+/* Mobile view */
+@media (max-width: 768px) {
+    .sidenav {
+        width: 100%;
+        right: -100%;
+    }
+
+    .sidenav.sidenav-active {
+        right: 0;
+    }
+}

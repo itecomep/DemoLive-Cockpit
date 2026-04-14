@@ -1,0 +1,236 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">Sub-Todo</h5>
+    <div class="d-flex align-items-center">
+        <button mat-raised-button (click)="onSubmit()" color="primary">
+            Save
+        </button>
+        <button mat-icon-button aria-label="close" (click)="onClose()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+<mat-dialog-content *ngIf="currentEntity">
+    <div class="title-bar">
+        <div>
+            <h5 *ngIf="!isCreateMode">{{currentEntity.title}}</h5>
+            <small *ngIf="!isCreateMode">{{currentEntity.subTitle}}</small>
+        </div>
+        <div>
+            <span *ngIf="currentEntity.statusFlag == 0" class="badge green">{{ currentEntity.statusValue }}</span>
+            <span *ngIf="currentEntity.statusFlag == 1" class="badge gray-700">{{currentEntity.statusValue}}</span>
+            <span *ngIf="currentEntity.statusFlag == 2" class="badge gray-500">{{currentEntity.statusValue}}</span>
+        </div>
+
+        <div>
+            <small>Assigned By </small>
+            <h6 *ngIf="!isCreateMode && currentEntity.assigner"> {{currentEntity.assigner.name}}</h6>
+        </div>
+
+        <div>
+            <small>Assigned On </small>
+            <h6 *ngIf="!isCreateMode">
+                {{currentEntity.created | date:'dd MMM y HH:mm'}}
+            </h6>
+        </div>
+
+        <div>
+            <small>Modified </small>
+            <h6 *ngIf="!isCreateMode">
+                {{currentEntity.modified | date:'dd MMM y HH:mm'}}
+            </h6>
+        </div>
+    </div>
+    <app-wftask-title-bar [task]="task"></app-wftask-title-bar>
+
+    <div class="container-fluid">
+
+        <div class="row">
+            <!-- <div class="col-md-12" *ngIf="isTaskMode && task && !isMobileView">
+            <mat-expansion-panel [expanded]="true">
+              <mcv-time-entry-time-line #timeline [wfTask]="task" (created)="onUpdateTimeEntries($event)"
+                (updated)="onUpdateTimeEntries($event)" (deleted)="onUpdateTimeEntries($event)"
+                [readonly]="task.wfStageCode===TASK_STAGE_TODO_WORK">
+              </mcv-time-entry-time-line>
+            </mat-expansion-panel>
+          </div> -->
+
+            <!-- Not CreateMode  -->
+            <div class="col-md-7">
+                <mat-expansion-panel [expanded]="true">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title> Details </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <form [formGroup]="form" autocomplete="off">
+
+                        <mat-form-field appearance="outline" class="col-sm-6">
+                            <mat-label>Type</mat-label>
+                            <mat-select formControlName="titleType" placeholder="Type">
+                                <mat-option *ngFor="let currentEntity of titleTypeOptions" [value]="currentEntity">
+                                    {{currentEntity}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="col-sm-6">
+                            <mat-label>Assign To</mat-label>
+                            <input placeholder="Enter name of person to select from the list" aria-label="Assign To"
+                                matInput formControlName="assignee" [matAutocomplete]="autoContact" />
+
+                            <mat-autocomplete #autoContact="matAutocomplete" [displayWith]="displayFnContact">
+                                <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
+                                    {{ option.name }}
+                                </mat-option>
+                            </mat-autocomplete>
+                            <span matSuffix>
+                                <mat-icon>person</mat-icon>
+                            </span>
+                            <mat-error>{{ getErrorMessage(f.assignee) }}</mat-error>
+                            <mat-hint>Enter name of person to select from the list</mat-hint>
+                        </mat-form-field>
+
+                        <!-- [matDatepickerFilter]="dateFilter" -->
+                        <mat-form-field appearance="outline" class="col-sm-6">
+                            <mat-label>Due Date*</mat-label>
+                            <input placeholder="Due Date" aria-label="Due Date" matInput formControlName="dueDate"
+                                [matDatepicker]="picker" readonly>
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker [touchUi]="isMobileView" #picker></mat-datepicker>
+                            <mat-error>{{getErrorMessage(f.dueDate)}} Must be greater than current time</mat-error>
+                            <mat-hint>Must be greater than current time</mat-hint>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="col-sm-6">
+                            <mat-label>Due Time*</mat-label>
+                            <input placeholder="Due Time" aria-label="Due Time" matInput formControlName="dueTime"
+                                [ngxTimepicker]="dueTime" [format]="24" readonly>
+                            <ngx-material-timepicker #dueTime
+                                [minutesGap]="timePickerMinutesGap"></ngx-material-timepicker>
+                            <mat-error>{{getErrorMessage(f.dueTime)}} 24 hour format</mat-error>
+                            <mat-hint>24 hour format</mat-hint>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="col-sm-6">
+                            <mat-label>Hours Assigned</mat-label>
+                            <input type="number" placeholder="Hours Assigned" aria-label="Hours Assigned" matInput
+                                formControlName="mHrAssigned" step="0.5" min="0.5">
+                            <span matSuffix><mat-icon>hourglass_empty</mat-icon></span>
+                            <mat-error>{{getErrorMessage(f.mHrAssigned)}}</mat-error>
+                            <mat-hint>Hours required for the work</mat-hint>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="col-sm-6">
+                            <mat-label>Priority</mat-label>
+                            <mat-select formControlName="priority" placeholder="Priority">
+                                <mat-option *ngFor="let item of priorityOptions" [value]="item">
+                                    {{item}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="col-md-12">
+                            <mat-label>Description</mat-label>
+                            <textarea aria-label="comment" matInput formControlName="comment"
+                                cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="2"
+                                cdkAutosizeMaxRows="5"></textarea>
+                            <mat-error>{{getErrorMessage(f.comment)}}</mat-error>
+                        </mat-form-field>
+                    </form>
+                </mat-expansion-panel>
+                <mat-expansion-panel [expanded]="true">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            Attachments <small>{{currentEntity.attachments.length}} items</small>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+
+                    <div class="mcv-activity-list-wrapper">
+                        <app-mcv-file-upload [uploaderConfig]="blobConfig" [showPaste]="true" [showDrop]="true"
+                            (upload)="onUpload($event)" *ngIf="blobConfig">
+                        </app-mcv-file-upload>
+                        <ul class="mcv-file-list">
+                            <li *ngFor="let file of getFilteredAttachments(currentEntity.attachments,0,false)">
+
+                                <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="true"
+                                    [tags]="file.searchTags" (addTag)="onAddAttachmentTag($event,file)"
+                                    (delete)="onDeleteAttachment(file)" [allowTagging]="true" [downloadUrl]="file.url"
+                                    [showPreview]="true" [singlePreview]="true" [url]="file.url"
+                                    [thumbUrl]="file.thumbUrl">
+                                </mcv-file>
+
+                            </li>
+                            <li *ngFor="let file of getFilteredAttachments(currentEntity.attachments,0,true)">
+
+                                <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="true"
+                                    [tags]="file.searchTags" (addTag)="onAddAttachmentTag($event,file)"
+                                    (delete)="onDeleteAttachment(file)" [allowTagging]="true" [downloadUrl]="file.url"
+                                    [showPreview]="true" [singlePreview]="true" [url]="file.url"
+                                    [thumbUrl]="file.thumbUrl">
+                                </mcv-file>
+
+                            </li>
+                        </ul>
+                    </div>
+                </mat-expansion-panel>
+
+                <!-- <mat-expansion-panel [expanded]="true">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title> Meeting Agenda </mat-panel-title>
+                    </mat-expansion-panel-header>
+    
+                    <ng-container *ngFor="let agenda of meetingAgendaList">
+    
+                        <app-todo-meeting-agenda [agenda]="agenda">
+                        </app-todo-meeting-agenda>
+                    </ng-container>
+    
+                </mat-expansion-panel> -->
+
+                <!-- Checklist & Attachment -->
+                <mat-expansion-panel [expanded]="true">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title> Checklist <small>{{currentEntity.agendas.length}}
+                                items</small></mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <div class="row">
+                        <div class="col-12">
+                            <small *ngIf="!isCreateMode " class="float-right">Checklist currentEntitys can be
+                                marked/checked
+                                as
+                                done in during
+                                work task only</small>
+                        </div>
+                    </div>
+                    <div class="mcv-activity-list-wrapper">
+                        <todo-agenda [config]="agendaConfig" (update)="onAgendaUpdate($event)"></todo-agenda>
+                    </div>
+                </mat-expansion-panel>
+
+
+            </div>
+
+            <div class="col-md-5" *ngIf="!isCreateMode">
+                <mat-expansion-panel [expanded]="true" *ngIf="!isCreateMode">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title> Activity </mat-panel-title>
+                        <mat-panel-description>
+
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    <div class="mcv-activity-list-wrapper">
+                        <mcv-activity-list #activity [entity]="nameOfEntity" [entityID]="currentEntity.id">
+                        </mcv-activity-list>
+                    </div>
+                </mat-expansion-panel>
+
+                <mat-expansion-panel [expanded]="true">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>Tags</mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <app-mcv-tag-editor [tags]="currentEntity.searchTags" [tagOptions]="tagOptions"
+                        [isPermissionEdit]="isPermissionEdit" (update)="onTagsUpdate($event)" *ngIf="!isCreateMode">
+                    </app-mcv-tag-editor>
+                </mat-expansion-panel>
+            </div>
+        </div>
+    </div>
+</mat-dialog-content>

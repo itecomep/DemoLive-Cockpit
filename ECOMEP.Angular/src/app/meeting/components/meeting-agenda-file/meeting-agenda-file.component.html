@@ -1,0 +1,98 @@
+<div class="meeting-agenda-file-wrapper"
+    [ngClass]="{'d-flex':contentType == pdf || contentType == excel, 'other':mediaType==='other'}">
+    <div class="meeting-agenda-header">
+        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="context-menu">
+            <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="onPreviewClick()" aria-label="Preview"
+                *ngIf="mediaType === 'image' || mediaType === 'video' || mediaType === 'audio'">
+                <mat-icon>launch</mat-icon>
+                <span>Preview</span>
+            </button>
+            <button mat-menu-item (click)="onEdit()" aria-label="Edit" *ngIf="mediaType === 'image' && showEditor">
+                <mat-icon>transform</mat-icon>
+                <span>Edit Image</span>
+            </button>
+            <button mat-menu-item (click)="onDownload()" aria-label="Download">
+                <mat-icon>get_app</mat-icon>
+                <span>Download</span>
+            </button>
+            <button mat-menu-item (click)="onDownloadOriginal()" aria-label="Download" *ngIf="originalUrl">
+                <mat-icon>get_app</mat-icon>
+                <span>Download Original</span>
+            </button>
+            <button mat-menu-item (click)="onDelete()" aria-label="Remove" *ngIf="showRemove">
+                <mat-icon>clear</mat-icon>
+                <span>Delete</span>
+            </button>
+        </mat-menu>
+    </div>
+    <div class="meeting-agenda-file-thumbnail-wrapper"
+        *ngIf="showPreview && (mediaType=='image' || mediaType=='video' || mediaType=='audio')"
+        (click)="onPreviewClick()">
+
+
+        <img class="meeting-agenda-file-thumbnail" src="{{ thumbUrl || url || 'assets/images/file-not-found.png' }}"
+            alt="" *ngIf="mediaType==='image'" />
+
+        <div class="meeting-agenda-file-thumbnail-icon" *ngIf="mediaType==='video'">
+            <mat-icon>play_circle_filled</mat-icon>
+        </div>
+        <div class="meeting-agenda-file-thumbnail-icon" *ngIf="mediaType==='audio'">
+            <mat-icon>music_note</mat-icon>
+        </div>
+
+        <img class="meeting-agenda-file-thumbnail-icon" src="assets/icons/{{extension}}.png" alt=""
+            *ngIf="mediaType!='image' && mediaType!='video' && mediaType!='audio'" />
+
+        <div class="meeting-agenda-file-video-preview" *ngIf="mediaType=='video'">
+            <!-- <button mat-icon-button (click)="onDelete()" aria-label="Remove" style="position: absolute;top: 0;right: 0">
+            <mat-icon>clear</mat-icon>
+        </button> -->
+            <img class="meeting-agenda-file-thumbnail"
+                src="{{ getVideoThumbUrl(url ?? '') || 'assets/images/file-not-found.png' }}" alt=""
+                *ngIf="mediaType==='video'" />
+        </div>
+    </div>
+
+    <div class="meeting-agenda-file-caption" *ngIf="mediaCaption">
+        <small>{{mediaCaption}}</small>
+    </div>
+    <div class="meeting-agenda-file">
+        <div class="meeting-agenda-file-detail text-nowrap mr-1" [matTooltip]="filename" (click)="onPreviewClick()"
+            *ngIf="!((mediaType=='image' || mediaType==='video' || mediaType==='audio') && hideDetails)">
+            <!-- <mat-icon class="meeting-agenda-file-icon">attach_file</mat-icon> -->
+            <div class="text-nowrap">
+                <h6 class="meeting-agenda-file-name mb-0">{{filename | mcvFileExtension:9}}</h6>
+                <span *ngIf="size">{{size | mcvFileSize}}</span>
+                <span class="float-right" *ngIf="progress">{{progress}}%</span>
+            </div>
+        </div>
+        <div class="meeting-agenda-file-actions" *ngIf="!hideDetails && !progress">
+            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="context-menu">
+                <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="onPreviewClick()" aria-label="Preview"
+                    *ngIf="mediaType === 'image' || mediaType === 'video' || mediaType === 'audio'">
+                    <mat-icon>launch</mat-icon>
+                    <span>Preview</span>
+                </button>
+                <button mat-menu-item (click)="onDownload()" aria-label="Download">
+                    <mat-icon>get_app</mat-icon>
+                    <span>Download</span>
+                </button>
+                <button mat-menu-item (click)="onDelete()" aria-label="Remove" *ngIf="showRemove">
+                    <mat-icon>clear</mat-icon>
+                    <span>Delete</span>
+                </button>
+            </mat-menu>
+        </div>
+    </div>
+    <mat-progress-bar *ngIf="progress" class="meeting-agenda-file-progress" mode="determinate" [value]="progress">
+    </mat-progress-bar>
+    <mat-progress-bar *ngIf="download$ | async as download"
+        [mode]="download.state == 'PENDING' ? 'buffer' : 'determinate'" [value]="download.progress">
+    </mat-progress-bar>
+</div>

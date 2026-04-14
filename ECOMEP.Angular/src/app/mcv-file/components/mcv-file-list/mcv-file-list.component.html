@@ -1,0 +1,9 @@
+<ul class="mcv-file-list">
+  <li *ngFor="let file of files">
+    <mcv-file [size]="file.size" [filename]="file.filename" [thumbUrl]="file.thumbUrl" [url]="file.url"
+      [contentType]="file.contentType" [showPreview]="showPreview" [hideDetails]="hideDetails" [showRemove]="showRemove"
+      [isVerticalThumb]="isVerticalThumb" [downloadUrl]="file.url" [mediaCaption]="file.description"
+      [showEditor]="showEditor" (preview)="onPreviewClick(file)" (delete)="onDelete(file)" (edited)="onEdited($event)">
+    </mcv-file>
+  </li>
+</ul>

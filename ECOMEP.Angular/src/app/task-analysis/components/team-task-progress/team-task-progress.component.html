@@ -1,0 +1,294 @@
+<div class="project-progress">
+    <div class="header">
+
+        <div class="header-filters">
+            <div>
+                <mat-form-field appearance="outline">
+                    <mat-date-range-input [formGroup]="dateFC" [rangePicker]="rangePicker1">
+                        <input matStartDate placeholder="Select Range" formControlName="start" />
+                        <input matEndDate placeholder="End date" formControlName="end" />
+                    </mat-date-range-input>
+                    <mat-datepicker-toggle matSuffix [for]="rangePicker1"></mat-datepicker-toggle>
+                    <mat-date-range-picker [touchUi]="isMobileView" #rangePicker1></mat-date-range-picker>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <div class="legend-wrapper">
+
+            <div class="legend">
+                <div class="legend-color" [style.background-color]="COLOR_BLUE_500"></div>
+                <small>Assigned mHr</small>
+            </div>
+            <div class="legend">
+                <div class="legend-color" [style.background-color]="COLOR_BLUE_900"></div>
+                <small>Assessed mHr</small>
+            </div>
+            <div class="legend">
+                <div class="legend-color" [style.background-color]="COLOR_DARK_GREEN"></div>
+                <small>Consumed mHr</small>
+            </div>
+            <div class="legend">
+                <div class="legend-color" [style.background-color]="COLOR_YELLOW"></div>
+                <small>Burned mHr</small>
+            </div>
+
+            <div>
+                <span [mcvPopover]="myPopover"><mat-icon>info</mat-icon></span>
+                <mcv-popover-content #myPopover placement="bottom" [animation]="true" [closeOnClickOutside]="true">
+                    <strong>Assigned mHr</strong>
+                    <p>Manhours assigned.</p>
+
+                    <strong>Assessed mHr</strong>
+                    <p>Manhours assessed out of assigned mHr based on assessment criteria.</p>
+
+                    <strong>Consumed mHr</strong>
+                    <p>Actual manhours consumed.</p>
+
+                    <strong>Burned mHr</strong>
+                    <p>Manhours consumed over assessed mHr. (Consumed mHr - Assessed mHr)</p>
+
+                    <strong>Available mHr</strong>
+                    <p>Manhours remaining after assessed mHr from total expected mhr. (Expected mHr - Assessed mHr)</p>
+                </mcv-popover-content>
+            </div>
+        </div>
+
+    </div>
+    <div>
+        <div class="project-progress-bar-wrapper">
+            <div class="project-details">
+                <div class="d-flex justify-content-between">
+                    <div class="flex-grow-0 flex-shrink-0">
+                        <div class="d-flex align-items-center">
+                            <img src="{{ contact.photoUrl || 'assets/images/person-icon.svg' }}"
+                                class="user-thumbnail mr-2" alt="" />
+                            <div>
+                                <h6>{{contact.name}}</h6>
+                                <ng-container *ngFor="let app of contact.appointments">
+                                    <!-- <span class="badge badge-warning mr-1">{{app.code}}</span> -->
+                                    <small>{{app.designation}}</small>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between">
+
+                        <div class="pl-1">
+                            <small>Available:</small>
+                            <h6 class="font-focused">{{(totalMHr - data.assignedMHr) |
+                                number:'2.0-1'}}
+                                <small>mHr</small>
+                            </h6>
+                        </div>
+                        <div class="pl-1">
+                            <small>Total:</small>
+                            <h6 class="font-focused">{{totalMHr | number:'2.0-1'}} <small>mHr</small></h6>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="project-progress-bars">
+                <div class="progress-bar">
+
+                    <div class="progress-bar-segment" [style.width]="getPercentage(data.assignedMHr,totalMHr) + '%'"
+                        [style.background-color]="COLOR_BLUE_500"
+                        [attr.aria-valuenow]="getPercentage(data.assignedMHr,totalMHr)"
+                        matTooltip="Assigned: {{data.assignedMHr | number:'2.0-1'}}mHr">
+                        {{getPercentage(data.assignedMHr,totalMHr) | number:'2.0-1'}}%</div>
+
+                    <div class="progress-bar-segment" [style.width]="getPercentage(data.assessedMHr,totalMHr) + '%'"
+                        [style.background-color]="COLOR_BLUE_900"
+                        matTooltip="Assessed: {{data.assessedMHr| number:'2.0-1'}}mHr">
+                        {{getPercentage(data.assessedMHr,totalMHr) | number:'2.0-1'}}%</div>
+
+                    <!-- <ng-container *ngIf="data.xCostPercentage > 0">
+                 <div class="progress-bar" [style.background-color]="COLOR_LIGHT_BLUE"
+                     [style.width]="data.xCostPercentage + '%'" [attr.aria-valuenow]="data.xCostPercentage"
+                       matTooltip="{{data.xCost | currency:'INR':'symbol':'1.0'}}">
+                     {{data.xCostPercentage}}%</div>
+             </ng-container> -->
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-bar-segment" [style.width]="getPercentage(data.consumedMHr,totalMHr) + '%'"
+                        [style.background-color]="COLOR_DARK_GREEN"
+                        matTooltip="Consumed: {{data.consumedMHr | number:'2.0-1'}}mHr">
+                        {{getPercentage(data.consumedMHr,totalMHr) |
+                        number:'2.0-1'}}%</div>
+
+                    <div class="progress-bar-segment" [style.width]="getPercentage(data.burnedMHr,totalMHr) + '%'"
+                        [style.background-color]="COLOR_YELLOW"
+                        matTooltip="Burned: {{data.burnedMHr | number:'2.0-1'}}mHr">
+                        {{getPercentage(data.burnedMHr,totalMHr) | number:'2.0-1'}}%
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <div>
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="chart-wrapper">
+                    <div class="chart">
+                        <canvas baseChart [type]="'pie'" [datasets]="assignedMHrChart" [labels]="assignedMHrChartLabels"
+                            [options]="pieChartOptions" [legend]="assignedMHrChartLegend">
+                        </canvas>
+                    </div>
+
+                    <div class="chart-details">
+                        <small>Assigned:</small>
+                        <h5 class="font-focused">{{totalAssignedMHr | number:'2.0-1'}} <small>mHr</small></h5>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="chart-wrapper">
+                    <div class="chart">
+                        <canvas baseChart [type]="'pie'" [datasets]="assessedMHrChart" [labels]="assessedMHrChartLabels"
+                            [options]="pieChartOptions" [plugins]="assessedMHrChartPlugins"
+                            [legend]="assessedMHrChartLegend">
+                        </canvas>
+                    </div>
+                    <div class="chart-details">
+                        <small>Assessed: </small>
+                        <h5 class="font-focused">{{totalAssessedMHr | number:'2.0-1'}} <small>mHr</small></h5>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="chart-wrapper">
+                    <div class="chart">
+                        <canvas baseChart [type]="'pie'" [datasets]="consumedMHrChart" [labels]="consumedMHrChartLabels"
+                            [options]="pieChartOptions" [plugins]="consumedMHrChartPlugins"
+                            [legend]="consumedMHrChartLegend">
+                        </canvas>
+                    </div>
+                    <div class="chart-details">
+                        <small>Consumed: </small>
+                        <h5 class="font-focused">{{totalConsumedMHr | number:'2.0-1' }} <small>mHr</small></h5>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="task-analysis">
+            <div class="task-analsysis-table-wrapper">
+
+                <table>
+                    <thead>
+                        <!-- Table Header  -->
+                        <tr>
+                            <th></th>
+                            <th>Start</th>
+                            <th>Due</th>
+                            <th>Completed</th>
+                            <th>Delay</th>
+                            <!-- <th>Assigned to</th> -->
+                            <th>Assigned By</th>
+                            <th>Task</th>
+                            <!-- <th>Title</th> -->
+                            <th>Assigned mhr</th>
+                            <th>Consumed mHr</th>
+                            <th>Points</th>
+                            <th>Assessed mHr</th>
+                            <th>Burned mHr</th>
+                        </tr>
+                        <!-- Table Header Total  -->
+                        <tr class="total" *ngIf="taskAnalysisTotal">
+
+                            <td></td>
+                            <td>Total</td>
+                            <td></td>
+                            <td></td>
+                            <td><span
+                                    [ngClass]="{'text-muted': taskAnalysisTotal.delay < 0,'text-danger': taskAnalysisTotal.delay > 0}"
+                                    *ngIf="taskAnalysisTotal.delay > 0">+</span>
+                                <span
+                                    [ngClass]="{'text-muted': taskAnalysisTotal.delay < 0,'text-danger': taskAnalysisTotal.delay > 0}">
+                                    {{ taskAnalysisTotal.delay | number: "2.0-2" }}</span>
+                            </td>
+                            <!-- <td></td> -->
+                            <td></td>
+                            <td></td>
+                            <!-- <td></td> -->
+                            <td class="align-right font-focused">{{ taskAnalysisTotal.mHrAssigned | number: "2.0-2" }}
+                            </td>
+                            <td class="align-right font-focused">{{ taskAnalysisTotal.mHrConsumed | number: "2.0-2" }}
+                            </td>
+                            <td></td>
+                            <td class="align-right font-focused">{{ taskAnalysisTotal.mHrAssessed | number: "2.0-2" }}
+                            </td>
+                            <td class="align-right font-focused">{{ taskAnalysisTotal.mHrBurned | number: "2.0-2" }}
+                            </td>
+                        </tr>
+                    </thead>
+                    <!-- Table Body  -->
+                    <tbody>
+                        <ng-container *ngFor="let grp of groupByProject;let groupIndex = index">
+                            <tr class="group">
+                                <td (click)="toggleGroupExpand(groupIndex)">
+                                    <mat-icon *ngIf="!isGroupExpanded[groupIndex]">expand_more</mat-icon>
+                                    <mat-icon *ngIf="isGroupExpanded[groupIndex]">expand_less</mat-icon>
+                                </td>
+                                <td colspan="6">{{grp.key || 'Other' }}</td>
+                                <td class="align-right">{{getMHrAssigned(grp.values) | number:'2.0-2'}}</td>
+                                <td class="align-right">{{getMHrConsumed(grp.values) | number:'2.0-2'}}</td>
+                                <td class="align-right">
+                                </td>
+                                <td class="align-right">{{getMHrAssessed(grp.values) | number:'2.0-2'}}</td>
+                                <td class="align-right">{{getMHrBurned(grp.values) | number:'2.0-2'}}</td>
+                            </tr>
+                            <ng-container *ngIf="isGroupExpanded[groupIndex]">
+                                <ng-container *ngFor="let item of grp.values; let i=index">
+
+                                    <tr>
+                                        <td></td>
+                                        <!-- <td *ngIf="!item.assessmentRemark && item.assessments.length == 0"></td> -->
+                                        <!-- <td *ngIf="item.assessmentRemark || item.assessments.length > 0" (click)="toggleExpand(i)">
+                                     <mat-icon *ngIf="!isExpanded[i]">expand_more</mat-icon>
+                                     <mat-icon *ngIf="isExpanded[i]">expand_less</mat-icon>
+                                 </td> -->
+                                        <td>{{item.startDate | date:'dd MMM y HH:mm'}}
+                                        </td>
+                                        <td>{{item.dueDate | date:'dd MMM y HH:mm'}}</td>
+                                        <td>{{item.completedDate | date:'dd MMM y HH:mm'}}</td>
+                                        <td>{{item.delay | number:'2.0-2'}}</td>
+                                        <!-- <td>{{item.person}}</td> -->
+                                        <td>{{item.assignedBy}}</td>
+                                        <!-- <td>{{item.taskTitle}}</td> -->
+                                        <td class="text-pre-wrap">{{item.taskTitle}} | {{item.entityTitle}}</td>
+                                        <td class="align-right">{{item.mHrAssigned | number:'2.0-2'}}</td>
+                                        <td class="align-right">{{item.mHrConsumed | number:'2.0-2'}}</td>
+                                        <td class="align-right">
+                                            <span
+                                                *ngIf="item.isAssessmentApplicable">{{item.assessmentPoints}}<small>/10</small></span>
+                                            <span *ngIf="!item.isAssessmentApplicable">N/A</span>
+                                        </td>
+                                        <td class="align-right">{{item.mHrAssessed | number:'2.0-2'}}</td>
+                                        <td class="align-right">{{item.mHrBurned | number:'2.0-2'}}</td>
+                                    </tr>
+                                    <!-- <tr *ngIf="item.assessments.length">
+                                 <td class="collapsed" colspan="13">
+                                     <task-analysis-assessment [item]="item" [isMobileView]="isMobileView" [showAll]="showAll"
+                                         [isExpanded]="isExpanded" [i]="i">
+                                     </task-analysis-assessment>
+                                 </td>
+                             </tr> -->
+                                </ng-container>
+                            </ng-container>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

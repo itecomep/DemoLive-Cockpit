@@ -1,0 +1,190 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">Maintenance Schedule | {{schedule.title}}</h5>
+    <div class="d-flex align-items-center">
+        <button mat-icon-button aria-label="Submit" color="warn" (click)="onDelete()"
+            *ngIf="schedule.statusFlag !== ASSET_SCHEDULE_ISSUE_VERIFIED ">
+            <mat-icon>delete</mat-icon>
+        </button>
+        <button mat-icon-button aria-label="close" (click)="onClose()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+<mat-dialog-content class="asset-wreapper">
+    <div class="asset-issue-update-wrapper">
+        <div class="table-container">
+            <table >
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Warranty Date</th>
+                        <th>Cost</th>
+                        <th></th>
+                    </tr>
+                    <tr class="total">
+                        <th></th>
+                        <th></th>
+                        <th>
+                            {{calculatedCostTotal | currency:'INR':'symbol':'1.0'}}
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngFor="let item of schedule.components;let i = index">
+                        <tr>
+                            <td>
+                                <div class="cell-content">
+                                    <div class="cell-input">
+                                        <form>
+                                            <input matInput (input)="onInput(compoFA,i,'component')"
+                                                [formControl]="getFormControl(compoFA,i,'component')"
+                                                (change)="onCellChange(compoFA,i,'component',item)"
+                                              >
+                                        </form>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="cell-content">
+                                    <div class="cell-input">
+                                        <form>
+                                            <mat-form-field appearance="outline">
+                                                <input matInput [formControl]="getFormControl(compoFA,i,'warrantyDate')"
+                                                    (dateChange)="onCellChange(compoFA,i,'warrantyDate',item)"
+                                                    [matDatepicker]="validityDatePicker" placeholder="Select Date"
+                                                   />
+                                                <mat-datepicker-toggle matSuffix
+                                                    [for]="validityDatePicker"></mat-datepicker-toggle>
+                                                <mat-datepicker [touchUi]="isMobileView"
+                                                    #validityDatePicker></mat-datepicker>
+                                            </mat-form-field>
+                                        </form>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="cell-content">
+                                    <div class="cell-input">
+
+                                        <form class="d-flex align-items-center justify-content-center">
+                                            <span matSuffix>&#8377;</span>
+                                            <input matInput (input)="onInput(compoFA,i,'cost')"
+                                                [formControl]="getFormControl(compoFA,i,'cost')"
+                                                (change)="onCellChange(compoFA,i,'cost',item)"
+                                                [disabled]="schedule.statusFlag == ASSET_SCHEDULE_ISSUE_APPROVED || schedule.statusFlag == ASSET_SCHEDULE_ISSUE_VERIFIED ">
+                                        </form>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span *ngIf="schedule.statusFlag == ASSET_SCHEDULE_ISSUE_PENDING">
+                                    <mat-icon (click)="onDeleteComponent(item)">clear</mat-icon>
+                                </span>
+                            </td>
+                        </tr>
+                    </ng-container>
+                    <tr>
+                        <td>
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <form>
+                                        <input matInput
+                                            (input)="onInput(compoFA,schedule.components.length,'component')"
+                                            [formControl]="getFormControl(compoFA,schedule.components.length,'component')"
+                                            (change)="onCellChange(compoFA,schedule.components.length,'component')">
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <form>
+                                        <mat-form-field appearance="outline">
+                                            <input matInput
+                                                [formControl]="getFormControl(compoFA,schedule.components.length,'warrantyDate')"
+                                                (change)="onCellChange(compoFA,schedule.components.length,'warrantyDate')"
+                                                [matDatepicker]="validityDatePicker" placeholder="Select Date" />
+                                            <mat-datepicker-toggle matSuffix
+                                                [for]="validityDatePicker"></mat-datepicker-toggle>
+                                            <mat-datepicker [touchUi]="isMobileView"
+                                                #validityDatePicker></mat-datepicker>
+                                        </mat-form-field>
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <form>
+                                        <input matInput (input)="onInput(compoFA,schedule.components.length,'cost')"
+                                            [formControl]="getFormControl(compoFA,schedule.components.length,'cost')"
+                                            (change)="onCellChange(compoFA,schedule.components.length,'cost')">
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="cell-content justify-content-center"
+                                *ngIf="schedule.statusFlag == ASSET_SCHEDULE_ISSUE_PENDING">
+                                <div class="cell-action">
+                                    <mat-icon (click)="onAddComponent()">add</mat-icon>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div [formGroup]="form" class="attachment-form-container">
+            <div class="attachment-container mt-1" >
+                <h6>Attachments</h6>
+                <app-mcv-file-upload [uploaderConfig]="blobConfig" [showDrop]="false" [showPaste]="true"
+                    (upload)="onUpload($event)" *ngIf="blobConfig">
+                </app-mcv-file-upload>
+                <ul class="mcv-file-list">
+                    <li *ngFor="let item of schedule.attachments">
+                        <mcv-file [size]="item.size" [filename]="item.filename" [showRemove]="true"
+                            [url]="item.thumbUrl || item.url" [tags]="item.searchTags" [contentType]="item.contentType"
+                            [showPreview]="true" [downloadUrl]="item.url" [singlePreview]="true" [showEditor]="true"
+                            [isVerticalThumb]="true" (delete)="onDeleteAttachment(item)"></mcv-file>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="form-container row mt-2">
+                <mat-form-field class="col-12">
+                    <mat-label>Resolution Message</mat-label>
+                    <textarea placeholder="Enter resolution message here" aria-label="Resolution Message" matInput
+                        formControlName="resolutionMessage" cdkTextareaAutosize #autosize="cdkTextareaAutosize"
+                        cdkAutosizeMinRows="3"></textarea>
+                    <mat-error>{{ getErrorMessage(f.resolutionMessage)}}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field class="col-md-6 col-12">
+                    <mat-label>Maintenance Date</mat-label>
+                    <input placeholder="Issue Date" aria-label="Issue Date" matInput formControlName="nextScheduleDate"
+                        [matDatepicker]="issueDatePicker" />
+                    <mat-datepicker-toggle matSuffix [for]="issueDatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker [touchUi]="isMobileView" #issueDatePicker></mat-datepicker>
+                    <mat-error>{{getErrorMessage(f.nextScheduleDate)}}</mat-error>
+                </mat-form-field>
+
+                <div class="col-md-6 col-12 d-flex align-items-center justify-content-end">
+                    <button mat-raised-button color="primary"
+                        *ngIf="schedule.statusFlag == ASSET_SCHEDULE_ISSUE_PENDING "
+                        (click)="onSubmit()">Save</button>
+                    <button mat-raised-button color="primary"
+                        *ngIf="schedule.statusFlag == ASSET_SCHEDULE_ISSUE_PENDING "
+                        (click)="onSubmit(ASSET_SCHEDULE_ISSUE_APPROVED)">Completed</button>
+                    <button mat-raised-button color="primary"
+                        *ngIf="schedule.statusFlag == ASSET_SCHEDULE_ISSUE_APPROVED "
+                        (click)="onSubmit(ASSET_SCHEDULE_ISSUE_VERIFIED)">Verify</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</mat-dialog-content>

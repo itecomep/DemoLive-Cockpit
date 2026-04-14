@@ -1,0 +1,37 @@
+<h2 mat-dialog-title class="dialog-title">
+  <div class="header">
+    <div class="title-left">
+      <mat-icon>group</mat-icon>
+      User Access
+    </div>
+    <div class="title-right">
+      Access Blocked: {{ deniedUsersCount }} - User
+    </div>
+  </div>
+</h2>
+
+
+<div mat-dialog-content class="dialog-content">
+  <mat-form-field appearance="outline" class="full-width search-box">
+    <mat-icon matPrefix>search</mat-icon>
+    <input matInput placeholder="Search user" [(ngModel)]="contactsSearch" (ngModelChange)="filterContacts()" />
+  </mat-form-field>
+  <div class="user-list">
+    <div class="user-item" *ngFor="let contact of filteredContactOptions">
+      <mat-checkbox class="user-checkbox" [checked]="selectedContacts.includes(contact.id)" (change)="toggleSelection(contact)">
+        <div class="user-info">
+          <img class="avatar" [src]="contact.photoUrl || 'assets/default-user.png'" alt="user" />
+          <div class="user-text">
+            <div class="name">{{ contact.name }}</div>
+            <div class="email">{{ contact.email }}</div>
+          </div>
+        </div>
+      </mat-checkbox>
+    </div>
+  </div>
+</div>
+
+<div mat-dialog-actions align="end" class="dialog-actions">
+  <button mat-button (click)="close()">Cancel</button>
+  <button mat-flat-button color="primary" (click)="save()">Save</button>
+</div>

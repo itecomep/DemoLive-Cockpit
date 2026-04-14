@@ -1,0 +1,59 @@
+<div class="agenda">
+    <div>
+        <div class="d-flex">
+            <div class="flex-grow-1">
+                <span>{{agenda?.meetingTitle}}</span>
+                <div class="d-flex flex-wrap">
+                    <span class="font-focused pr-1">{{agenda?.title}} </span>
+                    <span class="agenda-subtitle"> {{agenda?.subtitle}}</span>
+                </div>
+            </div>
+            <div class="pl-1 flex-grow-0" *ngIf="allowEdit">
+                <div class="d-flex align-items-center justify-content-end">
+                    <button mat-icon-button (click)="onEditClick()" matTooltip="Edit" aria-label="Edit">
+                        <mat-icon>create</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="d-flex">
+            <div class="pl-1">
+                <small>Status: </small>
+                <div>
+                    <span class="badge badge-danger mr-1" *ngIf="agenda?.isDelayed">DELAYED</span>
+                    <span class="badge badge-danger mr-1" *ngIf="agenda?.statusFlag==0">PENDING</span>
+                    <span class="badge badge-dark mr-1"
+                        *ngIf="(agenda?.typeFlag==MEETING_TYPEFLAG_MEETING || agenda?.typeFlag==MEETING_TYPEFLAG_CNOTE) && agenda?.statusFlag==1">RESOLVED</span>
+                    <span class="badge badge-dark mr-1"
+                        *ngIf="(agenda?.typeFlag==MEETING_TYPEFLAG_INSPECTION) && agenda?.statusFlag==1">COMPLETE</span>
+                </div>
+            </div>
+
+            <div class="pl-1">
+                <small>DueDate: </small>
+                <div>
+                    <strong>{{agenda?.dueDate | date:"dd MMM y"}}</strong>
+                </div>
+            </div>
+
+
+            <div class="pl-1">
+                <small>ActionBy: </small>
+                <div>
+                    <strong>{{agenda?.actionBy }}</strong>
+                </div>
+            </div>
+
+            <div class="pl-1 flex-grow-1 d-flex justify-content-end">
+                <div>
+                    <small>Reminders:</small>
+                    <div>
+                        <strong> {{agenda?.reminderCount | number:'2.0'}}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

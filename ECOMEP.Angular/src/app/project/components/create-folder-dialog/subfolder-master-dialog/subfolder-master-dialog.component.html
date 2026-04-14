@@ -1,0 +1,41 @@
+<h2 mat-dialog-title>Manage Subfolders</h2>
+
+<mat-dialog-content>
+  <div class="add-section">
+    <mat-form-field appearance="outline" class="flex-grow">
+      <mat-label>New Subfolder Name</mat-label>
+      <input matInput [(ngModel)]="newSubfolderName" (keyup.enter)="addSubfolder()" placeholder="e.g. Invoices 2024" />
+      <mat-hint>Press Enter to add</mat-hint>
+    </mat-form-field>
+    <button mat-flat-button color="primary" (click)="addSubfolder()" [disabled]="!newSubfolderName">
+      <mat-icon>add</mat-icon>
+      Add
+    </button>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="list-container">
+    <h3 class="list-header">Existing Folders ({{subFolderOptions.length}})</h3>
+    
+    <mat-list *ngIf="subFolderOptions.length > 0; else emptyState">
+      <mat-list-item *ngFor="let sub of subFolderOptions" class="subfolder-item">
+        <mat-icon matListItemIcon color="accent">folder</mat-icon>
+        <span matListItemTitle>{{ sub.folderName }}</span>
+        <button mat-icon-button color="warn" (click)="deleteSubfolder(sub)" matListItemMeta>
+          <mat-icon>delete_outline</mat-icon>
+        </button>
+      </mat-list-item>
+    </mat-list>
+
+    <ng-template #emptyState>
+      <div class="empty-msg">
+        <p>No subfolders created yet.</p>
+      </div>
+    </ng-template>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Close</button>
+</mat-dialog-actions>

@@ -1,0 +1,57 @@
+<div class="login-wrapper">
+  <div class="login-panel">
+    <div class="login-container">
+      <div class="login-logo">
+        <img src="{{ logoUrl || 'assets/images/logo.png' }}" />
+        <div class="logo-divider"></div>
+        <img src="{{ logoUrl_two || 'assets/images/logo.png' }}" />
+      </div>
+
+      <h2 class="login-title">EMC&PCEview</h2>
+
+      <form *ngIf="!isLoggedIn" [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off">
+
+        <mat-form-field appearance="outline">
+          <mat-label>Username</mat-label>
+          <input formControlName="username" matInput>
+          <mat-error *ngIf="f.username.invalid && (f.username.dirty || f.username.touched)">
+            {{getErrorMessage(f.username)}}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" *ngIf="!isLocked">
+          <mat-label>Password</mat-label>
+          <input type="password" formControlName="password" matInput>
+          <mat-error *ngIf="f.password.invalid && (f.password.dirty || f.password.touched)">
+            {{getErrorMessage(f.password)}}</mat-error>
+        </mat-form-field>
+
+        <button type="submit" [disabled]="!locationOn" mat-raised-button color="primary" class="btn btn-block mt-2">Login</button>
+        <small *ngIf="!locationOn">Location is required to login.</small>
+        <!--  <mat-form-field appearance="outline">
+  <mat-label>Enter your mobile number</mat-label>
+
+  <input type="number" [formControl]="mobileFC" placeholder="" matInput>
+  <h5 class="text-muted" matPrefix>+91</h5>
+  <mat-icon matSuffix>phone</mat-icon>
+  <mat-error>
+    {{utility.getErrorMessage(mobileFC)}}</mat-error>
+  <mat-hint>eg. 9823421121</mat-hint>
+</mat-form-field> -->
+      </form>
+
+      <form *ngIf="isLoggedIn" (ngSubmit)="verifyOTP()">
+        <h5 class="text-center pt-2 pb-2">Enter OTP here</h5>
+        <div class="d-flex align-items-center justify-content-center">
+          <app-otp-input (onInputChange)="onOtpChange($event)" [config]="otpConfig">
+          </app-otp-input>
+        </div>
+
+        <button mat-raised-button color="primary" (click)="onRetry()" class="mt-2">Retry</button>
+      </form>
+      <h6 class="login-version">{{ version }}</h6>
+      <small>MyCockpitView&copy;</small>
+      <small>Powered by Newarch<sup>&reg;</sup> Infotech LLP</small>
+      <small>IP Address: {{ clientIp }}</small>
+    </div>
+  </div>
+</div>

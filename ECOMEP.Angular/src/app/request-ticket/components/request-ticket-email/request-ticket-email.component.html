@@ -1,0 +1,24 @@
+<div class="mcv-email-contact-wrapper">
+    <div class="mcv-email-contact">
+        <!-- <div class="mcv-email-contact-photo" *ngIf="showPhoto">
+            <img src="{{'assets/images/user.png' }}" class="user-thumbnail" alt="" />
+        </div> -->
+
+        <div class="mcv-email-contact-details text-nowrap">
+            <div class="text-nowrap">
+                <h6 class="mb-0 font-focused">{{ item.name }} <small *ngIf="item.company">
+                        ({{item.company}})</small></h6>
+                <span style="line-break: anywhere;">{{item.email}}
+                </span>
+            </div>
+        </div>
+
+        <div class="mcv-email-contact-actions" *ngIf="showRemove">
+            <div class="flex-grow-0 flex-shrink-0">
+                <button mat-icon-button (click)="onRemove()" matTooltip="Remove" aria-label="Remove">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

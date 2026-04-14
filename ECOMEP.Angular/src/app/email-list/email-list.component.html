@@ -1,0 +1,228 @@
+<div class="gmail-toolbar">
+  <div class="toolbar-left">
+    <button mat-stroked-button (click)="loadEmails()" [ngClass]="{'active-btn': activeToolbarButton==='inbox'}">Inbox</button>
+    <button mat-stroked-button (click)="loadSentEmails()" [ngClass]="{'active-btn': activeToolbarButton==='sent'}">Sent</button>
+    <button mat-stroked-button (click)="loadDraftEmails()" [ngClass]="{'active-btn': activeToolbarButton==='drafts'}">Drafts</button>
+    <button mat-stroked-button (click)="composeNew()" [ngClass]="{'active-btn': activeToolbarButton==='compose'}">+ Compose</button>
+    <button mat-icon-button (click)="loadEmails()"><mat-icon>refresh</mat-icon></button>
+  </div>
+  <div class="toolbar-search email-search">
+    <mat-form-field
+      appearance="outline"
+      class="email-search-field"
+    >
+      <mat-label>Search emails</mat-label>
+      <input
+        matInput
+        [(ngModel)]="emailSearchText"
+        placeholder="Search subject, body, from…"
+        (keyup.enter)="searchEmails()"
+      />
+      <button
+        *ngIf="emailSearchText"
+        matSuffix
+        mat-icon-button
+        aria-label="Clear"
+        (click)="emailSearchText=''; loadEmails()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+      <button
+        matSuffix
+        mat-icon-button
+        color="primary"
+        aria-label="Search"
+        (click)="searchEmails()"
+      >
+        <mat-icon>search</mat-icon>
+      </button>
+      
+    </mat-form-field>
+  </div>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Select Label</mat-label>
+    <mat-select [(value)]="selectedLabel">
+      <mat-option>
+        <ngx-mat-select-search
+          [formControl]="labelSearchCtrl"
+          placeholderLabel="Search..."
+          noEntriesFoundLabel="No result found">
+        </ngx-mat-select-search>
+      </mat-option>
+      <mat-option
+        *ngFor="let label of filteredLabels"
+        [value]="label.id">
+        {{ label.name }}
+      </mat-option>
+
+    </mat-select>
+  </mat-form-field>
+
+  <button mat-raised-button (click)="assignLabel()">Link Project</button>
+  <button mat-stroked-button class="update-new-label" (click)="loadProjectsAndCreateLabels()"> Update New Label </button>
+  <button mat-stroked-button class="connect-mail" (click)="connectGmail()" [disabled]="isGmailConnected"> Connect Gmail </button>
+  <button mat-raised-button class="disconnect-mail" color="warn" (click)="disconnectGmail()" [disabled]="!isGmailConnected"> Disconnect Gmail </button>
+</div>
+
+ <div *ngIf="loading" class="loading-overlay">
+  <div class="spinner-container">
+    <mat-progress-spinner
+      mode="indeterminate"
+      color="primary"
+      diameter="50">
+    </mat-progress-spinner>
+    <div class="loading-text">Loading emails…</div>
+  </div>
+</div>
+
+<div class="compose-docked" *ngIf="showCompose">
+  <app-compose-email [state]="composeEmailState" (close)="closeCompose()">
+  </app-compose-email>
+</div>
+
+<div class="gmail-row" *ngFor="let email of emails" [class.unread]="!email.read" (click)="activeToolbarButton === 'drafts' ? openDraft(email) : toggleEmail(email)">
+  <div class="email-header">
+    <div class="left-icons" (click)="$event.stopPropagation()">
+      <mat-checkbox [(ngModel)]="email.selected"></mat-checkbox>
+      <button mat-icon-button (click)="email.starred = !email.starred">
+        <mat-icon>{{ email.starred ? "star" : "star_border" }}</mat-icon>
+      </button>
+    </div>
+    <div class="sender-avatar">
+      {{ email.from?.charAt(0) }}
+    </div>
+    <span class="unread-dot" *ngIf="!email.read"></span>
+    <div class="header-content">
+      <div class="header-top">
+        <span class="from">{{ email.from }}</span>
+        <span class="date">{{ email.date | date : "short" }}</span>
+      </div>
+
+      <div class="subject-line">
+        <div class="email-labels" *ngIf="email.labels?.length">
+          <span class="label-chip" *ngFor="let lbl of email.labels">
+            {{ lbl }}
+          </span>
+        </div>
+        <span class="subject">{{ email.subject }}</span>
+        <span class="snippet" *ngIf="!email.expanded">
+          – {{ email.snippet }}
+        </span>
+      </div>
+    </div>
+
+    <div class="hover-actions" (click)="$event.stopPropagation()">
+      <button mat-icon-button (click)="reply(email)" matTooltip="Reply">
+        <mat-icon>reply</mat-icon>
+      </button>
+      <button mat-icon-button (click)="replyAll(email)" matTooltip="Reply all">
+        <mat-icon>reply_all</mat-icon>
+      </button>
+      <button mat-icon-button (click)="forward(email)" matTooltip="Forward">
+        <mat-icon>forward</mat-icon>
+      </button>
+      <button *ngIf="activeToolbarButton === 'drafts'" mat-icon-button color="warn" (click)="discardDraft(email)" matTooltip="Discard Draft">
+        <mat-icon>delete_forever</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="email.expanded" class="expanded-email">
+    <div class="recipients">
+      <div *ngIf="email.to"><strong>To:</strong> {{ email.to }}</div>
+      <div *ngIf="email.cc"><strong>CC:</strong> {{ email.cc }}</div>
+      <div *ngIf="email.bcc"><strong>BCC:</strong> {{ email.bcc }}</div>
+    </div>
+
+    <!-- <div class="email-body email-content" [innerHTML]="email.safeBody" (click)="$event.stopPropagation()"></div> -->
+
+    <div class="email-body-wrapper" (click)="$event.stopPropagation()">
+      <iframe
+        class="email-body-frame"
+        [srcdoc]="email.body || '' | safeHtml"
+        sandbox="allow-same-origin allow-popups allow-forms allow-downloads"
+        (load)="onIframeLoad($event)">
+      </iframe>
+    </div>
+
+    <!-- <div class="thread-container" *ngIf="email.showReplies" (click)="$event.stopPropagation()">
+      <div class="reply" *ngFor="let reply of email.threadMessages">
+        <div class="reply-header">
+          <strong>{{ reply.from }}</strong>
+          <span>{{ reply.date | date : "short" }}</span>
+        </div>
+        <div class="reply-body" [innerHTML]="reply.safeBody"></div>
+        <div class="attachments" *ngIf="reply.attachments?.length">
+          <div class="attachment-chip" *ngFor="let att of reply.attachments" (click)="previewAttachment(reply, att)">
+            <mat-icon>attach_file</mat-icon>
+            {{ att.fileName }}
+          </div>
+        </div>
+      </div>
+    </div> -->
+    <div class="thread-container" *ngIf="email.showReplies" (click)="$event.stopPropagation()">
+      <div class="reply-card" *ngFor="let reply of email.threadMessages">
+        <div class="reply-header">
+          <div>
+            <strong>{{ reply.from }}</strong>
+            <div class="reply-date">{{ reply.date | date : "short" }}</div>
+          </div>
+        </div>
+        <div class="reply-body-wrapper">
+          <iframe class="reply-frame" [srcdoc]="reply.body || '' | safeHtml" sandbox="allow-same-origin allow-popups allow-forms" (load)="onIframeLoad($event)"></iframe>
+        </div>
+        <div class="attachments" *ngIf="reply.attachments?.length">
+          <div class="attachment-chip" *ngFor="let att of reply.attachments" (click)="previewAttachment(reply, att)">
+            <mat-icon>attach_file</mat-icon>
+            {{ att.fileName }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="attachments" *ngIf="email.attachments?.length">
+      <div class="attachment-chip" *ngFor="let att of email.attachments" (click)="previewAttachment(email, att)">
+        <mat-icon>attach_file</mat-icon>
+        {{ att.fileName }}
+      </div>
+    </div>
+
+    <div class="email-thread-action">
+      <div class="thread-toggle" *ngIf="email.threadId">
+        <button mat-button (click)="openThread(email); $event.stopPropagation()">
+          {{ email.showReplies ? "Hide replies" : "View replies" }}
+        </button>
+      </div>
+      
+
+      <div class="email-actions">
+        <button mat-button (click)="reply(email)">Reply</button>
+        <button mat-button (click)="replyAll(email)">Reply all</button>
+        <button mat-button (click)="forward(email)">Forward</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="pagination" *ngIf="totalEmails > 0">
+  <button
+    mat-button
+    [disabled]="currentPage === 1 || loading"
+    (click)="loadPrev()">
+    Prev
+  </button>
+
+  <span class="page-indicator">
+    ... {{ currentPage }} ...
+  </span>
+
+  <button
+    mat-button
+    [disabled]="currentPage === totalPages || !nextPageToken || loading"
+    (click)="loadNext()">
+    Next
+  </button>
+
+  <span class="total-pages">
+    of {{ totalPages }}
+  </span>
+</div>

@@ -1,0 +1,130 @@
+@import 'variables';
+
+.form-container {
+    border-radius: $border-radius;
+    border: 1px solid $gray-300;
+    padding: 0.3rem;
+}
+
+.attachment-container {
+    border: 1px solid $gray-300;
+    border-radius: $border-radius;
+    padding: 0.3rem;
+}
+
+.asset-issue-update-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.3rem;
+}
+
+.table-container{
+    overflow: auto;
+}
+
+.attachment-form-container {
+    display: flex;
+    flex-direction: column;
+    // align-items: center;
+}
+
+.cell-content {
+    display: flex;
+    flex-grow: 1;
+
+
+    .cell-input {
+        display: flex;
+        flex-grow: 1;
+        form {
+            flex-grow: 1;
+            flex-shrink: 1;
+
+            &>* {
+                border: none;
+                padding: 0;
+                
+                text-align: center;
+            }
+        }
+    }
+}
+
+table {
+    width: 100%;
+    border: 1px solid $gray-100;
+    border-collapse: collapse;
+
+    tr {
+        &.total {
+            background-color: $gray-100 !important;
+            color: $black;
+            th {
+                background-color: $gray-100 !important;
+                color: $black !important;  
+            }
+        }
+    }
+
+    thead {
+        position: sticky;
+        position: -webkit-sticky;
+        z-index: 99;
+        position: -webkit-sticky;
+        top: 0;
+        background-color: $gray-500;
+
+        tr {
+
+            th {
+                white-space: pre-wrap;
+                border: 1px solid $gray-300;
+                padding: 0.3rem;
+                text-align: center;
+                top: -1px;
+                background-color: $gray-500;
+                color: $white;
+            }
+        }
+    }
+
+    tbody {
+        tr {
+
+            td {
+                white-space: pre-wrap;
+                border: 1px solid $gray-300;
+                padding: 0.3rem;
+                text-align: center;
+            }
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .asset-wreapper{
+        padding-bottom: 2rem !important;
+    
+    .form-container,
+    .attachment-container,
+    .asset-issue-update-wrapper {
+        padding: 0.5rem;
+    }
+
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+        font-size: 0.875rem;
+
+        thead tr th,
+        tbody tr td {
+            padding: 0.5rem 0.25rem;
+            font-size: 0.75rem;
+        }
+    }
+}
+}

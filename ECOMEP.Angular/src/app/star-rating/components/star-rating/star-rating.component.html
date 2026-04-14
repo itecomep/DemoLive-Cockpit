@@ -1,0 +1,12 @@
+<div class="mcv-star-rating mcv-star-rating-{{theme}}" [class.mcv-star-rating-readonly]="readOnly"
+  [class.mcv-star-rating-disabled]="disabled">
+
+  <div class="mcv-star-rating-units" (mouseleave)="reset()">
+
+    <div class="mcv-star-rating-unit" *ngFor="let unit of contexts" [class.mcv-star-rating-fraction]="unit.fraction"
+      [class.mcv-star-rating-selected]="unit.selected" [class.mcv-star-rating-active]="unit.active"
+      (click)="unit.click($event)" (mouseenter)="unit.enter()"></div>
+  </div>
+
+  <div *ngIf="showText" class="mcv-star-rating-text">{{ nextRate | StarRating: titles }}</div>
+</div>

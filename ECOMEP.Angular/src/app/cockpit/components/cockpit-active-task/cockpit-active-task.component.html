@@ -1,0 +1,43 @@
+<div class="active-task-container" [ngClass]="{'delayed':isDelayed(activeTask)}" *ngIf="activeTask">
+    <div class="active-task-container-wrapper">
+
+        <div class="active-task-header ">
+            <h4 class="font-focused">Active Task</h4>
+        </div>
+        <div class="active-task-title">
+
+            <h6 class="font-focused">{{activeTask.title}}</h6>
+            <span>{{activeTask.subtitle}}</span>
+
+        </div>
+        <div class="active-task-time-details">
+            <div class="time">
+                <small>MHr Assigned:</small>
+                <h5 class="font-focused"> {{activeTask.mHrAssigned | number:'2.0-2'}}</h5>
+            </div>
+
+        </div>
+        <div class="active-task-time-details">
+            <div class="time">
+                <small>Due:</small>
+                <h5 class="font-focused"> {{activeTask.dueDate | date:'dd MMM y HH:mm'}}</h5>
+            </div>
+
+        </div>
+        <div class="active-task-consumed-mhr">
+            <small>MHr Consumed</small>
+            <h1 class="consumed" [ngClass]="{'exceeded':consumed > activeTask.mHrAssigned}">
+                {{consumed | number:'2.0-2'}}</h1>
+
+        </div>
+        <div class="active-task-actions">
+            <!-- <button mat-raised-button class="pause" color="primary" (click)="onPauseActiveTask()">Pause
+                <mat-icon>pause</mat-icon>
+            </button> -->
+            <button mat-raised-button class="open" color="accent" matTooltip="Open Task"
+                (click)="openTaskDialog(activeTask)">
+                <mat-icon class="m-0">open_in_new</mat-icon>
+            </button>
+        </div>
+    </div>
+</div>

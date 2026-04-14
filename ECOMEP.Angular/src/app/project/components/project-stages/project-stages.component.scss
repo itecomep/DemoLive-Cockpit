@@ -1,0 +1,144 @@
+@import 'variables';
+
+.project-stages-wrapper {
+    height: 100%;
+    overflow: hidden auto;
+
+    .text-green {
+        color: $green;
+    }
+
+    .text-red {
+        color: $red;
+    }
+
+    .project-stages-header {
+        display: flex;
+        align-items: center;
+        // justify-content: space-between;
+        gap: 0.5rem;
+        padding: 0.2rem 0.5rem;
+        position: sticky;
+        top: 0;
+        right: 0;
+        left: 0;
+        background-color: $gray-300;
+        z-index: 99;
+
+        .warning-message {
+            color: $red;
+        }
+
+        .stage-total {
+            font-weight: 500;
+
+            &.warning {
+                color: red;
+            }
+        }
+
+        .project-progress {
+            font-weight: 700;
+        }
+    }
+
+    .project-stages-table-wrapper {
+        background-color: $white;
+
+        table {
+            min-width: 100%;
+            font-size: 0.8rem;
+            cursor: pointer;
+
+            thead {
+                background-color: $gray-400;
+                position: sticky;
+                position: -webkit-sticky;
+                top: 0;
+
+                tr {
+                    &.total {
+                        background-color: $gray-600;
+                        color: $white;
+                    }
+
+                    td,
+                    th {
+                        border-bottom: 1px solid $gray-400;
+                        // white-space: nowrap;
+                        border-right: 1px solid $gray-300;
+                        padding: 0 0.3rem;
+
+                            text-align: center;
+                        &.align-right {
+                            text-align: right;
+                        }
+
+                        &.text-pre-wrap {
+                            white-space: pre-wrap;
+                        }
+
+                        &.collapsed {
+                            padding: 0 !important;
+                        }
+
+                    }
+                }
+
+            }
+
+            tbody {
+                tr {
+                    td {
+                        border-bottom: 1px solid $gray-400;
+                        white-space: nowrap;
+                        border-right: 1px solid $gray-300;
+                        padding: 0.3rem;
+
+                        &.align-center {
+                            text-align: center;
+                        }
+                        &.align-right {
+                            text-align: right;
+                        }
+
+                        &.text-pre-wrap {
+                            white-space: pre-wrap;
+                        }
+
+                        .status-badge {
+                            border-radius: $border-radius;
+                            padding: 0.1rem 0.3rem;
+                            font-size: 0.6rem;
+                            background-color: $gray-300;
+                            color: $white;
+      
+                            &.status-badge-yellow {
+                                background-color: $yellow;
+                                color: $black;
+                            }
+      
+                            &.status-badge-orange {
+                                background-color: $orange;
+                                color: $black;
+                            }
+      
+                            &.status-badge-red {
+                                background-color: $red;
+                            }
+      
+                            &.status-badge-green {
+                                background-color: $green;
+                            }
+                            &.status-badge-blue {
+                              background-color: $blue;
+                            }
+                        }
+                    }
+
+
+                }
+            }
+        }
+    }
+}

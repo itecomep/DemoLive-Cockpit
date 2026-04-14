@@ -1,0 +1,57 @@
+@import 'variables';
+
+.cockpit-wrapper {
+    width: 100%;
+    background-color: $page-background;
+    overflow: hidden !important;
+    position: absolute;
+    top: $app-header-height;
+    left: 0;
+    bottom: 50px;
+
+    .cockpit-message {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+        justify-content: center;
+        padding: 15px;
+
+        .cockpit-logo {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            width: 180px;
+            height: 180px;
+
+
+            & img {
+                max-width: 100%;
+                max-height: 100%;
+                // Makes `<img>` tags behave like `background-size: cover`. Not supported
+                // in IE, but we're using it as a progressive enhancement.
+                -o-object-fit: contain;
+                object-fit: contain;
+            }
+        }
+    }
+
+
+    .mat-mdc-tab-group {
+        height: 100%;
+        overflow: hidden;
+
+        ::ng-deep .mat-mdc-tab-header-pagination {
+            z-index: 1;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+
+    .cockpit-wrapper {
+        top: 92px;
+        width: 100%;
+    }
+}

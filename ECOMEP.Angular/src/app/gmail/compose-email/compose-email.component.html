@@ -1,0 +1,312 @@
+<div class="compose-wrapper" [class.maximized]="isMaximized"  [class.minimized]="isMinimized">
+  <div class="compose-header">
+    <span class="title">New Message</span>
+
+    <div class="header-buttons">
+      <button mat-icon-button (click)="toggleMinimize()">
+        <mat-icon>remove</mat-icon>
+      </button>
+
+      <button mat-icon-button (click)="toggleMaximize()">
+        <mat-icon>{{ isMaximized ? "fullscreen_exit" : "fullscreen" }}</mat-icon>
+      </button>
+      <button mat-icon-button (click)="closeCompose()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+  <div class="compose-minimized" *ngIf="isMinimized" (click)="toggleMinimize()">
+    {{ subject || 'New Message' }}
+  </div>
+  <div class="compose-body" [class.hidden]="isMinimized">
+    <form (ngSubmit)="sendEmail()" class="compose-form">
+      <div class="field-row">
+        <label>To</label>
+        <div class="email-chips-wrapper">
+          <span class="chip" *ngFor="let email of toList; let i = index">
+            {{ email }}
+            <button type="button" (click)="removeTo(i)">✕</button>
+          </span>
+          <mat-form-field appearance="fill" class="email-select">
+            <input type="text" placeholder="Select recipient" matInput [formControl]="toControl" [matAutocomplete]="autoTo" />
+            <mat-autocomplete #autoTo="matAutocomplete" (optionSelected)="addTo($event.option.value)">
+              <mat-option *ngFor="let contact of filteredToEmails" [value]="contact">
+                {{ contact.email }} ({{ contact.title }})
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+          <div class="email-warning" *ngIf="noToEmailFound">
+            ⚠️ Note: this mail-id is not available in list
+          </div>
+        </div>
+        <span class="cc-bcc-toggle" (click)="showCcBcc = !showCcBcc">Cc Bcc</span>
+      </div>
+      <div *ngIf="showCcBcc">
+        <div class="field-row">
+          <label>Cc</label>
+          <div class="email-chips-wrapper">
+            <span class="chip" *ngFor="let email of ccList; let i = index">
+              {{ email }} <button type="button" (click)="removeCc(i)">✕</button>
+            </span>
+            <mat-form-field appearance="fill" class="email-select">
+              <input type="text" placeholder="Select Cc" matInput [formControl]="ccControl" [matAutocomplete]="autoCc" />
+              <mat-autocomplete #autoCc="matAutocomplete" (optionSelected)="addCc($event.option.value)">
+                <mat-option *ngFor="let contact of filteredCcEmails" [value]="contact">
+                  {{ contact.email }} ({{ contact.title }})
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+            <div class="email-warning" *ngIf="noCcEmailFound">
+              ⚠️ Note: this mail-id is not available in list
+            </div>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label>Bcc</label>
+          <div class="email-chips-wrapper">
+            <span class="chip" *ngFor="let email of bccList; let i = index">
+              {{ email }}
+              <button type="button" (click)="removeBcc(i)">✕</button>
+            </span>
+            <mat-form-field appearance="fill" class="email-select">
+              <input type="text" placeholder="Select Bcc" matInput [formControl]="bccControl" [matAutocomplete]="autoBcc" />
+              <mat-autocomplete #autoBcc="matAutocomplete" (optionSelected)="addBcc($event.option.value)">
+                <mat-option *ngFor="let contact of filteredBccEmails" [value]="contact">
+                  {{ contact.email }} ({{ contact.title }})
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+            <div class="email-warning" *ngIf="noBccEmailFound">
+              ⚠️ Note: this mail-id is not available in list
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <label>Subject</label>
+        <input type="text" class="subject-input" [(ngModel)]="subject" name="subject" required />
+      </div>
+      
+      <mat-form-field *ngIf="state?.type === 'new' || state?.type === 'reply' || state?.type === 'replyAll' || state?.type === 'forward' || state?.type === 'draft'" appearance="outline" class="w-100 project-field">
+        <mat-label>Project</mat-label>
+        <input type="text" matInput [formControl]="projectControl" [matAutocomplete]="auto" placeholder="Search project" />
+        <button matSuffix class="input-tag-btn" [class.active]="selectedMailType === 'project'" (click)="selectMailType('project')" type="button">
+          PROJECT
+        </button>
+        <button matSuffix class="input-tag-btn" [class.active]="selectedMailType === 'other'" (click)="selectMailType('other')" type="button">
+          OTHERS
+        </button>
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onProjectSelected($event.option.value)">
+          <mat-option *ngIf="selectedMailType === 'project'" [value]="null"> -- Select Project -- </mat-option>
+          <mat-option *ngFor="let p of (selectedMailType === 'project' ? filteredProjects : [])" [value]="p">
+            {{ p.name }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <mat-expansion-panel *ngIf="selectedProjectId" [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Project associations</mat-panel-title>
+        </mat-expansion-panel-header>
+        <ul class="project-association-list">
+          <li *ngFor="let item of associations; let i=index" [class.added]="isContactAdded(item)">
+            <div class="d-flex justify-content-between">
+              <div class="association-contact d-flex">
+                <div class="flex-grow-0 flex-shrink-0">
+                  <img 
+                    [src]="item.contact?.photoUrl || (item.contact?.isCompany ? 'assets/images/company-icon.svg' : 'assets/images/person-icon.svg')"
+                    class="user-thumbnail mr-2"
+                    alt=""
+                    matTooltip="{{item.contact?.fullName}}"
+                  />
+                </div>
+                <div class="flex-grow-1">
+                  <div>
+                    <span class="font-focused">{{ item.contact?.fullName }}</span>
+                  </div>
+                  <span class="badge badge-warning mr-1"
+                    *ngFor="let cat of item.contact?.categories">
+                    {{ cat }}
+                  </span>
+                  <span class="badge badge-gray mr-1"
+                    *ngFor="let tag of item.contact?.searchTags">
+                    {{ tag }}
+                  </span>
+                </div>
+              </div>
+              <div class="association-actions d-flex flex-wrap">
+                <button mat-button type="button"
+                  (click)="addToRecipients(item, 'TO')"
+                  [class.active]="getContactTypeFlag(item) === 'TO'">
+                  To
+                </button>
+                <button mat-button type="button"
+                  (click)="addToRecipients(item, 'CC')"
+                  [class.active]="getContactTypeFlag(item) === 'CC'">
+                  CC
+                </button>
+                <button mat-button type="button"
+                  (click)="addToRecipients(item, 'BCC')"
+                  [class.active]="getContactTypeFlag(item) === 'BCC'">
+                  BCC
+                </button>
+              </div>
+            </div>
+            <hr class="mb-0" />
+            <div class="association-details">
+              <h6 class="font-focused">{{item.title}}</h6>
+              <mat-icon class="mr-1">email</mat-icon>
+              <span *ngIf="item.contact?.email">{{item.contact.email}}</span>
+              <mat-icon class="ml-2 mr-1">phone</mat-icon>
+              <span *ngIf="item.contact?.phone">{{item.contact.phone}}</span>
+            </div>
+          </li>
+        </ul>
+        <ul *ngIf="!associations || associations.length === 0">
+          <li>
+            <h6>No Project Associations Found!!!</h6>
+          </li>
+        </ul>
+      </mat-expansion-panel>
+
+      <!-- <div class="attachment-drop-zone" (click)="openDmsDialog()">
+        <span class="material-icons">perm_media</span>
+        Select files from DMS
+      </div> -->
+      <div class="attachment-drop-zone" (click)="openDmsDialog()">
+        <span class="material-icons upload-icon">cloud_upload</span>
+        <p class="title">Select files from DMS</p>
+      </div>
+
+        <div class="attachment-container" *ngIf="attachments.length > 0 || dmsAttachments.length > 0">
+          <div class="attachment-box" *ngFor="let att of attachments; let i = index">
+            <div class="file-icon">
+              <mat-icon>{{ att.icon }}</mat-icon>
+            </div>
+            <div class="file-info">
+              <div class="file-name"><a *ngIf="att.url" [href]="att.url" [download]="att.file.name" class="attachment-download">{{ att.file.name }}</a>
+                <span *ngIf="!att.url">
+                  {{ att.file.name }}
+                </span>
+              </div>
+              <div class="file-size">
+                {{ att.size }}
+              </div>
+            </div>
+
+            <button mat-icon-button class="remove-btn" (click)="removeAttachment(i)">
+              <mat-icon>close</mat-icon>
+            </button>
+
+          </div>
+          <div class="attachment-box" *ngFor="let att of dmsAttachments; let i = index">
+            <div class="file-icon">
+              <mat-icon>{{ att.icon }}</mat-icon>
+            </div>
+            <div class="file-info">
+              <div class="file-name">{{ att.name }}</div>
+              <div class="file-size">{{ att.size }}</div>
+            </div>
+
+            <button mat-icon-button class="remove-btn" (click)="removeDmsAttachment(i)">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </div>
+
+      <div class="custom-editor-container">
+        <div class="editor-toolbar" (mousedown)="saveSelection()">
+          <button type="button" (click)="exec('bold')" [class.active]="activeStyles.bold" title="Bold">
+            B
+          </button>
+          <button type="button" (click)="exec('italic')" [class.active]="activeStyles.italic" title="Italic">
+            <em>𝑰</em>
+          </button>
+          <button type="button" (click)="exec('underline')" [class.active]="activeStyles.underline" title="Underline">
+            U̲
+          </button>
+
+          <div class="divider"></div>
+          <div class="color-btn" (click)="toggleColorPalette($event)">
+            <span [style.color]="activeStyles.color">A</span>
+            <div class="color-palette-dropdown" *ngIf="showTextColorPalette" (mousedown)="$event.preventDefault()">
+              <span class="color-swatch reset" title="Reset color" (click)="applyColor()">×</span>
+              <span *ngFor="let c of colorPalette" [ngStyle]="{ 'background-color': c }" class="color-swatch" (mousedown)="onColorMouseDown($event); applyColor(c)">
+              </span>
+            </div>
+          </div>
+          <div class="color-btn highlight" (click)="toggleBgColorPalette($event)" title="Background color">
+            <mat-icon>format_color_fill</mat-icon>
+            <div class="color-palette-dropdown" *ngIf="showBgColorPalette" (mousedown)="$event.preventDefault()">
+              <span class="color-swatch reset" title="Reset background" (click)="applyBackgroundColor()">×</span>
+              <span *ngFor="let c of colorPalette" [ngStyle]="{ 'background-color': c }" class="color-swatch" (click)="applyBackgroundColor(c)">
+              </span>
+            </div>
+          </div>
+          <div class="divider"></div>
+          <button type="button" (click)="exec('justifyLeft')" [class.active]="activeStyles.align === 'left'" title="Align Left">
+            <mat-icon>format_align_left</mat-icon>
+          </button>
+          <button type="button" (click)="exec('justifyCenter')" [class.active]="activeStyles.align === 'center'" title="Align Center">
+            <mat-icon>format_align_center</mat-icon>
+          </button>
+
+          <button type="button" (click)="exec('justifyRight')" [class.active]="activeStyles.align === 'right'" title="Align Right">
+            <mat-icon>format_align_right</mat-icon>
+          </button>
+
+          <button type="button" (click)="exec('justifyFull')" [class.active]="activeStyles.align === 'justify'" title="Justify">
+            <mat-icon>format_align_justify</mat-icon>
+          </button>
+
+          <div class="font-size-dropdown">
+            <select [value]="activeStyles.fontSize" (change)="applyFontSize($any($event.target).value)">
+              <option value="small">Small</option>
+              <option value="normal">Normal</option>
+              <option value="large">Large</option>
+              <option value="huge">Huge</option>
+            </select>
+          </div>
+
+          <div class="font-family-dropdown">
+            <select [value]="activeStyles.fontFamily" (change)="applyFontFamily($any($event.target).value)">
+              <option *ngFor="let f of fontFamilies" [value]="f.value">
+                {{ f.label }}
+              </option>
+            </select>
+          </div>
+
+          <button type="button" (click)="exec('insertUnorderedList')" [class.active]="activeStyles.bullet">
+            <mat-icon>format_list_bulleted</mat-icon>
+          </button>
+          <button type="button" (click)="exec('insertOrderedList')" [class.active]="activeStyles.number">
+            <mat-icon>format_list_numbered</mat-icon>
+          </button>
+        </div>
+
+        <div
+          #editorElement
+          contenteditable="true"
+          class="editor-content"
+          (paste)="onPaste($event)"
+          (input)="onEditorInput()"
+          (click)="handleEditorClick($event)"
+          (keyup)="updateToolbarState(); saveSelection()"
+          (mouseup)="updateToolbarState(); saveSelection()"
+          placeholder="Write your message here..."
+        ></div>
+      </div>
+
+      <!-- <div class="attachment-drop-zone" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)" (click)="fileInput.click()">
+         Drag & Drop files here or click Attach Files
+        <input type="file" #fileInput multiple (change)="onFileSelected($event)" hidden />
+      </div> -->
+    </form>
+  </div>
+  <div class="compose-footer" [class.hidden]="isMinimized">
+    <button mat-flat-button color="info" (click)="saveDraft()">Save As Draft</button>
+    <button mat-flat-button color="primary" (click)="sendEmail()">Send</button>
+  </div>
+</div>

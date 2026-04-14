@@ -1,0 +1,197 @@
+@import 'variables';
+
+::ng-deep .mat-pseudo-checkbox {
+  display: none !important;
+}
+
+::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled):not(.mat-mdc-option-multiple) {
+  background-color: transparent !important;
+}
+
+.module-tab-wrapper{
+  position: relative;
+  top: 3rem;
+}
+.permission-wrapper {
+  overflow: auto;
+  background-color: #f9fafb; // Soft off-white for contrast
+  position: relative;
+  top: 3rem;
+  height: calc(100vh - 9.2rem);
+  // .permission-table {
+  //   width: 100%;
+  //   border-collapse: collapse;
+  //   text-align: center;
+  //   overflow: auto;
+  //   border-radius: 8px;
+  //   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  //   .permission-table-header{
+  //     position: sticky;
+  //     top: 0rem;
+  //     z-index: 2;
+  //   }
+  //   th, td {
+  //     border: 1px solid #d1d5db; // Subtle gray for a clean look
+  //     padding: 0.3rem; 
+  //     text-align: center;
+  //     vertical-align: middle;
+  //   }
+
+  //   // Header styling
+  //   th {
+     
+  //     background-color: $gray-500; 
+  //     color: #ffffff;
+  //     font-weight: 600;
+  //     text-transform: uppercase;
+  //     padding:0.3rem;
+  //     font-size: x-small;
+  //     span{
+  //       writing-mode: vertical-rl;
+  //       transform: rotate(180deg);
+  //     }
+  //   }
+ 
+  //   // Second-level header (groups)
+  //   thead tr:nth-child(2) th {
+  //     background-color: $gray-600;
+  //     color: #ffffff;
+      
+  //   }
+
+  //   // // Third-level header (permissions)
+  //   // thead tr:nth-child(3) th {
+    
+  //   //   // text-orientation: upright;
+  //   //   background-color: $gray-300; // Light green for permissions row
+  //   //   color: #ffffff;
+  //   // }
+
+  //   .team-member {
+  //     width: 3rem;
+     
+  //     padding-left: 0.3rem;
+  //     font-weight: 500;
+  //     background: #ffffff; // Very soft green to match theme
+
+  //     .team-member-photo {
+  //       width: 2.5rem;
+  //       height: 2.5rem;
+  //       border-radius: 10px;
+  //       object-fit: cover;
+  //       margin-right: 8px;
+  //       cursor: pointer;
+  //       // border: 2px solid #2d6a4f;
+  //     }
+  //   }
+
+  //   // Checkbox Styling
+  //   input[type="checkbox"] {
+  //     transform: scale(1.2);
+  //     cursor: pointer;
+  //     accent-color: #ffffff; // White checkbox
+  //     border: 2px solid #2d6a4f;
+  //   }
+
+  //   // tr:hover {
+  //   //   background-color: rgba(64, 145, 108, 0.15); // Gentle hover effect
+  //   // }
+  // }
+  .permission-table {
+    width: auto; // Makes the table adjust to content width
+    max-width: 80%; // Prevents it from stretching to full screen
+    min-width: 18rem; // Ensures it doesn’t become too small
+    border-collapse: collapse;
+    text-align: center;
+    overflow: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+   
+  
+    .permission-table-header {
+      position: sticky;
+      top: 0rem;
+      z-index: 2;
+    }
+  
+    th,
+    td {
+      border: 1px solid #d1d5db;
+      padding: 0.3rem;
+      text-align: center;
+      vertical-align: middle;
+      white-space: nowrap; // Prevents text from breaking
+    }
+  
+    th {
+      background-color: $gray-500;
+      color: #ffffff;
+      font-weight: 600;
+      text-transform: uppercase;
+      padding: 0.3rem;
+      font-size: x-small;
+  
+      span {
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+      }
+    }
+  
+    thead tr:nth-child(2) th {
+      background-color: $gray-600;
+      color: #ffffff;
+    }
+  
+    .team-member {
+      width: 3rem;
+      padding-left: 0.3rem;
+      font-weight: 500;
+      background: #ffffff;
+  
+      .team-member-photo {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 10px;
+        object-fit: cover;
+        margin-right: 8px;
+        cursor: pointer;
+      }
+    }
+  
+    input[type="checkbox"] {
+      transform: scale(1.2);
+      cursor: pointer;
+      accent-color: #ffffff;
+      border: 2px solid #2d6a4f;
+    }
+  }
+  
+}
+
+@media (max-width: 768px) {
+  .module-tab-wrapper {
+    top: 6rem;
+    position: fixed;
+    width: 100%;
+    background: white;
+  }
+
+  .permission-wrapper {
+    top: 9rem;
+    height: calc(100vh - 12rem);
+    
+    .permission-table {
+      max-width: 100%;
+      font-size: 0.75rem;
+
+      th, td {
+        padding: 0.2rem;
+      }
+
+      .team-member-photo {
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+  }
+}

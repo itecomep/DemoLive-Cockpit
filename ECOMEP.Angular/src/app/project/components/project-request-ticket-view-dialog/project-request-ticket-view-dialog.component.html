@@ -1,0 +1,262 @@
+<div class="mat-dialog-header mcv-dialog-header">
+  <div>
+    <h5 class="font-focused">{{data.currentEntity.title}}</h5>
+    <h6>{{data.currentEntity.subtitle}}</h6>
+  </div>
+
+  <button mat-icon-button aria-label="close" (click)="onClose()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+<mat-dialog-content class="dialog-wrapper" *ngIf="currentEntity">
+  <div class="dialog-data-wrapper">
+    <div class="detail-data-wrapper">
+      <h5 class="mb-2">DETAILS</h5>
+      <div class="request-ticket-property-wrapper">
+        <div class="request-ticket-property">
+          <small class="property-label">
+            Stage
+          </small>
+          <div class="property-value">
+            <h6>{{currentEntity.stageTitle}}</h6>
+          </div>
+        </div>
+        <div class="request-ticket-property">
+          <small class="property-label">
+            Purpose
+          </small>
+          <div class="property-value">
+            <h6>{{currentEntity.purpose}}</h6>
+          </div>
+        </div>
+
+      </div>
+      <div class="request-ticket-property-wrapper">
+        <div class="request-ticket-property">
+          <small class="property-label">
+            Subtitle
+          </small>
+          <div class="property-value">
+            <h6>{{currentEntity.subtitle}}</h6>
+          </div>
+        </div>
+
+      </div>
+      <div class="request-ticket-property-wrapper">
+        <div class="request-ticket-property">
+          <small class="property-label">
+            Revision
+          </small>
+          <div class="property-value">
+            <h6>{{currentEntity.revision}}</h6>
+          </div>
+        </div>
+
+        <div class="request-ticket-property">
+          <small class="property-label">
+            Is Repeat Required
+          </small>
+          <div class="property-value">
+            <h6> {{currentEntity.isRepeatRequired ? 'Yes': 'No'}}</h6>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="request-message-wrapper" *ngIf="currentEntity.requestMessage && currentEntity.requestMessage !=='' ">
+      <h5 class="mb-2">REQUEST MESSAGE</h5>
+      <p>{{currentEntity.requestMessage}}</p>
+    </div>
+
+    <div class="attachment-wrapper" *ngIf="currentEntity.attachments.length > 0">
+      <h5 class="mb-2">ATTACHMENTS</h5>
+      <ul class="mcv-file-list">
+        <li *ngFor="let file of currentEntity.attachments">
+          <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="false" [downloadUrl]="file.url"
+            [showPreview]="true" [singlePreview]="true" [url]="file.url" [thumbUrl]="file.thumbUrl"
+            [showRemove]="false">
+          </mcv-file>
+          <!-- <div class="p-2">
+            <mat-chip-set>
+              <mat-chip *ngFor="let tag of file.searchTags">
+                {{tag}}
+              </mat-chip>
+            </mat-chip-set>
+          </div> -->
+        </li>
+      </ul>
+    </div>
+
+    <div class="history-wrapper" *ngIf="historyList && historyList.length > 0">
+      <h5 class="mb-2">HISTORY</h5>
+      <div class="example-action-buttons">
+        <button mat-button (click)="accordion.openAll()">Expand All</button>
+        <button mat-button (click)="accordion.closeAll()">Collapse All</button>
+      </div>
+      <mat-accordion class="example-headers-align" multi>
+        <mat-expansion-panel *ngFor="let history of historyList">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{history.modified | date: "dd MMM y HH:mm"}}
+            </mat-panel-title>
+            <mat-panel-description>
+
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div class="request-ticket-history-content">
+            <div class="request-ticket-property-wrapper">
+              <div class="request-ticket-property">
+                <small class="property-label">
+                  Request For
+                </small>
+                <div class="property-value">
+                  <h6>{{history.purpose}}</h6>
+                </div>
+              </div>
+
+              <div class="request-ticket-property">
+                <small class="property-label">
+                  Subtitle
+                </small>
+                <div class="property-value">
+                  <h6>{{history.subtitle}}</h6>
+                </div>
+              </div>
+
+              <div class="request-ticket-property">
+                <small class="property-label">
+                  Next Reminder Date
+                </small>
+                <div class="property-value">
+                  <h6>{{history.nextReminderDate | date: "dd MMM y" }}</h6>
+                </div>
+              </div>
+
+              <div class="request-ticket-property">
+                <small class="property-label">
+                  Repeat Interval
+                </small>
+                <div class="property-value">
+                  <h6>{{history.reminderInterval | number: '2.0-0'}} <small>days</small></h6>
+                </div>
+              </div>
+            </div>
+            <div class="attendee-group">
+              <div class="attendee-block"
+                *ngIf="getFilteredAssignees(history.assignees, REQUEST_TICKET_ASSIGNEE_TYPEFLAG_TO).length > 0">
+                <div class="attendee-type">TO:</div>
+                <div class="attendee-item"
+                  *ngFor="let item of getFilteredAssignees(history.assignees, REQUEST_TICKET_ASSIGNEE_TYPEFLAG_TO)">
+                  <span class="name">{{ item.name }}</span>
+                  <span class="email">{{ item.email }}</span>
+                  <span class="company" *ngIf="item.company && item.company!==''">(<small>{{ item.company
+                      }}</small>)</span>
+                </div>
+              </div>
+
+              <div class="attendee-block"
+                *ngIf="getFilteredAssignees(history.assignees, REQUEST_TICKET_ASSIGNEE_TYPEFLAG_CC).length > 0">
+                <div class="attendee-type">CC:</div>
+                <div class="attendee-item"
+                  *ngFor="let item of getFilteredAssignees(history.assignees, REQUEST_TICKET_ASSIGNEE_TYPEFLAG_CC)">
+                  <span class="name">{{ item.name }}</span>
+                  <span class="email">{{ item.email }}</span>
+                  <span class="company" *ngIf="item.company && item.company!==''">(<small>{{ item.company
+                      }}</small>)</span>
+                </div>
+              </div>
+
+              <div class="attendee-block"
+                *ngIf="getFilteredAssignees(history.assignees, REQUEST_TICKET_ASSIGNEE_TYPEFLAG_BCC).length > 0">
+                <div class="attendee-type">BCC:</div>
+                <div class="attendee-item"
+                  *ngFor="let item of getFilteredAssignees(history.assignees, REQUEST_TICKET_ASSIGNEE_TYPEFLAG_BCC)">
+                  <span class="name">{{ item.name }}</span>
+                  <span class="email">{{ item.email }}</span>
+                  <span class="company" *ngIf="item.company && item.company!==''">(<small>{{ item.company
+                      }}</small>)</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="request-ticket-property-wrapper">
+              <div class="request-ticket-property">
+                <small class="property-label">
+                  Request Message
+                </small>
+                <div class="property-value">
+                  <p>{{history.requestMessage}}</p>
+                </div>
+              </div>
+              <!-- <div class="request-ticket-property">
+                <small class="property-label">
+                  Resolution Message
+                </small>
+                <div class="property-value">
+                  <p>{{history.resolutionMessage}}</p>
+                </div>
+              </div> -->
+            </div>
+
+
+
+            <div class="request-ticket-property-wrapper" *ngIf="history.attachments.length > 0">
+              <div class="request-ticket-property">
+                <small class="property-label">
+                  Attachments
+                </small>
+                <div class="property-value">
+                  <ul class="mcv-file-list">
+                    <li *ngFor="let file of history.attachments">
+                      <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="false"
+                        [tags]="file.searchTags" [allowTagging]="false" [downloadUrl]="file.url" [showPreview]="true"
+                        [singlePreview]="true" [url]="file.url">
+                      </mcv-file>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-expansion-panel>
+
+      </mat-accordion>
+
+    </div>
+
+  </div>
+
+  <div class="attendees-data-wrapper">
+    <h5>ATTENDEES</h5>
+
+    <div class="attendee-group">
+      <div class="attendee-block" *ngIf="toAttendees.length > 0">
+        <div class="attendee-type">TO:</div>
+        <div *ngFor="let attendee of toAttendees" class="attendee-item">
+          <span class="name">{{ attendee.name }}</span>
+          <span class="email">{{ attendee.email }}</span>
+        </div>
+      </div>
+
+      <div class="attendee-block" *ngIf="ccAttendees.length > 0">
+        <div class="attendee-type">CC:</div>
+        <div *ngFor="let attendee of ccAttendees" class="attendee-item">
+          <span class="name">{{ attendee.name }}</span>
+          <span class="email">{{ attendee.email }}</span>
+        </div>
+      </div>
+
+      <div class="attendee-block" *ngIf="bccAttendees.length > 0">
+        <div class="attendee-type">BCC:</div>
+        <div *ngFor="let attendee of bccAttendees" class="attendee-item">
+          <span class="name">{{ attendee.name }}</span>
+          <span class="email">{{ attendee.email }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+</mat-dialog-content>

@@ -1,0 +1,46 @@
+<!-- This component allows to create new master which gets its stages from the existing workorder -->
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">Add To Master</h5>
+    <div class="d-flex align-items-center">
+        <button mat-raised-button color="primary" (click)="onSubmit()">
+            Add
+        </button>
+        <button mat-icon-button aria-label="close" (click)="onClose()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+<mat-dialog-content>
+    <div class="master-container">
+        <mat-form-field appearance="outline">
+            <mat-label>Template Title</mat-label>
+            <input type="typologyTitle" [formControl]="typologyTitle" matInput required />
+        </mat-form-field>
+
+        <div class="stage-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Stage Title</th>
+                        <th>Stage Value</th>
+                    </tr>
+                    <tr class="total">
+                        <th></th>
+                        <th></th>
+                        <th [ngClass]="{'warning':percentageTotal > 100}">{{percentageTotal}} %</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngFor="let item of workOrderStages; let i = index">
+                        <tr>
+                            <td class="align-center">{{i + 1}}</td>
+                            <td class="align-center">{{item.title}}</td>
+                            <td class="align-center">{{item.percentage}}</td>
+                        </tr>
+                    </ng-container>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</mat-dialog-content>

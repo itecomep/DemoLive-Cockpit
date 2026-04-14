@@ -1,0 +1,53 @@
+<div class="todo-header">
+  <h5 class ="font-focused">Meetings</h5>
+  <div class="d-flex align-items-center flex-wrap">
+    <div class="mv-list-search-filter">
+      <mat-icon matPrefix>search</mat-icon>
+      <input aria-label="Type to Search" [formControl]="searchFC" matInput />
+    </div>
+    <div *ngIf="statusOptions && statusOptions.length > 0">
+      <mat-form-field appearance="outline">
+        <mat-select [formControl]="statusFC" multiple placeholder="Status">
+          <mat-option *ngFor="let item of statusOptions" [value]="item">{{
+            item.title
+            }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <mat-paginator [length]="totalRecordsCount" [pageIndex]="pageIndex" [pageSize]="pageSize"
+      (page)="handlePageEvent($event)" aria-label="Select page">
+    </mat-paginator>
+  </div>
+</div>
+<div class="project-meeting-view-wrapper">
+  <ul class="project-meeting-ul" *ngIf="meetings && meetings.length > 0">
+    <li *ngFor="let item of meetings">
+      <div class="row">
+        <div class="col-12">
+          <img src="{{ item.contact?.photoUrl || 'assets/images/user.png'}}" (click)="openPhotoDialog(item.contact); $event.stopPropagation()" style="cursor: pointer;"
+            [matTooltip]="item.contact ? item.contact.name : ''" class="user-thumbnail float-left mr-2">
+          <div class="d-flex align-item-center justify-content-between">
+            <div>
+              <h6 class="mb-0">{{item.title}}</h6>
+              <h5 class="float-left mr-1"> #{{item.orderFlag | number:'3.0'}}</h5>
+              <span class="mb-0"> <small>on</small> {{item.startDate| date:'dd MMM y' }} </span>
+              <span *ngIf="item.statusFlag==0" class="badge badge-primary ml-1">{{item.statusValue}}</span>
+              <span *ngIf="item.statusFlag==1" class="badge badge-dark ml-1">{{item.statusValue}}</span>
+              <span *ngIf="item.statusFlag==2" class="badge badge-success ml-1">{{item.statusValue}}</span>
+              <span *ngIf="item.statusFlag==3" class="badge badge-gray ml-1">{{item.statusValue}}</span>
+              <span *ngIf="item.typeFlag!=0" class="badge badge-warning ml-1">{{item.typeValue}}</span>
+            </div>
+            <button mat-icon-button matTooltip="Open in new tab" (click)="openMeeting(item)">
+              <mat-icon>open_in_new</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+  <ul class="no-meeting-list" *ngIf="meetings.length == 0">
+    <li>
+      <h6>No Meeting Found!!</h6>
+    </li>
+  </ul>
+</div>

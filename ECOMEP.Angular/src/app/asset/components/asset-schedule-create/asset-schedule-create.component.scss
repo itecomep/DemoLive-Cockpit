@@ -1,0 +1,70 @@
+@import 'variables';
+@import 'theme';
+.mcv-dialog-header{
+    background-color: mat-color($mcv-primary, 500);
+    color: $white;
+}
+.form-container,
+.image-container,
+.schedule-review-container {
+    margin: 0.3rem;
+    border-radius: $border-radius;
+    box-shadow: $box-shadow;
+    padding: 0.3rem;
+}
+
+
+thead {
+    background-color: $gray-400;
+    position: sticky;
+    position: -webkit-sticky;
+    top: 0;
+    font-size: 0.75rem;
+
+    th {
+        border-bottom: 1px solid $gray-400;
+        border-right: 1px solid $gray-300;
+        padding: 0 0.3rem;
+        text-align: center;
+    }
+}
+
+tbody {
+    tr {
+        td {
+            border-bottom: 1px solid $gray-400;
+            white-space: nowrap;
+            border-right: 1px solid $gray-300;
+            padding: 0.3rem;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+    }
+}
+
+.preview {
+    h6 {
+        padding: 0.3rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .form-container,
+    .image-container,
+    .schedule-review-container {
+        margin: 0.2rem;
+        padding: 0.2rem;
+    }
+
+    thead th,
+    tbody td {
+        font-size: 0.7rem;
+        padding: 0.2rem;
+    }
+
+    .preview h6 {
+        font-size: 0.9rem;
+    }
+}

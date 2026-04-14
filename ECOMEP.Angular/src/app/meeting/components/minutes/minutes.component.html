@@ -1,0 +1,393 @@
+<div class="minutes-wrapper" *ngIf="currentEntity">
+  <div class="minutes-page">
+
+    <div class="minutes-page-header">
+      <div class="minutes-page-header-title">
+        <h3 class="font-focused">{{reportType}}</h3>
+        <h4>{{meetingTitle}}</h4>
+      </div>
+      <div class="minutes-page-header-logo text-right">
+        <img src="{{ logoUrl || 'assets/images/logo.png' }}" />
+      </div>
+
+
+    </div>
+    <div class="minutes-page-header-actions">
+      <!-- <button mat-icon-button matTooltip="Download PDF" aria-label="Download PDF" (click)="onClickDownloadPDF()">
+        <mat-icon>download</mat-icon>
+      </button> -->
+      <button mat-icon-button matTooltip="Share" aria-label="Share"
+        (click)="onClickShare()"><mat-icon>share</mat-icon></button>
+    </div>
+    <div class="minutes-page-content">
+
+      <div class="row ">
+        <div class="col-sm-6 py-1" [ngClass]="{'d-flex justify-content-between align-items-center':isMobileView}">
+          <div>
+            <small>No.</small>
+            <h6 class="font-focused">#{{currentEntity.orderFlag | number:'3.0'}}</h6>
+          </div>
+        </div>
+
+        <div class="col-sm-6 py-1 minutes-intial-details">
+          <small>Date:</small>
+          <h6 class="font-focused">{{currentEntity.startDate | date:'dd MMM y HH:mm'}}</h6>
+        </div>
+
+        <div class="col-sm-6 py-1 minutes-intial-details">
+          <small>Subject:</small>
+          <h6 class="font-focused">{{currentEntity.title}}</h6>
+        </div>
+
+        <div class="col-sm-6 py-1 minutes-intial-details">
+          <small>Prepared By:</small>
+          <h6 class="font-focused">{{currentEntity.createdBy}}</h6>
+        </div>
+
+        <div class="col-sm-6 py-1 minutes-intial-details">
+          <small>Venue:</small>
+          <h6 class="font-focused">{{currentEntity.venue }}</h6>
+        </div>
+
+      </div>
+      <div class="row">
+        <div class="col-sm-6 py-1">
+          <small>Internal: ({{getFilteredAttendees(MEETING_ATTENDEE_INTERNAL).length}})</small>
+          <ng-container *ngFor="let item of getFilteredAttendees(MEETING_ATTENDEE_INTERNAL); let i = index;">
+            <div class="minute-attendee" >
+              <div>
+                <h6 class="mb-1 p-1">{{item.name}} <i>({{item.email}})</i></h6>
+              </div>
+              <div *ngIf="getPendingAgendaCount(item)!=0">
+                <span class="badge badge-danger">
+                  {{ getPendingAgendaCount(item)| number:'2.0' }}
+                </span>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <div class="col-sm-6 py-1">
+          <small>External: ({{getFilteredAttendees(MEETING_ATTENDEE_EXTERNAL).length}})</small>
+          <ng-container *ngFor="let item of getFilteredAttendees(MEETING_ATTENDEE_EXTERNAL); let i = index;">
+            <div class="minute-attendee" >
+              <div>
+                <h6 class="mb-1 p-1">{{item.name}} <i>({{item.email}})</i></h6>
+              </div>
+              <div *ngIf="getPendingAgendaCount(item)!=0">
+                <span class="badge badge-danger">
+                  {{ getPendingAgendaCount(item)| number:'2.0' }}
+                </span>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col-sm-12 py-1">
+          <small>Contact Person: ({{getFilteredAttendees(MEETING_ATTENDEE_CONTACT_PERSON).length}})</small>
+          <ng-container *ngFor="let item of getFilteredAttendees(MEETING_ATTENDEE_CONTACT_PERSON); let i = index;">
+            <div class="minute-attendee" >
+              <div>
+                <h6 class="mb-1 p-1">{{item.name}} <i>({{item.email}})</i></h6>
+              </div>
+              <div *ngIf="getPendingAgendaCount(item)!=0">
+                <span class="badge badge-danger">
+                  {{ getPendingAgendaCount(item)| number:'2.0' }}
+                </span>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- <div class="col-12 py-1">
+          <small>Click on any attendee to filter agenda.</small>
+        </div> -->
+      </div>
+
+      <div class="row" *ngIf="this.selectedAttendee">
+
+        <div class="col-sm-12 py-1">
+          <h6 class="font-focused">Filtered by: </h6>
+          <button mat-icon-button class="d-inline pl-1" (click)="resetAttendeeSelection()" matTooltip="clear"
+            aria-label="clear">
+            <mat-icon>clear</mat-icon>
+          </button>
+          <h6 class="d-inline pl-1">{{this.selectedAttendee.name }} ({{this.selectedAttendee.email}})</h6>
+        </div>
+      </div>
+
+      <small>These minutes will be considered as a true record unless otherwise advised in writing within 2
+        working days of issue.</small>
+
+      <hr />
+
+      <div *ngIf="currentEntity.typeFlag == MEETING_TYPEFLAG_INSPECTION">
+        <div class="minutes-agenda-title-header">
+          <h4 class="font-focused mb-1">Completion Status</h4>
+          <button mat-icon-button class="d-inline pl-1" (click)="resetProgressBarSelection()" matTooltip="clear"
+            aria-label="clear" *ngIf="this.selectedProgressBar">
+            <mat-icon>clear</mat-icon>
+          </button>
+
+          <button mat-raised-button class="btn btn-light" *ngIf="!this.selectedProgressBar && !progressExpanded"
+            (click)="toggleProgress()">
+            Show More
+            <mat-icon *ngIf="!progressExpanded">expand_more</mat-icon>
+            <mat-icon *ngIf="progressExpanded">expand_less</mat-icon>
+          </button>
+          <button mat-raised-button class="btn btn-light" *ngIf="!this.selectedProgressBar && progressExpanded"
+            (click)="toggleProgress()">
+            Show Less
+            <mat-icon *ngIf="!progressExpanded">expand_more</mat-icon>
+            <mat-icon *ngIf="progressExpanded">expand_less</mat-icon>
+          </button>
+        </div>
+        <ng-container *ngIf="progressExpanded">
+          <ul class="minutes-agenda-list">
+            <li *ngFor="let item of currentEntity.agendas; let i = index;">
+              <div class="minutes-agenda-progress-content row" (click)="onProgressBarSelected(item)"
+                [ngClass]="{'selectedProgressBar':isProgressBarSelected}">
+                <h6 class="col-md-3">{{item.title}}</h6>
+                <div class="col-md-8 col-11">
+                  <mat-progress-bar class="minutes-agenda-progress-bar" mode="determinate" value={{item.progress}}>
+                  </mat-progress-bar>
+                </div>
+                <h6 class="col-md-1 col-1 text-right">{{item.progress}}%</h6>
+              </div>
+            </li>
+          </ul>
+
+          <div class="py-1">
+            <small>Click on any progress bar to filter agenda.</small>
+          </div>
+        </ng-container>
+        <hr />
+      </div>
+
+
+      <!-- <div class="d-flex align-items-center justify-content-end pb-1">
+        <button mat-raised-button class="btn btn-light" [matMenuTriggerFor]="agendaSort" matTooltip="Sort">
+          <mat-icon>sort</mat-icon> Sort by {{sortKey}}
+        </button>
+        <mat-menu #agendaSort="matMenu" xPosition="before">
+          <button mat-menu-item (click)="sortBy('Due Date')" aria-label="dueDate">
+            Due Date
+          </button>
+          <button mat-menu-item (click)="sortBy('Agenda')" aria-label="Agenda">
+            Agenda
+          </button>
+          <button mat-menu-item (click)="sortBy('Action By')" aria-label="Action By">
+            Action By
+          </button>
+      
+        </mat-menu>
+      </div> -->
+
+      <div class="agenda-section">
+        <div class="minutes-agenda-title-header">
+          <h4 class="font-focused font-weight-bold text-uppercase" style="margin-bottom: 0.5rem;">AGENDA</h4>
+        </div>
+        
+        <div class="agenda-item-section" *ngFor="let item of getFilteredAgendas(0); let i = index; let last = last">
+          <div class="row">
+            <div class="col-md-7 col-12">
+              <div>
+                <h6 class="font-focused">{{item.title}} | <span
+                    [ngStyle]="{'font-weight':'400'}">{{item.subtitle}}</span></h6>
+              </div>
+              <div class="d-flex align-items-center justify-content-between"
+                [ngClass]="{'flex-column align-items-start':isMobileView}">
+                <div class="py-1" [ngClass]="{'d-flex justify-content-between align-items-center w-100':isMobileView}">
+                  <small>Status: </small>
+                  <div>
+                    <span class="badge mr-1" [ngClass]="getStatusBadgeColor(item.statusFlag)">
+                      {{item.statusFlag === MEETING_AGENDA_STATUSFLAG_PENDING ? 'PENDING' : 'RESOLVED'}}
+                    </span>
+                  </div>
+                </div>
+                <div class="py-1" [ngClass]="{'d-flex justify-content-between align-items-center w-100':isMobileView}">
+                  <small>Reminder: </small>
+                  <h6 class="minutes-agenda-text-standard"> {{item?.reminderCount | number:'2.0'}}</h6>
+                </div>
+                <div class="py-1" [ngClass]="{'d-flex justify-content-between align-items-center w-100':isMobileView}">
+                  <small>Due Date: </small>
+                  <h6 class="minutes-agenda-text-focused">{{item?.dueDate | date:'dd MMM y'}}</h6>
+                </div>
+                <div class="py-1" [ngClass]="{'d-flex justify-content-between align-items-center w-100':isMobileView}">
+                  <small>Action By: </small>
+                  <h6 class="minutes-agenda-text-focused">{{item?.actionBy}}</h6>
+                </div>
+              </div>
+              <small>Comment: </small>
+              <p class="minutes-agenda-comment-focused">{{item?.comment}}</p>
+              <ul class="mcv-file-list">
+                <li *ngFor="let file of item.attachments; let i = index">
+                  <mcv-file [filename]="file.filename" [size]="file.size" [downloadUrl]="file.url" [showPreview]="true"
+                    [url]="file.url || file.thumbUrl" [singlePreview]="true" [showRemove]="false">
+                  </mcv-file>
+                </li>
+              </ul>
+              <div class="d-flex">
+                <small>Modified: {{item?.modified | date:"dd MMM yy HH:mm"}} | {{item?.modifiedBy}} |
+                  {{item?.updateFrom ||
+                  (item?.typeFlag==MEETING_TYPEFLAG_INSPECTION?'INSPECTION':'MEETING')}}
+                </small>
+              </div>
+            </div>
+            <div class="col-md-5 col-12 pl-2">
+              <div class="image-history-wrapper">
+                <div class="row history-wrapper" *ngIf="item?.previousHistory">
+                  <div class="col-12 py-1">
+                    <small>History: </small>
+                    <div class="history" [ngClass]="{'hide-history':!showHistory[i]}">
+                      <p class="minutes-agenda-text-history">{{item?.previousHistory}}</p>
+                    </div>
+                    <small class="show-more" (click)="toggleHistorySection(i)" *ngIf="!showHistory[i]">...show
+                      more</small>
+                    <small class="show-more" (click)="toggleHistorySection(i)" *ngIf="showHistory[i]">...show
+                      less</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr *ngIf="getFilteredAgendas(1).length > 0">
+
+        <div class="minutes-agenda-title-header" *ngIf="getFilteredAgendas(1).length > 0">
+          <h4 class="font-focused font-weight-bold text-uppercase" style="margin-bottom: 0.5rem;">DISCUSSIONS</h4>
+        </div>
+        
+        <div class="agenda-item-section" *ngFor="let item of getFilteredAgendas(1); let i = index; let last = last">
+          <div class="row">
+            <div class="col-md-7 col-12">
+              <div>
+                <h6 class="font-focused">{{item.title}} | <span
+                    [ngStyle]="{'font-weight':'400'}">{{item.subtitle}}</span></h6>
+              </div>
+              <div class="d-flex align-items-center justify-content-between"
+                [ngClass]="{'flex-column align-items-start':isMobileView}">
+                <div class="py-1" [ngClass]="{'d-flex justify-content-between align-items-center w-100':isMobileView}">
+                  <small>Status: </small>
+                  <div>
+                    <span class="badge mr-1"
+                      [ngClass]="{'badge-pending':!currentEntity.isDelayed, 'badge-delayed':currentEntity.isDelayed}"
+                      *ngIf="item.statusFlag==MEETING_AGENDA_STATUSFLAG_PENDING && !currentEntity.isDelayed">PENDING</span>
+                    <span class="badge mr-1"
+                      [ngClass]="{'badge-pending':!currentEntity.isDelayed, 'badge-delayed':currentEntity.isDelayed}"
+                      *ngIf="item.statusFlag==MEETING_AGENDA_STATUSFLAG_PENDING && currentEntity.isDelayed">DELAYED</span>
+                    <span class="badge badge-resolved mr-1"
+                      *ngIf="item.statusFlag!=MEETING_AGENDA_STATUSFLAG_PENDING &&(currentEntity.typeFlag==MEETING_TYPEFLAG_MEETING || currentEntity.typeFlag==MEETING_TYPEFLAG_CNOTE)">RESOLVED</span>
+                    <span class="badge badge-resolved mr-1"
+                      *ngIf="item.statusFlag!=MEETING_AGENDA_STATUSFLAG_PENDING && (currentEntity.typeFlag==MEETING_TYPEFLAG_INSPECTION)">COMPLETE</span>
+                  </div>
+                </div>
+                <div class="py-1" [ngClass]="{'d-flex justify-content-between align-items-center w-100':isMobileView}">
+                  <small>Reminder: </small>
+                  <h6 class="minutes-agenda-text-standard"> {{item?.reminderCount | number:'2.0'}}</h6>
+                </div>
+                <div class="py-1" [ngClass]="{'d-flex justify-content-between align-items-center w-100':isMobileView}">
+                  <small>Due Date: </small>
+                  <h6 class="minutes-agenda-text-focused">{{item?.dueDate | date:'dd MMM y'}}</h6>
+                </div>
+                <div class="py-1" [ngClass]="{'d-flex justify-content-between align-items-center w-100':isMobileView}">
+                  <small>Action By: </small>
+                  <h6 class="minutes-agenda-text-focused">{{item?.actionBy}}</h6>
+                </div>
+              </div>
+              <small>Comment: </small>
+              <p class="minutes-agenda-comment-focused">{{item?.comment}}</p>
+              <ul class="mcv-file-list">
+                <li *ngFor="let file of item.attachments; let i = index">
+                  <mcv-file [filename]="file.filename" [size]="file.size" [downloadUrl]="file.url" [showPreview]="true"
+                    [url]="file.url || file.thumbUrl" [singlePreview]="true" [showRemove]="false">
+                  </mcv-file>
+                </li>
+              </ul>
+              <div class="d-flex">
+                <small>Modified: {{item?.modified | date:"dd MMM yy HH:mm"}} | {{item?.modifiedBy}} |
+                  {{item?.updateFrom ||
+                  (item?.typeFlag==MEETING_TYPEFLAG_INSPECTION?'INSPECTION':'MEETING')}}
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Meeting Attachments Section -->
+      <div class="attachment-section" *ngIf="getMeetingAttachments(0).length > 0 || getMeetingAttachments(1).length > 0 || getMeetingAttachments(2).length > 0 || getMeetingAttachments(3).length > 0">
+        <div *ngIf="getMeetingAttachments(0).length > 0">
+          <div class="minutes-agenda-title-header">
+            <h4 class="font-focused   font-weight-bold text-uppercase" style="margin-bottom: 0.5rem;">MEETING ATTACHMENTS</h4>
+          </div>
+          <ul class="mcv-file-list">
+            <li *ngFor="let file of getMeetingAttachments(0); let i = index">
+              <mcv-file [filename]="file.filename" [size]="file.size" [downloadUrl]="file.url" [showPreview]="true"
+                [url]="file.url || file.thumbUrl" [singlePreview]="true" [showRemove]="false">
+              </mcv-file>
+            </li>
+          </ul>
+        </div>
+
+        <hr *ngIf="getMeetingAttachments(0).length > 0 && getMeetingAttachments(1).length > 0">
+
+        <div *ngIf="getMeetingAttachments(1).length > 0">
+          <div class="minutes-agenda-title-header">
+            <h4 class="font-focused   font-weight-bold text-uppercase" style="margin-bottom: 0.5rem;">REPORTS</h4>
+          </div>
+          <ul class="mcv-file-list">
+            <li *ngFor="let file of getMeetingAttachments(1); let i = index">
+              <mcv-file [filename]="file.filename" [size]="file.size" [downloadUrl]="file.url" [showPreview]="true"
+                [url]="file.url || file.thumbUrl" [singlePreview]="true" [showRemove]="false">
+              </mcv-file>
+            </li>
+          </ul>
+        </div>
+
+        <hr *ngIf="(getMeetingAttachments(0).length > 0 || getMeetingAttachments(1).length > 0) && getMeetingAttachments(2).length > 0">
+
+        <div *ngIf="getMeetingAttachments(2).length > 0">
+          <div class="minutes-agenda-title-header">
+            <h4 class="font-focused   font-weight-bold text-uppercase" style="margin-bottom: 0.5rem;">PHOTOS</h4>
+          </div>
+          <ul class="mcv-file-list">
+            <li *ngFor="let file of getMeetingAttachments(2); let i = index">
+              <mcv-file [filename]="file.filename" [size]="file.size" [downloadUrl]="file.url" [showPreview]="true"
+                [url]="file.url || file.thumbUrl" [singlePreview]="true" [showRemove]="false">
+              </mcv-file>
+            </li>
+          </ul>
+        </div>
+
+        <hr *ngIf="(getMeetingAttachments(0).length > 0 || getMeetingAttachments(1).length > 0 || getMeetingAttachments(2).length > 0) && getMeetingAttachments(3).length > 0">
+
+        <div *ngIf="getMeetingAttachments(3).length > 0">
+          <div class="minutes-agenda-title-header">
+            <h4 class="font-focused   font-weight-bold text-uppercase" style="margin-bottom: 0.5rem;">DRAWINGS</h4>
+          </div>
+          <ul class="mcv-file-list">
+            <li *ngFor="let file of getMeetingAttachments(3); let i = index">
+              <mcv-file [filename]="file.filename" [size]="file.size" [downloadUrl]="file.url" [showPreview]="true"
+                [url]="file.url || file.thumbUrl" [singlePreview]="true" [showRemove]="false">
+              </mcv-file>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="minutes-page-footer">
+      <div>
+        <h6>MyCockpitView©</h6>
+        <small>Powered by Newarch® Infotech LLP</small>
+      </div>
+      <div>
+        <h6>v{{version}}</h6>
+        <small>Copyrights 2022</small>
+      </div>
+    </div>
+  </div>
+</div>

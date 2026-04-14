@@ -1,0 +1,27 @@
+@import 'variables';
+
+.request-ticket-assignee-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.3rem;
+
+    &>li {
+        border-bottom: 1px solid $gray-200;
+    }
+}
+
+.request-ticket-assignee {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.3rem;
+    padding: 0.3rem;
+
+    .request-ticket-assignee-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.3rem;
+    }
+}

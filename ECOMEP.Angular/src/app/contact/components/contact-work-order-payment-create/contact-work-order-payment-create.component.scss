@@ -1,0 +1,16 @@
+@import 'variables';
+
+.bill-payment-form-wrapper {
+    border: 1px solid $gray-300;
+    border-radius: $border-radius;
+    padding: 0.3rem;
+
+    .action-buttons {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 0.3rem;
+        padding: 0.3rem 0;
+    }
+}

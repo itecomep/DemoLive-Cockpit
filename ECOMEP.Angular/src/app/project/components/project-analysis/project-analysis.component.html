@@ -1,0 +1,118 @@
+<app-footer>
+    <div class="mcv-footer-actions">
+        <div>
+            <mat-form-field appearance="outline">
+                <input placeholder="Enter text to search" aria-label="Search" matInput [formControl]="searchFC" />
+                <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+        </div>
+        <div>
+            <mat-form-field appearance="outline">
+                <mat-select [formControl]="companyFC" multiple placeholder="Company">
+                    <mcv-select-all [selectFC]="companyFC" [values]="companyOptions">
+                    </mcv-select-all>
+                    <mat-option *ngFor="let item of companyOptions" [value]="item">
+                        {{item.title }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div>
+            <mat-form-field appearance="outline">
+                <mat-select [formControl]="statusFC" multiple placeholder="Status">
+                    <mcv-select-all [selectFC]="statusFC" [values]="statusOptions">
+                    </mcv-select-all>
+                    <mat-option *ngFor="let item of statusOptions" [value]="item">{{item.title}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div>
+            <mat-form-field appearance="outline">
+                <mat-select [formControl]="sortFC" placeholder="Sort">
+                    <mat-select-trigger>
+                        <mat-icon class="sort-select-icon">{{sortFC.value ? sortFC.value.icon :
+                            ''}}</mat-icon>
+                        {{sortFC.value ? sortFC.value.label : ''}}
+                    </mat-select-trigger>
+                    <mat-option *ngFor="let item of sortOptions" [value]="item">
+                        <div class="sort-dropdown">
+                            <mat-icon>{{item.icon}}</mat-icon>
+                            {{item.label}}
+                        </div>
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+
+        <button mat-icon-button (click)="onRefresh()" matTooltip="Refresh" aria-label="Refresh">
+            <mat-icon>refresh</mat-icon>
+        </button>
+
+        <button mat-icon-button (click)="onExportExcel()" matTooltip="Export Excel" aria-label="export excel"
+            *ngIf="isPermissionExcel">
+            <!-- <mat-icon>file_download</mat-icon> -->
+            <img src="assets/icons/file-excel.png" alt="xlsx" />
+        </button>
+        <div>
+            <h6>{{dataList.length}} <small> Items</small></h6>
+        </div>
+    </div>
+</app-footer>
+<div class="project-analysis">
+
+    <div class="pra-table-wrapper">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Title</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Segment</th>
+                    <th>Created</th>
+                    <th>Expected Completion</th>
+                    <th>Landscape Area</th>
+                    <th>Facade Area</th>
+                    <th>Interior Area</th>
+
+
+                    <th>Expected MHr</th>
+                    <th>Assigned MHr</th>
+                    <th>Assessed MHr</th>
+                    <th>Available MHr</th>
+                    <th>Client</th>
+                    <th>Fee</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <ng-container *ngFor="let item of dataList; let i=index">
+                    <tr>
+
+                        <td>{{item.code }}</td>
+                        <td class="text-wrap">{{item.title }}</td>
+                        <td>{{item.location }}</td>
+                        <td>{{item.status }}</td>
+                        <td>{{item.segment}}</td>
+
+                        <td>{{item.created | date:'dd MMM y'}}</td>
+                        <td>{{item.expectedCompletionDate | date:'dd MMM y'}}</td>
+
+                        <td class="align-right">{{item.landscapeArea | number:'2.0-0'}}</td>
+                        <td class="align-right">{{item.facadeArea | number:'2.0-0'}}</td>
+                        <td class="align-right">{{item.interiorArea | number:'2.0-0'}}</td>
+
+                        <td class="align-right">{{item.expectedMHr | number:'2.0-1'}}</td>
+                        <td class="align-right">{{item.assignedMHr | number:'2.0-1'}}</td>
+                        <td class="align-right">{{item.assessedMHr | number:'2.0-1'}}</td>
+                        <td class="align-right">{{item.availableMHr | number:'2.0-1'}}</td>
+                        <td>{{item.client}}</td>
+                        <td class="align-right">{{item.fee | currency:'INR':'symbol':'1.0'}}</td>
+                    </tr>
+                </ng-container>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,199 @@
+<app-footer>
+    <div class="mcv-footer-actions">
+        <div>
+            <mat-form-field appearance="outline">
+                <input placeholder="Enter text to search" aria-label="Search" matInput [formControl]="searchFC" />
+                <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+        </div>
+
+        <button mat-icon-button (click)="sidenav.toggleSidenav()" matTooltip="Filters" aria-label="Filters">
+            <mat-icon>filter_list</mat-icon>
+        </button>
+
+        <button mat-icon-button (click)="onRefresh()" matTooltip="Refresh" aria-label="Refresh">
+            <mat-icon>refresh</mat-icon>
+        </button>
+    </div>
+     <div class="mcv-footer-mobile-actions">
+        <button mat-icon-button (click)="sidenav.toggleSidenav()" matTooltip="Filters" aria-label="Filters">
+            <mat-icon>filter_list</mat-icon>
+        </button>
+
+        <button mat-icon-button (click)="onRefresh()" matTooltip="Refresh" aria-label="Refresh">
+            <mat-icon>refresh</mat-icon>
+        </button>
+    </div>
+
+    <div class="mcv-footer-mobile-filters">
+
+        <div class="search-filter">
+            <mat-icon matPrefix>search</mat-icon>
+            <input aria-label="Enter project name and select" [formControl]="searchFC" matInput />
+        </div>
+
+        <div>
+            <mat-form-field>
+                <mat-date-range-input [formGroup]="dateFC" [rangePicker]="rangePicker2">
+                    <input matStartDate placeholder="Select Range" formControlName="start" />
+                    <input matEndDate placeholder="End date" formControlName="end" />
+                </mat-date-range-input>
+                <mat-datepicker-toggle matSuffix [for]="rangePicker2"></mat-datepicker-toggle>
+                <mat-date-range-picker [touchUi]="isMobileView" #rangePicker2></mat-date-range-picker>
+            </mat-form-field>
+        </div>
+    </div>
+</app-footer>
+
+<app-mcv-filter-sidenav #sidenav (refreshFiltersEvent)="refreshFilters()">
+    <div>
+        <mat-form-field appearance="outline">
+            <!-- <mat-label>Select Range</mat-label> -->
+            <mat-date-range-input [formGroup]="dateFC" [rangePicker]="rangePicker1">
+                <input matStartDate placeholder="Select Range" formControlName="start" />
+                <input matEndDate placeholder="End date" formControlName="end" />
+            </mat-date-range-input>
+            <mat-datepicker-toggle matSuffix [for]="rangePicker1"></mat-datepicker-toggle>
+            <mat-date-range-picker [touchUi]="isMobileView" #rangePicker1></mat-date-range-picker>
+        </mat-form-field>
+    </div>
+
+    <div *ngIf="teamOptions && teamOptions.length > 0 && isMaster">
+        <mat-form-field appearance="outline">
+            <mat-label>Team</mat-label>
+            <mat-select [formControl]="teamFC" multiple placeholder="Team">
+                <mat-option *ngFor=" let item of teamOptions" [value]="item">{{ item.title
+                    }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+</app-mcv-filter-sidenav>
+
+<div class="project-progress-chart">
+    <div class="header">
+        <div class="header-filters">
+            <h3 class="font-focused">Team <small>{{dataList.length}}</small></h3>
+
+        </div>
+        <div class="legend-wrapper">
+
+            <div class="legend">
+                <div class="legend-color" [style.background-color]="COLOR_BLUE_500"></div>
+                <small>Assigned mHr</small>
+            </div>
+            <div class="legend">
+                <div class="legend-color" [style.background-color]="COLOR_BLUE_900"></div>
+                <small>Assessed mHr</small>
+            </div>
+            <div class="legend">
+                <div class="legend-color" [style.background-color]="COLOR_DARK_GREEN"></div>
+                <small>Consumed mHr</small>
+            </div>
+            <div class="legend">
+                <div class="legend-color" [style.background-color]="COLOR_YELLOW"></div>
+                <small>Burned mHr</small>
+            </div>
+            <!-- <div class="legend">
+                    <div class="legend-color" [style.background-color]="COLOR_BLUE_100"></div>
+                    <small>Available MHr</small>
+                </div> -->
+            <div>
+                <span [mcvPopover]="myPopover"><mat-icon>info</mat-icon></span>
+                <mcv-popover-content #myPopover placement="bottom" [animation]="true" [closeOnClickOutside]="true">
+                    <strong>Assigned mHr</strong>
+                    <p>Manhours assigned.</p>
+
+                    <strong>Assessed mHr</strong>
+                    <p>Manhours assessed out of assigned mHr based on assessment criteria.</p>
+
+                    <strong>Consumed mHr</strong>
+                    <p>Actual manhours consumed.</p>
+
+                    <strong>Burned mHr</strong>
+                    <p>Manhours consumed over assessed mHr. (Consumed mHr - Assessed mHr)</p>
+
+                    <strong>Available mHr</strong>
+                    <p>Manhours remaining after assessed mHr from total expected mhr. (Expected mHr - Assessed mHr)
+                    </p>
+                </mcv-popover-content>
+            </div>
+        </div>
+    </div>
+
+    <div class="pt-2">
+        <div class="project-progress-bar-wrapper" *ngFor="let item of userOptions" (click)="onClick(item)">
+            <div class="project-details">
+                <div class="d-flex justify-content-between">
+                    <div class="flex-grow-0 flex-shrink-0">
+                        <div class="d-flex align-items-center">
+                            <img src="{{ item.photoUrl || 'assets/images/person-icon.svg' }}" (click)="openPhotoDialog(item); $event.stopPropagation()" style="cursor: pointer;"
+                                class="user-thumbnail mr-2" alt="" />
+                            <div>
+                                <h6>{{item.name}}</h6>
+                                <ng-container *ngFor="let app of item.appointments">
+                                    <!-- <span class="badge badge-warning mr-1">{{app.code}}</span> -->
+                                    <small>{{app.designation}}</small>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between">
+
+                        <div class="pl-1">
+                            <small>Available:</small>
+                            <h6 class="font-focused">{{(totalMHr - getContactData(item.id).assignedMHr) |
+                                number:'2.0-1'}}
+                                <small>mHr</small>
+                            </h6>
+                        </div>
+                        <div class="pl-1">
+                            <small>Total:</small>
+                            <h6 class="font-focused">{{totalMHr | number:'2.0-1'}} <small>mHr</small></h6>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="project-progress-bars">
+                <div class="progress-bar">
+
+                    <div class="progress-bar-segment"
+                        [style.width]="getPercentage(getContactData(item.id).assignedMHr,totalMHr) + '%'"
+                        [style.background-color]="COLOR_BLUE_500"
+                        [attr.aria-valuenow]="getPercentage(getContactData(item.id).assignedMHr,totalMHr)"
+                        matTooltip="Assigned: {{getContactData(item.id).assignedMHr | number:'2.0-1'}}mHr">
+                        {{getPercentage(getContactData(item.id).assignedMHr,totalMHr) | number:'2.0-1'}}%</div>
+                    <!-- </div>
+                <div class="progress-bar"> -->
+
+                    <div class="progress-bar-segment"
+                        [style.width]="getPercentage(getContactData(item.id).assessedMHr,totalMHr) + '%'"
+                        [style.background-color]="COLOR_BLUE_900"
+                        [attr.aria-valuenow]="getPercentage(getContactData(item.id).assessedMHr,totalMHr)"
+                        matTooltip="Assessed: {{getContactData(item.id).assessedMHr | number:'2.0-1'}}mHr">
+                        {{getPercentage(getContactData(item.id).assessedMHr,totalMHr) | number:'2.0-1'}}%</div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-bar-segment"
+                        [style.width]="getPercentage(getContactData(item.id).consumedMHr,totalMHr) + '%'"
+                        [style.background-color]="COLOR_DARK_GREEN"
+                        matTooltip="Consumed: {{getContactData(item.id).consumedMHr | number:'2.0-1'}}mHr">
+                        {{getPercentage(getContactData(item.id).consumedMHr,totalMHr)
+                        | number:'2.0-1'}}%</div>
+                    <!-- </div>
+                <div class="progress-bar"> -->
+
+                    <div class="progress-bar-segment"
+                        [style.width]="getPercentage(getContactData(item.id).burnedMHr,totalMHr) + '%'"
+                        [style.background-color]="COLOR_YELLOW"
+                        matTooltip="Burned: {{getContactData(item.id).burnedMHr | number:'2.0-1'}}mHr">
+                        {{getPercentage(getContactData(item.id).burnedMHr,totalMHr)
+                        | number:'2.0-1'}}%</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>

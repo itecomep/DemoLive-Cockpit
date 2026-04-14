@@ -1,0 +1,12 @@
+<ul class="agenda-list">
+    <li *ngFor="let item of dataList;let i=index">
+        <app-cockpit-meeting-agenda-list-item [agenda]="item" (resovled)="onResolved($event)"></app-cockpit-meeting-agenda-list-item>
+    </li>
+    <li *ngIf="!isLoading && dataList.length==0">
+        <div class="row">
+            <div class="col-12">
+                <span>No items found</span>
+            </div>
+        </div>
+    </li>
+</ul>

@@ -1,0 +1,67 @@
+<div class="page-wrapper">
+    <app-header [title]="headerTitle" [titleCount]="headerTitleCount"></app-header>
+  <div class="container-fluid">
+    <div class="top-bar">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search IP</mat-label>
+        <input matInput placeholder="Enter IP to search" [formControl]="searchFilter">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <div class="action-group">
+        <button mat-raised-button color="primary" (click)="refresh()">
+          Refresh
+        </button>
+        <button mat-raised-button color="accent" (click)="openAddIpDialog()">
+          Add IP
+        </button>
+        <button mat-raised-button color="accent" (click)="goToAllowedUser()">
+          Bypass/Allowed User
+        </button>
+      </div>
+    </div>
+
+    <table mat-table [dataSource]="filteredIpList" class="mat-elevation-z2 ip-table">
+
+      <!-- <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef class="col-id">ID</th>
+        <td mat-cell *matCellDef="let ip" class="col-id" style="font-size: 16px !important;">{{ ip.id }}</td>
+      </ng-container> -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef class="col-id">#</th>
+        <td mat-cell *matCellDef="let ip; let i = index" class="col-id" style="font-size: 16px !important;">
+          {{ i + 1 }}
+        </td>
+      </ng-container>
+
+
+      <ng-container matColumnDef="ipAddress">
+        <th mat-header-cell *matHeaderCellDef>IP Address</th>
+        <td mat-cell *matCellDef="let ip" style="font-size: 16px !important;">{{ ip.ipAddress }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef class="col-center">Active</th>
+        <td mat-cell *matCellDef="let ip" class="col-center" style="font-size: 16px !important;">Yes</td>
+      </ng-container>
+
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef class="col-center">Action</th>
+        <td mat-cell *matCellDef="let ip" class="col-center">
+          <button mat-icon-button color="warn"
+                  (click)="deleteIp(ip.id)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <div *ngIf="filteredIpList.length === 0" class="empty-text">
+      No IPs found.
+    </div>
+
+  </div>
+</div>

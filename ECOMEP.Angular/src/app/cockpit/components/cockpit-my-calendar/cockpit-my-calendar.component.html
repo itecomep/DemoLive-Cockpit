@@ -1,0 +1,30 @@
+<div class="container-fluid" *ngIf="calendarOptions">
+  <full-calendar #calendar [options]="calendarOptions" defaultView="dayGridMonth"></full-calendar>
+</div>
+<app-footer>
+  <div class="nav-footer-actions">
+    <div>
+      <mat-form-field appearance="outline">
+        <mat-label>Search</mat-label>
+        <input placeholder="Enter text to search" aria-label="Search" matInput [formControl]="searchFilter" />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+    <div>
+      <button mat-raised-button (click)="refresh()" matTooltip="Refresh" aria-label="Refresh">Refresh</button>
+    </div>
+  </div>
+
+  <div class="nav-footer-mobile-actions">
+    <div>
+      <mat-form-field appearance="outline">
+        <mat-label>Search</mat-label>
+        <input placeholder="Enter text to search" aria-label="Search" matInput [formControl]="searchFilter" />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+    <div>
+      <button mat-raised-button (click)="refresh()" matTooltip="Refresh" aria-label="Refresh">Refresh</button>
+    </div>
+  </div>
+</app-footer>

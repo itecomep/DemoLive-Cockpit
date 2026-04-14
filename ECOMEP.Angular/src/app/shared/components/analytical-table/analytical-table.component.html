@@ -1,0 +1,133 @@
+<div class="analytical-wrapper">
+  <!-- Active Filters Display -->
+  <div class="data-filter-row" *ngIf="enableFilters">
+    <div class="filter-header" *ngIf="hasActiveFilters()">
+      <h6 class="font-focused">Filters:</h6>
+    </div>
+    <ng-container *ngFor="let column of columns">
+      <h6 *ngIf="column.filterable && filterProperties[column.key] && filterProperties[column.key].selected.length > 0">
+        <b>{{column.label}}:</b> {{filterProperties[column.key].selected.join(', ')}}
+        <span class="clear-icon" (click)="clearSelection(column.key)">✖</span>
+      </h6>
+    </ng-container>
+    <h6 (click)="resetAllFilters()" *ngIf="hasActiveFilters()">
+      <b>Clear All</b>
+    </h6>
+  </div>
+
+  <div class="analytical-table-wrapper">
+    <table>
+      
+        <thead >
+            <tr >
+              <th *ngFor="let column of columns" 
+                  [style.width]="column.width || 'auto'"
+                  [ngClass]="{
+                    'sort': sortState.activeColumn === column.key,
+                    'filter': enableFilters && column.filterable && filterProperties[column.key] && filterProperties[column.key].selected.length > 0,
+                    'text-right': column.type === 'number' || column.type === 'currency',
+                    'text-left': column.type !== 'number' && column.type !== 'currency'
+                  }">
+                <div class="table-header">
+                  <div class="header-content">
+                    <h6>{{ column.label }}</h6>
+                  </div>
+                  
+                  <!-- Sort Icon -->
+                  <div class="sort-menu" *ngIf="column.sortable !== false" (click)="sortData(column.key)">
+                    <mat-icon *ngIf="sortState.activeColumn === column.key && sortState[column.key] === 'newFirst'">
+                      south
+                    </mat-icon>
+                    <mat-icon *ngIf="sortState.activeColumn === column.key && sortState[column.key] === 'oldFirst'">
+                      north
+                    </mat-icon>
+                    <mat-icon *ngIf="sortState.activeColumn !== column.key || !sortState[column.key]">
+                      import_export
+                    </mat-icon>
+                  </div>
+                  
+                  <!-- Filter Menu -->
+                  <div class="filter-menu" *ngIf="enableFilters && column.filterable">
+                    <mat-icon [matMenuTriggerFor]="filterMenu" 
+                              [ngClass]="{'active-filter': filterProperties[column.key] && filterProperties[column.key].selected.length > 0}">
+                      filter_alt
+                    </mat-icon>
+                    
+                    <mat-menu #filterMenu="matMenu">
+                      <div class="search-container p-1">
+                        <mat-form-field appearance="outline" (click)="$event.stopPropagation();">
+                          <input matInput placeholder="Search" [(ngModel)]="filterProperties[column.key].keySearch"
+                            (input)="filterDistinctValues(column.key)" />
+                          <mat-icon class="clear-icon" matSuffix (click)="clearSearch(column.key)">close</mat-icon>
+                        </mat-form-field>
+                      </div>
+                      <button mat-menu-item (click)="$event.stopPropagation(); toggleSelectAll(column.key)">
+                        {{ isAllSelected(column.key) ? 'Deselect All' : 'Select All' }}
+                      </button>
+                      <mat-option *ngFor="let option of filterProperties[column.key].filtered"
+                        (click)="$event.stopPropagation(); toggleSelection(option, column.key)">
+                        <mat-checkbox [checked]="filterProperties[column.key].selected.includes(option)">
+                          <ng-container [ngSwitch]="column.type">
+                            <span *ngSwitchCase="'Date'">{{ option | date:'dd MMM y HH:mm' }}</span>
+                            <span *ngSwitchCase="'number'">{{ option | number:'1.0-2' }}</span>
+                            <span *ngSwitchCase="'currency'">{{ option | number:'1.0-2' }}</span>
+                            <span *ngSwitchDefault>{{ option }}</span>
+                          </ng-container>
+                        </mat-checkbox>
+                      </mat-option>
+                    </mat-menu>
+                  </div>
+                </div>
+              </th>
+            </tr>
+            
+            <!-- Totals Row -->
+            <tr *ngIf="showTotals" class="total-row">
+              <td *ngFor="let column of columns" [style.width]="column.width || 'auto'">
+                <strong *ngIf="column.totalable">
+                  <ng-container [ngSwitch]="column.type">
+                    <span *ngSwitchCase="'currency'">
+                      ₹{{ getTotals()[column.key] | number:'1.2-2' }}
+                    </span>
+                    <span *ngSwitchDefault>
+                      {{ getTotals()[column.key] | number:'1.2-2' }}
+                    </span>
+                  </ng-container>
+                </strong>
+              </td>
+            </tr>
+          
+        </thead>
+
+      <tbody>
+        <tr *ngFor="let item of filteredData">
+          <td *ngFor="let column of columns" 
+              [style.width]="column.width || 'auto'"
+              [ngClass]="{
+                'text-right': column.type === 'number' || column.type === 'currency',
+                'text-left': column.type !== 'number' && column.type !== 'currency'
+              }">
+            <ng-container [ngSwitch]="column.type">
+              <!-- Currency columns -->
+              <span *ngSwitchCase="'currency'">
+                ₹{{ item[column.key] | number:'1.2-2' }}
+              </span>
+              <!-- Number columns -->
+              <span *ngSwitchCase="'number'">
+                {{ item[column.key] | number:'1.2-2' }}
+              </span>
+              <!-- Date columns -->
+              <span *ngSwitchCase="'Date'">
+                {{ item[column.key] | date:'dd MMM y HH:mm' }}
+              </span>
+              <!-- Text columns (default) -->
+              <span *ngSwitchDefault>
+                {{ item[column.key] }}
+              </span>
+            </ng-container>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

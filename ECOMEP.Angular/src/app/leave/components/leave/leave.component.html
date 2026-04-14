@@ -1,0 +1,187 @@
+<div class="title-bar" *ngIf="!isTaskMode && !isCreateMode">
+    <h5 class="title-bar-item">{{currentEntity.title}} | {{currentEntity?.contact?.fullName}}</h5>
+
+    <div>
+        <small>Days </small>
+        <h6>{{currentEntity.total | number:'2.0-1'}}</h6>
+    </div>
+
+    <div>
+        <span *ngIf="currentEntity.statusFlag == LEAVE_STATUSFLAG_PENDING" class="leave-icon-pending"
+            [matTooltip]="currentEntity.statusValue">
+            <mat-icon>help</mat-icon>
+        </span>
+        <span *ngIf="currentEntity.statusFlag == LEAVE_STATUSFLAG_APPROVED" class="leave-icon-approved"
+            [matTooltip]="currentEntity.statusValue">
+            <mat-icon>done_all</mat-icon>
+        </span>
+        <span *ngIf="currentEntity.statusFlag == LEAVE_STATUSFLAG_REJECTED" class="leave-icon-rejected"
+            [matTooltip]="currentEntity.statusValue">
+            <mat-icon>remove_done</mat-icon>
+        </span>
+    </div>
+
+    <div>
+        <small>Applied</small>
+        <h6 class="title-bar-item">
+            {{currentEntity.created | date:'dd MMM y HH:mm'}}
+        </h6>
+    </div>
+</div>
+
+<app-wftask-title-bar [task]="task" *ngIf="isTaskMode"></app-wftask-title-bar>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-7">
+            <mat-expansion-panel [expanded]="true">
+                <mat-expansion-panel-header>
+                    <mat-panel-title> Details </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div class="row" [formGroup]="form">
+                    <!-- <mat-form-field appearance="outline" *ngIf="typeOptions && typeOptions.length > 0">
+                        <mat-label>Application Type</mat-label>
+                        <mat-select formControlName="typeFlag" placeholder="Type">
+                            <mat-option *ngFor="let item of typeOptions" [value]="item.value">
+                                {{ item.title }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Applicant</mat-label>
+                        <input placeholder="Enter name of applicant" aria-label="Applicant" matInput
+                            formControlName="contact" [matAutocomplete]="auto" />
+                        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFnContact">
+                            <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
+                                {{ option.name }}
+                            </mat-option>
+                        </mat-autocomplete>
+                        <span matSuffix>
+                            <mat-icon>person</mat-icon>
+                        </span>
+                        <mat-error>{{ getErrorMessage(f.contact) }}</mat-error>
+                    </mat-form-field> -->
+
+                    <mat-form-field appearance="outline" class="col-md-6">
+                        <mat-label>From Date</mat-label>
+                        <input matInput formControlName="start" [min]="minDate" [matDatepicker]="startDatePicker"
+                            [matDatepickerFilter]="dateFilter" placeholder="Select Start Date" readonly />
+                        <mat-error>{{ getErrorMessage(f.start) }}</mat-error>
+
+                        <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+                        <mat-datepicker [touchUi]="isMobileView" #startDatePicker></mat-datepicker>
+                    </mat-form-field>
+
+                    <!-- <mat-form-field appearance="outline" class="col-md-6 col-6" *ngIf="showTimeSelection">
+                        <mat-label>From Time</mat-label>
+                        <input aria-label="Start Time" [ngxTimepicker]="pickerStartTime" formControlName="startTime"
+                            matInput [format]="24" readonly />
+                        <ngx-material-timepicker #pickerStartTime [minutesGap]="minutesGap">
+                        </ngx-material-timepicker>
+                        <mat-error>{{ getErrorMessage(f.startTime)}}</mat-error>
+                    </mat-form-field> -->
+
+                    <mat-form-field appearance="outline" class="col-md-6 col-6"
+                        *ngIf="currentEntity.typeFlag == LEAVE_TYPEFLAG_CASUAL || currentEntity.typeFlag == LEAVE_TYPEFLAG_EMERGENCY">
+                        <mat-label>To Date</mat-label>
+                        <input matInput formControlName="end" [matDatepicker]="endDatePicker"
+                            [matDatepickerFilter]="dateFilter" placeholder="Select End Date" readonly />
+                        <mat-error>{{ getErrorMessage(f.end) }}</mat-error>
+                        <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+                        <mat-datepicker [touchUi]="isMobileView" #endDatePicker></mat-datepicker>
+                    </mat-form-field>
+
+                    <!-- <mat-form-field appearance="outline" class="col-md-6 col-6" *ngIf="showTimeSelection">
+                        <mat-label>To Time</mat-label>
+                        <input aria-label="Due Time" [ngxTimepicker]="pickerDueTime" formControlName="endTime" matInput
+                            [format]="24" readonly />
+                        <ngx-material-timepicker #pickerDueTime [minutesGap]="minutesGap">
+                        </ngx-material-timepicker>
+                        <mat-error>{{ getErrorMessage(f.endTime)}}</mat-error>
+                    </mat-form-field> -->
+
+                    <mat-form-field appearance="outline" class="col-md-12 col-6">
+                        <mat-label>Reason</mat-label>
+                        <textarea id="reason" aria-label="reason" matInput formControlName="reason" cdkTextareaAutosize
+                            #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="4" cdkAutosizeMaxRows="5"></textarea>
+                        <mat-error>{{getErrorMessage(f.reason)}}</mat-error>
+                    </mat-form-field>
+                </div>
+            </mat-expansion-panel>
+
+                <mat-expansion-panel [expanded]="true">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>Attachments</mat-panel-title>
+                </mat-expansion-panel-header>
+                <app-mcv-file-upload [uploaderConfig]="blobConfig" [showPaste]="true" [showDrop]="true"
+                    (upload)="onUpload($event)" *ngIf="blobConfig && allowEdit">
+                </app-mcv-file-upload>
+                <ul class="mcv-file-list">
+                    <li *ngFor="let file of currentEntity.attachments">
+                        <mcv-file [filename]="file.filename" [size]="file.size" [showRemove]="allowEdit"
+                            (delete)="onDeleteAttachment(file)" [downloadUrl]="file.url"
+                            [showPreview]="true" [singlePreview]="true" [url]="file.url" [thumbUrl]="file.thumbUrl">
+                        </mcv-file>
+                    </li>
+                </ul>
+            </mat-expansion-panel>
+            
+
+            <mat-expansion-panel [expanded]="true">
+                <mat-expansion-panel-header>
+                    <mat-panel-title> Leave Calendar </mat-panel-title>
+                </mat-expansion-panel-header>
+                <app-leave-calendar [contactID]="currentEntity.contactID"></app-leave-calendar>
+            </mat-expansion-panel>
+
+
+        </div>
+        <div class="col-md-5">
+            <app-wf-task-action *ngIf="task" [task]="task" (updateEntity)="onSubmit($event)"
+                (complete)="onTaskCompleted($event)" (updated)="onTaskUpdated($event)">
+            </app-wf-task-action>
+
+            <mat-expansion-panel *ngIf="!isTaskMode" [expanded]="true">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        Action
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div class="panel-body">
+                    <div class="row m-0">
+                        <div class="col-12">
+                            <div class="inline-list inline-list-justify-right">
+                                <button (click)="onSubmit()" mat-raised-button color="primary" class=" flex-grow-1"
+                                    aria-label="update"
+                                    *ngIf="!isCreateMode && (currentEntity.statusFlag == LEAVE_STATUSFLAG_PENDING ||  isPermissionSpecialEdit)">Update</button>
+                                <button (click)="onDelete()" mat-raised-button color="warn" class="flex-grow-1"
+                                    aria-label="delete"
+                                    *ngIf="!isCreateMode && (currentEntity.statusFlag == LEAVE_STATUSFLAG_PENDING ||  isPermissionDelete)">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </mat-expansion-panel>
+
+            <mat-expansion-panel [expanded]="true" *ngIf="!isCreateMode">
+                <mat-expansion-panel-header>
+                    <mat-panel-title> Activity </mat-panel-title>
+                    <mat-panel-description>
+
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+                <div class="mcv-activity-list-wrapper">
+                    <mcv-activity-list #activity [entity]="nameOfEntity" [entityID]="entityID">
+                    </mcv-activity-list>
+                </div>
+            </mat-expansion-panel>
+
+            <mat-expansion-panel [expanded]="true">
+                <mat-expansion-panel-header>
+                    <mat-panel-title> Leave Summary </mat-panel-title>
+                </mat-expansion-panel-header>
+                <app-leave-summary [config]="summaryConfig"></app-leave-summary>
+            </mat-expansion-panel>
+        </div>
+    </div>
+</div>

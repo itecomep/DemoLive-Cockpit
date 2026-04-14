@@ -1,0 +1,13 @@
+<div class="mat-dialog-header mcv-dialog-header">
+  <div>
+    <h5 class="font-focused">{{data.dialogTitle}}</h5>
+    <!-- <h6>{{data.dialogSubTitle}}</h6> -->
+  </div>
+  <button mat-icon-button aria-label="close" (click)="onClose(null)">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+<mat-dialog-content>
+  <app-request-ticket [config]="data" (create)="onClose($event)" (cancel)="onClose($event)" (update)="onClose($event)"
+    (delete)="onClose($event)" *ngIf="data"></app-request-ticket>
+</mat-dialog-content>

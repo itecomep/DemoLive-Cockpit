@@ -1,0 +1,25 @@
+<div>
+    <ul class="project-list">
+        <li *ngFor="let item of projects; let i = index;">
+            <div class="project-list-item" *ngIf="item">
+                <div class="list-item-details">
+                    <h6 class="project-title">{{item.title}}</h6>
+                    <div class="subtitle">
+                        <h5 class="project-code">{{item.code}}</h5> <span
+                            class="badge {{getStatusColor(item)}}">{{item.statusValue}}</span>
+                        <span class="segment-tag">{{item.typology}}</span>
+                        <small> {{item.created | date:'dd MMM y'}} </small>
+                    </div>
+                </div>
+            </div>
+        </li>
+
+        <li *ngIf="projects.length === 0">
+            <div class="row">
+                <div class="col-12">
+                    <span>No items found</span>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>

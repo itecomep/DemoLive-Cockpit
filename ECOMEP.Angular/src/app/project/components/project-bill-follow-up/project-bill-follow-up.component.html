@@ -1,0 +1,64 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">Proforma Follow Up | {{title}}</h5>
+    <div class="d-flex align-items-center">
+        <button mat-icon-button aria-label="close" (click)="onClose()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+<mat-dialog-content>
+    <div class="project-bill-follow-up-wrapper">
+        <div class="row">
+            <div class="col-md-4">
+                <h5>Next Follow-Up</h5>
+                <form [formGroup]="form">
+                    <mat-form-field class="col-md-12">
+                        <mat-label>Due Date</mat-label>
+                        <input matInput formControlName="dueDate" [matDatepicker]="birthDatePicker"
+                            placeholder="Select Date" />
+                        <mat-error>{{
+                            getErrorMessage(f.dueDate)
+                            }}</mat-error>
+                        <mat-datepicker-toggle matSuffix [for]="birthDatePicker"></mat-datepicker-toggle>
+                        <mat-datepicker [touchUi]="isMobileView" #birthDatePicker></mat-datepicker>
+                    </mat-form-field>
+                    <mat-form-field class="col-md-12">
+                        <mat-label>Comment</mat-label>
+                        <textarea aria-label="Comment" matInput formControlName="comment" cdkTextareaAutosize
+                            #autosize="cdkTextareaAutosize" placeholder="Comment" [rows]="5"></textarea>
+                        <mat-error>{{ getErrorMessage(f.comment) }}</mat-error>
+                    </mat-form-field>
+
+                    <div class="d-flex align-items-center justify-content-end pt-2">
+                        <button mat-raised-button color="primary" (click)="onSubmit()">Save</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-8">
+                <ul class="project-bill-follow-up-list">
+                    <li *ngFor="let item of followUps">
+                        <div>
+                            <div>
+
+                                <div>
+                                    <p class="font-focused">{{item.comment}}</p>
+                                </div>
+
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <small>DueDate: </small>
+                                    <h6 class="text-red">{{item.dueDate | date:'dd MMM yyyy'}}</h6>
+                                </div>
+                                <div><small>ActionBy: </small>
+                                    <h6>{{item.createdBy}} | {{item.created | date:'dd MMM yyyy HH:mm'}}</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</mat-dialog-content>

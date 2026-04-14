@@ -1,0 +1,87 @@
+<div class="row m-0" *ngIf="wfTask">
+  <!-- <div class="col-12">
+    <app-wftask-title-bar [task]="wfTask"></app-wftask-title-bar>
+  </div> -->
+  <div class="col-sm-12">
+    <ul class="smart-list" *ngIf="wfTask">
+      <li *ngFor="let item of assessments; let i = index">
+        <div class="d-flex align-items-center justify-content-between">
+          <h6 class="mb-0">{{i+1}}. {{ item.category }}</h6>
+          <div class="d-flex align-items-center">
+            <app-star-rating [(rate)]="item.scoredPoints" (rateChange)="onRatingsChanged($event)" [max]="item.points * 2">
+            </app-star-rating>
+            <button mat-icon-button matTooltip="Clear Ratings" (click)="clearRatings(i)" aria-label="Clear Ratings">
+              <mat-icon>clear</mat-icon>
+            </button>
+          </div>
+        </div>
+
+      </li>
+    </ul>
+  </div>
+  <!-- <div class="col-sm-6">
+    <div class="mb-1">
+      <small class="text-muted">Assignee</small>
+      <div class="d-flex align-items-center">
+        <div class="flex-grow-0 flex-shrink-0">
+          <img src="{{ wfTask.contact.photoUrl || 'assets/images/user.png'}}" [matTooltip]="wfTask.contact.name"
+            class="user-thumbnail" *ngIf="wfTask">
+        </div>
+        <div class="ml-1">
+          <h5>{{wfTask.contact.name}}</h5>
+        </div>
+      </div>
+    </div>
+    <div class="row mb-1">
+      <div class="col-md-6">
+        <small class="text-muted">Comment</small>
+        <p>{{ wfTask.comment }}</p>
+      </div>
+    </div>
+    <div class="mb-1">
+      <small class="text-muted">Time Stamps</small>
+      <p class="pb-0 mb-0">{{ wfTask.history }}</p>
+    </div>
+
+    <div class="row mb-1">
+      <div class="col-sm-3 col-6">
+        <small class="text-muted">Assigned MHr</small>
+        <h4>{{ wfTask.mHrAssigned | number:'2.0-2' }}</h4>
+      </div>
+
+      <div class="col-sm-3 col-6">
+        <small class="text-muted">Consumed MHr</small>
+        <h4>{{ wfTask.mHrConsumed | number:'2.0-2' }}</h4>
+      </div>
+
+      <div class="col-sm-3 col-6">
+        <small class="text-muted">Assessment Points</small>
+        <h4>{{ wfTask.assessmentPoints }}/<small>{{totalPoints}}</small></h4>
+      </div>
+
+      <div class="col-sm-3 col-6">
+        <small class="text-muted">Assessed Mhr</small>
+        <h4>{{ wfTask.mHrAssessed | number:'2.0-2' }}</h4>
+      </div>
+    </div>
+
+    <form [formGroup]="form" autocomplete="off">
+
+      <mat-form-field appearance="outline" class="col-md-12">
+        <mat-label>Assessment Remark</mat-label>
+        <textarea id="comment" aria-label="comment" matInput formControlName="comment" cdkTextareaAutosize
+          #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="2" cdkAutosizeMaxRows="5"></textarea>
+        <mat-error>{{ getErrorMessage(f.comment) }}</mat-error>
+      </mat-form-field>
+
+    </form>
+    <div class="d-flex align-items-center justify-content-end pt-2">
+      <button mat-raised-button color="primary" (click)="onSubmit()" aria-label="Submit and Complete">Submit &
+        Complete</button> -->
+      <!-- <button mat-raised-button color="warn" (click)="onSubmitAndReAssign()"  aria-label="Submit and Reassign">Submit &
+          Re-Assign</button> -->
+      <!-- <button mat-raised-button (click)="onCancel()" class="btn btn-light" matTooltip="Cancel"
+        aria-label="cancel">Cancel</button> -->
+    <!-- </div>
+  </div> -->
+</div>

@@ -1,0 +1,10 @@
+<ul class="meeting-agenda-file-list">
+    <li *ngFor="let file of files">
+        <meeting-agenda-file [size]="file.size" [filename]="file.filename" [url]="file.url" [singlePreview]="true"
+            [thumbUrl]="file.thumbUrl || file.url" [originalUrl]="file.originalUrl" [downloadUrl]="file.url"
+            [contentType]="file.contentType" [showPreview]="showPreview" [hideDetails]="hideDetails"
+            [showRemove]="showRemove" [isVerticalThumb]="isVerticalThumb" [mediaCaption]="file.description"
+            [showEditor]="showEditor" (delete)="onDelete(file)">
+        </meeting-agenda-file>
+    </li>
+</ul>

@@ -1,0 +1,90 @@
+/* ---------------------------------------------------
+   Material Dialog
+----------------------------------------------------- */
+@import 'theme';
+
+.mat-mdc-dialog-container {
+   border-radius: $border-radius !important;
+   padding: 0 !important;
+   overflow: hidden !important;
+
+   & .mat-datepicker-content-touch {
+      margin: 0 !important;
+   }
+
+   & .mat-mdc-dialog-content {
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: hidden auto !important;
+      color: $black !important;
+   }
+
+   & .mat-mdc-dialog-actions {
+      justify-content: flex-end;
+   }
+}
+
+.mcv-dialog-header {
+   position: sticky;
+   position: -webkit-sticky;
+
+   top: 0;
+   z-index: 99;
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   margin: 0px;
+   padding: 5px 12px;
+   // box-shadow: $box-shadow;
+   background-color: $gray-400;
+}
+
+.mcv-dialog-actions {
+   position: sticky;
+   position: -webkit-sticky;
+   top: 0;
+   z-index: 99;
+   background-color: $gray-200;
+   padding: 0.3rem;
+   display: flex;
+   align-content: center;
+   justify-content: flex-end;
+   border-radius: $border-radius;
+   // box-shadow: $box-shadow;
+}
+
+// .mat-mdc-dialog-content {
+//    max-height: none !important;
+//    height: 90vh;
+// }
+
+.mcv-fullscreen-dialog {
+   max-width: none !important;
+   width: calc(100vw - 10px);
+   max-height: calc(100vh - 10px);
+
+
+   .mat-mdc-dialog-content {
+      height: 85vh !important;
+      // height: 85vh;
+      max-height: none !important;
+   }
+
+}
+
+.mat-mdc-dialog-container .mdc-dialog__surface {
+   overflow: hidden;
+}
+
+@media only screen and (max-width: 768px) {
+   .mat-mdc-dialog-content {
+      // max-height: 80vh !important;
+   }
+
+   .mcv-fullscreen-dialog {
+      height: calc(90vh - 10px);
+      width: calc(100vw - 10px);
+   }
+}
+
+/*==========================*/

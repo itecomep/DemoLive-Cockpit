@@ -1,0 +1,244 @@
+<div class="project-stages-wrapper">
+    <div class="project-stages-header">
+
+        <div>
+            <small>Total Progress</small>
+            <h5 class="font-focused">{{stageTotalProgress}} %</h5>
+        </div>
+
+        <div>
+            <small>Pending Stages</small>
+            <h5 class="font-focused">{{stagePendingProgress}} %</h5>
+        </div>
+
+        <div class="actions">
+            <button mat-icon-button (click)="onAddStage()" *ngIf="isPermissionStagesEdit">
+                <mat-icon>add</mat-icon>
+            </button>
+            <!-- <button mat-icon-button matTooltip="open master" aria-label="open master" *ngIf="isPermissionStageMasters"
+                (click)="onClickOpenMaster()">
+                <mat-icon>settings</mat-icon>
+            </button> -->
+        </div>
+    </div>
+
+    <div class="project-stages-table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th></th>
+                    <th>Stage</th>
+                    <th>Value</th>
+                    <th>Target Date</th>
+                    <!-- <th>Comments</th> -->
+                    <th>Billing Date</th>
+                    <th>Payment Received Date</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+                <tr class="total">
+                    <th colspan="3">Total</th>
+                    <th [ngClass]="{ 'bg-red': stageTotal != 100 }">
+                        {{stageTotal}}%
+                    </th>
+                    <th colspan="5"></th>
+                </tr>
+                <tr *ngIf="stageTotal != 100">
+                    <th colspan="12">
+                        <h5 class="error-message">Stage total must be exact 100%</h5>
+                    </th>
+                </tr>
+            </thead>
+            <tbody cdkDropList [cdkDropListData]="newStages" (cdkDropListDropped)="onDrop($event)">
+                <ng-container *ngFor="let item of newStages;let i = index">
+                    <tr cdkDrag>
+                        <td class="align-center">
+                            {{i + 1}}
+                        </td>
+                        <!-- <td *ngIf="item.children.length == 0"></td>
+                        <td *ngIf="item.children.length > 0" class="align-center" (click)="toggleExpand(i)">
+                            <mat-icon *ngIf="!isExpanded[i]">expand_more</mat-icon>
+                            <mat-icon *ngIf="isExpanded[i]">expand_less</mat-icon>
+                        </td> -->
+                        <td class="align-center">
+                            <span matTooltip="sort" aria-label="sort" cdkDragHandle>
+                                <mat-icon>drag_handle</mat-icon>
+                            </span>
+                        </td>
+                        <td>
+                            <div class="cell-content">
+                                <mat-icon
+                                    *ngIf="getFormControl(fa,i,'title').value && getFormControl(fa,i,'title').invalid"
+                                    [matTooltip]="getErrorMessage(getFormControl(fa,i,'title'))">
+                                    report_problem
+                                </mat-icon>
+                                <div class="cell-input">
+                                    <form *ngIf="isPermissionStagesEdit">
+                                        <textarea matInput [formControl]="getFormControl(fa,i,'title')"
+                                            (change)="onCellChange(fa,i,'title',item)" 
+                                            cdkTextareaAutosize
+                                            #autosize="cdkTextareaAutosize"
+                                            rows="1"></textarea>
+                                          
+                                    </form>
+                                    <h6 *ngIf="!isPermissionStagesEdit">{{item.title}}</h6>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="align-center">
+                            <div class="cell-content">
+                                <mat-icon
+                                    *ngIf="getFormControl(fa,i,'percentage').value && getFormControl(fa,i,'percentage').invalid"
+                                    [matTooltip]="getErrorMessage(getFormControl(fa,i,'percentage'))">
+                                    report_problem
+                                </mat-icon>
+                                <div class="cell-input">
+                                    <form>
+                                        <input *ngIf="isPermissionStagesEdit" matInput [formControl]="getFormControl(fa,i,'percentage')"
+                                            (change)="onCellChange(fa,i,'percentage',item)"
+                                            (keypress)="keyPressNumbers($event)">
+                                            <h6 *ngIf="!isPermissionStagesEdit">{{item.percentage}}</h6>
+                                    </form>
+                                    <span class="cell-input-suffix">%</span>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="align-center">
+                            <!-- <div class="cell-content">
+                                <mat-icon
+                                    *ngIf="getFormControl(fa,i,'percentage').value && getFormControl(fa,i,'percentage').invalid"
+                                    [matTooltip]="getErrorMessage(getFormControl(fa,i,'percentage'))">
+                                    report_problem
+                                </mat-icon>
+                                <div class="cell-input">
+                                    <form>
+                                        <input matInput [formControl]="getFormControl(fa,i,'dueDate')" class="date"
+                                            (dateChange)="onCellChange(fa,i,'dueDate',item)"
+                                            [matDatepicker]="dueDatePicker" placeholder="Select Date" 
+                                            [disabled]="isDueDateDisabled(item)"/>
+                                        <mat-datepicker-toggle matSuffix [for]="dueDatePicker"></mat-datepicker-toggle>
+                                        <mat-datepicker [touchUi]="isMobileView" #dueDatePicker></mat-datepicker>
+                                        <mat-icon (click)="onEditTargetDate(item)">
+                                            edit
+                                        </mat-icon>
+                                    </form>
+                                </div>
+                            </div> -->
+                            <div class="cell-content justify-content-between">
+                                <div>{{item.dueDate | date:"dd MMM yyyy"}}</div>
+                                <mat-icon (click)="onEditTargetDate(item)" *ngIf="isPermissionStagesTargetDate">
+                                    edit
+                                </mat-icon>
+                            </div>
+                        </td>
+
+                        <!-- <td class="align-center">
+                            <div class="cell-content">
+                                <div class="cell-input">
+                                    <form>
+                                        <textarea placeholder="Comment" aria-label="Comment" matInput
+                                            [formControl]="getFormControl(fa,i,'description')" cdkTextareaAutosize
+                                            #autosize="cdkTextareaAutosize"></textarea>
+                                    </form>
+                                </div>
+                            </div>
+                        </td> -->
+
+                        <td class="align-center">
+                            <!-- <div>{{item.billingDate | date:"dd MMM yyyy"}}</div> -->
+                            <div class="cell-content">
+                                <mat-icon
+                                    *ngIf="getFormControl(fa,i,'billingDate').value && getFormControl(fa,i,'billingDate').invalid"
+                                    [matTooltip]="getErrorMessage(getFormControl(fa,i,'billingDate'))">
+                                    report_problem
+                                </mat-icon>
+                                <div class="cell-input">
+                                    <form *ngIf="isPermissionStagesEdit">
+                                        <input matInput [formControl]="getFormControl(fa,i,'billingDate')" class="date"
+                                            (dateChange)="onCellChange(fa,i,'billingDate',item)"
+                                            [matDatepicker]="billingDatePicker" placeholder="Select Date" />
+                                        <mat-datepicker-toggle matSuffix
+                                            [for]="billingDatePicker"></mat-datepicker-toggle>
+                                        <mat-datepicker [touchUi]="isMobileView" #billingDatePicker></mat-datepicker>
+                                    </form>
+                                    <h6 *ngIf="!isPermissionStagesEdit">{{item.billingDate | date:"dd MMM yyyy"}}</h6>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="align-center">
+                            <!-- <div>{{item.paymentReceivedDate | date:"dd MMM yyyy"}}</div> -->
+                            <div class="cell-content">
+                                <mat-icon
+                                    *ngIf="getFormControl(fa,i,'paymentReceivedDate').value && getFormControl(fa,i,'paymentReceivedDate').invalid"
+                                    [matTooltip]="getErrorMessage(getFormControl(fa,i,'paymentReceivedDate'))">
+                                    report_problem
+                                </mat-icon>
+                                <div class="cell-input">
+                                    <form *ngIf="isPermissionStagesEdit">
+                                        <input matInput [formControl]="getFormControl(fa,i,'paymentReceivedDate')"
+                                            class="date" (dateChange)="onCellChange(fa,i,'paymentReceivedDate',item)"
+                                            [matDatepicker]="paymentReceivedDatePicker" placeholder="Select Date" />
+                                        <mat-datepicker-toggle matSuffix
+                                            [for]="paymentReceivedDatePicker"></mat-datepicker-toggle>
+                                        <mat-datepicker [touchUi]="isMobileView"
+                                            #paymentReceivedDatePicker></mat-datepicker>
+                                    </form>
+                                    <h6 *ngIf="!isPermissionStagesEdit">{{item.paymentReceivedDate | date:"dd MMM yyyy"}}</h6>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="align-center">
+                            <div class="cell-content" >
+                                <mat-icon
+                                    *ngIf="getFormControl(fa,i,'statusFlag').value && getFormControl(fa,i,'statusFlag').invalid"
+                                    [matTooltip]="getErrorMessage(getFormControl(fa,i,'statusFlag'))">
+                                    report_problem
+                                </mat-icon>
+                                <div class="cell-input">
+                                    <form *ngIf=" isPermissionStagesStatusEdit ">
+                                        <mat-select placeholder="Type" [formControl]="getFormControl(fa,i,'statusFlag')"
+                                            (selectionChange)="onCellChange(fa,i,'statusFlag',item)">
+                                            <mat-option *ngFor="let status of filteredProjectStageStatus" [disabled]="disabledByPermission(status)"
+                                                [value]="status.value">{{status.title}}</mat-option>
+                                        </mat-select>
+                                    </form>
+                                    <h6 *ngIf="!isPermissionStagesStatusEdit">{{getStatusTitle(item.statusFlag)}}</h6>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="align-center">
+                            <button mat-icon-button (click)="onDeleteStage(item)" *ngIf="isPermissionStagesDelete">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </ng-container>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div *ngIf="authService.isRoleMaster">
+    <mat-form-field appearance="outline">
+        <mat-label>Scope Of Work</mat-label>
+        <textarea placeholder="Scope Of Work" aria-label="Scope Of Work" matInput [formControl]="scopeOfWork"
+            cdkTextareaAutosize #autosize="cdkTextareaAutosize"></textarea>
+        <mat-error>{{ getErrorMessage(f.street) }}</mat-error>
+    </mat-form-field>
+
+    <div class="d-flex align-items-center justify-content-end">
+        <button mat-raised-button color="primary" (click)="onSubmit()">
+            Save
+        </button>
+    </div>
+</div>
+
+<div class="scope-of-work-container" *ngIf="!authService.isRoleMaster">
+    <h6 class="font-focused">Scope Of Work</h6>
+    <p>{{project.scopeOfWork}}</p>
+  </div>

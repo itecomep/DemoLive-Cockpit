@@ -1,0 +1,85 @@
+<div class="work-order-container">
+    <div class="d-flex align-items-center justify-content-end p-2">
+        <button mat-raised-button color="primary" (click)="onNewWorkOrder()" *ngIf="isPermissionWorkOrderEdit && !isActiveAppointment">
+            + New
+        </button>
+    </div>
+
+    <div>
+        <table class="main-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>WorkOrder No</th>
+                    <th>WorkOrder Date</th>
+                    <th>Due Date</th>
+                    <th>Amount</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let item of workOrders; let i = index">
+                    <!-- Parent Row -->
+                    <tr>
+                        <td *ngIf="item.payments.length == 0"></td>
+                        <td *ngIf="item.payments.length > 0" (click)="toggleExpand(i)">
+                            <mat-icon *ngIf="!isExpanded[i]">expand_more</mat-icon>
+                            <mat-icon *ngIf="isExpanded[i]">expand_less</mat-icon>
+                        </td>
+                        <td>{{ item.workOrderNo }}</td>
+                        <td>{{ item.workOrderDate | date: 'dd MMM y' }}</td>
+                        <td>{{ item.dueDate | date: 'dd MMM y' }}</td>
+                        <td>{{ item.fees | currency: 'INR' }}</td>
+                        <td>
+                            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="context-menu">
+                                <mat-icon>more_vert</mat-icon>
+                            </button>
+                            <mat-menu #menu="matMenu">
+                                <button mat-menu-item (click)="onEdit(item)" aria-label="edit"
+                                    *ngIf="isPermissionWorkOrderEdit">
+                                    <mat-icon>edit</mat-icon>
+                                    <span>Edit</span>
+                                </button>
+                                <button mat-menu-item (click)="onDelete(item)" aria-label="delete"
+                                    *ngIf="isPermissionWorkOrderDelete">
+                                    <mat-icon>delete</mat-icon>
+                                    <span>Delete</span>
+                                </button>
+                            </mat-menu>
+                        </td>
+                    </tr>
+
+                    <!-- Nested Table Row (Appears Only If Payments Exist) -->
+                    <tr *ngIf="item.payments && item.payments.length > 0 && isExpanded[i]">
+                        <td colspan="6">
+                            <table class="nested-table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Payment Date</th>
+                                        <th>Received Amount</th>
+                                        <th>TDS Amount</th>
+                                        <th>Net Amount</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let payment of item.payments">
+                                        <td></td>
+                                        <td>{{ payment.transactionDate | date: 'dd MMM y' }}</td>
+                                        <td>{{ payment.amount | currency: 'INR' }}</td>
+                                        <td>{{ payment.tdsAmount | currency: 'INR' }}</td>
+                                        <td>{{ payment.netAmount | currency: 'INR' }}</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </ng-container>
+            </tbody>
+
+        </table>
+
+    </div>
+</div>

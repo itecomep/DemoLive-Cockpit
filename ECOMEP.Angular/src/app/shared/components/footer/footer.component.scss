@@ -1,0 +1,43 @@
+// @import "variables";
+
+
+// .mcv-footer {
+//     display: flex;
+//     align-items: center;
+//     padding: 0 15px;
+//     height: 45px;
+//     border-color: transparent;
+//     box-shadow: $box-shadow-inverse;
+//     z-index: 999;
+//     position: absolute;
+//     bottom: 0;
+//     left: 0;
+//     right: 0;
+//     background-color: $white;
+
+//     .mcv-footer-actions {
+//         display: flex;
+//         align-items: center;
+
+//         &>* {
+//             max-height: 45px !important;
+//             margin-left: 5px !important;
+//         }
+
+//         .search-filter {
+//             display: flex;
+//             align-items: center;
+//             justify-content: space-between;
+//             height: 80%;
+//             border: 1px solid $gray-200;
+//             border-radius: 5px;
+//             height: 2.1rem;
+//         }
+//     }
+
+//     .footer-form-field {
+//         .mat-mdc-form-field {
+//             display: block !important;
+//         }
+//     }
+// }

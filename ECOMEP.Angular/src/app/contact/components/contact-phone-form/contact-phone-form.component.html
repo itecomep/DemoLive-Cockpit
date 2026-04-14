@@ -1,0 +1,35 @@
+<div class="contact-phone-form-wrapper">
+  <form [formGroup]="form" autocomplete="off">
+    <div class="contact-phone-form-actions">
+      <mat-form-field appearance="outline">
+        <mat-label>Type</mat-label>
+        <mat-select placeholder="Type" formControlName="title">
+          <mat-option *ngFor="let title of titleOptions" [value]="title">{{title}}</mat-option>
+        </mat-select>
+        <mat-error>{{ getErrorMessage(f.title) }}</mat-error>
+      </mat-form-field>
+      <div>
+        <mat-checkbox [checked]="currentEntity.isPrimary" formControlName="isPrimary">Primary
+        </mat-checkbox>
+      </div>
+      <!-- <button mat-icon-button (click)="onSubmit()">
+        <mat-icon>done</mat-icon>
+      </button> -->
+      <button mat-icon-button (click)="onDelete()" >
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+    <div class="contact-phone-form-fields">
+
+      <mat-form-field appearance="outline">
+        <mat-label>Phone</mat-label>
+        <input placeholder="Phone" aria-label="Phone" matInput formControlName="phone" />
+        <mat-error>{{ getErrorMessage(f.phone) }}</mat-error>
+      </mat-form-field>
+
+    </div>
+
+
+
+  </form>
+</div>

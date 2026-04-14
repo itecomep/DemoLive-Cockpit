@@ -1,0 +1,365 @@
+<div class="project-definition-update">
+  <div class="row">
+    <div class="col-md-8">
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Project Details</mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="project-alert-bar" *ngIf="isShowAlert">
+          <mat-icon>warning</mat-icon>
+          <div>
+            <h6>{{this.existing.length}} Duplicate {{nameOfEntity}} Found !</h6>
+            <small> {{nameOfEntity}}(s) already exists with same title. Please do add some prefix if the title is same.
+              eg.
+              {{f.title.value}} ({{f.location.value || 'Andheri'}}) </small>
+          </div>
+        </div>
+
+        <div class="form-collection">
+          <form [formGroup]="form" autocomplete="off">
+
+            <mat-form-field appearance="outline" class="col-md-6">
+              <mat-label>Company</mat-label>
+              <mat-select formControlName="companyID">
+                <mat-option *ngFor="let company of companyOptions" [value]="company.id">
+                  {{ company.initials }} | {{ company.title }}
+                </mat-option>
+              </mat-select>
+              <mat-error>{{ getErrorMessage(f.companyID) }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-6">
+              <mat-label>Code</mat-label>
+              <input placeholder="Code" aria-label="Code" matInput formControlName="code">
+              <mat-error>{{getErrorMessage(f.code)}}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-12">
+              <mat-label>Project Name</mat-label>
+              <input placeholder="Project Name" aria-label="Project Name" matInput formControlName="title">
+              <mat-error>{{getErrorMessage(f.title)}}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-6">
+              <mat-label>Location</mat-label>
+              <input placeholder="Project Location" aria-label="Project Location" matInput formControlName="location"
+                [matAutocomplete]="autoLoc">
+              <mat-autocomplete #autoLoc="matAutocomplete" [displayWith]="displayFnLocation">
+                <mat-option *ngFor="let option of filteredLocationOptions | async" [value]="option">
+                  {{option}}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error>{{getErrorMessage(f.location)}}</mat-error>
+            </mat-form-field>
+
+
+            <mat-form-field appearance="outline" class="col-6 col-md-6">
+              <mat-label>City</mat-label>
+              <input placeholder="City" aria-label="City" matInput formControlName="city" [matAutocomplete]="autoCity">
+              <mat-autocomplete #autoCity="matAutocomplete" [displayWith]="displayFnCity">
+                <mat-option *ngFor="let option of filteredCityOptions$ | async" [value]="option">
+                  {{option}}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error>{{getErrorMessage(f.city)}}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-6 col-md-6">
+              <mat-label>State</mat-label>
+              <input placeholder="State" aria-label="State" matInput formControlName="state"
+                [matAutocomplete]="autoState">
+              <mat-autocomplete #autoState="matAutocomplete" [displayWith]="displayFnState">
+                <mat-option *ngFor="let option of filteredStateOptions$ | async" [value]="option">
+                  {{option}}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error>{{getErrorMessage(f.state)}}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-6 col-md-6">
+              <mat-label>Country</mat-label>
+              <input placeholder="Country" aria-label="Country" matInput formControlName="country"
+                [matAutocomplete]="autoCountry">
+              <mat-autocomplete #autoCountry="matAutocomplete" [displayWith]="displayFnCountry">
+                <mat-option *ngFor="let option of filteredCountryOptions$ | async" [value]="option">
+                  {{option}}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error>{{getErrorMessage(f.country)}}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-6 col-md-6">
+              <mat-label>Typology</mat-label>
+              <mat-select placeholder="Typology" formControlName="typologies" [multiple]="true">
+                <mat-option *ngFor="let item of typologyOptions" [value]="item">
+                  {{item}}
+                </mat-option>
+              </mat-select>
+              <mat-error>{{getErrorMessage(f.typologies)}}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-6 col-md-6">
+              <mat-label>Segment</mat-label>
+              <mat-select placeholder="Segment" formControlName="segments" [multiple]="true">
+                <mat-option *ngFor="let item of segmentOptions" [value]="item">
+                  {{item}}
+                </mat-option>
+              </mat-select>
+              <mat-error>{{getErrorMessage(f.segments)}}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-6 col-md-6">
+              <mat-label>Contract Start Date</mat-label>
+              <input placeholder="Contract Completion Date" aria-label="Contract Completion Date" matInput
+                formControlName="contractStartDate" [matDatepicker]="pickerContractStartDate">
+              <mat-datepicker-toggle matSuffix [for]="pickerContractStartDate"></mat-datepicker-toggle>
+              <mat-datepicker [touchUi]="isMobileView" #pickerContractStartDate></mat-datepicker>
+              <mat-error>{{getErrorMessage(f.contractStartDate)}}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-6 col-md-6">
+              <mat-label>Contract Completion Date</mat-label>
+              <input placeholder="Contract Completion Date" aria-label="Contract Completion Date" matInput
+                formControlName="contractCompletionDate" [matDatepicker]="pickerContactCompletionDate">
+              <mat-datepicker-toggle matSuffix [for]="pickerContactCompletionDate"></mat-datepicker-toggle>
+              <mat-datepicker [touchUi]="isMobileView" #pickerContactCompletionDate></mat-datepicker>
+              <mat-error>{{getErrorMessage(f.contractCompletionDate)}}</mat-error>
+            </mat-form-field>
+
+            <!-- <mat-form-field appearance="outline" class="col-6 col-md-6">
+              <mat-label>Expected Completion Date</mat-label>
+              <input placeholder="Expected Completion Date" aria-label="Expected Completion Date" matInput
+                formControlName="expectedCompletionDate" [matDatepicker]="pickerExpectedCompletionDate">
+              <mat-datepicker-toggle matSuffix [for]="pickerExpectedCompletionDate"></mat-datepicker-toggle>
+              <mat-datepicker [touchUi]="isMobileView" #pickerExpectedCompletionDate></mat-datepicker>
+              <mat-error>{{getErrorMessage(f.expectedCompletionDate)}}</mat-error>
+            </mat-form-field> -->
+            <div class="row">
+              <mat-form-field appearance="outline" class="col-6 col-md-6">
+                <mat-label>Expected MHr</mat-label>
+                <input type="number" placeholder="Expected MHr" aria-label="Expected MHr" matInput
+                  formControlName="expectedMHr" [min]="0">
+                <span matSuffix><mat-icon>hourglass_empty</mat-icon></span>
+                <mat-error>{{getErrorMessage(f.expectedMHr)}}</mat-error>
+              </mat-form-field>
+              <div class="col-md-6 col-6 mb-2 ">
+                <mat-form-field appearance="outline" *ngIf="!currentEntity.clientContact">
+                  <mat-label>Bill To Company/Client</mat-label>
+                  <mat-select formControlName="clientContact" placeholder="Search Contact" #singleSelect>
+                    <mat-option>
+                      <ngx-mat-select-search [formControl]="clientContactFC" placeholderLabel="Search here"
+                        noEntriesFoundLabel="No matching value found"></ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option *ngFor="let option of filteredClientOptions | async" [value]="option">
+                      {{ option?.name }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error>{{ getErrorMessage(f.clientContact) }}</mat-error>
+                </mat-form-field>
+
+                <div class="contact-container" *ngIf="currentEntity.clientContact && currentEntity.clientContactID">
+                  <div class="d-flex justify-content-between align-items-center w-100">
+                    <!-- Left side -->
+                    <div class="d-flex align-items-start" (click)="onOpenContactDialog(currentEntity.clientContact)">
+                      <img class="image"
+                        [src]="currentEntity.clientContact?.photoUrl || 'assets/images/person-icon.svg'" />
+                      <div class="d-flex flex-column ml-2">
+                        <small class="font-focused">Bill To Company/Client</small>
+                        <h6 class="name mt-1">{{ currentEntity.clientContact?.fullName }}</h6>
+                      </div>
+                    </div>
+
+                    <!-- Right side -->
+                    <mat-icon (click)="onDeleteClientContact()">clear</mat-icon>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 col-6 mb-2 ">
+                <mat-form-field appearance="outline" *ngIf="!currentEntity.referredByContact">
+                  <mat-label>Referred By</mat-label>
+                  <mat-select formControlName="referredByContact" placeholder="Search Contact" #singleSelect>
+                    <mat-option>
+                      <ngx-mat-select-search [formControl]="referredByFC" placeholderLabel="Search here"
+                        noEntriesFoundLabel="No matching value found"></ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option *ngFor="let option of filteredReferrerOptions | async" [value]="option">
+                      {{ option?.name }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error>{{ getErrorMessage(f.referredByContact) }}</mat-error>
+                </mat-form-field>
+
+                <div class="contact-container "
+                  *ngIf="currentEntity.referredByContact && currentEntity.referredByContactID">
+                  <div class="d-flex justify-content-between align-items-center w-100">
+                    <!-- Left side -->
+                    <div class="d-flex align-items-start"
+                      (click)="onOpenContactDialog(currentEntity.referredByContact)">
+                      <img class="image"
+                        [src]="currentEntity.referredByContact?.photoUrl || 'assets/images/person-icon.svg'" />
+                      <div class="d-flex flex-column ml-2">
+                        <small class="font-focused">Referred By</small>
+                        <h6 class="name mt-1">{{ currentEntity.referredByContact?.fullName }}</h6>
+                      </div>
+                    </div>
+
+                    <!-- Right side -->
+                    <mat-icon (click)="onDeleteReferredContact()">clear</mat-icon>
+                  </div>
+                </div>
+              </div>
+
+
+              <mat-form-field appearance="outline" class="col-6 col-md-6">
+                <mat-label>Status</mat-label>
+                <mat-select placeholder="Status" formControlName="statusFlag">
+                  <mat-option *ngFor="let item of statusOptions" [value]="item.value">
+                    {{item.title}}
+                  </mat-option>
+                </mat-select>
+                <mat-error>{{getErrorMessage(f.statusFlag)}}</mat-error>
+                <mat-hint>Status must only be changed via task flow.</mat-hint>
+              </mat-form-field>
+
+            </div>
+
+
+            <div class="col-md-6 col-6 mb-2 ">
+              <mat-form-field appearance="outline" *ngIf="!currentEntity.groupCompanyContact">
+                <mat-label>Group Company Contact</mat-label>
+                <mat-select formControlName="groupCompanyContact" placeholder="Search Contact" #singleSelect>
+                  <mat-option>
+                    <ngx-mat-select-search [formControl]="groupCompanyContactFC" placeholderLabel="Search here"
+                      noEntriesFoundLabel="No matching value found"></ngx-mat-select-search>
+                  </mat-option>
+                  <mat-option *ngFor="let option of filteredGroupCompanyOptions | async" [value]="option">
+                    {{ option?.name }}
+                  </mat-option>
+                </mat-select>
+                <mat-error>{{ getErrorMessage(f.groupCompanyContact) }}</mat-error>
+              </mat-form-field>
+
+              <div class="contact-container "
+                *ngIf="currentEntity.groupCompanyContact && currentEntity.groupCompanyContactID">
+                <div class="d-flex justify-content-between align-items-center w-100">
+
+                  <div class="d-flex align-items-start"
+                    (click)="onOpenContactDialog(currentEntity.groupCompanyContact)">
+                    <img class="image"
+                      [src]="currentEntity.groupCompanyContact?.photoUrl || 'assets/images/person-icon.svg'" />
+                    <div class="d-flex flex-column ml-2">
+                      <small class="font-focused">GroupCompany Contact</small>
+                      <h6 class="name mt-1">{{ currentEntity.groupCompanyContact?.fullName }}</h6>
+                    </div>
+                  </div>
+
+
+                  <mat-icon (click)="onDeleteGroupCompanyContact()">clear</mat-icon>
+                </div>
+              </div>
+            </div>
+
+
+          </form>
+        </div>
+      </mat-expansion-panel>
+
+      <!-- <mat-expansion-panel [expanded]="true" *ngIf="isPermissionBillingEdit">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Billing Details</mat-panel-title>
+    </mat-expansion-panel-header>
+    <div class="form-collection" *ngIf="isPermissionBillingEdit">
+      <form [formGroup]="form" autocomplete="off">
+  
+        <div class="row m-0">
+  
+          <mat-form-field appearance="outline" class="col-md-6">
+            <mat-label>Bill To Company/Client</mat-label>
+            <mat-select formControlName="clientContact" placeholder="Search Contact" #singleSelect>
+              <mat-option>
+                <ngx-mat-select-search [formControl]="clientContactFC" placeholderLabel="Search here"
+                  noEntriesFoundLabel="No matching value found"></ngx-mat-select-search>
+              </mat-option>
+              <mat-option *ngFor="let option of filteredClientOptions | async" [value]="option">
+                {{option?.name}}
+              </mat-option>
+            </mat-select>
+            <mat-error>{{getErrorMessage(f.clientContact)}}</mat-error>
+          </mat-form-field>
+  
+          <mat-form-field appearance="outline" class="col-md-6">
+            <mat-label>Title on Bill</mat-label>
+            <input placeholder="Title on Bill" aria-label="Title on Bill" matInput formControlName="billingTitle">
+            <mat-error>{{getErrorMessage(f.billingTitle)}}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-md-6">
+            <mat-label>Project HSN/SAC</mat-label>
+            <input matInput formControlName="hsn">
+            <mat-error>{{getErrorMessage(f.hsn)}}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-md-6">
+            <mat-label>Project GST StateCode</mat-label>
+            <input placeholder="Project GST StateCode" aria-label="Project GST StateCode" matInput formControlName="stateCode"
+              [matAutocomplete]="autoStateCode">
+            <mat-autocomplete #autoStateCode="matAutocomplete" [displayWith]="displayFnStateCode">
+              <mat-option *ngFor="let option of filteredStateCodeOptions$ | async" [value]="option.tin">
+                {{option.tin}} <small>({{option.state}})</small>
+              </mat-option>
+            </mat-autocomplete>
+            <mat-error>{{getErrorMessage(f.stateCode)}}</mat-error>
+          </mat-form-field>
+     
+        </div>
+      </form>
+    </div>
+
+  </mat-expansion-panel> -->
+    </div>
+    <div class="col-md-4">
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Actions</mat-panel-title>
+          <mat-panel-description> </mat-panel-description>
+        </mat-expansion-panel-header>
+        <div [formGroup]="form">
+          <mat-form-field appearance="outline">
+            <mat-label>Comment</mat-label>
+            <textarea aria-label="comment" matInput formControlName="comment" cdkTextareaAutosize
+              #autosize="cdkTextareaAutosize" [cdkAutosizeMinRows]="3"></textarea>
+            <mat-error>{{ getErrorMessage(f.comment) }}</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="d-flex align-items-center justify-content-end">
+          <button mat-raised-button color="accent" (click)="onCreateChild()" aria-label="Add new child Project"
+            *ngIf="isPermissionEdit && !currentEntity.parentID">
+            <mat-icon>add</mat-icon> Child
+          </button>
+
+          <button mat-raised-button color="primary" (click)="onSubmit()" aria-label="save" *ngIf="isPermissionEdit">
+            Save
+          </button>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Activity </mat-panel-title>
+          <mat-panel-description> </mat-panel-description>
+        </mat-expansion-panel-header>
+        <div class="mcv-activity-list-wrapper">
+          <mcv-activity-list #activity [entity]="'Project'" [entityID]="currentEntity.id">
+          </mcv-activity-list>
+        </div>
+      </mat-expansion-panel>
+    </div>
+
+  </div>
+
+
+
+</div>

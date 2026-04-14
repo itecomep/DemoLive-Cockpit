@@ -1,0 +1,237 @@
+/* ---------------------------------------------------
+   contact
+----------------------------------------------------- */
+@import "variables";
+@import 'theme';
+
+.mcv-chip-wrapper {
+  background-color: $gray-300;
+  margin: 3px;
+  box-sizing: border-box;
+  cursor: pointer;
+  min-height: 30px;
+  border-radius: 40px;
+  flex: 0 0;
+  max-width: 100%;
+
+  &.mcv-yellow-chip {
+    background-color: $yellow;
+    color: $gray-900;
+  }
+
+  &.mcv-blue-chip {
+    background-color: $blue;
+    color: $white;
+  }
+
+  &.mcv-red-chip {
+    background-color: $red;
+    color: $white;
+  }
+
+  &.mcv-orange-chip {
+    background-color: $orange;
+    color: $white;
+  }
+
+  &:hover {
+    background-color: $gray-500;
+    box-shadow: $box-shadow;
+  }
+
+  .mcv-chip {
+    display: -webkit-box;
+    flex: 1 0;
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    height: 100%;
+
+    & .mcv-chip-details {
+      padding: 0 0 0 10px;
+      display: flex;
+      align-items: center;
+      flex-grow: 1;
+      height: 100%;
+
+      &>* {
+        width: 100%;
+        overflow: hidden;
+      }
+    }
+
+    & .mcv-chip-actions {
+      padding: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-shrink: 0;
+      height: 100%;
+      cursor: pointer;
+    }
+  }
+}
+
+.mcv-email-contact-wrapper {
+  background-color: $gray-300;
+  margin: 3px;
+  box-sizing: border-box;
+  cursor: pointer;
+  height: 40px;
+  border-radius: 40px;
+  flex: 0 0;
+  max-width: 100%;
+
+  &:hover {
+    background-color: $gray-500;
+    box-shadow: $box-shadow;
+  }
+
+}
+
+.mcv-email-contact {
+  display: -webkit-box;
+  flex: 1 0;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  justify-content: space-between;
+  min-width: 150px;
+  height: 100%;
+
+  & .mcv-email-contact-photo {
+    height: 100%;
+
+    & .user-thumbnail {
+      border-radius: 40px;
+      width: 40px;
+      background-color: $white;
+    }
+  }
+
+  & .mcv-email-contact-details {
+    padding: 0.2rem;
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    height: 100%;
+
+    &>* {
+      width: 100%;
+      overflow: hidden;
+    }
+  }
+
+  & .mcv-email-contact-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-shrink: 0;
+    height: 100%;
+
+    &>* {
+      flex: 0 0;
+      display: flex;
+      -webkit-box-align: center;
+      align-items: center;
+      border-left: 1px solid #fff;
+      padding: 0.2rem;
+      font-size: 20px;
+    }
+  }
+}
+
+.mcv-contact-list-hover {
+  list-style: none;
+  margin: 0;
+  max-width: 100%;
+  padding: 5px 0;
+
+  &>li {
+    box-sizing: border-box;
+    padding: 5px;
+    margin: 5px 3px;
+    border: 1px solid $gray-300;
+    border-radius: $border-radius;
+    cursor: pointer;
+
+    &.active,
+    &.selected {
+      border: 3px solid mat-color($mcv-primary, 500);
+    }
+
+    &:hover {
+      background-color: $gray-200;
+      color: $black;
+    }
+  }
+}
+
+.mcv-contant-inline-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: -webkit-box;
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.mcv-contant-inline-list.mcv-contant-inline-list-justify-right {
+  -webkit-box-pack: end;
+  justify-content: flex-end;
+}
+
+.mcv-contant-inline-list>li,
+.mcv-contant-inline-list>* {
+  max-width: 100%;
+}
+
+.mcv-contant-inline-list>li:only-child,
+.mcv-contant-inline-list>*:only-child {
+  -webkit-box-flex: 0;
+  flex-grow: 0;
+}
+
+.mcv-contant-inline-list.inilne-50>li {
+  min-width: 48%;
+}
+
+.mcv-contant-inline-list.inilne-25>li {
+  min-width: 24%;
+}
+
+.mcv-contact-activity-list-wrapper {
+  max-height: 350px;
+  overflow: hidden auto;
+}
+
+.mcv-contact-dialog-actions {
+  position: sticky;
+  position: -webkit-sticky;
+  bottom: 0;
+  z-index: 99;
+  background-color: $gray-200;
+  padding: 0.3rem;
+  display: flex;
+  align-content: center;
+  justify-content: flex-end;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
+}
+
+.mcv-contact-dialog-header {
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0px;
+  padding: 5px 12px;
+  box-shadow: $box-shadow;
+}

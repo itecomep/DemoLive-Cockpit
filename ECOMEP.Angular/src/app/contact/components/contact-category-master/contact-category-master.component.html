@@ -1,0 +1,56 @@
+<div class="mat-dialog-header mcv-dialog-header">
+    <h5 class="font-focused">Contact Category Master</h5>
+    <div class="d-flex align-items-center">
+        <button mat-icon-button aria-label="Submit" (click)="onSubmit()">
+            <mat-icon>done</mat-icon>
+        </button>
+        <button mat-icon-button aria-label="close" (click)="onClose()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+<mat-dialog-content>
+    <div class="contact-category-master-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Sr No.</th>
+                    <th>Category</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let item of items;let i = index">
+                    <tr>
+                        <td>{{i + 1}}</td>
+                        <td>
+                            <div class="cell-content">
+
+                                <mat-icon *ngIf="getFormControl(fa,i).value && getFormControl(fa,i).invalid"
+                                    [matTooltip]="getErrorMessage(getFormControl(fa,i))">
+                                    report_problem
+                                </mat-icon>
+
+                                <div class="cell-input text-left">
+                                    <form>
+                                        <input matInput (input)="onInput(fa,i)" [formControl]="getFormControl(fa,i)">
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+                        <td (click)="onDelete(item,getFormControl(fa,i))">
+                            <mat-icon>delete</mat-icon>
+                        </td>
+                    </tr>
+                </ng-container>
+                <tr>
+                    <td colspan="3" (click)="onAddCategory()">
+                        <mat-icon>add</mat-icon>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+</mat-dialog-content>

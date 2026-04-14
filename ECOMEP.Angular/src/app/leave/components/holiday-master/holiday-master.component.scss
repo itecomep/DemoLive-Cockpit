@@ -1,0 +1,178 @@
+@import 'variables';
+@import 'theme';
+
+.mcv-dialog-header {
+  background-color: mat-color($mcv-primary, 500);
+  color: $white;
+}
+
+
+table {
+  position: relative;
+  border: 1px solid $gray-300;
+  border-collapse: collapse;
+
+  thead,
+  tfoot {
+    position: sticky;
+    position: -webkit-sticky;
+    z-index: 9999;
+    position: -webkit-sticky;
+  }
+
+  thead {
+    inset-block-start: 0;
+
+    th {
+      white-space: pre-wrap;
+      border: 1px solid $gray-300;
+      padding: 0.3rem;
+      text-align: center;
+      top: -1px;
+      background-color: $gray-500;
+      color: $white;
+    }
+  }
+
+  td {
+    white-space: nowrap;
+    border: 1px solid $gray-300;
+    padding: 0;
+    text-align: center;
+  }
+}
+
+.cell-content {
+  display: flex;
+  align-items: center;
+
+  .cell-action,
+  .cell-input,
+  .cell-value {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.2rem;
+    // text-align: right;
+    max-width: 100%;
+    margin: 0;
+    border: none;
+    padding: 0.3rem;
+
+    &.text-left {
+      justify-content: flex-start;
+    }
+
+    &.text-right {
+      justify-content: flex-end;
+    }
+
+    mat-icon {
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+  }
+
+  .cell-input {
+    .remark-textarea {
+      font-size: 0.7rem;
+    }
+
+    textarea {
+      overflow: hidden;
+    }
+  }
+
+  .cell-package {
+    flex-grow: 1;
+    flex-shrink: 1;
+    background-color: $blue;
+    color: $white;
+
+    &.active {
+      background-color: $green;
+    }
+  }
+
+
+  .cell-input,
+  .cell-value {
+    flex-grow: 1;
+    flex-shrink: 1;
+  }
+
+  .cell-value,
+  .cell-action {
+    cursor: pointer;
+  }
+
+  .cell-action {
+    flex-grow: 0;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    cursor: pointer;
+  }
+
+  .cell-input {
+    form {
+      flex-grow: 1;
+      flex-shrink: 1;
+
+      input,
+      textarea {
+        border: none;
+        padding: 0;
+        width: 100%;
+        text-align: center;
+      }
+    }
+  }
+
+  .cell-input-align-right {
+    form {
+
+      input {
+        text-align: right;
+      }
+    }
+  }
+
+  .cell-input-prefix,
+  .cell-input-suffix {
+    flex-grow: 0;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  table {
+    font-size: 0.75rem;
+
+    thead th {
+      padding: 0.2rem;
+      font-size: 0.7rem;
+    }
+
+    td {
+      white-space: normal;
+    }
+  }
+
+  .cell-content {
+    .cell-action,
+    .cell-input,
+    .cell-value {
+      padding: 0.2rem;
+      font-size: 0.75rem;
+
+      mat-icon {
+        font-size: 0.875rem;
+      }
+    }
+  }
+}

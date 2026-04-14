@@ -1,0 +1,435 @@
+<div class="sitevisit-view-wrapper">
+
+  <div class="sitevisit-header" *ngIf="!isTaskMode">
+    <div class="title-bar">
+      <div [matTooltip]="currentEntity.contact.name" *ngIf="currentEntity.contact">
+        <img class="contact-icon" src="{{ currentEntity.contact.photoUrl || 'assets/images/person-icon.svg' }}" alt=""
+          *ngIf="!currentEntity.contact.isCompany" />
+        <img class="contact-icon" src="{{ currentEntity.contact.photoUrl || 'assets/images/company-icon.svg' }}" alt=""
+          *ngIf="currentEntity.contact.isCompany" />
+      </div>
+
+      <div>
+        <h6 class="font-focused">{{currentEntity.title}}</h6>
+        <h5 class="float-left mr-1"> #{{currentEntity.orderFlag | number:'3.0'}}</h5>
+        <span class="mb-0"> <small>on</small> {{currentEntity.startDate| date:'dd MMM y' }} </span>
+      </div>
+
+      <div>
+        <small>Created By </small>
+        <h6>
+          {{currentEntity.createdBy || 'System'}}
+        </h6>
+      </div>
+
+      <div>
+        <small>Created On </small>
+        <h6>
+          {{currentEntity.created | date:'dd MMM y HH:mm'}}
+        </h6>
+      </div>
+
+      <div>
+        <small>Modified By </small>
+        <h6>
+          {{currentEntity.modifiedBy || 'System'}}
+        </h6>
+      </div>
+
+      <div>
+        <small>Modified On</small>
+        <h6>
+          {{currentEntity.modified | date:'dd MMM y HH:mm'}}
+        </h6>
+      </div>
+    </div>
+
+    <!-- <div class="action-bar">
+      <button matTooltip="Edit" mat-icon-button (click)="onEdit()" aria-label="Edit"
+        *ngIf="isPermissionEdit && !isEditMode">
+        <mat-icon>
+          edit
+        </mat-icon>
+      </button>
+      <button matTooltip="Edit" class="ml-1" mat-icon-button (click)="onViewMode()" aria-label="Edit"
+        *ngIf="isPermissionEdit && isEditMode">
+        <mat-icon>
+          close
+        </mat-icon>
+      </button>
+    </div> -->
+  </div>
+  <app-wftask-title-bar [task]="task" *ngIf="isTaskMode"></app-wftask-title-bar>
+
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-8">
+        <mat-expansion-panel [expanded]="true"
+          *ngIf="currentEntity?.typeFlag==SITE_VISIT_TYPEFLAG_SITE_VISIT || currentEntity?.typeFlag==SITE_VISIT_TYPEFLAG_INSPECTION">
+          <mat-expansion-panel-header>
+            <mat-panel-title> Details </mat-panel-title>
+          </mat-expansion-panel-header>
+          <form [formGroup]="form" autocomplete="off">
+            <mat-form-field appearance="outline" class="col-md-4">
+              <mat-label>Start Date</mat-label>
+              <input id="startDate" placeholder=" From" aria-label=" From" matInput formControlName="startDate"
+                [matDatepicker]="pickerFrom">
+              <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+              <mat-datepicker [touchUi]="isMobileView" #pickerFrom></mat-datepicker>
+              <mat-error>{{getErrorMessage(f.startDate)}}</mat-error>
+              <mat-hint align="end"> start</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-2">
+              <mat-label>Start Time</mat-label>
+              <input id="startTime" aria-label="startTime" [ngxTimepicker]="pickerstartTime" formControlName="startTime"
+                matInput [format]="24">
+              <ngx-material-timepicker #pickerstartTime [minutesGap]="minutesGap"></ngx-material-timepicker>
+
+              <mat-error>{{getErrorMessage(f.startTime)}}</mat-error>
+              <mat-hint align="end">24 hour</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-4">
+              <mat-label>End Date</mat-label>
+              <input id="endDate" placeholder=" To" aria-label=" To" matInput formControlName="endDate"
+                [matDatepicker]="pickerTo">
+              <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
+              <mat-datepicker [touchUi]="isMobileView" #pickerTo></mat-datepicker>
+              <mat-error>{{getErrorMessage(f.endDate)}}</mat-error>
+              <mat-hint align="end">SiteVisit end</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-2">
+              <mat-label>End Time</mat-label>
+              <input id="endTime" aria-label="endTime" [ngxTimepicker]="pickerendTime" matInput
+                formControlName="endTime" [format]="24">
+              <ngx-material-timepicker #pickerendTime [minutesGap]="minutesGap"></ngx-material-timepicker>
+
+              <mat-error>{{getErrorMessage(f.endTime)}}</mat-error>
+              <mat-hint align="end">24 hour</mat-hint>
+            </mat-form-field>
+
+            <div class="clear-fix"></div>
+
+            <mat-form-field appearance="outline" class="col-sm-12">
+              <mat-label>Location</mat-label>
+              <input id="location" aria-label="location" matInput formControlName="location">
+              <mat-error>{{getErrorMessage(f.location)}}</mat-error>
+            </mat-form-field>
+          </form>
+
+          
+        </mat-expansion-panel>
+         <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>Recipients</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <div class="sitevisit-attendee-input">
+            <mat-form-field appearance="outline" *ngIf="currentEntity.isEditable">
+              <mat-label>To</mat-label>
+              <input placeholder="Enter name of person to select from the list" aria-label="To" matInput
+                [formControl]="assigneeFC" [matAutocomplete]="autoRequestTo" />
+
+              <mat-autocomplete #autoRequestTo="matAutocomplete" [displayWith]="displayFnContact"
+                (optionSelected)="onSelectContact(SITE_VISIT_ATTENDEE_TYPEFLAG_TO)">
+                <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
+                  <h6>
+                    {{option.name}}
+                  </h6>
+                  <span>{{option.email}} <small *ngIf="option.company">({{option.company}})</small></span>
+                </mat-option>
+              </mat-autocomplete>
+              <span matSuffix>
+                <mat-icon>person</mat-icon>
+              </span>
+              <mat-error>{{ getErrorMessage(assigneeFC) }}</mat-error>
+              <mat-hint align="end">Enter name of person to select from the list</mat-hint>
+            </mat-form-field>
+
+            <!-- <div class="sitevisit-attendee-input-actions">
+              <button (click)="onCreateAssignee(REQUEST_TICKET_ASSIGNEE_TYPEFLAG_TO)" mat-raised-button color="primary"
+                aria-label="Add as Attendee">To</button>
+            </div> -->
+          </div>
+
+          <h4 class="m-2 font-bold">TO</h4>
+          <span class="text-danger" *ngIf="toList.length==0">
+            Please add atleast 1 contact to send!
+          </span>
+          <ul class="sitevisit-attendee-list" id="toList">
+            <!-- cdkDropList
+            [cdkDropListData]="{list:toList,typeFlag:REQUEST_TICKET_ASSIGNEE_TYPEFLAG_TO}" [cdkDropListConnectedTo]="['ccList']"
+            (cdkDropListDropped)="drop($event)" -->
+            <!-- <li *ngIf="toList.length == 0" style="min-height: 10px;">
+              <div *cdkDragPlaceholder></div>
+            </li> -->
+            <ng-container *ngFor="let item of toList; let i = index;">
+              <li>
+                <div *cdkDragPlaceholder></div>
+                <div class="sitevisit-attendee">
+                  <div>
+                    <h6>{{item.name}}</h6>
+                    <span>{{item.email}} </span> (<small>{{item.company}} </small>)
+                  </div>
+                  <div class="sitevisit-attendee-actions"
+                   *ngIf="currentEntity.isEditable">
+                    <!-- <button mat-icon-button cdkDragHandle><mat-icon>drag_handle</mat-icon></button> -->
+                    <button mat-icon-button (click)="onDeleteAttendee(item)" matTooltip="Remove" aria-label="Remove">
+                      <mat-icon>clear</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </ng-container>
+          </ul>
+
+          <!-- CC Input -->
+          <div class="sitevisit-attendee-input">
+            <mat-form-field appearance="outline" *ngIf="currentEntity.isEditable">
+              <mat-label>CC</mat-label>
+              <input placeholder="Enter name of person to select from the list" aria-label="Assign CC" matInput
+                [formControl]="assigneeFC" [matAutocomplete]="autoRequestCC" />
+
+              <mat-autocomplete #autoRequestCC="matAutocomplete" [displayWith]="displayFnContact"
+                (optionSelected)="onSelectContact(SITE_VISIT_ATTENDEE_TYPEFLAG_CC)">
+                <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
+                  <h6>
+                    {{option.name}}
+                  </h6>
+                  <span>{{option.email}} <small *ngIf="option.company">({{option.company}})</small></span>
+                </mat-option>
+              </mat-autocomplete>
+              <span matSuffix>
+                <mat-icon>person</mat-icon>
+              </span>
+              <mat-error>{{ getErrorMessage(assigneeFC) }}</mat-error>
+              <mat-hint align="end">Enter name of person to select from the list</mat-hint>
+            </mat-form-field>
+
+            <!-- <div class="sitevisit-attendee-input-actions">
+              <button (click)="onCreateAssignee(REQUEST_TICKET_ASSIGNEE_TYPEFLAG_CC)" mat-raised-button
+                aria-label="Add as CC">CC</button>
+            </div> -->
+          </div>
+
+          <h4 class="m-2 font-bold">CC</h4>
+          <ul class="sitevisit-attendee-list" id="ccList">
+            <!-- cdkDropList
+            [cdkDropListData]="{list:ccList,typeFlag:REQUEST_TICKET_ASSIGNEE_TYPEFLAG_CC}" [cdkDropListConnectedTo]="['toList']"
+            (cdkDropListDropped)="drop($event)" -->
+            <!-- <li *ngIf="ccList.length == 0" style="min-height: 10px;">
+              <div *cdkDragPlaceholder></div>
+            </li> -->
+            <ng-container *ngFor="let item of ccList; let i = index;">
+              <li>
+                <!-- <div *cdkDragPlaceholder></div> -->
+                <div class="sitevisit-attendee">
+                  <div>
+                    <h6>{{item.name}}</h6>
+                    <span>{{item.email}} </span> (<small>{{item.company}} </small>)
+                  </div>
+                  <div class="sitevisit-attendee-actions"
+                    *ngIf="currentEntity.isEditable">
+                    <!-- <button mat-icon-button cdkDragHandle><mat-icon>drag_handle</mat-icon></button> -->
+                    <button mat-icon-button (click)="onDeleteAttendee(item)" matTooltip="Remove" aria-label="Remove">
+                      <mat-icon>clear</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </ng-container>
+          </ul>
+
+          <!-- BCC Input -->
+      
+        
+        </mat-expansion-panel>
+
+
+
+        <!-- <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>Attendee </mat-panel-title>
+          </mat-expansion-panel-header>
+          
+          <form [formGroup]="attendeeform" autocomplete="off" novalidate *ngIf="currentEntity.isEditable">
+
+            <div class="row m-0">
+              <mat-form-field appearance="outline" class="col-sm-8">
+                <mat-label>Select Contact</mat-label>
+                <input id="name" placeholder="Name" aria-label="Name" matInput formControlName="name"
+                  [matAutocomplete]="name">
+                <mat-autocomplete #name="matAutocomplete" [displayWith]="displayFnAttendee">
+                  <mat-option *ngFor="let option of filteredAttendeeOptions$ | async" [value]="option">
+                    {{option.name}} | {{option.email}} | {{option.company}}
+                  </mat-option>
+                </mat-autocomplete>
+                <span matSuffix>
+                  <mat-icon>person</mat-icon>
+                </span>
+                <mat-error>{{getErrorMessage(af.name)}}</mat-error>
+              </mat-form-field>
+
+              <div class="col-sm-4 text-right">
+                <button (click)="onAddAttendee(0)" mat-raised-button color="primary" class="btn ml-1"
+                  matTooltip="Add Attendee" aria-label="Add Attendee">Add</button>
+                <button (click)="onAddAttendee(1)" mat-raised-button class="btn t ml-1" matTooltip="Add CC"
+                  aria-label="Add CC">Add CC</button>
+              </div>
+            </div>
+          </form>
+
+
+          <h4 class="m-2 font-bold">TO</h4>
+
+          <ul class="sitevisit-attendee-list" id="cdkAttendee" cdkDropList
+            [cdkDropListData]="{list:attendeeTo,typeFlag:sitevisit_ATTENDEE_TYPEFLAG_TO}"
+            [cdkDropListConnectedTo]="['cdkCc']" (cdkDropListDropped)="drop($event)">
+            <li *ngIf="attendeeTo.length == 0">
+              <div *cdkDragPlaceholder></div>
+            </li>
+            <ng-container *ngFor="let item of attendeeTo; let i = index;">
+              <li>
+                <div *cdkDragPlaceholder></div>
+                <div class="sitevisit-attendee" cdkDrag>
+                  <div>
+                    <h6>{{item.name}}</h6>
+                    <span>{{item.email}} </span> (<small>{{item.company}} </small>)
+                  </div>
+                  <div class="sitevisit-attendee-actions" *ngIf="currentEntity?.isEditable">
+                    <button mat-icon-button cdkDragHandle><mat-icon>drag_handle</mat-icon></button>
+                    <button mat-icon-button (click)="onDeleteAttendee(item)" matTooltip="Remove" aria-label="Remove">
+                      <mat-icon>clear</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </ng-container>
+          </ul>
+
+          <h4 class="m-2 font-bold">CC</h4>
+
+          <ul class="sitevisit-attendee-list" id="cdkCc" cdkDropList
+            [cdkDropListData]="{list:attendeeCC,typeFlag:sitevisit_ATTENDEE_TYPEFLAG_CC}"
+            [cdkDropListConnectedTo]="['cdkAttendee']" (cdkDropListDropped)="drop($event)">
+            <li *ngIf="attendeeCC.length == 0">
+              <div *cdkDragPlaceholder></div>
+            </li>
+            <ng-container *ngFor="let item of attendeeCC; let i = index;">
+              <li>
+                <div *cdkDragPlaceholder></div>
+                <div class="sitevisit-attendee" cdkDrag>
+                  <div>
+                    <h6>{{item.name}}</h6>
+                    <span>{{item.email}} </span> (<small>{{item.company}} </small>)
+                  </div>
+                  <div class="sitevisit-attendee-actions" *ngIf="currentEntity?.isEditable">
+                    <button mat-icon-button cdkDragHandle><mat-icon>drag_handle</mat-icon></button>
+                    <button mat-icon-button (click)="onDeleteAttendee(item)" matTooltip="Remove" aria-label="Remove">
+                      <mat-icon>clear</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </ng-container>
+          </ul>
+        </mat-expansion-panel> -->
+      </div>
+
+      <div class="col-md-4" *ngIf="!isCreateMode">
+        <mat-expansion-panel [expanded]="true" *ngIf="isTaskMode && task">
+          <mat-expansion-panel-header>
+            <mat-panel-title> Time Entries </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mcv-time-entry-list [wfTask]="task" (deleted)="onRemoveTimeEntry($event)"></mcv-time-entry-list>
+        </mat-expansion-panel>
+
+        <app-wf-task-action *ngIf="task" [task]="task" (updateEntity)="onSubmit($event)"
+          (complete)="onTaskCompleted($event)" (updated)="onTaskUpdated($event)">
+        </app-wf-task-action>
+
+        <mat-expansion-panel [expanded]="true" *ngIf="!isTaskMode && !task">
+          <mat-expansion-panel-header>
+            <mat-panel-title>Action </mat-panel-title>
+            <mat-panel-description>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div class="sitevisit-action-buttons">
+            <button mat-raised-button color="primary" aria-label="Save" (click)="onSubmit()"
+              *ngIf="isAllowedToUpdate && !isAllowedToSendUpdate">Save</button>
+            <button mat-raised-button color="primary" aria-label="Save & Send" (click)="onClickSaveAndSend()"
+              *ngIf="isAllowedToSendUpdate ">Save & Send</button>
+            <button mat-raised-button color="warn" aria-label="delete" (click)="onDelete()"
+              *ngIf="isAllowedToDelete">Delete</button>
+
+          </div>
+        </mat-expansion-panel>
+
+
+        <mat-expansion-panel [expanded]="true" *ngIf="!isCreateMode">
+          <mat-expansion-panel-header>
+            <mat-panel-title> Activity </mat-panel-title>
+            <mat-panel-description>
+
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <div class="mcv-activity-list-wrapper">
+            <mcv-activity-list #activity [entity]="nameOfEntity" [entityID]="entityID">
+            </mcv-activity-list>
+          </div>
+        </mat-expansion-panel>
+      </div>
+    </div>
+
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Agenda </mat-panel-title>
+        <mat-panel-description>
+
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <span *ngIf="currentEntity?.isEditable">The sitevisit will remain open for edit for {{sitevisitEditDuration}} days after being sent.</span>
+      <mat-tab-group>
+        <!-- *ngIf="currentEntity?.isEditable && (currentEntity?.typeFlag==MEETING_TYPEFLAG_MEETING || currentEntity?.typeFlag==MEETING_TYPEFLAG_INSPECTION)" -->
+        <mat-tab label="For edit" *ngIf="currentEntity?.isEditable">
+          <ng-template matTabContent>
+            <div class="d-flex align-items-center justify-content-end pb-2">
+              <button mat-raised-button color="primary" aria-label="New Agenda" (click)="onNewAgenda()"
+                *ngIf="currentEntity.isEditable || isPermissionSpecialEdit"><mat-icon>add</mat-icon> Agenda</button>
+              <button mat-raised-button aria-label="Preview Visit" (click)="onPreviewLink(currentEntity.uid)">
+                <span>Preview Visit</span>
+              </button>
+            </div>
+
+           <ng-container *ngFor="let item of currentEntity?.agendas; let i = index;">
+              <app-site-visit-agenda [config]="{ agenda:item, blobConfig:blobConfig, sitevisit:currentEntity}" [index]="i"
+                [allowDelete]="!item.previousAgendaID && (isPermissionSpecialEdit || currentEntity.isEditable)"
+                [allowEdit]="currentEntity.isEditable || isPermissionSpecialEdit"
+                [allowAttachmentDelete]="currentEntity.isEditable || isPermissionSpecialEdit"
+                (update)="onAgendaChange($event)" (delete)="onDeleteAgenda(item)">
+              </app-site-visit-agenda>
+            </ng-container>
+
+          </ng-template>
+        </mat-tab>
+
+        <ng-container *ngFor="let version of versions">
+          <mat-tab label="Sent: {{version.created | date:'dd MMM yyyy HH:mm'}} | R{{version.version}}">
+            <ng-template matTabContent>
+
+              <app-site-visit-minutes [hideTitleBar]="true" [uid]="version.uid"></app-site-visit-minutes>
+
+            </ng-template>
+          </mat-tab>
+        </ng-container>
+      </mat-tab-group>
+    </mat-expansion-panel>
+  </div>
+
+
+</div>

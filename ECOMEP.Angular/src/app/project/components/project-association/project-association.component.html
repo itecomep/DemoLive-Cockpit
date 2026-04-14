@@ -1,0 +1,95 @@
+<div class="row">
+  <div class="col-md-8">
+
+    <mat-expansion-panel [expanded]="true" *ngFor="let grp of groupOptions">
+      <mat-expansion-panel-header>
+        <mat-panel-title>{{ grp }}</mat-panel-title>
+        <mat-panel-description>
+{{getAssociationByGroup(grp).length}}
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+  
+      <div class="project-association-group" >
+        <ul class="project-association-list">
+
+          <li *ngFor="let item of getAssociationByGroup(grp); let i=index" >
+            <div class="assiociation-wrapper">
+              <div class="association-contact" (click)="onOpenContactDialog(item.contact)">
+
+                  <app-project-association-contact-list-item [item]="item.contact"></app-project-association-contact-list-item>
+                  <small *ngFor="let tag of item.contact.searchTags" class="tag">#{{tag}}</small>
+              </div>
+              <button mat-icon-button (click)="onDeleteAssociate(item)" matTooltip="Remove" aria-label="Remove"
+                *ngIf="isPermissionAssociationsDelete">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </li>
+        </ul>
+      </div>
+ 
+
+    </mat-expansion-panel>
+  </div>
+
+  <div class="col-md-4">
+    <mat-expansion-panel class="theme-dark" [expanded]="true" *ngIf="isPermissionAssociationsEdit">
+      <mat-expansion-panel-header>
+        <mat-panel-title>New </mat-panel-title>
+        <mat-panel-description>
+
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+     <div class="project-association-action-wrapper">
+       <form [formGroup]="form" autocomplete="off">
+         <div class="row m-0">
+           <mat-form-field appearance="outline" class="col-md-12">
+             <mat-label>Select Contact</mat-label>
+             <input placeholder="Enter name of contact to select from the list" aria-label="Select Contact" matInput
+               formControlName="contact" [matAutocomplete]="autoContact" />
+             <mat-autocomplete #autoContact="matAutocomplete" [displayWith]="displayFnContact">
+               <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
+                 {{ option.name }}
+               </mat-option>
+             </mat-autocomplete>
+             <span matSuffix>
+               <mat-icon>person</mat-icon>
+             </span>
+             <mat-error>{{ getErrorMessage(f.contact) }}</mat-error>
+           </mat-form-field>
+      
+           <mat-form-field appearance="outline" class="col-md-12">
+             <mat-label>Group</mat-label>
+             <mat-select placeholder="Select Group" aria-label="Group" matInput formControlName="title" >
+               <mat-option *ngFor="let item of groupOptions" [value]="item">
+                 {{ item }}
+               </mat-option>
+              </mat-select>
+             <mat-error>{{ getErrorMessage(f.title) }}
+             </mat-error>
+           </mat-form-field>
+         </div>
+        
+      
+       </form>
+       <div class="action-buttons">
+         <button mat-raised-button color="primary" aria-label="Add" (click)="onCreate()" [disabled]="!form.valid">Add</button>
+       </div>
+     </div>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel [expanded]="true ">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Activity </mat-panel-title>
+        <mat-panel-description>
+
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div class="mcv-activity-list-wrapper">
+        <mcv-activity-list #activity [entity]="'Project'" [entityID]="project.id">
+        </mcv-activity-list>
+      </div>
+    </mat-expansion-panel>
+  </div>
+</div>

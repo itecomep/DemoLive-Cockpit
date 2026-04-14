@@ -1,0 +1,77 @@
+@import 'variables';
+@import 'theme';
+
+.contact-appointment-create-dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: mat-color($mcv-primary, 500);
+    color: $white;
+
+    .contact-appointment-create-dialog-header-title {
+        font-weight: 600;
+        padding: 12px;
+    }
+
+    .contact-appointment-create-dialog-header-actions {
+        flex-grow: 1;
+        flex-shrink: 0;
+        display: flex;
+        gap: 0.3rem;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0 15px;
+    }
+}
+
+img.contact-icon {
+    width: 40px;
+    height: 40px;
+    -o-object-fit: cover;
+    object-fit: cover;
+    border-radius: $border-radius;
+}
+
+.contact-appointment-create-dialog-mobile-actions {
+    display: none;
+}
+
+.contact-appointment-create-form {
+    max-width: 800px;
+
+    .contact-alert-bar {
+        margin: 0.5rem;
+        padding: 0.5rem;
+        border-radius: $border-radius;
+        background-color: $red;
+        color: $white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+
+
+}
+
+@media only screen and (max-width: 768px) {
+    .contact-appointment-create-dialog-mobile-actions {
+        background-color: mat-color($mcv-primary, 500);
+        display: flex;
+        gap: 0.3rem;
+        align-items: center;
+        justify-content: space-between;
+        padding: 5px 15px;
+    }
+
+    .contact-appointment-create-dialog-header {
+
+        .contact-appointment-create-dialog-header-actions {
+            display: none;
+        }
+    }
+
+    .contact-appointment-create-form {
+        max-width: none;
+    }
+}

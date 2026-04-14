@@ -1,0 +1,152 @@
+<app-header title="Checklist" [titleCount]="items.length"> </app-header>
+
+<div class="container">
+  <div class="left-panel scrollable">
+    <!-- ✅ VIEW PERMISSION -->
+    <ng-container *ngIf="isPermissionChecklistView">
+      <!-- ================= STAGE ================= -->
+      <h3>Stage</h3>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-select
+          [(ngModel)]="selectedStageId"
+          (selectionChange)="onStageChange($event.value)"
+        >
+          <mat-option *ngFor="let s of stages" [value]="s.id">
+            {{ s.title }}
+          </mat-option>
+
+          <mat-option value="__new__" *ngIf="isPermissionChecklistEdit">
+            + Add New Stage
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field
+        *ngIf="isNewStage && isPermissionChecklistEdit"
+        appearance="outline"
+        class="full-width"
+      >
+        <input matInput [(ngModel)]="newStage" placeholder="Enter new stage" />
+      </mat-form-field>
+
+      <!-- ================= CATEGORY ================= -->
+      <h3>Category</h3>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-select
+          [(ngModel)]="selectedCategoryId"
+          (selectionChange)="onCategoryChange($event.value)"
+        >
+          <mat-option *ngFor="let c of categories" [value]="c.id">
+            {{ c.title }}
+          </mat-option>
+
+          <mat-option value="__new__" *ngIf="isPermissionChecklistEdit">
+            + Add New Category
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field
+        *ngIf="isNewCategory && isPermissionChecklistEdit"
+        appearance="outline"
+        class="full-width"
+      >
+        <input
+          matInput
+          [(ngModel)]="newCategory"
+          placeholder="Enter new category"
+        />
+      </mat-form-field>
+
+      <!-- ================= CHECKLIST ================= -->
+      <h5>Checklist</h5>
+
+      <div class="checklist-items">
+        <div
+          *ngFor="let item of items; let i = index; trackBy: trackByIndex"
+          class="field-row"
+        >
+          <!-- TITLE -->
+          <mat-form-field appearance="outline" class="full-width">
+            <input
+              matInput
+              [(ngModel)]="item.title"
+              name="title-{{ i }}"
+              placeholder="Task title..."
+              [disabled]="!isPermissionChecklistEdit"
+            />
+          </mat-form-field>
+
+          <!-- DESCRIPTION -->
+          <mat-form-field appearance="outline" class="full-width">
+            <textarea
+              matInput
+              [(ngModel)]="item.description"
+              name="desc-{{ i }}"
+              placeholder="Task description..."
+              [disabled]="!isPermissionChecklistEdit"
+            >
+            </textarea>
+          </mat-form-field>
+
+          
+
+
+          <div class="file-row" *ngIf="isPermissionChecklistEdit">
+
+  <button mat-raised-button color="primary" (click)="fileInput.click()">
+    Choose Files
+  </button>
+
+  <input type="file"
+         multiple
+         hidden
+         (change)="onFileChange($event, i, fileInput)"
+         #fileInput />
+
+  <div *ngIf="item.files?.length">
+    <div *ngFor="let f of item.files">
+      {{ f.name }}
+    </div>
+  </div>
+
+</div>
+
+
+          <!-- REMOVE -->
+          <button
+            mat-icon-button
+            color="warn"
+            (click)="removeField(i)"
+            *ngIf="items.length > 1 && isPermissionChecklistEdit"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- ADD FIELD -->
+      <button
+        mat-button
+        color="primary"
+        (click)="addField()"
+        *ngIf="isPermissionChecklistEdit"
+      >
+        + Add Field
+      </button>
+
+      <!-- SAVE -->
+      <div class="action-buttons" *ngIf="isPermissionChecklistEdit">
+        <button mat-raised-button color="primary" (click)="save()">
+          💾 Save Checklist
+        </button>
+      </div>
+    </ng-container>
+
+    <!-- ❌ NO ACCESS -->
+    <ng-container *ngIf="!isPermissionChecklistView">
+      <p>You do not have permission to view this checklist.</p>
+    </ng-container>
+  </div>
+</div>
+
