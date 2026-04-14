@@ -1,0 +1,28 @@
+# ======================
+# Angular / Frontend
+# ======================
+**/node_modules/
+**/dist/
+**/.angular/
+tmp/
+coverage/
+
+# Angular build artifacts
+*.js.map
+
+# ======================
+# .NET / Backend
+# ======================
+**/bin/
+**/obj/
+
+# Environment configs
+**/appsettings.Development.json
+
+# ======================
+# IDE / OS
+# ======================
+.vscode/
+.idea/
+.DS_Store
+npm-debug.log*
