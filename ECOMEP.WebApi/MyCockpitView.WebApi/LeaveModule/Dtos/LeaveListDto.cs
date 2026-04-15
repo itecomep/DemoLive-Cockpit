@@ -9,5 +9,6 @@
         public DateTime EndDate { get; set; }
         public decimal Days { get; set; }
         public string Status { get; set; }
+        public string AttachmentUrl { get; set; }
     }
 }
