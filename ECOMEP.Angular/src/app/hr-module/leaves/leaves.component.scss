@@ -13,6 +13,39 @@
   background: #ffffff;
 }
 
+/* 🔥 HEADER ROW */
+::ng-deep .mat-mdc-header-row {
+  background: #247a34 !important; /* rich green */
+  height: 48px;
+}
+
+/* HEADER CELL */
+::ng-deep .mat-mdc-header-cell {
+  color: #ffffff !important;
+  font-weight: 600;
+  font-size: 13px;
+  border-bottom: none !important;
+}
+
+/* 🔥 ROW */
+::ng-deep .mat-mdc-row {
+  transition: background 0.2s ease;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* ROW HOVER */
+::ng-deep .mat-mdc-row:hover {
+  background: #f6fbf7;
+}
+
+/* CELL */
+::ng-deep .mat-mdc-cell {
+  font-size: 13px;
+  color: #333;
+  padding: 12px 10px;
+}
+
+/* 🔥 EMPLOYEE CELL */
 .emp-cell {
   display: flex;
   align-items: center;
