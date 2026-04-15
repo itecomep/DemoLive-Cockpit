@@ -1,10 +1,16 @@
+/* 🔥 CONTAINER */
 .table-container {
-  padding: 16px;
-  background: #fff;
+  padding: 20px;
+  background: #f4fbf6;
+  border-radius: 12px;
 }
 
+/* 🔥 TABLE */
 .full-table {
   width: 100%;
+  border-radius: 12px;
+  overflow: hidden; /* needed for rounded header */
+  background: #ffffff;
 }
 
 .emp-cell {
@@ -14,8 +20,216 @@
 }
 
 .user-img {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid #e0f2e9;
+}
+
+/* 🔥 REASON TEXT */
+::ng-deep .mat-mdc-cell:nth-child(2) {
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 🔥 DAYS BADGE */
+// ::ng-deep .mat-mdc-cell:nth-child(6) {
+//   font-weight: 600;
+//   color: #2e7d32;
+// }
+/* 🔥 DAYS COLUMN FIX */
+::ng-deep .mat-column-total {
+  // display: flex;
+  justify-content: center;   /* center content */
+  align-items: center;
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+/* 🔥 HEADER ALIGNMENT FOR DAYS */
+::ng-deep .mat-mdc-header-cell.mat-column-total {
+  justify-content: center;   /* center header text */
+}
+
+
+/* 🔥 STATUS ICON CENTER */
+::ng-deep .mat-mdc-cell:nth-child(7) {
+  text-align: center;
+}
+
+/* 🔥 ATTACHMENT ICON */
+::ng-deep .mat-mdc-cell:nth-child(8) mat-icon {
+  font-size: 20px;
+  color: #247a34;
+  transition: transform 0.2s ease;
+}
+
+::ng-deep .mat-mdc-cell:nth-child(8) mat-icon:hover {
+  transform: scale(1.2);
+}
+
+/* 🔥 EMPTY STATE (optional future use) */
+.no-data {
+  text-align: center;
+  padding: 20px;
+  color: #999;
+}
+
+/* 🔥 SCROLL (if table grows) */
+.table-container {
+  overflow-x: auto;
+}
+
+
+/* 🔥 REASON WRAPPER */
+.reason-wrapper {
+  max-width: 250px;
+}
+
+/* DEFAULT (collapsed) */
+.reason-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;   /* show 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  line-height: 1.4;
+}
+
+/* EXPANDED */
+.reason-text.expanded {
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+
+/* TOGGLE BUTTON */
+.toggle {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #247a34;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.toggle:hover {
+  text-decoration: underline;
+}
+
+/* 🔥 HEADER ROW (match meetings-table thead) */
+::ng-deep .mat-mdc-header-row {
+  background: #2e7d32 !important;   /* ✅ same as history */
+  height: auto !important;
+}
+
+/* 🔥 HEADER CELL (match th exactly) */
+::ng-deep .mat-mdc-header-cell {
+  color: #ffffff !important;
+  font-weight: 600;
+  font-size: 12px !important;      /* ✅ same as history */
+  padding: 14px !important;        /* ✅ same spacing */
+  text-align: left;
+  border-bottom: none !important;
+}
+
+
+
+
+
+
+
+
+/* 🔥 STATUS CELL */
+.status-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 🔥 BUTTON BASE */
+.status-cell button {
+  border: none;
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ✅ APPROVE */
+.approve-btn {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+}
+
+.approve-btn:hover {
+  background: #2e7d32;
+  color: #fff;
+}
+
+/* ❌ REJECT */
+.reject-btn {
+  background: #fdecea;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+}
+
+.reject-btn:hover {
+  background: #c62828;
+  color: #fff;
+}
+
+/* ✅ FINAL STATUS */
+.approved {
+  color: #2e7d32;
+  font-weight: 600;
+  background: #e8f5e9;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.rejected {
+  color: #c62828;
+  font-weight: 600;
+  background: #fdecea;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+
+/* 🔥 CENTER ALIGNMENT HELPER */
+::ng-deep .text-center-cell {
+  text-align: center !important;
+  justify-content: center !important;
+  display: flex-cell; /* Ensures Material flex behaves */
+}
+
+/* 🔥 DAYS BADGE STYLING */
+.days-badge {
+  display: inline-block;
+  background-color: #e8f5e9; /* Light green background */
+  color: #2e7d32;            /* Dark green text */
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;       /* Pill shape */
+  font-size: 12px;
+  min-width: 30px;
+  text-align: center;
+}
+
+/* 🔥 FIXING THE HEADER FOR THE TOTAL COLUMN */
+::ng-deep .mat-mdc-header-cell.mat-column-total {
+  text-align: center !important;
+  .relative { display: flex; justify-content: center; } 
+}
+
+/* Ensure the cell itself centers the badge */
+::ng-deep .mat-mdc-cell.mat-column-total {
+  display: table-cell;      /* Override flex if needed */
+  vertical-align: middle;
+  text-align: center;
 }

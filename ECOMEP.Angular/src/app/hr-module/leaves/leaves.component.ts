@@ -69,4 +69,29 @@ export class LeavesComponent implements OnInit {
       }
     });
   }
+
+
+  toggleReason(row: any): void {
+  row.expanded = !row.expanded;
+}
+
+
+
+
+updateStatus(row: any, status: 'Approved' | 'Rejected') {
+
+  // 🔥 update UI instantly
+  row.statusFlag = status === 'Approved' ? 1 : -1;
+
+  // ✅ use correct service method
+  this.service.updateStatus(row.id, status).subscribe({
+    next: () => {
+      console.log('Status updated');
+    },
+    error: (err: any) => {   // ✅ FIX 2 (typing)
+      console.error('Error updating status', err);
+    }
+  });
+}
+
 }
