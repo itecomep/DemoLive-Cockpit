@@ -295,7 +295,8 @@ public class LeaveController : ControllerBase
     public async Task<IActionResult> GetLeaveList()
     {
         var query = service.Get(null, null, null)
-            .Include(x => x.Contact);
+            .Include(x => x.Contact)
+            .Include(x => x.Attachments); // ✅ IMPORTANT
 
         var leaves = await query.ToListAsync();
 
@@ -319,7 +320,12 @@ public class LeaveController : ControllerBase
             Days = x.Total,
 
             Status = statusMasters
-                .FirstOrDefault(s => s.Value == x.StatusFlag)?.Title
+                .FirstOrDefault(s => s.Value == x.StatusFlag)?.Title,
+
+            // ✅ Take first attachment (or null)
+            AttachmentUrl = x.Attachments != null && x.Attachments.Any()
+                ? x.Attachments.First().Url
+                : null
         });
 
         return Ok(result);
