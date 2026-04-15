@@ -55,21 +55,35 @@ ngOnInit(): void {
   // =========================
   // FILE HANDLING
   // =========================
-  openFile(file: any): void {
-    const url = file?.url;
-    if (!url) return;
+  // openFile(file: any): void {
+  //   const url = file?.url;
+  //   if (!url) return;
 
-    const type = url.split('.').pop()?.toLowerCase();
+  //   const type = url.split('.').pop()?.toLowerCase();
 
-    if (['jpg', 'jpeg', 'png'].includes(type!)) {
-      window.open(url, '_blank');
-    } else {
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = file.fileName || file.name;
-      a.click();
-    }
-  }
+  //   if (['jpg', 'jpeg', 'png'].includes(type!)) {
+  //     window.open(url, '_blank');
+  //   } else {
+  //     const a = document.createElement('a');
+  //     a.href = url;
+  //     a.download = file.fileName || file.name;
+  //     a.click();
+  //   }
+  // }
+
+  // =========================
+// FILE HANDLING (UPDATED)
+// ======================
+
+
+openFile(file: any): void {
+  const url = file?.url;
+  if (!url) return;
+
+  window.open(url, '_blank');  // 👈 always open in new tab
+}
+
+
 
   getCleanFileName(fileName: string): string {
     if (!fileName) return '';
@@ -183,22 +197,42 @@ formData.append('endDate', this.toSafeDate(this.editedRow.endDate));
 
     }
   }
+    // onFileSelect(event: any): void {
+    //   const files = Array.from(event.target.files);
+
+    //   if (!this.editedRow.newFiles) {
+    //     this.editedRow.newFiles = [];
+    //   }
+
+    //   this.editedRow.newFiles.push(...files);
+
+    //   // ✅ RESET INPUT (VERY IMPORTANT)
+    //   event.target.value = null;
+    // }
+
     onFileSelect(event: any): void {
-      const files = Array.from(event.target.files);
+  const files = Array.from(event.target.files);
 
-      if (!this.editedRow.newFiles) {
-        this.editedRow.newFiles = [];
-      }
+  if (!this.editedRow.newFiles) {
+    this.editedRow.newFiles = [];
+  }
 
-      this.editedRow.newFiles.push(...files);
+  this.editedRow.newFiles.push(...files);
 
-      // ✅ RESET INPUT (VERY IMPORTANT)
-      event.target.value = null;
-    }
+  event.target.value = null; // keep this
+}
+
     
-    removeFile(index: number): void {
-      this.editedRow.attachments.splice(index, 1);
-    }
+ // remove EXISTING file
+removeFile(index: number): void {
+  this.editedRow.attachments.splice(index, 1);
+}
+
+// remove NEW file
+removeNewFile(index: number): void {
+  this.editedRow.newFiles.splice(index, 1);
+}
+
 
 }
 

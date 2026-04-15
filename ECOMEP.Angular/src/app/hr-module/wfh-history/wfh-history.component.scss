@@ -1,3 +1,25 @@
+/* GLOBAL FONT */
+body, .meetings-container {
+  font-family: Arial, sans-serif;
+  font-size: 12px;   /* ✅ content default */
+}
+
+.table-header h2 {
+  font-size: 16px;   /* ✅ reduced from 22px */
+  font-weight: 600;
+  color: #1b5e20;
+}
+
+.meetings-table th {
+  font-size: 12px;   /* header */
+}
+
+.meetings-table td {
+  font-size: 12px;   /* content */
+}
+
+
+
 .meetings-container {
   padding: 20px;
   background: #f4fbf6;
@@ -15,24 +37,6 @@
     font-weight: 600;
     color: #1b5e20;
     margin: 0;
-  }
-}
-
-/* SUMMARY BOX */
-.summary-box {
-  background: #e8f5e9;
-  padding: 8px 14px;
-  border-radius: 8px;
-  text-align: center;
-
-  span {
-    font-size: 12px;
-    color: #2e7d32;
-  }
-
-  h3 {
-    margin: 0;
-    color: #1b5e20;
   }
 }
 
@@ -60,6 +64,7 @@
 .meetings-table td {
   padding: 12px;
   border-bottom: 1px solid #e8f5e9;
+  vertical-align: middle;
 }
 
 .meetings-table tbody tr:nth-child(even) {
@@ -70,22 +75,36 @@
   background: #e8f5e9;
 }
 
-/* EMPLOYEE CELL */
+/* 👇 INCREASE ATTACHMENT COLUMN WIDTH */
+.meetings-table th:nth-child(6),
+.meetings-table td:nth-child(6) {
+  width: 320px;
+}
+
+/* EMPLOYEE */
 .employee-cell {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .avatar {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
   border-radius: 50%;
   background: #2e7d32;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.employee-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
 }
 
 /* BADGE */
@@ -98,78 +117,84 @@
 
 /* REASON */
 .reason {
-  max-width: 200px;
-  word-break: break-word;
-}
-
-/* ATTACHMENT */
-.attachment-link {
-  color: #2e7d32;
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-.reason {
   max-width: 220px;
 }
 
-/* TEXT LIMIT */
 .reason-text {
   display: -webkit-box;
-  -webkit-line-clamp: 2;   // 👈 SHOW ONLY 2 LINES
-    line-clamp: 2;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.4;
-  max-height: 2.8em; // fallback
-  transition: all 0.2s ease;
 }
 
-/* EXPANDED STATE */
 .reason-text.expanded {
   -webkit-line-clamp: unset;
   line-clamp: unset;
-  max-height: none;
 }
 
-/* TOGGLE BUTTON */
-.toggle {
-  display: inline-block;
-  margin-top: 4px;
-  font-size: 12px;
-  color: #2e7d32;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.toggle:hover {
-  text-decoration: underline;
-}
-
+/* ATTACHMENT */
 .attachment-cell {
-  max-width: 260px;
+  max-width: 320px;
 }
 
-/* BOX WITH SCROLL */
-// .attachment-box {
-//   max-height: 70px;   // 👈 2 rows visible
-//   overflow-y: auto;
-//   padding-right: 4px;
+/* MAIN BOX */
+.attachment-box {
+  display: flex;
+  flex-wrap: wrap;   /* 🔥 important */
+  gap: 4px;
+
+  max-height: 60px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* FILE NAME */
+
+// .file-name {
+//   color: #1976d2;
+//   cursor: pointer;
+//   text-decoration: underline;
+//   font-weight: 500;
+
+//   font-size: 11px;   /* 👈 reduced from default (~14px) */
+
+//   padding: 2px 4px;
+//   border-radius: 4px;
+
+//   white-space: nowrap;
+//   display: inline-block;
+
+//   flex: 1 1 45%;
 // }
 
 
-.attachment-box {
-  max-height: 48px;
-  overflow-y: auto;
+.file-name {
+  color: #1976d2;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 500;
+  font-size: 11px;
 
-  display: inline-block;   /* 👈 key fix */
-  max-width: 180px;        /* 👈 control width */
-  padding-right: 6px;
+  padding: 2px 4px;
+  border-radius: 4px;
 
-  scrollbar-width: thin;   /* Firefox */
+  white-space: nowrap;
+  display: inline-block;
+
+  flex: unset;   
+  max-width: 48%       /* ❌ remove forced width */
 }
 
+
+
+/* LONG FILE → FULL ROW */
+.file-name.long-file {
+  flex: 1 1 100%;
+    max-width: 100%;
+}
+
+/* NO ATTACHMENT */
 .no-attachment {
   display: flex;
   justify-content: center;
@@ -179,161 +204,22 @@
   font-weight: 500;
 }
 
-
-/* EACH ROW (2 FILES) */
-.file-row {
-  display: flex;
-  flex-wrap: wrap;
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-/* LINK */
-.attachment-link {
-  color: #2e7d32;
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-.attachment-link:hover {
-  color: #14532d;
-}
-
-/* CONTAINER */
-.attachment-box {
-  max-height: 80px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-/* ROW (2 FILES PER ROW) */
-.file-row {
-  display: flex;
-  gap: 6px;
-}
-
-/* CHIP DESIGN */
-// .file-chip {
-//   background: #e8f5e9;
-//   border: 1px solid #c8e6c9;
-//   border-radius: 16px;
-//   padding: 4px 10px;
-//   font-size: 12px;
-//   display: inline-flex;
-//   align-items: center;
-//   max-width: 120px;
-//   transition: 0.2s ease;
-// }
-
-.file-chip {
-  background: transparent;   /* ❌ remove green */
-  border: none;              /* ❌ remove border */
-  padding: 0;                /* cleaner */
-  font-size: 12px;
-  display: inline-flex;
-  align-items: center;
-  max-width: 120px;
-}
-
-
-/* HOVER EFFECT */
-// .file-chip:hover {
-//   background: #c8e6c9;
-//   transform: translateY(-1px);
-// }
-
-/* FILE TEXT */
-// .file-name {
-//   cursor: pointer;
-//   color: #1b5e20;
-//   white-space: nowrap;
-//   overflow: hidden;
-//   text-overflow: ellipsis;
-// }
-
-.file-name {
-  color: #1976d2;
-  cursor: pointer;
-  text-decoration: underline;
-  font-weight: 500;
-}
-
-.file-name:hover {
-  color: #0d47a1;
-}
-
-
-.attachment-edit-box {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.attachment-edit-box .file-chip {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.remove-btn {
-  background: transparent;
-  border: none;
-  color: red;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-
-.meetings-table tbody tr {
-  height: 70px;  
-  max-height: 70px;
-}
-
-.meetings-table td {
-  overflow: hidden;
-  vertical-align: middle;
-}
-
-.attachment-box {
-  height: 48px;
-  max-height: 48px;
-  overflow-y: auto;
-}
-
-.file-chip {
-  max-width: 110px;
-  height: 24px; 
-  display: flex;
-  align-items: center;
-}
-
-.employee-cell span {
-  max-width: 120px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-/* STATUS CELL */
+/* STATUS */
 .status-cell {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-/* COMMON BUTTON STYLE */
 .status-cell button {
   border: none;
   padding: 5px 10px;
   font-size: 12px;
   border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-weight: 500;
 }
 
-/* APPROVE BUTTON */
+/* APPROVE */
 .approve-btn {
   background: #e8f5e9;
   color: #2e7d32;
@@ -343,10 +229,9 @@
 .approve-btn:hover {
   background: #2e7d32;
   color: #fff;
-  transform: translateY(-1px);
 }
 
-/* REJECT BUTTON */
+/* REJECT */
 .reject-btn {
   background: #fdecea;
   color: #c62828;
@@ -356,7 +241,6 @@
 .reject-btn:hover {
   background: #c62828;
   color: #fff;
-  transform: translateY(-1px);
 }
 
 /* STATUS TEXT */
@@ -375,120 +259,106 @@
   padding: 4px 8px;
   border-radius: 6px;
 }
-.employee-cell {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: nowrap;   /* 🚨 prevents breaking */
-}
-.status-dropdown {
-  padding: 5px 8px;
-  border-radius: 6px;
-  border: 1px solid #c8e6c9;
-  font-size: 12px;
-  outline: none;
-}
 
-
-/* Avatar fixed size */
-.avatar {
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  border-radius: 50%;
-  background: #2e7d32;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Employee text container */
-.employee-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-width: 0;
-}
-
-/* Employee name FIX */
-.employee-name {
-  white-space: nowrap;        /* 🚨 keeps in one line */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 160px;
-  display: inline-block;
-}
-
-/* Edit input fix */
-.employee-input {
-  width: 160px;
-  padding: 4px 6px;
-  font-size: 13px;
-}
-
-
-/* =========================
-   EDIT BUTTON
-========================= */
+/* EDIT BUTTONS */
 .edit-btn {
   background: #e3f2fd;
   color: #1565c0;
   border: 1px solid #90caf9;
   padding: 5px 10px;
-  font-size: 12px;
   border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
-.edit-btn:hover {
-  background: #1565c0;
-  color: white;
-  transform: translateY(-1px);
-}
-
-/* =========================
-   SAVE BUTTON
-========================= */
 .save-btn {
   background: #e8f5e9;
   color: #2e7d32;
   border: 1px solid #a5d6a7;
   padding: 5px 10px;
-  font-size: 12px;
   border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
 }
 
-.save-btn:hover {
-  background: #2e7d32;
-  color: white;
-  transform: translateY(-1px);
-}
-
-/* =========================
-   CANCEL BUTTON
-========================= */
 .cancel-btn {
   background: #fdecea;
   color: #c62828;
   border: 1px solid #ef9a9a;
   padding: 5px 10px;
-  font-size: 12px;
   border-radius: 6px;
+}
+
+.edit-cell button {
+  margin-right: 6px;
+}
+
+
+
+.reason {
+  max-width: 200px;
+  word-break: break-word;
+}
+/* TEXT LIMIT */
+.reason-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;   // 👈 SHOW ONLY 2 LINES
+    line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+  max-height: 2.8em; // fallback
+  transition: all 0.2s ease;
+}/* EXPANDED STATE */
+.reason-text.expanded {
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  max-height: none;
+}
+.reason {
+  max-width: 220px;
+}
+
+/* TOGGLE (Show More / Show Less) */
+.toggle {
+  display: inline-block;
+  margin-top: 4px;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  color: #2e7d32;              /* ✅ green text */
+  background: #e8f5e9;         /* ✅ light green bg */
+
+  padding: 2px 8px;
+  border-radius: 12px;
+
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.cancel-btn:hover {
-  background: #c62828;
-  color: white;
+/* HOVER EFFECT */
+.toggle:hover {
+  background: #2e7d32;         /* ✅ dark green */
+  color: #ffffff;              /* white text */
   transform: translateY(-1px);
 }
+.remove-btn {
+  background: transparent;
+  border: none;
+  outline: none;
 
-/* spacing between save/cancel */
-.edit-cell button {
-  margin-right: 6px;
+  color: #c62828;
+  font-size: 14px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  padding: 0;
+  margin-left: 6px;
+
+  line-height: 1;
+}
+
+.remove-btn:hover {
+  color: #ff1744;
+  transform: scale(1.2);
 }

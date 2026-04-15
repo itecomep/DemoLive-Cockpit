@@ -46,7 +46,7 @@
         </td>
 
 
-   <!-- START DATE -->
+        <!-- START DATE -->
         <td>
           <div *ngIf="editingRowId !== req.id; else editStart">
             {{ req.startDate | date:'mediumDate' }}
@@ -96,97 +96,89 @@
         </td>
 
         <!-- ATTACHMENT -->
-        <!-- <td class="attachment-cell">
-          <div class="attachment-box" *ngIf="req.attachments?.length > 0; else noFile">
-            <div class="file-row" *ngFor="let chunk of getFileChunks(req.attachments)">
-              <div class="file-chip" *ngFor="let file of chunk">
-                <span class="file-name" (click)="openFile(file)">
-                  {{ getCleanFileName(file.fileName) }}
-                </span>
-              </div>
-            </div>
-          </div>
-          <ng-template #noFile>—</ng-template>
-        </td> -->
-
         <td class="attachment-cell">
 
-  <!-- VIEW MODE -->
-  <div *ngIf="editingRowId !== req.id; else editAttachment">
-    <div class="attachment-box" *ngIf="req.attachments?.length > 0; else noFile">
-      <div class="file-row" *ngFor="let chunk of getFileChunks(req.attachments)">
-        <!-- <div class="file-chip" *ngFor="let file of chunk">
-          <span class="file-name" (click)="openFile(file)">
-            {{ getCleanFileName(file.fileName) }}
-          </span>
-        </div> -->
-        <div class="file-row" *ngFor="let chunk of getFileChunks(req.attachments)">
-  
-  <ng-container *ngFor="let file of chunk; let last = last">
-    
-    <span class="file-name" (click)="openFile(file)">
-      {{ getCleanFileName(file.fileName) }}
-    </span>
-    
-    <span *ngIf="!last">, </span> <!-- 👈 comma with space -->
-  
-  </ng-container>
+          <!-- VIEW MODE -->
+          <div *ngIf="editingRowId !== req.id; else editAttachment">
 
-</div>
+            <div class="attachment-box" *ngIf="req.attachments?.length > 0; else noFile">
 
-      </div>
-    </div>
-    <!-- <ng-template #noFile>—</ng-template> -->
-     <ng-template #noFile>
-  <span class="no-attachment">—</span>
-</ng-template>
+              <ng-container *ngFor="let file of req.attachments">
 
-  </div>
+                <span class="file-name" [class.long-file]="getCleanFileName(file.fileName).length > 22"
+                  (click)="openFile(file)">
+                  {{ getCleanFileName(file.fileName) }}
+                </span>
 
-  <!-- EDIT MODE -->
-  <ng-template #editAttachment>
+              </ng-container>
 
-    <!-- EXISTING FILES -->
-    <div *ngIf="editedRow.attachments?.length > 0">
-      <div class="file-chip editable" *ngFor="let file of editedRow.attachments; let i = index">
-        <span>{{ getCleanFileName(file.fileName) }}</span>
+            </div>
 
-        <button class="remove-btn" (click)="removeFile(i)">
-          ✕
-        </button>
-      </div>
-    </div>
 
-    <!-- ADD NEW FILE -->
-    <input type="file" multiple (change)="onFileSelect($event)" #fileInput />
+            <ng-template #noFile>
+              <span class="no-attachment">—</span>
+            </ng-template>
 
-  </ng-template>
+          </div>
 
-</td>
+          <!-- EDIT MODE -->
+          <ng-template #editAttachment>
+
+            <!-- EXISTING FILES -->
+            <div *ngIf="editedRow.attachments?.length > 0">
+              <div class="file-chip editable" *ngFor="let file of editedRow.attachments; let i = index">
+                <span>{{ getCleanFileName(file.fileName) }}</span>
+
+                <button class="remove-btn" (click)="removeFile(i)">
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            <!-- ADD NEW FILE -->
+            <input type="file" multiple (change)="onFileSelect($event)" #fileInput />
+
+            <!-- ✅ SHOW NEWLY SELECTED FILES -->
+            <div *ngIf="editedRow.newFiles?.length > 0">
+              <div class="file-chip editable" *ngFor="let file of editedRow.newFiles; let i = index">
+
+                <span>{{ file.name }}</span>
+
+                <button class="remove-btn" (click)="removeNewFile(i)">
+                  ✕
+                </button>
+
+              </div>
+            </div>
+
+
+          </ng-template>
+
+        </td>
 
 
         <!-- STATUS -->
         <td class="status-cell">
 
-  <ng-container *ngIf="req.status === 'pending'">
-    <button class="approve-btn" (click)="updateStatus(req, 'APPROVED')">
-      Approve
-    </button>
+          <ng-container *ngIf="req.status === 'pending'">
+            <button class="approve-btn" (click)="updateStatus(req, 'APPROVED')">
+              Approve
+            </button>
 
-    <button class="reject-btn" (click)="updateStatus(req, 'REJECTED')">
-      Reject
-    </button>
-  </ng-container>
+            <button class="reject-btn" (click)="updateStatus(req, 'REJECTED')">
+              Reject
+            </button>
+          </ng-container>
 
-  <span *ngIf="req.status === 'approved'" class="approved">
-    Approved
-  </span>
+          <span *ngIf="req.status === 'approved'" class="approved">
+            Approved
+          </span>
 
-  <span *ngIf="req.status === 'rejected'" class="rejected">
-    Rejected
-  </span>
+          <span *ngIf="req.status === 'rejected'" class="rejected">
+            Rejected
+          </span>
 
-</td>
+        </td>
 
         <!-- EDIT / SAVE / CANCEL -->
         <td class="edit-cell">

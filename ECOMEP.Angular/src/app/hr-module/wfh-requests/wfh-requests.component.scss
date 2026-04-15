@@ -1,7 +1,30 @@
 .meetings-container {
   padding: 20px;
   background: #f4fbf6;
+  font-family: Arial, sans-serif;  /* ✅ added */
+  font-size: 12px;                 /* ✅*/
+  
 }
+
+.meetings-table td,
+.employee-name,
+.reason-text,
+.file-name,
+.badge,
+.status-badge,
+.toggle,
+.action-cell button {
+  font-size: 12px;   /* ✅ */
+}
+
+
+.table-header h2 {
+  font-size: 16px;   /* ✅ */
+  font-weight: 600;
+  color: #1b5e20;
+  margin: 0;
+}
+
 
 /* HEADER */
 .table-header {
@@ -55,6 +78,7 @@
   padding: 14px;
   text-align: left;
   font-size: 14px;
+  
 }
 
 .meetings-table td {
@@ -151,33 +175,16 @@
   max-width: 260px;
 }
 
-/* BOX WITH SCROLL */
-// .attachment-box {
-//   max-height: 70px;   // 👈 2 rows visible
-//   overflow-y: auto;
-//   padding-right: 4px;
-// }
 
 
-.attachment-box {
-  max-height: 48px;
-  overflow-y: auto;
-
-  display: inline-block;   /* 👈 key fix */
-  max-width: 180px;        /* 👈 control width */
-  padding-right: 6px;
-
-  scrollbar-width: thin;   /* Firefox */
-}
-
-
-/* EACH ROW (2 FILES) */
 .file-row {
   display: flex;
   flex-wrap: wrap;
-  font-size: 13px;
-  line-height: 1.6;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
 }
+
 
 /* LINK */
 .attachment-link {
@@ -190,14 +197,6 @@
   color: #14532d;
 }
 
-/* CONTAINER */
-.attachment-box {
-  max-height: 80px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
 
 /* ROW (2 FILES PER ROW) */
 .file-row {
@@ -205,24 +204,7 @@
   gap: 6px;
 }
 
-/* CHIP DESIGN */
-.file-chip {
-  background: #e8f5e9;
-  border: 1px solid #c8e6c9;
-  border-radius: 16px;
-  padding: 4px 10px;
-  font-size: 12px;
-  display: inline-flex;
-  align-items: center;
-  max-width: 120px;
-  transition: 0.2s ease;
-}
 
-/* HOVER EFFECT */
-.file-chip:hover {
-  background: #c8e6c9;
-  transform: translateY(-1px);
-}
 
 /* FILE TEXT */
 .file-name {
@@ -241,19 +223,6 @@
 .meetings-table td {
   overflow: hidden;
   vertical-align: middle;
-}
-
-.attachment-box {
-  height: 48px;
-  max-height: 48px;
-  overflow-y: auto;
-}
-
-.file-chip {
-  max-width: 110px;
-  height: 24px; 
-  display: flex;
-  align-items: center;
 }
 
 .employee-cell span {
@@ -377,4 +346,215 @@
 /* REJECTED → RED */
 .status-badge.rejected {
   color: #c62828; /* red */
+}
+
+
+.attachment-cell {
+  max-width: 320px; /* Gives enough room for side-by-side links */
+  vertical-align: middle;
+}
+
+
+
+/* Chrome/Safari Scrollbar styling to match the thin grey look */
+.attachment-box::-webkit-scrollbar {
+  width: 4px;
+}
+.attachment-box::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+
+/* THE LINKS (Matching your screenshot) */
+.file-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px; /* Space between links */
+  align-items: center;
+}
+
+
+
+.file-link {
+  display: inline-block;
+  max-width: 100%;
+  
+  color: #1976d2;
+  text-decoration: underline;
+  font-size: 11px;
+  cursor: pointer;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  padding: 2px 4px;
+}
+
+
+.file-link:hover {
+  color: #0d47a1;
+}
+
+/* EDIT MODE CHIPS (If you want them to stay as chips) */
+.attachment-edit-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.file-chip {
+  background: #f1f1f1;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+}
+
+.attachment-cell {
+  max-width: 320px; /* Gives enough room for side-by-side links */
+  vertical-align: middle;
+}
+
+
+
+/* Chrome/Safari Scrollbar styling to match the thin grey look */
+.attachment-box::-webkit-scrollbar {
+  width: 4px;
+}
+.attachment-box::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+
+/* THE LINKS (Matching your screenshot) */
+.file-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px; /* Space between links */
+  align-items: center;
+}
+
+.file-link {
+  color: #1976d2 !important; /* The specific blue from your screenshot */
+  text-decoration: underline;
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.file-link:hover {
+  color: #0d47a1;
+}
+
+/* EDIT MODE CHIPS (If you want them to stay as chips) */
+.attachment-edit-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.file-chip {
+  background: #f1f1f1;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+}
+
+/* ATTACHMENT CELL CONTAINER */
+.attachment-cell {
+  max-width: 300px;
+  min-width: 200px;
+  vertical-align: middle;
+}
+
+
+
+/* Scrollbar Styling for Chrome/Safari */
+.attachment-box::-webkit-scrollbar {
+  width: 4px;
+}
+.attachment-box::-webkit-scrollbar-thumb {
+  background: #ccd1d1;
+  border-radius: 10px;
+}
+
+/* FILE ROW & LINKS */
+.file-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* Space between links in a row */
+  width: 100%;
+}
+
+.file-link {
+  color: #1976d2 !important; /* Blue link color */
+  text-decoration: underline;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.file-link:hover {
+  color: #0d47a1;
+}
+
+/* EDIT MODE STYLING */
+.attachment-edit-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-width: 280px;
+}
+
+.file-chip {
+  background: #f1f3f4;
+  border: 1px solid #dadce0;
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+}
+
+.remove-icon {
+  margin-left: 6px;
+  color: #d93025;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.attachment-box {
+  max-height: 60px; /* adjust if needed */
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  padding-right: 6px;
+
+  /* prevents layout shift when scrollbar appears */
+  scrollbar-gutter: stable;
+  box-sizing: border-box;
+
+  scrollbar-width: thin;
+}
+
+/* Chrome scrollbar */
+.attachment-box::-webkit-scrollbar {
+  width: 4px;
+}
+
+.attachment-box::-webkit-scrollbar-thumb {
+  background: #cfcfcf;
+  border-radius: 10px;
 }
