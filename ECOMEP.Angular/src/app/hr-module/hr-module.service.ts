@@ -32,7 +32,7 @@ export class HrModuleService {
   }
 
   getLeaves() {
-    return this.http.get<any[]>('/api/leaves'); // 🔁 replace with your actual API
+    return this.http.get<any[]>(`http://localhost:5054/Leave/LeaveList`); 
   }
 
   updateStatus(id: number, status: string): Observable<any> {

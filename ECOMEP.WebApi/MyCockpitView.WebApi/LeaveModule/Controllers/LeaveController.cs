@@ -290,4 +290,38 @@ public class LeaveController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpGet("LeaveList")]
+    public async Task<IActionResult> GetLeaveList()
+    {
+        var query = service.Get(null, null, null)
+            .Include(x => x.Contact);
+
+        var leaves = await query.ToListAsync();
+
+        var statusMasters = await db.StatusMasters
+            .Where(x => x.Entity == nameof(Leave))
+            .ToListAsync();
+
+        var typeMasters = await db.TypeMasters
+            .Where(x => x.Entity == nameof(Leave))
+            .ToListAsync();
+
+        var result = leaves.Select(x => new LeaveListDto
+        {
+            EmployeeName = x.Contact != null ? x.Contact.Name : "",
+            ApplicationType = typeMasters
+                .FirstOrDefault(t => t.Value == x.TypeFlag)?.Title,
+
+            Reason = x.Reason,
+            StartDate = x.Start,
+            EndDate = x.End,
+            Days = x.Total,
+
+            Status = statusMasters
+                .FirstOrDefault(s => s.Value == x.StatusFlag)?.Title
+        });
+
+        return Ok(result);
+    }
 }

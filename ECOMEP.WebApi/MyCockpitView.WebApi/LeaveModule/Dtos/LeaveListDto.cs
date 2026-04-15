@@ -1,0 +1,13 @@
+﻿namespace MyCockpitView.WebApi.LeaveModule.Dtos
+{
+    public class LeaveListDto
+    {
+        public string EmployeeName { get; set; }
+        public string ApplicationType { get; set; }
+        public string Reason { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public decimal Days { get; set; }
+        public string Status { get; set; }
+    }
+}
