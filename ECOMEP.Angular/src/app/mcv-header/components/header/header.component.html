@@ -15,6 +15,35 @@
 
 
   <div class="mcv-header-part mcv-header-part-right">
+
+
+     <div class="nav-item nav-icon" (click)="openNotifications()" matTooltip="Notifications">
+
+      <mat-icon matBadge="{{ unreadNotificationCount }}" matBadgeColor="warn" matBadgeSize="small"
+        *ngIf="unreadNotificationCount > 0">
+        notifications
+      </mat-icon>
+
+      <mat-icon *ngIf="unreadNotificationCount == 0">
+        notifications_none
+      </mat-icon>
+    </div>
+
+    <mat-menu #notificationMenu="matMenu" xPosition="before">
+
+      <div class="notification-header">
+        <b>Notifications</b>
+      </div>
+
+      <button mat-menu-item *ngFor="let n of notifications">
+        {{ n.message }}
+      </button>
+
+      <button mat-menu-item *ngIf="notifications.length == 0">
+        No Notifications
+      </button>
+
+    </mat-menu>
     <div class="nav-item">
       <h6 class="data-bank" (click)="onClickDataBank()" *ngIf="canAccess('data-bank')">Data-Bank</h6>
     </div>
@@ -54,6 +83,12 @@
         
         <button mat-menu-item (click)="createAsset('New Asset')" *ngIf="isPermissionAssetEdit && canAccess('asset-edit')">Asset</button>
         <!-- <button mat-menu-item (click)="openNewSiteVisit()" *ngIf="isPermissionSitevisitEdit">Site Visit</button> -->
+
+          <button mat-menu-item (click)="openWorkFromHome()"
+  *ngIf="isPermissionLeaveEdit && canAccess('leave-edit')">
+  Work From Home
+</button>
+
 
 
         <button mat-menu-item (click)="openNewRequestTicket()" aria-label="New Request Ticket"

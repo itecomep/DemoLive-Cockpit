@@ -1,0 +1,231 @@
+<!-- <ul class="agile-list">
+
+  
+  <li *ngFor="let item of dataList; let i = index">
+
+    <img
+      [src]="item.contact?.photoUrl || 'assets/images/user.png'"
+      [matTooltip]="item.contact?.name ?? ''"
+      (click)="openPhotoDialog(item.contact); $event.stopPropagation()"
+      class="user-thumbnail float-left mr-2"
+      style="cursor:pointer;"
+    />
+
+    <a [routerLink]="[pagedListConfig.route, item.id]">
+
+      <app-leave-list-item
+        [item]="item"
+        [index]="i"
+        [showAll]="pagedListConfig.showAll"
+        [allLeaves]="dataList">
+      </app-leave-list-item>
+
+    </a>
+
+  </li>
+
+  <li *ngIf="!isLoading && dataList.length === 0">
+    <span>No items found</span>
+  </li>
+
+  <li
+    *ngIf="!isLoading && totalRecordsCount > dataList.length"
+    (click)="loadMoreRecords()"
+    class="text-center"
+    style="cursor:pointer;"
+  >
+    Show More
+  </li>
+
+</ul> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 
+<ul class="agile-list">
+
+  <li *ngFor="let item of dataList; let i = index">
+
+    <img
+      [src]="item.contact?.photoUrl || 'assets/images/user.png'"
+      [matTooltip]="item.contact?.name"
+      (click)="openPhotoDialog(item.contact); $event.stopPropagation()"
+      class="user-thumbnail float-left mr-2"
+      style="cursor:pointer;"
+    />
+        <div>
+      <strong>{{ item.contact.name }}</strong><br>
+      <span>{{ item.title }}</span><br>
+      <small>{{ item.status }}</small>
+    </div>
+
+  </li>
+
+  <li *ngIf="dataList.length === 0">
+    No items found
+  </li>
+
+  <li (click)="loadMoreRecords()" style="cursor:pointer; text-align:center;">
+    Show More
+  </li>
+
+</ul> -->
+
+
+
+
+
+
+
+
+
+
+<!-- <table class="leave-table">
+
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>Leave Type</th>
+      <th>Status</th>
+      <th>Total Leaves</th>
+    </tr>
+  </thead>
+
+  <tbody>
+
+    <tr *ngFor="let item of dataList">
+
+     
+      <td class="user-cell">
+        <img
+          [src]="item.contact?.photoUrl || 'assets/images/user.png'"
+          (click)="openPhotoDialog(item.contact)"
+          class="avatar"
+        />
+        <span>{{ item.contact.name }}</span>
+      </td>
+
+      
+      <td>{{ item.title }}</td>
+
+    
+      <td>
+        <span [ngClass]="item.status.toLowerCase()">
+          {{ item.status }}
+        </span>
+      </td>
+
+     
+      <td>
+        {{ item.totalLeaves }}
+      </td>
+
+    </tr>
+
+  </tbody>
+
+</table>
+ -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ <div class="table-container">
+
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z2 full-table">
+
+    <!-- Employee -->
+    <ng-container matColumnDef="employee">
+      <th mat-header-cell *matHeaderCellDef> Employee </th>
+      <td mat-cell *matCellDef="let element">
+
+        <div class="emp-cell">
+          <img
+            [src]="element.contact?.photoUrl || 'assets/images/user.png'"
+            [matTooltip]="element.contact?.name"
+            class="user-img"
+          />
+
+          <span>{{ element.contact.name }}</span>
+        </div>
+
+      </td>
+    </ng-container>
+
+    <!-- Type -->
+    <ng-container matColumnDef="type">
+      <th mat-header-cell *matHeaderCellDef> Leave Type </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.typeValue }}
+      </td>
+    </ng-container>
+
+    <!-- Dates -->
+    <ng-container matColumnDef="dates">
+      <th mat-header-cell *matHeaderCellDef> Dates </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.start | date:'dd MMM yyyy' }}
+        →
+        {{ element.end | date:'dd MMM yyyy' }}
+      </td>
+    </ng-container>
+
+    <!-- Total -->
+    <ng-container matColumnDef="total">
+      <th mat-header-cell *matHeaderCellDef> Days </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.total }}
+      </td>
+    </ng-container>
+
+    <!-- Status -->
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef> Status </th>
+      <td mat-cell *matCellDef="let element">
+
+        <mat-icon *ngIf="element.statusFlag === 0" style="color:#f3c807;">
+          help
+        </mat-icon>
+
+        <mat-icon *ngIf="element.statusFlag === 1" style="color:#4CAF50;">
+          check_circle
+        </mat-icon>
+
+        <mat-icon *ngIf="element.statusFlag === -1" style="color:red;">
+          cancel
+        </mat-icon>
+
+      </td>
+    </ng-container>
+
+    <!-- Header -->
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+    <!-- Rows -->
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+  </table>
+
+</div>

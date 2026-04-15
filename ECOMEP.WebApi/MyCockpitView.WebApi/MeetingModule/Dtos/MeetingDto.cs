@@ -39,7 +39,7 @@ public class MeetingDto : BaseEntityDto
     public virtual List<MeetingDocumentCarried> DocumentsCarried { get; set; } = new List<MeetingDocumentCarried>();
     public int Annexure { get; set; }
 
-
+    public string SubjectType { get; set; }
 }
 
 public class MeetingDtoMapperProfile : Profile

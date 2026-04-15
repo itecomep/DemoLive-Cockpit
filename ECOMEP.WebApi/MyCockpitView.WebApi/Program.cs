@@ -31,6 +31,9 @@ using MyCockpitView.WebApi.GmailModule.Extensions;
 using Microsoft.EntityFrameworkCore;
 using MyCockpitView.WebApi.GmailModule.Configuration;
 using Microsoft.AspNetCore.Http.Features;
+using MyCockpitView.WebApi.NotificationModule;
+using MyCockpitView.WebApi.NotificationModule.Services;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -149,6 +152,13 @@ builder.WebHost.ConfigureKestrel(options =>
     options.Limits.MaxRequestBodySize = 1L * 1024 * 1024 * 1024;
 });
 
+// ================= SIGNALR =================
+builder.Services.AddSignalR();
+
+// ================= Notification =================
+builder.Services.AddScoped<BirthdayNotificationService>();
+builder.Services.AddHostedService<BirthdayBackgroundService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -183,6 +193,8 @@ app.UseAuthorization();
 // Add username context middleware after auth
 app.UseMiddleware<UserContextMiddleware>();
 app.UseMiddleware<OutsideIpAccessMiddleware>();
+
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.MapControllers();
 

@@ -1,0 +1,380 @@
+.meetings-container {
+  padding: 20px;
+  background: #f4fbf6;
+}
+
+/* HEADER */
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+
+  h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #1b5e20;
+    margin: 0;
+  }
+}
+
+/* SUMMARY BOX */
+.summary-box {
+  background: #e8f5e9;
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-align: center;
+
+  span {
+    font-size: 12px;
+    color: #2e7d32;
+  }
+
+  h3 {
+    margin: 0;
+    color: #1b5e20;
+  }
+}
+
+/* TABLE */
+.meetings-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+
+.meetings-table thead {
+  background: #2e7d32;
+  color: white;
+}
+
+.meetings-table th {
+  padding: 14px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.meetings-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e8f5e9;
+}
+
+.meetings-table tbody tr:nth-child(even) {
+  background: #f6fcf7;
+}
+
+.meetings-table tbody tr:hover {
+  background: #e8f5e9;
+}
+
+/* EMPLOYEE CELL */
+.employee-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #2e7d32;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* BADGE */
+.badge {
+  background: #c8e6c9;
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: #1b5e20;
+}
+
+/* REASON */
+.reason {
+  max-width: 200px;
+  word-break: break-word;
+}
+
+/* ATTACHMENT */
+.attachment-link {
+  color: #2e7d32;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.reason {
+  max-width: 220px;
+}
+
+/* TEXT LIMIT */
+.reason-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;   // 👈 SHOW ONLY 2 LINES
+    line-clamp: 2; 
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+  max-height: 2.8em; // fallback
+  transition: all 0.2s ease;
+}
+
+/* EXPANDED STATE */
+.reason-text.expanded {
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  max-height: none;
+}
+
+/* TOGGLE BUTTON */
+.toggle {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #2e7d32;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.toggle:hover {
+  text-decoration: underline;
+}
+
+.attachment-cell {
+  max-width: 260px;
+}
+
+/* BOX WITH SCROLL */
+// .attachment-box {
+//   max-height: 70px;   // 👈 2 rows visible
+//   overflow-y: auto;
+//   padding-right: 4px;
+// }
+
+
+.attachment-box {
+  max-height: 48px;
+  overflow-y: auto;
+
+  display: inline-block;   /* 👈 key fix */
+  max-width: 180px;        /* 👈 control width */
+  padding-right: 6px;
+
+  scrollbar-width: thin;   /* Firefox */
+}
+
+
+/* EACH ROW (2 FILES) */
+.file-row {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* LINK */
+.attachment-link {
+  color: #2e7d32;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.attachment-link:hover {
+  color: #14532d;
+}
+
+/* CONTAINER */
+.attachment-box {
+  max-height: 80px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ROW (2 FILES PER ROW) */
+.file-row {
+  display: flex;
+  gap: 6px;
+}
+
+/* CHIP DESIGN */
+.file-chip {
+  background: #e8f5e9;
+  border: 1px solid #c8e6c9;
+  border-radius: 16px;
+  padding: 4px 10px;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  max-width: 120px;
+  transition: 0.2s ease;
+}
+
+/* HOVER EFFECT */
+.file-chip:hover {
+  background: #c8e6c9;
+  transform: translateY(-1px);
+}
+
+/* FILE TEXT */
+.file-name {
+  cursor: pointer;
+  color: #1b5e20;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.meetings-table tbody tr {
+  height: 70px;  
+  max-height: 70px;
+}
+
+.meetings-table td {
+  overflow: hidden;
+  vertical-align: middle;
+}
+
+.attachment-box {
+  height: 48px;
+  max-height: 48px;
+  overflow-y: auto;
+}
+
+.file-chip {
+  max-width: 110px;
+  height: 24px; 
+  display: flex;
+  align-items: center;
+}
+
+.employee-cell span {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* =========================
+   ACTION BUTTON BASE
+========================= */
+.action-cell button {
+  margin-right: 6px;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.25s ease;
+  letter-spacing: 0.3px;
+}
+
+/* =========================
+   ✏️ EDIT BUTTON (SOFT INDIGO)
+========================= */
+.btn-edit {
+  background: #eef2ff;
+  color: #4f46e5;
+  border: 1px solid #c7d2fe;
+}
+
+.btn-edit:hover {
+  background: #4f46e5;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(79, 70, 229, 0.25);
+}
+
+/* =========================
+   🗑 DELETE BUTTON (SOFT ROSE RED)
+========================= */
+.btn-delete {
+  background: #fff1f2;
+  color: #e11d48;
+  border: 1px solid #fecdd3;
+}
+
+.btn-delete:hover {
+  background: #e11d48;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(225, 29, 72, 0.25);
+}
+
+/* =========================
+   💾 SAVE BUTTON (SOFT GREEN)
+========================= */
+.btn-save {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+}
+
+.btn-save:hover {
+  background: #059669;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(5, 150, 105, 0.25);
+}
+
+/* =========================
+   ❌ CANCEL BUTTON (SOFT GRAY)
+========================= */
+.btn-cancel {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn-cancel:hover {
+  background: #374151;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(55, 65, 81, 0.25);
+}
+
+/* spacing */
+.action-cell button {
+  margin-right: 8px;
+}
+.remove-icon {
+  cursor: pointer;
+  color: #c62828;
+  font-size: 16px;
+  margin-left: 8px;
+  font-weight: bold;
+  transition: 0.2s ease;
+}
+
+.remove-icon:hover {
+  color: #8e0000;
+  transform: scale(1.2);
+}
+
+.status-badge {
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* APPROVED → GREEN */
+.status-badge.approved {
+  color: #2e7d32; /* dark green */
+}
+
+/* PENDING → YELLOW */
+.status-badge.pending {
+  color: #f9a825; /* amber */
+}
+
+/* REJECTED → RED */
+.status-badge.rejected {
+  color: #c62828; /* red */
+}

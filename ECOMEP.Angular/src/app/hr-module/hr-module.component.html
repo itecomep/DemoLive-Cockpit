@@ -1,0 +1,31 @@
+<app-header title="Work From Home Requests"></app-header>
+
+<div class="page-wrapper full-width-page">
+
+  <mat-tab-group>
+
+    <mat-tab label="All">
+      <app-wfh-history 
+  [requests]="requests"
+  (refresh)="loadRequests()">
+</app-wfh-history>
+    </mat-tab>
+
+    <mat-tab label="WFH Requests">
+      <app-wfh-requests></app-wfh-requests>
+    </mat-tab>
+
+    <mat-tab label="Meetings">
+      <app-meetings></app-meetings>
+    </mat-tab>
+
+    <mat-tab label="Attendance">
+      <app-attendance></app-attendance>
+    </mat-tab>
+    <mat-tab label="Leaves">
+      <app-leaves></app-leaves>
+    </mat-tab>
+
+  </mat-tab-group>
+
+</div>

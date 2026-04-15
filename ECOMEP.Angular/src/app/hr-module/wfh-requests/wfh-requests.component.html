@@ -1,0 +1,163 @@
+<div class="meetings-container">
+
+  <div class="table-header">
+    <h2>Work From Home Requests</h2>
+
+    <div class="summary-box">
+      <span>Total Days</span>
+      <h3>{{ getTotalDays() }}</h3>
+    </div>
+  </div>
+
+  <table class="meetings-table">
+
+    <thead>
+      <tr>
+        <th>Employee</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Days</th>
+        <th>Reason</th>
+        <th>Attachment</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      <tr *ngIf="requests.length === 0">
+        <td colspan="8" class="text-center">
+          No WFH requests found
+        </td>
+      </tr>
+
+      <tr *ngFor="let req of requests">
+
+        <!-- EMPLOYEE -->
+        <td>
+          <div class="employee-cell">
+            <div class="avatar">
+              {{
+              (req.employeeName || 'U')
+              .trim()
+              .charAt(0)
+              .toUpperCase()
+              }}
+            </div>
+
+            <span class="employee-name">
+              {{ req.employeeName || 'Unknown' }}
+            </span>
+          </div>
+        </td>
+
+        <!-- START DATE -->
+        <td>
+          <span *ngIf="editingRowId !== req.id">
+            {{ req.startDate ? (req.startDate | date:'mediumDate') : '—' }}
+          </span>
+
+          <input *ngIf="editingRowId === req.id" type="date" [(ngModel)]="req.startDate" />
+        </td>
+
+        <!-- END DATE -->
+        <td>
+          <span *ngIf="editingRowId !== req.id">
+            {{ req.endDate ? (req.endDate | date:'mediumDate') : '—' }}
+          </span>
+
+          <input *ngIf="editingRowId === req.id" type="date" [(ngModel)]="req.endDate" />
+        </td>
+
+        <!-- DAYS -->
+        <td>
+          <span class="badge">
+            {{ req.startDate && req.endDate ? getDays(req.startDate, req.endDate) : 0 }}
+          </span>
+        </td>
+
+        <!-- REASON -->
+        <td class="reason">
+          <div *ngIf="editingRowId !== req.id">
+            <div class="reason-text" [class.expanded]="req.expanded">
+              {{ req.reason || '—' }}
+            </div>
+
+            <span class="toggle" *ngIf="req.reason?.length > 80" (click)="toggleReason(req)">
+              {{ req.expanded ? 'Show Less' : 'Show More' }}
+            </span>
+          </div>
+
+          <textarea *ngIf="editingRowId === req.id" rows="2" [(ngModel)]="req.reason"></textarea>
+        </td>
+
+        <!-- ATTACHMENT -->
+        <td class="attachment-cell">
+
+          <!-- VIEW -->
+          <ng-container *ngIf="editingRowId !== req.id; else editAttachment">
+            <div class="attachment-box" *ngIf="req.attachments?.length > 0; else noFile">
+              <div class="file-row" *ngFor="let chunk of getFileChunks(req.attachments)">
+                <div class="file-chip" *ngFor="let file of chunk">
+                  <span class="file-name" (click)="openFile(file)">
+                    {{ getCleanFileName(file.fileName || file.name) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- EDIT -->
+          <ng-template #editAttachment>
+
+            <!-- EXISTING FILES -->
+            <div class="file-chip" *ngFor="let file of existingFiles; let i = index">
+              <span>{{ getCleanFileName(file.fileName) }}</span>
+              <span class="remove-icon" (click)="removeExistingFile(i)">✕</span>
+            </div>
+
+            <!-- NEW FILES -->
+            <div class="file-chip" *ngFor="let file of newFiles; let i = index">
+              <span>{{ file.name }}</span>
+              <span class="remove-icon" (click)="removeNewFile(i)">✕</span>
+            </div>
+
+            <!-- ADD FILE -->
+            <input type="file" multiple (change)="onFileSelected($event)" />
+
+          </ng-template>
+
+          <ng-template #noFile>-</ng-template>
+
+        </td>
+
+        <!-- STATUS -->
+        <td>
+          <span class="status-badge" [ngClass]="req.status">
+            {{ req.status || 'Pending' }}
+          </span>
+        </td>
+
+        <!-- ACTION -->
+        <td class="action-cell">
+
+          <div *ngIf="editingRowId === req.id">
+            <button class="btn-save" (click)="saveEdit(req)">Save</button>
+            <button class="btn-cancel" (click)="cancelEdit(req)">Cancel</button>
+          </div>
+
+          <div *ngIf="editingRowId !== req.id">
+            <button class="btn-edit" *ngIf="req.status === 'pending'" (click)="openEdit(req)">Edit</button>
+            <button class="btn-delete" *ngIf="req.status === 'pending'" (click)="deleteRequest(req)">Delete</button>
+          </div>
+
+        </td>
+
+      </tr>
+
+    </tbody>
+
+  </table>
+
+</div>

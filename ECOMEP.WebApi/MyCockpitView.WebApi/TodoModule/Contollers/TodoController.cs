@@ -17,6 +17,9 @@ using MyCockpitView.CoreModule;
 using MyCockpitView.WebApi.Responses;
 using MyCockpitView.WebApi.Exceptions;
 using MyCockpitView.WebApi.Services;
+using Microsoft.AspNetCore.SignalR;
+using MyCockpitView.WebApi.NotificationModule;
+using MyCockpitView.WebApi.NotificationModule.Entities;
 
 namespace MyCockpitView.WebApi.TodoModule.Contollers
 {
@@ -33,6 +36,7 @@ namespace MyCockpitView.WebApi.TodoModule.Contollers
         private readonly IContactService contactService;
         private readonly EntitiesContext db;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IHubContext<NotificationHub> _hub;
 
         public TodoController(
             ILogger<TodoController> logger,
@@ -42,7 +46,8 @@ namespace MyCockpitView.WebApi.TodoModule.Contollers
             IActivityService activityService,
             IWFTaskService wFTaskService,
             IContactService contactService,
-            ICurrentUserService currentUserService
+            ICurrentUserService currentUserService,
+            IHubContext<NotificationHub> hub
             )
         {
             this.logger = logger;
@@ -53,6 +58,7 @@ namespace MyCockpitView.WebApi.TodoModule.Contollers
             this.wFTaskService = wFTaskService;
             this.contactService = contactService;
             _currentUserService = currentUserService;
+            _hub = hub;
         }
 
         [Authorize]
@@ -150,9 +156,12 @@ namespace MyCockpitView.WebApi.TodoModule.Contollers
             var results = mapper.Map<TodoDto>(await service.GetById(await service.Create(mapper.Map<Todo>(Dto))));
             if (results == null) throw new BadRequestException($"{nameof(Todo)} could not be created!");
             var _statusMasters = await db.StatusMasters.AsNoTracking()
-.Where(x => x.Entity == nameof(Todo))
-.ToListAsync();
-            results.StatusValue = _statusMasters.Any(x => x.Value == results.StatusFlag) ? _statusMasters.FirstOrDefault(x => x.Value == results.StatusFlag).Title : "";
+                .Where(x => x.Entity == nameof(Todo))
+                .ToListAsync();
+
+            results.StatusValue = _statusMasters.Any(x => x.Value == results.StatusFlag)
+                ? _statusMasters.FirstOrDefault(x => x.Value == results.StatusFlag).Title
+                : "";
 
             var username = _currentUserService.GetCurrentUsername();
             var currentContact = await contactService.Get()
@@ -160,16 +169,39 @@ namespace MyCockpitView.WebApi.TodoModule.Contollers
             if (currentContact != null)
             {
                 await activityService.LogUserActivity(currentContact, nameof(Todo), results.ID,
-                                                                        $"{results.Title}-{results.SubTitle}",
-                                                                        $"{nameof(Todo)} | {results.Title}-{results.SubTitle} | {results.MHrAssigned}mHr",
-                                                                    "Created",
-                                                                    $"Due: {ClockTools.GetIST((results.DueDate)).ToString("dd MMM yyyy HH:mm")} | {results.MHrAssigned}mHr"
-            );
+                    $"{results.Title}-{results.SubTitle}",
+                    $"{nameof(Todo)} | {results.Title}-{results.SubTitle} | {results.MHrAssigned}mHr",
+                    "Created",
+                    $"Due: {ClockTools.GetIST(results.DueDate).ToString("dd MMM yyyy HH:mm")} | {results.MHrAssigned}mHr"
+                );
             }
             await wFTaskService.StartFlow(nameof(Todo), results.TypeFlag, results.ID, ProjectID: results.ProjectID);
 
-            return Ok(results);
 
+            // ================= SIGNALR NOTIFICATION =================
+            var assignee = await contactService.Get()
+                .FirstOrDefaultAsync(x => x.ID == results.AssigneeContactID);
+
+            if (assignee != null)
+            {
+                var notification = new Notification
+                {
+                    Username = assignee.Username,
+                    Message = $"New Todo Assigned: {results.Title}",
+                    Source = "todo",
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                db.Notifications.Add(notification);
+                await db.SaveChangesAsync();
+
+                if (NotificationHub.UserConnections.TryGetValue(assignee.Username, out var connectionId))
+                {
+                    await _hub.Clients.Client(connectionId)
+                        .SendAsync("ReceiveNotification", notification);
+                }
+            }
+            return Ok(results);
         }
 
         [Authorize]
@@ -193,11 +225,11 @@ namespace MyCockpitView.WebApi.TodoModule.Contollers
             if (currentContact != null)
             {
                 await activityService.LogUserActivity(currentContact, nameof(Todo), results.ID,
-                                                                        $"{results.Title}-{results.SubTitle}",
-                                                                        $"{nameof(Todo)} | {results.Title}-{results.SubTitle} | {results.MHrAssigned}mHr",
-                                                                    "Updated",
-                                                                    $"Due: {ClockTools.GetIST((results.DueDate)).ToString("dd MMM yyyy HH:mm")} | {results.MHrAssigned}mHr"
-                                                                    );
+                $"{results.Title}-{results.SubTitle}",
+                $"{nameof(Todo)} | {results.Title}-{results.SubTitle} | {results.MHrAssigned}mHr",
+                "Updated",
+                $"Due: {ClockTools.GetIST((results.DueDate)).ToString("dd MMM yyyy HH:mm")} | {results.MHrAssigned}mHr"
+                );
             }
 
             if (results.StatusFlag == McvConstant.TODO_STATUSFLAG_PENDING)

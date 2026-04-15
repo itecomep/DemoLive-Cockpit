@@ -1,0 +1,116 @@
+<!-- <div class="meetings-container">
+
+  <h2>Meetings Module</h2>
+
+  <table class="meetings-table">
+
+    <thead>
+      <tr>
+        <th>Staff Name</th>
+        <th>Date</th>
+        <th>Project</th>
+        <th>Meeting Hours</th>
+        <th>Travel Hours</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let m of meetings">
+
+        <td>{{ m.staffName }}</td>
+        <td>{{ m.date }}</td>
+        <td>{{ m.project }}</td>
+        <td>{{ m.meetingHours }}</td>
+        <td>{{ m.travelHours }}</td>
+
+      </tr>
+    </tbody>
+
+  </table>
+
+</div> -->
+
+
+
+
+
+
+
+
+
+
+
+<div class="meetings-container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h2>Meetings Module</h2>
+
+    <div class="summary">
+      <div class="box">
+        <label>Total Meetings</label>
+        <h3>{{ meetings.length }}</h3>
+      </div>
+
+      <div class="box">
+        <label>Total Meeting Hours</label>
+        <h3>{{ getTotalMeetingHours() }}</h3>
+      </div>
+
+      <div class="box">
+        <label>Total Travel Hours</label>
+        <h3>{{ getTotalTravelHours() }}</h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <table class="meetings-table">
+
+    <thead>
+      <tr>
+        <th>Staff Name</th>
+        <th>Date</th>
+        <th>Project</th>
+        <th>Meeting Hours</th>
+        <th>Travel Hours</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let m of meetings">
+
+        <td><b>{{ m.staffName }}</b></td>
+
+        <td>{{ m.date | date:'dd MMM y' }}</td>
+
+        <td>{{ m.project }}</td>
+
+        <td>{{ m.meetingHours }} hrs</td>
+
+        <td>{{ m.travelHours }} hrs</td>
+
+        <td>
+          <b>{{ m.meetingHours + m.travelHours }} hrs</b>
+        </td>
+
+      </tr>
+    </tbody>
+
+    <!-- FOOTER TOTAL -->
+    <tfoot>
+      <tr>
+        <td colspan="3"><b>Total</b></td>
+        <td><b>{{ getTotalMeetingHours() }} hrs</b></td>
+        <td><b>{{ getTotalTravelHours() }} hrs</b></td>
+        <td>
+          <b>{{ getTotalMeetingHours() + getTotalTravelHours() }} hrs</b>
+        </td>
+      </tr>
+    </tfoot>
+
+  </table>
+
+</div>
+

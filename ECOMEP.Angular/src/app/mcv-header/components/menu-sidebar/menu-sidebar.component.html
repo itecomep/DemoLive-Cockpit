@@ -1,6 +1,18 @@
-<div class="sidebar-wrapper" [ngClass]="{'active':showMenu}"></div>
+<!-- <div class="sidebar-wrapper" [ngClass]="{'active':showMenu}"></div> -->
 
-<nav class="menu-sidebar" [ngClass]="{'active':showMenu}" (click)="onCloseMenu()">
+<div
+  class="sidebar-wrapper"
+  [ngClass]="{ active: showMenu }"
+  (click)="onCloseMenu()"
+></div>
+
+<!-- <nav class="menu-sidebar" [ngClass]="{'active':showMenu}" (click)="onCloseMenu()"> -->
+
+  <nav
+  class="menu-sidebar"
+  [ngClass]="{ active: showMenu }"
+  (click)="$event.stopPropagation()"
+>
   <ul class="menu-list">
     <!-- <li *ngIf="isPermissionProjectList">
       <a [routerLinkActive]="['active']" [routerLink]="['/wftask-list']">
@@ -91,5 +103,17 @@
         <h5>Checklist</h5>
       </a>
     </li>
+
+    <li *ngIf="isPermissionWorkFromHome">
+     
+      <a
+  [routerLink]="['/hr-module']"
+  routerLinkActive="active"
+  (click)="closeMenuDelayed()"
+>
+        <h5>HR Module</h5>
+      </a>
+    </li>
+
   </ul>
 </nav>

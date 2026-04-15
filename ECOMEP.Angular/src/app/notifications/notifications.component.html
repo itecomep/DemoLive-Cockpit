@@ -1,0 +1,146 @@
+<!-- MAIN APP HEADER -->
+<app-header title="Notifications"> </app-header>
+
+<!-- BACK BUTTON TO HOME -->
+<div class="notification-back">
+  <button mat-icon-button (click)="goHome()">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <span>Back</span>
+</div>
+
+<!-- NOTIFICATION TABS -->
+
+<div class="notifications-tabs">
+  <button
+    mat-button
+    [color]="selectedTab === 'all' ? 'primary' : ''"
+    (click)="selectTab('all')"
+  >
+    All
+  </button>
+
+  <button
+    mat-button
+    [color]="selectedTab === 'meeting' ? 'primary' : ''"
+    (click)="selectTab('meeting')"
+  >
+    Meeting
+  </button>
+
+  <button
+    mat-button
+    [color]="selectedTab === 'event' ? 'primary' : ''"
+    (click)="selectTab('event')"
+  >
+    Event
+  </button>
+
+  <button
+    mat-button
+    [color]="selectedTab === 'todo' ? 'primary' : ''"
+    (click)="selectTab('todo')"
+  >
+    Todos
+  </button>
+
+  <button
+    mat-button
+    [color]="selectedTab === 'birthday' ? 'primary' : ''"
+    (click)="selectTab('birthday')"
+  >
+    Birthday
+  </button>
+</div>
+
+<!-- DATE FILTER -->
+
+<div
+  class="date-filter-tabs"
+  *ngIf="['all', 'meeting', 'event', 'todo', 'birthday'].includes(selectedTab)"
+>
+  <div class="filter-row">
+    <!-- ✅ ADD THIS WRAPPER -->
+
+    <button mat-stroked-button color="primary" (click)="openYearPicker()">
+      Year
+    </button>
+
+    <button mat-stroked-button color="primary" (click)="openMonthPicker()">
+      Month
+    </button>
+
+    <button mat-stroked-button color="primary" (click)="openDatePicker()">
+      Date
+    </button>
+
+    <button mat-button color="warn" (click)="clearFilters()">Clear</button>
+
+    <div class="selected-filter">
+      <span class="filter-chip" *ngIf="selectedYear">
+        Year: <b>{{ selectedYear }}</b>
+      </span>
+
+      <span class="filter-chip" *ngIf="selectedMonth">
+        Month: <b>{{ selectedMonth }}</b>
+      </span>
+
+      <span class="filter-chip" *ngIf="selectedDate">
+        Date: <b>{{ selectedDate | date: "mediumDate" }}</b>
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- HIDDEN DATE PICKER -->
+
+<mat-form-field style="visibility: hidden; height: 0">
+  <input
+    matInput
+    [matDatepicker]="picker"
+    (dateChange)="onDateSelected($event)"
+  />
+
+  <mat-datepicker
+    #picker
+    (yearSelected)="chosenYearHandler($event, picker)"
+    (monthSelected)="chosenMonthHandler($event, picker)"
+  >
+  </mat-datepicker>
+</mat-form-field>
+
+<!-- NOTIFICATION LIST -->
+
+<div class="notifications-container">
+  <div class="header">
+    <mat-icon class="header-icon">notifications</mat-icon>
+    <h2>Recent Updates</h2>
+  </div>
+
+  <div class="notification-list" *ngIf="filteredNotifications.length > 0">
+    <div
+      class="notification-card"
+      *ngFor="let n of filteredNotifications"
+      [class.unread]="!n.isRead"
+      (click)="openNotification(n)"
+    >
+      <div class="icon-section">
+        <mat-icon [style.color]="n.isRead ? '#777' : '#4CAF50'">
+          {{ n.isRead ? "drafts" : "notifications_active" }}
+        </mat-icon>
+      </div>
+
+      <div class="content-section">
+        <div class="message">{{ n.message }}</div>
+        <div class="time">{{ n.createdAt | date: "medium" }}</div>
+      </div>
+
+      <div class="status-dot" *ngIf="!n.isRead"></div>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="filteredNotifications.length === 0">
+    <mat-icon>notifications_off</mat-icon>
+    <p>No notifications available</p>
+  </div>
+</div>

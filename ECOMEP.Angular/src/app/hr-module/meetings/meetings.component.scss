@@ -1,0 +1,138 @@
+// .meetings-container {
+//   padding: 20px;
+//   background: #f4fbf6; // light green-white background
+//   min-height: 100%;
+// }
+
+// h2 {
+//   margin-bottom: 15px;
+//   font-size: 22px;
+//   font-weight: 600;
+//   color: #1b5e20; // dark green
+// }
+
+// .meetings-table {
+//   width: 100%;
+//   border-collapse: collapse;
+//   background: #ffffff;
+//   border-radius: 10px;
+//   overflow: hidden;
+//   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+// }
+
+// .meetings-table thead {
+//   background: #2e7d32; // green header
+//   color: #ffffff;
+// }
+
+// .meetings-table th {
+//   padding: 14px;
+//   text-align: left;
+//   font-size: 14px;
+//   letter-spacing: 0.5px;
+//   font-weight: 600;
+// }
+
+// .meetings-table td {
+//   padding: 12px;
+//   border-bottom: 1px solid #e8f5e9; // light green border
+//   font-size: 14px;
+//   color: #2e2e2e;
+// }
+
+// .meetings-table tbody tr:nth-child(even) {
+//   background: #f6fcf7; // alternate light green row
+// }
+
+// .meetings-table tbody tr:hover {
+//   background: #e8f5e9; // hover green highlight
+//   transition: 0.2s ease;
+// }
+
+// /* optional badge style for hours */
+// .badge {
+//   display: inline-block;
+//   padding: 4px 8px;
+//   border-radius: 6px;
+//   background: #c8e6c9;
+//   color: #1b5e20;
+//   font-weight: 500;
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.meetings-container {
+  padding: 20px;
+  background: #f5f7fb;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  h2 {
+    margin: 0;
+    font-size: 22px;
+  }
+}
+
+.summary {
+  display: flex;
+  gap: 12px;
+}
+
+.box {
+  background: #fff;
+  padding: 10px 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+
+  label {
+    font-size: 12px;
+    color: #666;
+  }
+
+  h3 {
+    margin: 5px 0 0;
+  }
+}
+
+.meetings-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+
+  th {
+    text-align: left;
+    padding: 12px;
+    background:#2e7d32;;
+    color: white;
+  }
+
+  td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+  }
+
+  tbody tr:hover {
+    background: #f1f7ff;
+  }
+
+  tfoot td {
+    background: #fafafa;
+    font-weight: bold;
+  }
+}

@@ -35,6 +35,11 @@ import { SiteVisitApiService } from 'src/app/site-visit/services/site-visit-api.
 import { SitevisitCreateComponent } from 'src/app/site-visit/component/site-visit-create/site-visit-create.component';
 import { AssetCreateComponent } from 'src/app/asset/components/asset-create/asset-create.component';
 import { AssetApiService } from 'src/app/asset/services/asset-api.service';
+import { SignalRService } from "src/app/shared/services/signalr.service";
+import { NotificationService } from "src/app/notifications/notification.service";
+import { MatBadgeModule } from '@angular/material/badge';
+import { WorkFromHomeComponent } from 'src/app/work-from-home/work-from-home/work-from-home.component';
+
 
 
 @Component({
@@ -47,7 +52,7 @@ import { AssetApiService } from 'src/app/asset/services/asset-api.service';
      MatIconModule, 
      MatMenuModule, 
      CommonModule,
-
+       MatBadgeModule, 
      //Components
      MenuSidebarComponent,
      TodoCreateDialogComponent,
@@ -72,10 +77,14 @@ export class HeaderComponent implements OnInit, OnDestroy
   private assetService = inject(AssetApiService);
   private appService = inject(AppService);
   private swUpdate = inject(SwUpdate);
+    private signalR = inject(SignalRService);
+  private notificationService = inject(NotificationService);
 
 
   @Input() title!: string;
   @Input() titleCount: number = 0;
+  
+  
 
   get user() { return this.authService.currentUserStore; }
   get isMobileView() { return this.utilityService.isMobileView; }
@@ -112,26 +121,57 @@ export class HeaderComponent implements OnInit, OnDestroy
   {
 
   }
-  ngOnInit()
-  {
-    // if (!this.user || !this.user.isAuth)
-    // {
-    //   this.logout();
-    // }
+  // ngOnInit()
+  // {
+  //   // if (!this.user || !this.user.isAuth)
+  //   // {
+  //   //   this.logout();
+  //   // }
+
+    
+  //   this.checkForVersionUpdate();
+  //   if (this.appSettingService.presets.length == 0)
+  //   {
+  //     this.appSettingService.loadPresets();
+  //   }
+
+  //   if (this.authService.currentUserStore && this.authService.currentUserStore.isChangePassword)
+  //   {
+
+  //     this.router.navigate([this.config.ROUTE_CHANGE_PASSWORD]);
+  //   }
+
+  //   this.authService.refreshRoles();
+
+  // }
+
+  ngOnInit() {
+
+    const token = localStorage.getItem("token") || "";
+
+    /* SIGNALR CONNECTION */
+    this.signalR.startConnection(token);
+
+    /* LOAD EXISTING NOTIFICATIONS FROM DB */
+    this.notificationService.loadNotificationsFromApi();
+
+    /* SUBSCRIBE TO NOTIFICATION STREAM */
+    this.notificationService.getNotifications()
+      .subscribe((data) => {
+        this.notifications = data;
+      });
+
     this.checkForVersionUpdate();
-    if (this.appSettingService.presets.length == 0)
-    {
+
+    if (this.appSettingService.presets.length === 0) {
       this.appSettingService.loadPresets();
     }
 
-    if (this.authService.currentUserStore && this.authService.currentUserStore.isChangePassword)
-    {
-
+    if (this.authService.currentUserStore?.isChangePassword) {
       this.router.navigate([this.config.ROUTE_CHANGE_PASSWORD]);
     }
 
     this.authService.refreshRoles();
-
   }
 
   isNewVersionAvailable: boolean = false;
@@ -143,6 +183,35 @@ export class HeaderComponent implements OnInit, OnDestroy
       });
     });
   }
+
+
+
+   // ------------------- Notifications -------------------
+  notifications: { message: string; isRead: boolean }[] = [];
+
+  get unreadNotificationCount(): number {
+    return this.notifications.filter((n) => !n.isRead).length;
+  }
+
+  loadNotifications() {
+    if (!this.authService.currentUserStore) return;
+
+    this.notifications = [
+      { message: "New Task assigned to you", isRead: false },
+      { message: "Meeting scheduled today", isRead: false },
+    ];
+  }
+
+  markAsRead(notification: any) {
+    notification.isRead = true;
+  }
+
+  openNotifications() {
+    this.router.navigate(["/notifications"]);
+  }
+
+  // -----------------------------------------------------
+
 
   updateVersion() {
     this.swUpdate.activateUpdate().then(() => {
@@ -337,6 +406,19 @@ export class HeaderComponent implements OnInit, OnDestroy
   const _dialogRef = this.dialog.open(SitevisitCreateComponent,_dialogConfig);
   _dialogRef.afterClosed().subscribe(res =>{
     console.log(res);
+  });
+}
+
+
+openWorkFromHome() {
+  const dialogConfig = new MatDialogConfig();
+  dialogConfig.disableClose = true;
+  dialogConfig.autoFocus = true;
+
+  const dialogRef = this.dialog.open(WorkFromHomeComponent, dialogConfig);
+
+  dialogRef.afterClosed().subscribe(() => {
+    this.leaveService.refreshList();
   });
 }
 

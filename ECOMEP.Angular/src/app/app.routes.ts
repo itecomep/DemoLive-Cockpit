@@ -51,7 +51,23 @@ export const ROOT_ROUTES: Routes = [
     ]
   },
 
-  { path: '', redirectTo: 'cockpit', pathMatch: 'full' },
+
+   // Notifications
+  {
+    path: 'notifications',
+    loadComponent: () => import('./notifications/notifications.component')
+      .then(m => m.NotificationsComponent)
+  },
+
+  
+{
+  path: 'hr-module',
+  loadComponent: () =>
+    import('./hr-module/hr-module.component').then(m => m.HrModuleComponent)
+},
+
+
+{ path: '', redirectTo: 'cockpit', pathMatch: 'full' },
   { path: '**', redirectTo: '/cockpit', pathMatch: 'full' },
 ];
 

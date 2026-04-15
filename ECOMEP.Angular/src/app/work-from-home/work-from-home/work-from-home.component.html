@@ -1,0 +1,155 @@
+<div class="wfhm-container">
+
+ 
+  <div class="mcv-dialog-header">
+    <div class="header-title-group">
+      <div class="icon-circle">
+        <mat-icon>home_work</mat-icon>
+      </div>
+      <h5 class="font-focused">Work From Home Request</h5>
+    </div>
+
+    <div class="header-actions">
+      <button mat-button class="close-btn" (click)="onClose()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  
+  <mat-dialog-content>
+
+    <form class="leave-create-wrapper" [formGroup]="form">
+
+      <div class="card-section">
+        <h6 class="section-title">REQUEST SETTINGS</h6>
+
+        <div class="grid-layout mt-2">
+          <div class="date-range-group">
+
+         
+            <mat-form-field appearance="outline">
+              <mat-label>From Date</mat-label>
+
+              <input matInput
+                     formControlName="startDate"
+                     [matDatepicker]="startPicker"
+                     readonly>
+
+              <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+              <mat-datepicker #startPicker></mat-datepicker>
+
+              <mat-error *ngIf="form.get('startDate')?.hasError('required')">
+                Start date is required
+              </mat-error>
+            </mat-form-field>
+
+
+            <mat-form-field appearance="outline">
+              <mat-label>To Date</mat-label>
+
+              <input matInput
+                     formControlName="endDate"
+                     [matDatepicker]="endPicker"
+                     readonly>
+
+              <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+              <mat-datepicker #endPicker></mat-datepicker>
+
+              <mat-error *ngIf="form.get('endDate')?.hasError('required')">
+                End date is required
+              </mat-error>
+
+              <mat-error *ngIf="form?.value?.startDate && form?.value?.endDate && form.value.endDate < form.value.startDate">
+                End date cannot be before start date
+              </mat-error>
+            </mat-form-field>
+
+          </div>
+        </div>
+      </div>
+
+    
+      <div class="card-section">
+        <h6 class="section-title">Reason</h6>
+
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Reason for request</mat-label>
+
+          <textarea matInput
+                    formControlName="reason"
+                    placeholder="Please provide a brief explanation..."
+                    cdkTextareaAutosize
+                    cdkAutosizeMinRows="3">
+          </textarea>
+
+          <mat-error *ngIf="form.get('reason')?.hasError('required')">
+            Reason is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+    
+      <div class="card-section">
+
+        <div class="section-header">
+          <h6 class="section-title">ATTACHMENTS</h6>
+
+          <span class="badge" *ngIf="selectedFiles.length">
+            {{ selectedFiles.length }} Files
+          </span>
+        </div>
+
+        <div class="upload-zone">
+         <input type="file"
+       multiple
+       (change)="onFileSelected($event)"
+       class="file-input" />
+        </div>
+
+        <div class="file-grid" *ngIf="selectedFiles.length">
+
+          <div class="file-item"
+               *ngFor="let file of selectedFiles">
+
+            <mcv-file
+              [filename]="file.name"
+              [showRemove]="allowEdit"
+              (delete)="onDeleteAttachment(file)">
+            </mcv-file>
+
+          </div>
+        </div>
+
+        <div class="empty-state"
+     *ngIf="!selectedFiles.length">
+  <small>No files selected</small>
+</div>
+
+      </div>
+
+    </form>
+
+  </mat-dialog-content>
+
+ 
+  <div class="mat-dialog-actions modern-actions">
+
+    <button mat-button color="warn" (click)="onClose()">
+      Cancel
+    </button>
+
+    <button mat-raised-button
+            color="primary"
+            class="save-btn"
+            [disabled]="form.invalid || (form?.value?.startDate && form?.value?.endDate && form.value.endDate < form.value.startDate)"
+            (click)="onSubmit()">
+
+      <mat-icon>check</mat-icon>
+      Submit Request
+
+    </button>
+
+  </div>
+
+</div>
