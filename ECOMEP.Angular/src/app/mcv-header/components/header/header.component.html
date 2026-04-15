@@ -83,18 +83,17 @@
         
         <button mat-menu-item (click)="createAsset('New Asset')" *ngIf="isPermissionAssetEdit && canAccess('asset-edit')">Asset</button>
         <!-- <button mat-menu-item (click)="openNewSiteVisit()" *ngIf="isPermissionSitevisitEdit">Site Visit</button> -->
-
-          <button mat-menu-item (click)="openWorkFromHome()"
-  *ngIf="isPermissionLeaveEdit && canAccess('leave-edit')">
-  Work From Home
-</button>
-
-
-
+      
         <button mat-menu-item (click)="openNewRequestTicket()" aria-label="New Request Ticket"
           *ngIf="IsPermissionRequestTicketEdit && canAccess('request-ticket-edit')">
           Request Ticket
         </button>
+
+        <button mat-menu-item (click)="openWorkFromHome()"
+          *ngIf="isPermissionLeaveEdit && canAccess('leave-edit')">
+          Work From Home
+        </button>
+        
       </mat-menu>
     </div>
     <div class="nav-item nav-icon " (click)="openRoute('/cockpit')" matTooltip="MyCockpit">

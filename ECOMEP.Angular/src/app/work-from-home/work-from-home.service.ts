@@ -37,7 +37,6 @@ export class WorkFromHomeService {
 
   private readonly baseUrl = 'http://localhost:5054/api/WorkFromHome';
 
-  // ✅ INJECT AUTH
   private authService = inject(AuthService);
 
   constructor(private http: HttpClient) {}
@@ -65,14 +64,13 @@ export class WorkFromHomeService {
   // ================= CREATE =================
   create(data: FormData): Observable<any> {
 
-    const user = this.getCurrentUser();
+    // ✅ FIXED: use correct keys (userId, userName)
+    if (!data.has('userId')) {
+      const user = this.getCurrentUser();
 
-    if (!user.userId) {
-      throw new Error('User not found');
+      data.append('userId', user.userId.toString());
+      data.append('userName', user.userName);
     }
-
-    data.append('userId', user.userId.toString());
-    data.append('userName', user.userName);
 
     return this.http.post(`${this.baseUrl}/create`, data);
   }
@@ -80,10 +78,13 @@ export class WorkFromHomeService {
   // ================= UPDATE =================
   update(id: number, data: FormData): Observable<any> {
 
-    const user = this.getCurrentUser();
+    // ✅ FIXED: same logic here
+    if (!data.has('userId')) {
+      const user = this.getCurrentUser();
 
-    data.append('userId', user.userId.toString());
-    data.append('userName', user.userName);
+      data.append('userId', user.userId.toString());
+      data.append('userName', user.userName);
+    }
 
     return this.http.put(`${this.baseUrl}/${id}`, data);
   }
