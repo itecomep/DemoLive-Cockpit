@@ -51,87 +51,26 @@ export class LeavesComponent implements OnInit {
     this.loadLeaves();
   }
 
-  // loadLeaves() {
-  //   this.service.getLeaves().subscribe({
-  //     next: (res: any[]) => {
-  //       this.dataSource = res.map(x => ({
-  //         id: x.id,
-  //         employeeName: x.employeeName,
-  //         reason: x.reason,
-  //         type: x.applicationType,
-  //         start: new Date(x.startDate),
-  //         end: new Date(x.endDate),
-  //         total: x.days,
-  //         statusFlag: x.status === 'Approved' ? 1 : x.status === 'Rejected' ? -1 : 0,
-  //         attachmentUrl: x.attachmentUrl || ''
-  //       }));
-  //     },
-  //     error: (err) => {
-  //       console.error('Error fetching leaves:', err);
-  //     }
-  //   });
-  // }
-
-
-loadLeaves() {
-  this.service.getLeaves().subscribe({
-    next: (res: any[]) => {
-      this.dataSource = res.map(x => {
-        const start = new Date(x.startDate);
-        const end = new Date(x.endDate);
-
-        const { totalDays, weekendDays, workingDays } = this.calculateDays(start, end);
-
-        return {
+  loadLeaves() {
+    this.service.getLeaves().subscribe({
+      next: (res: any[]) => {
+        this.dataSource = res.map(x => ({
           id: x.id,
           employeeName: x.employeeName,
           reason: x.reason,
           type: x.applicationType,
-          start,
-          end,
-          total: totalDays,
-          weekendDays,
-          workingDays,
+          start: new Date(x.startDate),
+          end: new Date(x.endDate),
+          total: x.days,
           statusFlag: x.status === 'Approved' ? 1 : x.status === 'Rejected' ? -1 : 0,
           attachmentUrl: x.attachmentUrl || ''
-        };
-      });
-    },
-    error: (err) => {
-      console.error('Error fetching leaves:', err);
-    }
-  });
-}
-
-
-
-calculateDays(start: Date, end: Date) {
-  let totalDays = 0;
-  let weekendDays = 0;
-
-  const current = new Date(start);
-
-  while (current <= end) {
-    totalDays++;
-
-    const day = current.getDay();
-
-    // Sunday = 0, Saturday = 6
-    if (day === 0 || day === 6) {
-      weekendDays++;
-    }
-
-    current.setDate(current.getDate() + 1);
+        }));
+      },
+      error: (err) => {
+        console.error('Error fetching leaves:', err);
+      }
+    });
   }
-
-  return {
-    totalDays,
-    weekendDays,
-    workingDays: totalDays - weekendDays
-  };
-}
-
-
 
   // ✅ Method to open the CV Viewer
   openCvViewer(element: any) {
