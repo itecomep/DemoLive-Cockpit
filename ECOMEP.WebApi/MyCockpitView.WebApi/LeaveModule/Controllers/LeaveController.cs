@@ -296,7 +296,7 @@ public class LeaveController : ControllerBase
     {
         var query = service.Get(null, null, null)
             .Include(x => x.Contact)
-            .Include(x => x.Attachments); // ✅ IMPORTANT
+            .Include(x => x.Attachments);
 
         var leaves = await query.ToListAsync();
 
@@ -322,7 +322,6 @@ public class LeaveController : ControllerBase
             Status = statusMasters
                 .FirstOrDefault(s => s.Value == x.StatusFlag)?.Title,
 
-            // ✅ Take first attachment (or null)
             AttachmentUrl = x.Attachments != null && x.Attachments.Any()
                 ? x.Attachments.First().Url
                 : null
