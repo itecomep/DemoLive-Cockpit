@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { HrModuleService } from '../hr-module.service'; // ✅ adjust path if needed
+import { HrModuleService } from '../hr-module.service';
 
 @Component({
   selector: 'app-leaves',
@@ -45,7 +45,6 @@ export class LeavesComponent implements OnInit {
         this.dataSource = res.map(x => ({
           id: x.id,
 
-          // ✅ API mapping
           employeeName: x.employeeName,
           reason: x.reason,
           type: x.applicationType,
@@ -54,12 +53,7 @@ export class LeavesComponent implements OnInit {
           end: new Date(x.endDate),
           total: x.days,
 
-          // ✅ convert status string → flag for icons
-          statusFlag:
-            x.status === 'Approved' ? 1 :
-            x.status === 'Rejected' ? -1 : 0,
-
-          // ✅ optional (if backend adds later)
+          statusFlag: x.statusFlag,
           attachmentUrl: x.attachmentUrl || ''
         }));
 
@@ -70,28 +64,22 @@ export class LeavesComponent implements OnInit {
     });
   }
 
-
   toggleReason(row: any): void {
-  row.expanded = !row.expanded;
-}
+    row.expanded = !row.expanded;
+  }
 
+  updateStatus(row: any, status: 'Approved' | 'Rejected') {
 
+    row.statusFlag = status === 'Approved' ? 1 : -1;
 
-
-updateStatus(row: any, status: 'Approved' | 'Rejected') {
-
-  // 🔥 update UI instantly
-  row.statusFlag = status === 'Approved' ? 1 : -1;
-
-  // ✅ use correct service method
-  this.service.updateStatus(row.id, status).subscribe({
-    next: () => {
-      console.log('Status updated');
-    },
-    error: (err: any) => {   // ✅ FIX 2 (typing)
-      console.error('Error updating status', err);
-    }
-  });
-}
-
+    this.service.updateLeaveStatus(row.id, status).subscribe({
+      next: () => {
+        console.log('Leave status updated');
+        this.loadLeaves(); 
+      },
+      error: (err: any) => {
+        console.error('Error updating leave status', err);
+      }
+    });
+  }
 }

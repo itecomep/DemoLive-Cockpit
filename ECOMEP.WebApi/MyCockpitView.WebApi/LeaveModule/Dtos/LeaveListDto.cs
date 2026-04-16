@@ -2,6 +2,7 @@
 {
     public class LeaveListDto
     {
+        public int Id { get; set; }
         public string EmployeeName { get; set; }
         public string ApplicationType { get; set; }
         public string Reason { get; set; }
@@ -10,5 +11,10 @@
         public decimal Days { get; set; }
         public string Status { get; set; }
         public string AttachmentUrl { get; set; }
+        public int StatusFlag { get; set; }
+    }
+    public class UpdateStatusDto
+    {
+        public string Status { get; set; }
     }
 }

@@ -310,6 +310,7 @@ public class LeaveController : ControllerBase
 
         var result = leaves.Select(x => new LeaveListDto
         {
+            Id = x.ID,
             EmployeeName = x.Contact != null ? x.Contact.Name : "",
             ApplicationType = typeMasters
                 .FirstOrDefault(t => t.Value == x.TypeFlag)?.Title,
@@ -322,11 +323,26 @@ public class LeaveController : ControllerBase
             Status = statusMasters
                 .FirstOrDefault(s => s.Value == x.StatusFlag)?.Title,
 
+            StatusFlag = x.StatusFlag,
+
             AttachmentUrl = x.Attachments != null && x.Attachments.Any()
                 ? x.Attachments.First().Url
                 : null
         });
 
         return Ok(result);
+    }
+
+    [HttpPut("update-status/{id}")]
+    public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateStatusDto body)
+    {
+        var leave = await service.GetById(id);
+        if (leave == null) return NotFound();
+
+        leave.StatusFlag = body.Status == "Approved" ? 1 : -1;
+
+        await service.Update(leave);
+
+        return Ok();
     }
 }
