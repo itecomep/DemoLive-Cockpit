@@ -1,54 +1,34 @@
 <div class="table-container">
   <div class="table-header">
-    <h2>Work From Home Requests</h2>
-    </div>
+    <h2>Leaves</h2>
+  </div>
 
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z2 full-table">
 
-    <!-- Employee -->
     <ng-container matColumnDef="employee">
       <th mat-header-cell *matHeaderCellDef> Employee </th>
       <td mat-cell *matCellDef="let element">
         <div class="emp-cell">
-          <img
-            [src]="'assets/images/user.png'"
-            [matTooltip]="element.employeeName"
-            class="user-img"
-          />
+          <img [src]="'assets/images/user.png'" [matTooltip]="element.employeeName" class="user-img" />
           <span>{{ element.employeeName }}</span>
         </div>
       </td>
     </ng-container>
 
-    <!-- Reason -->
-<ng-container matColumnDef="reason">
-  <th mat-header-cell *matHeaderCellDef> Reason </th>
-  <td mat-cell *matCellDef="let element">
+    <ng-container matColumnDef="reason">
+      <th mat-header-cell *matHeaderCellDef> Reason </th>
+      <td mat-cell *matCellDef="let element">
+        <div class="reason-wrapper">
+          <div class="reason-text" [class.expanded]="element.expanded">
+            {{ element.reason || '-' }}
+          </div>
+          <span class="toggle" *ngIf="element.reason?.length > 80" (click)="toggleReason(element)">
+            {{ element.expanded ? 'Show Less' : 'Show More' }}
+          </span>
+        </div>
+      </td>
+    </ng-container>
 
-    <div class="reason-wrapper">
-
-      <div
-        class="reason-text"
-        [class.expanded]="element.expanded">
-
-        {{ element.reason || '-' }}
-      </div>
-
-      <span
-        class="toggle"
-        *ngIf="element.reason?.length > 80"
-        (click)="toggleReason(element)">
-
-        {{ element.expanded ? 'Show Less' : 'Show More' }}
-      </span>
-
-    </div>
-
-  </td>
-</ng-container>
-
-
-    <!-- Leave Type -->
     <ng-container matColumnDef="type">
       <th mat-header-cell *matHeaderCellDef> Leave Type </th>
       <td mat-cell *matCellDef="let element">
@@ -56,7 +36,6 @@
       </td>
     </ng-container>
 
-    <!-- Start Date -->
     <ng-container matColumnDef="start">
       <th mat-header-cell *matHeaderCellDef> Start Date </th>
       <td mat-cell *matCellDef="let element">
@@ -64,7 +43,6 @@
       </td>
     </ng-container>
 
-    <!-- End Date -->
     <ng-container matColumnDef="end">
       <th mat-header-cell *matHeaderCellDef> End Date </th>
       <td mat-cell *matCellDef="let element">
@@ -72,77 +50,87 @@
       </td>
     </ng-container>
 
-    <!-- Days -->
-
-
     <ng-container matColumnDef="total">
-  <th mat-header-cell *matHeaderCellDef class="text-center-cell"> Days </th>
-  <td mat-cell *matCellDef="let element" class="text-center-cell">
-    <span class="days-badge">{{ element.total }}</span>
-  </td>
-</ng-container>
+      <th mat-header-cell *matHeaderCellDef class="text-center-cell"> Days </th>
+      <td mat-cell *matCellDef="let element" class="text-center-cell">
+        <span class="days-badge">{{ element.total }}</span>
+      </td>
+    </ng-container>
+    
 
-
-    <!-- Status -->
-<ng-container matColumnDef="status">
-  <th mat-header-cell *matHeaderCellDef> Status </th>
-  <td mat-cell *matCellDef="let element">
-
-    <div class="status-cell">
-
-      <!-- PENDING -->
-      <ng-container *ngIf="element.statusFlag === 0">
-        <button class="approve-btn"
-                (click)="updateStatus(element, 'Approved')">
-          Approve
-        </button>
-
-        <button class="reject-btn"
-                (click)="updateStatus(element, 'Rejected')">
-          Reject
-        </button>
-      </ng-container>
-
-      <!-- APPROVED -->
-      <span *ngIf="element.statusFlag === 1" class="approved">
-        Approved
-      </span>
-
-      <!-- REJECTED -->
-      <span *ngIf="element.statusFlag === -1" class="rejected">
-        Rejected
-      </span>
-
-    </div>
-
-  </td>
-</ng-container>
-
-
-    <!-- Attachment -->
-    <ng-container matColumnDef="attachment">
-      <th mat-header-cell *matHeaderCellDef> Attachment </th>
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef> Status </th>
       <td mat-cell *matCellDef="let element">
-
-        <a *ngIf="element.attachmentUrl"
-           [href]="element.attachmentUrl"
-           target="_blank"
-           matTooltip="View Attachment">
-
-          <mat-icon style="cursor:pointer;">attach_file</mat-icon>
-        </a>
-
-        <span *ngIf="!element.attachmentUrl">-</span>
-
+        <div class="status-cell">
+          <ng-container *ngIf="element.statusFlag === 0">
+            <button class="approve-btn" (click)="updateStatus(element, 'Approved')">Approve</button>
+            <button class="reject-btn" (click)="updateStatus(element, 'Rejected')">Reject</button>
+          </ng-container>
+          <span *ngIf="element.statusFlag === 1" class="approved">Approved</span>
+          <span *ngIf="element.statusFlag === -1" class="rejected">Rejected</span>
+        </div>
       </td>
     </ng-container>
 
-    <!-- Header -->
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <ng-container matColumnDef="attachment">
+      <th mat-header-cell *matHeaderCellDef> Attachment </th>
+      <td mat-cell *matCellDef="let element">
+        <div *ngIf="element.attachmentUrl" 
+             (click)="openCvViewer(element)" 
+             style="cursor:pointer; display: flex; align-items: center; color: #247a34;"
+             matTooltip="View CV">
+          <mat-icon>attach_file</mat-icon>
+        </div>
+        <span *ngIf="!element.attachmentUrl">-</span>
+      </td>
+    </ng-container>
 
-    <!-- Rows -->
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
   </table>
-
 </div>
+<ng-template #cvViewerDialog>
+  <div class="unique-modal-container">
+    <header class="modal-glass-header">
+      <div class="header-content">
+        <div class="title-group">
+          <span class="badge">PRO VIEW</span>
+          <h3>CV Viewer — {{ selectedEmployeeName }}</h3>
+        </div>
+        <button class="close-circle" (click)="closeDialog()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="sub-info">
+        <span><mat-icon>badge</mat-icon> Candidate Document</span>
+        <span class="divider">|</span>
+        <span><mat-icon>verified</mat-icon> Verified Source</span>
+      </div>
+    </header>
+
+    <div class="workspace-body">
+      <div class="accent-bar"></div>
+      
+      <div class="document-container">
+        <iframe *ngIf="selectedCvUrl" 
+                [src]="selectedCvUrl" 
+                frameborder="0">
+        </iframe>
+      </div>
+    </div>
+
+    <footer class="modal-action-footer">
+      <div class="action-group">
+        <a [href]="rawCvUrl" target="_blank" class="btn-neo secondary">
+          <mat-icon>open_in_new</mat-icon>
+          <span>Preview Mode</span>
+        </a>
+        <a [href]="rawCvUrl" download class="btn-neo primary">
+          <mat-icon>cloud_download</mat-icon>
+          <span>Get Copy</span>
+        </a>
+      </div>
+    </footer>
+  </div>
+</ng-template>
