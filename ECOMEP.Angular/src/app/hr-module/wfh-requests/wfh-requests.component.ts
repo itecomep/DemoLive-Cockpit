@@ -17,7 +17,7 @@ export class WfhRequestsComponent implements OnInit {
 
   requests: any[] = [];
 
-  editingRowId: number | null = null;
+  // editingRowId: number | null = null;  
   backupRow: any = null;
 
   existingFiles: any[] = [];
@@ -27,6 +27,16 @@ export class WfhRequestsComponent implements OnInit {
     private hrService: HrModuleService,
     private authService: AuthService
   ) {}
+
+
+  editingRowId: any = null;
+  editedRow: any = {};
+  filteredRequests: any[] = [];
+  filters = {
+    employeeName: '',
+    startDate: '',
+    endDate: ''
+  };
 
   ngOnInit(): void {
     this.loadRequests();
@@ -53,6 +63,8 @@ export class WfhRequestsComponent implements OnInit {
               'Unknown',
             attachments: Array.isArray(x.attachments) ? x.attachments : []
           }));
+
+          this.filteredRequests = [...this.requests];
       },
       error: err => console.error(err)
     });
@@ -153,17 +165,31 @@ export class WfhRequestsComponent implements OnInit {
     return `${year}-${month}-${day}`;
   }
 
-  getTotalDays(): number {
-    let total = 0;
+  // getTotalDays(): number {
+  //   let total = 0;
 
-    this.requests.forEach(req => {
-      if (req.startDate && req.endDate) {
-        total += this.getDays(req.startDate, req.endDate);
-      }
-    });
+  //   this.requests.forEach(req => {
+  //     if (req.startDate && req.endDate) {
+  //       total += this.getDays(req.startDate, req.endDate);
+  //     }
+  //   });
 
-    return total;
-  }
+  //   return total;
+  // }
+
+getTotalDays(): number {
+  let total = 0;
+
+  this.filteredRequests.forEach(req => {
+    if (req.startDate && req.endDate) {
+      total += this.getDays(req.startDate, req.endDate);
+    }
+  });
+
+  return total;
+}
+
+
 
   getDays(start: Date, end: Date): number {
     const diff = new Date(end).getTime() - new Date(start).getTime();
@@ -197,4 +223,66 @@ export class WfhRequestsComponent implements OnInit {
     const parts = fileName.split('_');
     return parts.length > 1 ? parts.slice(1).join('_') : fileName;
   }
+
+
+  applyFilters(): void {
+
+  this.filteredRequests = this.requests.filter(req => {
+
+    const reqStart = this.formatDate(req.startDate);
+    const reqEnd = this.formatDate(req.endDate);
+
+    const filterStart = this.filters.startDate;
+    const filterEnd = this.filters.endDate;
+
+    const empMatch = this.filters.employeeName
+      ? req.employeeName?.toLowerCase().includes(this.filters.employeeName.toLowerCase())
+      : true;
+
+    let dateMatch = true;
+
+    if (filterStart && filterEnd) {
+
+      // ✅ AUTO SORT DATES (IMPORTANT FIX)
+      const from = filterStart < filterEnd ? filterStart : filterEnd;
+      const to = filterStart > filterEnd ? filterStart : filterEnd;
+
+      // ✅ RANGE MATCH
+      dateMatch = reqStart >= from && reqEnd <= to;
+    }
+    else if (filterStart) {
+      dateMatch = reqStart === filterStart;
+    }
+    else if (filterEnd) {
+      dateMatch = reqEnd === filterEnd;
+    }
+
+    return empMatch && dateMatch;
+  });
+
+}
+
+resetFilters(): void {
+  this.filters = {
+    employeeName: '',
+    startDate: '',
+    endDate: ''
+  };
+
+  this.filteredRequests = [...this.requests];
+}
+
+formatDate(date: any): string {
+  if (!date) return '';
+
+  const d = new Date(date);
+
+  // ✅ Convert to YYYY-MM-DD (safe format)
+  const year = d.getFullYear();
+  const month = ('0' + (d.getMonth() + 1)).slice(-2);
+  const day = ('0' + d.getDate()).slice(-2);
+
+  return `${year}-${month}-${day}`;
+}
+
 }

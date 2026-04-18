@@ -575,6 +575,80 @@
   }
 }
 
+.filter-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
 
+.filter-bar input {
+  padding: 6px 10px;
+  border: 1px solid #c8e6c9;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.filter-bar button {
+  background: #2e7d32;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.filter-bar button:hover {
+  background: #609263;
+}
+
+
+
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #528155;
+  cursor: pointer;
+}
+
+.radio-option input {
+  accent-color: #6ca16e;
+  cursor: pointer;
+}
+
+
+
+.filter-bar button {
+  transition: all 0.2s ease;
+}
+
+/* DEFAULT STATE */
+.filter-bar button.month-btn {
+  background: #e8f5e9;
+  color: #1b5e20;
+  border: 1px solid #a5d6a7;
+}
+
+/* HOVER */
+.filter-bar button.month-btn:hover {
+  background: #c8e6c9;
+}
+
+/* ACTIVE (ENABLED) STATE */
+.filter-bar button.month-btn.active {
+  background: #2e7d32;
+  color: #ffffff;
+  border: 1px solid #1b5e20;
+  transform: scale(1.03);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* DISABLED LOOK (when not active but clickable) */
+.filter-bar button.month-btn:not(.active) {
+  opacity: 0.85;
+}
 
 

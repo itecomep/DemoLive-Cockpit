@@ -1,9 +1,36 @@
-<div class="meetings-container">
+<!-- <div class="meetings-container">
 
   <div class="table-header">
     <h2>Work From Home Requests</h2>
 
   </div>
+
+
+  <div class="filter-bar">
+
+  <input
+    type="text"
+    placeholder="Search Employee..."
+    [(ngModel)]="filters.employeeName"
+    (input)="applyFilters()"
+  />
+
+  <input
+    type="date"
+    [(ngModel)]="filters.startDate"
+    (change)="applyFilters()"
+  />
+
+  <input
+    type="date"
+    [(ngModel)]="filters.endDate"
+    (change)="applyFilters()"
+  />
+
+  <button (click)="resetFilters()">Reset</button>
+
+</div>
+
 
   <table class="meetings-table">
 
@@ -22,15 +49,13 @@
 
     <tbody>
 
-      <!-- NO DATA -->
       <tr *ngIf="requests.length === 0">
         <td colspan="8" class="text-center">No WFH requests found</td>
       </tr>
 
-      <!-- ROW -->
-      <tr *ngFor="let req of requests">
+        <tr *ngFor="let req of filteredRequests">
 
-        <!-- EMPLOYEE -->
+
         <td>
           <div class="employee-cell">
             <div class="avatar">
@@ -46,7 +71,6 @@
         </td>
 
 
-        <!-- START DATE -->
         <td>
           <div *ngIf="editingRowId !== req.id; else editStart">
             {{ req.startDate | date:'mediumDate' }}
@@ -57,7 +81,6 @@
           </ng-template>
         </td>
 
-        <!-- END DATE -->
         <td>
           <div *ngIf="editingRowId !== req.id; else editEnd">
             {{ req.endDate | date:'mediumDate' }}
@@ -69,14 +92,12 @@
         </td>
 
 
-        <!-- DAYS -->
         <td>
           <span class="badge">
             {{ getDays(req.startDate, req.endDate) }}
           </span>
         </td>
 
-        <!-- REASON -->
         <td class="reason">
 
           <div *ngIf="editingRowId !== req.id; else editReason">
@@ -95,10 +116,8 @@
 
         </td>
 
-        <!-- ATTACHMENT -->
         <td class="attachment-cell">
 
-          <!-- VIEW MODE -->
           <div *ngIf="editingRowId !== req.id; else editAttachment">
 
             <div class="attachment-box" *ngIf="req.attachments?.length > 0; else noFile">
@@ -121,10 +140,8 @@
 
           </div>
 
-          <!-- EDIT MODE -->
           <ng-template #editAttachment>
 
-            <!-- EXISTING FILES -->
             <div *ngIf="editedRow.attachments?.length > 0">
               <div class="file-chip editable" *ngFor="let file of editedRow.attachments; let i = index">
                 <span>{{ getCleanFileName(file.fileName) }}</span>
@@ -135,10 +152,8 @@
               </div>
             </div>
 
-            <!-- ADD NEW FILE -->
             <input type="file" multiple (change)="onFileSelect($event)" #fileInput />
 
-            <!-- ✅ SHOW NEWLY SELECTED FILES -->
             <div *ngIf="editedRow.newFiles?.length > 0">
               <div class="file-chip editable" *ngFor="let file of editedRow.newFiles; let i = index">
 
@@ -157,7 +172,6 @@
         </td>
 
 
-        <!-- STATUS -->
         <td class="status-cell">
 
           <ng-container *ngIf="req.status === 'pending'">
@@ -180,7 +194,284 @@
 
         </td>
 
-        <!-- EDIT / SAVE / CANCEL -->
+        <td class="edit-cell">
+
+          <ng-container *ngIf="editingRowId !== req.id; else editActions">
+            <button class="edit-btn" (click)="startEdit(req)">
+              Edit
+            </button>
+          </ng-container>
+
+          <ng-template #editActions>
+            <button class="save-btn" (click)="saveEdit(req)">
+              Save
+            </button>
+
+            <button class="cancel-btn" (click)="cancelEdit()">
+              Cancel
+            </button>
+          </ng-template>
+
+        </td>
+
+      </tr>
+
+    </tbody>
+
+  </table>
+
+</div> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="meetings-container">
+
+  <div class="table-header">
+    <h2>Work From Home Requests</h2>
+
+  </div>
+
+
+  <div class="filter-bar">
+
+
+
+     
+  <label class="radio-option">
+    <input 
+      type="radio" 
+      name="wfhType" 
+      value="all"
+      [(ngModel)]="activeTab"
+      (change)="onFilterTypeChange()" />
+    All Requests
+  </label>
+
+  <label class="radio-option">
+    <input 
+      type="radio" 
+      name="wfhType" 
+      value="team"
+      [(ngModel)]="activeTab"
+      (change)="onFilterTypeChange()" />
+    Team Leaders
+  </label>
+
+  <input
+    type="text"
+    placeholder="Search Employee..."
+    [(ngModel)]="filters.employeeName"
+    (input)="applyFilters()"
+  />
+
+  <input
+    type="date"
+    [(ngModel)]="filters.startDate"
+    (change)="applyFilters()"
+  />
+
+  <input
+    type="date"
+    [(ngModel)]="filters.endDate"
+    (change)="applyFilters()"
+  />
+
+  <button (click)="resetFilters()">Reset</button>
+
+
+   <button 
+  class="month-btn"
+  [class.active]="activeMonthFilter === 'current'"
+  (click)="toggleFilter('current')">
+  Current Month
+</button>
+
+<button 
+  class="month-btn"
+  [class.active]="activeMonthFilter === 'last'"
+  (click)="toggleFilter('last')">
+  Last Month
+</button>
+
+
+</div>
+
+
+  <table class="meetings-table">
+
+    <thead>
+      <tr>
+        <th>Employee</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Days</th>
+        <th>Reason</th>
+        <th>Attachment</th>
+        <th>Status</th>
+        <th>Edit</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      <tr *ngIf="requests.length === 0">
+        <td colspan="8" class="text-center">No WFH requests found</td>
+      </tr>
+
+        <tr *ngFor="let req of filteredRequests">
+
+
+        <td>
+          <div class="employee-cell">
+            <div class="avatar">
+              {{ req.employeeName?.charAt(0) }}
+            </div>
+
+            <div class="employee-info">
+              <span class="employee-name">
+                {{ req.employeeName }}
+              </span>
+            </div>
+          </div>
+        </td>
+
+
+        <td>
+          <div *ngIf="editingRowId !== req.id; else editStart">
+            {{ req.startDate | date:'mediumDate' }}
+          </div>
+
+          <ng-template #editStart>
+            <input type="date" [(ngModel)]="editedRow.startDate" />
+          </ng-template>
+        </td>
+
+        <td>
+          <div *ngIf="editingRowId !== req.id; else editEnd">
+            {{ req.endDate | date:'mediumDate' }}
+          </div>
+
+          <ng-template #editEnd>
+            <input type="date" [(ngModel)]="editedRow.endDate" />
+          </ng-template>
+        </td>
+
+
+        <td>
+          <span class="badge">
+            {{ getDays(req.startDate, req.endDate) }}
+          </span>
+        </td>
+
+        <td class="reason">
+
+          <div *ngIf="editingRowId !== req.id; else editReason">
+            <div class="reason-text" [class.expanded]="req.expanded">
+              {{ req.reason }}
+            </div>
+
+            <span class="toggle" *ngIf="req.reason?.length > 80" (click)="toggleReason(req)">
+              {{ req.expanded ? 'Show Less' : 'Show More' }}
+            </span>
+          </div>
+
+          <ng-template #editReason>
+            <textarea [(ngModel)]="editedRow.reason"></textarea>
+          </ng-template>
+
+        </td>
+
+        <td class="attachment-cell">
+
+          <div *ngIf="editingRowId !== req.id; else editAttachment">
+
+            <div class="attachment-box" *ngIf="req.attachments?.length > 0; else noFile">
+
+              <ng-container *ngFor="let file of req.attachments">
+
+                <span class="file-name" [class.long-file]="getCleanFileName(file.fileName).length > 22"
+                  (click)="openFile(file)">
+                  {{ getCleanFileName(file.fileName) }}
+                </span>
+
+              </ng-container>
+
+            </div>
+
+
+            <ng-template #noFile>
+              <span class="no-attachment">—</span>
+            </ng-template>
+
+          </div>
+
+          <ng-template #editAttachment>
+
+            <div *ngIf="editedRow.attachments?.length > 0">
+              <div class="file-chip editable" *ngFor="let file of editedRow.attachments; let i = index">
+                <span>{{ getCleanFileName(file.fileName) }}</span>
+
+                <button class="remove-btn" (click)="removeFile(i)">
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            <input type="file" multiple (change)="onFileSelect($event)" #fileInput />
+
+            <div *ngIf="editedRow.newFiles?.length > 0">
+              <div class="file-chip editable" *ngFor="let file of editedRow.newFiles; let i = index">
+
+                <span>{{ file.name }}</span>
+
+                <button class="remove-btn" (click)="removeNewFile(i)">
+                  ✕
+                </button>
+
+              </div>
+            </div>
+
+
+          </ng-template>
+
+        </td>
+
+
+        <td class="status-cell">
+
+          <ng-container *ngIf="req.status === 'pending'">
+            <button class="approve-btn" (click)="updateStatus(req, 'APPROVED')">
+              Approve
+            </button>
+
+            <button class="reject-btn" (click)="updateStatus(req, 'REJECTED')">
+              Reject
+            </button>
+          </ng-container>
+
+          <span *ngIf="req.status === 'approved'" class="approved">
+            Approved
+          </span>
+
+          <span *ngIf="req.status === 'rejected'" class="rejected">
+            Rejected
+          </span>
+
+        </td>
+
         <td class="edit-cell">
 
           <ng-container *ngIf="editingRowId !== req.id; else editActions">

@@ -41,6 +41,10 @@ export class HrModuleService {
     });
   }
 
+  getContactTeams() {
+  return this.http.get<any[]>(`http://localhost:5054/ContactTeam`);
+}
+
   updateRequest(id: number, data: any): Observable<any> {
     return this.http.put(`${this.baseUrl}/update/${id}`, data);
   }

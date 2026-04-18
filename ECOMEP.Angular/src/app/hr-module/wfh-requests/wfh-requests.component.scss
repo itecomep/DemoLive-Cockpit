@@ -558,3 +558,33 @@
   background: #cfcfcf;
   border-radius: 10px;
 }
+
+
+
+
+.filter-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-bar input {
+  padding: 6px 10px;
+  border: 1px solid #c8e6c9;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.filter-bar button {
+  background: #2e7d32;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.filter-bar button:hover {
+  background: #1b5e20;
+}

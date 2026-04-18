@@ -196,3 +196,53 @@ app-header {
   white-space: normal;
   word-break: break-word;
 }
+
+
+
+/* =========================
+   CURVED TABS CONTAINER
+========================= */
+
+::ng-deep .mat-mdc-tab-group {
+  background: #ffffff;
+  border-radius: 12px;   /* 👈 main curve */
+  overflow: hidden;      /* important for clean edges */
+  border: 1px solid #d1fae5;
+}
+
+/* Tab header background */
+::ng-deep .mat-mdc-tab-header {
+  background: #f0fdf4;
+  border-bottom: 1px solid #d1fae5;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+/* Individual tab buttons */
+::ng-deep .mat-mdc-tab {
+  font-weight: 600;
+  color: #166534 !important;
+  font-size: 13px;
+  text-transform: none;
+  border-radius: 8px; /* slight curve on tab itself */
+  margin: 6px 4px;
+  transition: all 0.2s ease;
+}
+
+/* Hover effect */
+::ng-deep .mat-mdc-tab:hover {
+  background: #dcfce7;
+}
+
+/* Active tab */
+::ng-deep .mat-mdc-tab.mdc-tab--active {
+  color: #0f5132 !important;
+  font-weight: 700;
+  background: #bbf7d0;
+  border-radius: 10px;
+}
+
+/* Ink bar */
+::ng-deep .mdc-tab-indicator__content--underline {
+  border-color: #16a34a !important;
+}

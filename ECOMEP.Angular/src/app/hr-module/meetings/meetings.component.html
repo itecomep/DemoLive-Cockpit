@@ -1,48 +1,5 @@
 <!-- <div class="meetings-container">
-
-  <h2>Meetings Module</h2>
-
-  <table class="meetings-table">
-
-    <thead>
-      <tr>
-        <th>Staff Name</th>
-        <th>Date</th>
-        <th>Project</th>
-        <th>Meeting Hours</th>
-        <th>Travel Hours</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <tr *ngFor="let m of meetings">
-
-        <td>{{ m.staffName }}</td>
-        <td>{{ m.date }}</td>
-        <td>{{ m.project }}</td>
-        <td>{{ m.meetingHours }}</td>
-        <td>{{ m.travelHours }}</td>
-
-      </tr>
-    </tbody>
-
-  </table>
-
-</div> -->
-
-
-
-
-
-
-
-
-
-
-
-<div class="meetings-container">
-
-  <!-- HEADER -->
+  
   <div class="header">
     <h2>Meetings Module</h2>
 
@@ -64,7 +21,6 @@
     </div>
   </div>
 
-  <!-- TABLE -->
   <table class="meetings-table">
 
     <thead>
@@ -98,7 +54,6 @@
       </tr>
     </tbody>
 
-    <!-- FOOTER TOTAL -->
     <tfoot>
       <tr>
         <td colspan="3"><b>Total</b></td>
@@ -109,6 +64,99 @@
         </td>
       </tr>
     </tfoot>
+
+  </table>
+
+</div> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ <div class="meetings-container">
+
+  <!-- ✅ HEADER (WFH STYLE) -->
+  <div class="table-header">
+    <h2>Meetings Module</h2>
+
+    
+    <!-- Right side summary -->
+    <div class="total-box">
+      <label>Total Meetings</label>
+      <h3>{{ meetings.length }}</h3>
+    </div>
+  </div>
+
+
+
+  <div class="filter-bar">
+
+  <input
+    type="text"
+    placeholder="Search Staff..."
+    [(ngModel)]="filters.staffName"
+    (input)="applyFilters()"
+  />
+
+  <input
+    type="date"
+    [(ngModel)]="filters.startDate"
+    (change)="applyFilters()"
+  />
+
+  <button (click)="resetFilters()">Reset</button>
+
+</div>
+
+  <!-- TABLE -->
+  <table class="meetings-table">
+
+    <thead>
+      <tr>
+        <th>Staff Name</th>
+        <th>Date</th>
+        <th>Title</th>
+        <th>Project</th>
+        <th>Purpose</th>
+        <th>Location</th>
+        <th>Meeting Hours</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <!-- <tr *ngFor="let m of meetings"> -->
+        <tr *ngFor="let m of filteredMeetings">
+
+        <td><b>{{ m.createdBy }}</b></td>
+
+        <td>{{ m.startDate | date:'dd MMM y' }}</td>
+
+        <td>{{ m.title }}</td>
+
+        <td>{{ m.project?.title }}</td>
+
+        <td>{{ m.purpose }}</td>
+
+        <td>{{ m.location }}</td>
+
+        <td>{{ getMeetingHours(m) }} hrs</td>
+
+        <td>
+          <b>{{ getMeetingHours(m) }} hrs</b>
+        </td>
+
+      </tr>
+    </tbody>
 
   </table>
 

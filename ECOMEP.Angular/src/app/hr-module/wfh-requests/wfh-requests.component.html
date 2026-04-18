@@ -9,6 +9,34 @@
     </div>
   </div>
 
+
+  
+  <div class="filter-bar">
+
+  <input
+    type="text"
+    placeholder="Search Employee..."
+    [(ngModel)]="filters.employeeName"
+    (input)="applyFilters()"
+  />
+
+  <input
+    type="date"
+    [(ngModel)]="filters.startDate"
+    (change)="applyFilters()"
+  />
+
+  <input
+    type="date"
+    [(ngModel)]="filters.endDate"
+    (change)="applyFilters()"
+  />
+
+  <button (click)="resetFilters()">Reset</button>
+
+</div>
+
+
   <table class="meetings-table">
 
     <thead>
@@ -32,7 +60,8 @@
         </td>
       </tr>
 
-      <tr *ngFor="let req of requests">
+      <!-- <tr *ngFor="let req of requests"> -->
+       <tr *ngFor="let req of filteredRequests">
 
         <!-- EMPLOYEE -->
         <td>
