@@ -362,3 +362,25 @@ body, .meetings-container {
   color: #ff1744;
   transform: scale(1.2);
 }
+
+
+.table-header {
+  display: flex;
+  align-items: center;
+    padding: 10px 15px; 
+}
+
+/* 👇 New wrapper */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* space between label & search */
+}
+
+.search-box input {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 220px;
+  margin-bottom: 8px;
+}

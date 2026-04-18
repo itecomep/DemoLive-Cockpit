@@ -21,7 +21,10 @@ export class WfhHistoryComponent implements OnInit, OnChanges  {
 
   @Input() requests: any[] = [];
   @Output() refresh = new EventEmitter<void>();
-
+sortColumn: string = '';
+sortDirection: 'asc' | 'desc' = 'asc';
+searchText: string = '';
+filteredRequests: any[] = [];
   displayedColumns: string[] = [
     'employeeName',
     'startDate',
@@ -75,6 +78,36 @@ ngOnInit(): void {
 // FILE HANDLING (UPDATED)
 // ======================
 
+
+sort(column: string) {
+  if (this.sortColumn === column) {
+    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+  } else {
+    this.sortColumn = column;
+    this.sortDirection = 'asc';
+  }
+
+  this.requests.sort((a, b) => {
+    let valueA = a[column];
+    let valueB = b[column];
+
+    // Handle dates
+    if (column === 'startDate' || column === 'endDate') {
+      valueA = new Date(valueA).getTime();
+      valueB = new Date(valueB).getTime();
+    }
+
+    // Handle strings
+    if (column === 'employeeName') {
+      valueA = valueA?.toLowerCase();
+      valueB = valueB?.toLowerCase();
+    }
+
+    if (valueA < valueB) return this.sortDirection === 'asc' ? -1 : 1;
+    if (valueA > valueB) return this.sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
+}
 
 openFile(file: any): void {
   const url = file?.url;
@@ -186,29 +219,31 @@ formData.append('endDate', this.toSafeDate(this.editedRow.endDate));
   }
 
 
-   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['requests'] && this.requests) {
+  //  ngOnChanges(changes: SimpleChanges): void {
+  //   if (changes['requests'] && this.requests) {
 
-      this.requests = this.requests.map(req => ({
-        ...req,
-        status: (req.status || 'pending').toLowerCase(),
-        attachments: Array.isArray(req.attachments) ? req.attachments : []
-      }));
+  //     this.requests = this.requests.map(req => ({
+  //       ...req,
+  //       status: (req.status || 'pending').toLowerCase(),
+  //       attachments: Array.isArray(req.attachments) ? req.attachments : []
+  //     }));
 
-    }
+  //   }
+  // }
+
+  ngOnChanges(changes: SimpleChanges): void {
+  if (changes['requests'] && this.requests) {
+
+    this.requests = this.requests.map(req => ({
+      ...req,
+      status: (req.status || 'pending').toLowerCase(),
+      attachments: Array.isArray(req.attachments) ? req.attachments : []
+    }));
+
+    this.filteredRequests = [...this.requests]; // ✅ initialize filter
   }
-    // onFileSelect(event: any): void {
-    //   const files = Array.from(event.target.files);
-
-    //   if (!this.editedRow.newFiles) {
-    //     this.editedRow.newFiles = [];
-    //   }
-
-    //   this.editedRow.newFiles.push(...files);
-
-    //   // ✅ RESET INPUT (VERY IMPORTANT)
-    //   event.target.value = null;
-    // }
+}
+    
 
     onFileSelect(event: any): void {
   const files = Array.from(event.target.files);
@@ -231,6 +266,22 @@ removeFile(index: number): void {
 // remove NEW file
 removeNewFile(index: number): void {
   this.editedRow.newFiles.splice(index, 1);
+}
+
+
+applyFilter(): void {
+  const value = this.searchText.toLowerCase().trim();
+
+  if (!value) {
+    this.filteredRequests = [...this.requests];
+    return;
+  }
+
+  this.filteredRequests = this.requests.filter(req =>
+    req.employeeName?.toLowerCase().includes(value) ||
+    req.reason?.toLowerCase().includes(value) ||
+    req.status?.toLowerCase().includes(value)
+  );
 }
 
 

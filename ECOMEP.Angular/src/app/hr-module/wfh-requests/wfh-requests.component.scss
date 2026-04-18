@@ -31,7 +31,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 2px;
 
   h2 {
     font-size: 22px;
@@ -67,6 +67,7 @@
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+   margin-top: 0;
 }
 
 .meetings-table thead {
@@ -557,4 +558,30 @@
 .attachment-box::-webkit-scrollbar-thumb {
   background: #cfcfcf;
   border-radius: 10px;
+}
+
+/* HEADER SAME AS LEAVES */
+.table-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* TITLE */
+.table-header h2 {
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* SEARCH */
+.search-input {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 220px;
+}
+
+/* PUSH SUMMARY TO RIGHT */
+.summary-box {
+  margin-left: auto;   /* 👈 IMPORTANT */
 }

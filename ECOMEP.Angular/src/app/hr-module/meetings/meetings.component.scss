@@ -1,80 +1,49 @@
-// .meetings-container {
-//   padding: 20px;
-//   background: #f4fbf6; // light green-white background
-//   min-height: 100%;
-// }
-
-// h2 {
-//   margin-bottom: 15px;
-//   font-size: 22px;
-//   font-weight: 600;
-//   color: #1b5e20; // dark green
-// }
-
-// .meetings-table {
-//   width: 100%;
-//   border-collapse: collapse;
-//   background: #ffffff;
-//   border-radius: 10px;
-//   overflow: hidden;
-//   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-// }
-
-// .meetings-table thead {
-//   background: #2e7d32; // green header
-//   color: #ffffff;
-// }
-
-// .meetings-table th {
-//   padding: 14px;
-//   text-align: left;
-//   font-size: 14px;
-//   letter-spacing: 0.5px;
-//   font-weight: 600;
-// }
-
-// .meetings-table td {
-//   padding: 12px;
-//   border-bottom: 1px solid #e8f5e9; // light green border
-//   font-size: 14px;
-//   color: #2e2e2e;
-// }
-
-// .meetings-table tbody tr:nth-child(even) {
-//   background: #f6fcf7; // alternate light green row
-// }
-
-// .meetings-table tbody tr:hover {
-//   background: #e8f5e9; // hover green highlight
-//   transition: 0.2s ease;
-// }
-
-// /* optional badge style for hours */
-// .badge {
-//   display: inline-block;
-//   padding: 4px 8px;
-//   border-radius: 6px;
-//   background: #c8e6c9;
-//   color: #1b5e20;
-//   font-weight: 500;
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 .meetings-container {
   padding: 20px;
   background: #f5f7fb;
+}
+
+/* 🔥 HEADER SAME AS WFH */
+.table-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 6px 10px;
+}
+
+/* TITLE */
+.table-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: #1b5e20;
+}
+
+/* SEARCH */
+.search-input {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 220px;
+}
+
+/* RIGHT SIDE BOX */
+.total-box {
+  margin-left: auto;
+  background: #e8f5e9;
+  padding: 8px 14px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.total-box label {
+  font-size: 12px;
+  color: #2e7d32;
+}
+
+.total-box h3 {
+  margin: 2px 0 0;
+  color: #1b5e20;
 }
 
 .header {
@@ -83,10 +52,16 @@
   align-items: center;
   margin-bottom: 20px;
 
-  h2 {
-    margin: 0;
-    font-size: 22px;
-  }
+  // background: #eef0ee; /* light green background */
+  padding: 12px 16px;
+  border-radius: 8px;
+
+ h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #2e7d32; /* same green as table header */
+  font-weight: 600;
+}
 }
 
 .summary {

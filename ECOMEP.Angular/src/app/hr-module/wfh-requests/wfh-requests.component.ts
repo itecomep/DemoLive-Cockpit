@@ -22,6 +22,10 @@ export class WfhRequestsComponent implements OnInit {
 
   existingFiles: any[] = [];
   newFiles: File[] = [];
+  sortColumn: string = '';
+sortDirection: 'asc' | 'desc' = 'asc';
+searchText: string = '';
+filteredRequests: any[] = [];
 
   constructor(
     private hrService: HrModuleService,
@@ -197,4 +201,55 @@ export class WfhRequestsComponent implements OnInit {
     const parts = fileName.split('_');
     return parts.length > 1 ? parts.slice(1).join('_') : fileName;
   }
+
+
+
+
+
+
+  sort(column: string) {
+  if (this.sortColumn === column) {
+    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+  } else {
+    this.sortColumn = column;
+    this.sortDirection = 'asc';
+  }
+
+  this.requests.sort((a, b) => {
+    let valueA = a[column];
+    let valueB = b[column];
+
+    // ✅ Date sorting
+    if (column === 'startDate' || column === 'endDate') {
+      valueA = new Date(valueA).getTime();
+      valueB = new Date(valueB).getTime();
+    }
+
+    // ✅ String sorting
+    if (column === 'employeeName') {
+      valueA = valueA?.toLowerCase();
+      valueB = valueB?.toLowerCase();
+    }
+
+    if (valueA < valueB) return this.sortDirection === 'asc' ? -1 : 1;
+    if (valueA > valueB) return this.sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
+}
+
+applyFilter(): void {
+  const value = this.searchText.toLowerCase().trim();
+
+  if (!value) {
+    this.filteredRequests = [...this.requests];
+    return;
+  }
+
+  this.filteredRequests = this.requests.filter(req =>
+    req.employeeName?.toLowerCase().includes(value) ||
+    req.reason?.toLowerCase().includes(value) ||
+    req.status?.toLowerCase().includes(value)
+  );
+}
+
 }

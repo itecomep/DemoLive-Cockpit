@@ -94,10 +94,26 @@
 }
 
 /* 🔥 ATTACHMENT ICON */
-::ng-deep .mat-mdc-cell:nth-child(8) mat-icon {
+
+/* ✅ TARGET COLUMN DIRECTLY (BEST WAY) */
+::ng-deep .mat-column-attachment {
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ICON CENTER */
+::ng-deep .mat-column-attachment mat-icon {
   font-size: 20px;
   color: #247a34;
+  display: block;
+  margin: 0 auto;
+  cursor: pointer;
   transition: transform 0.2s ease;
+}
+
+::ng-deep .mat-column-attachment mat-icon:hover {
+  transform: scale(1.2);
 }
 
 ::ng-deep .mat-mdc-cell:nth-child(8) mat-icon:hover {
@@ -573,8 +589,31 @@
     border-radius: 16px !important;
     overflow: hidden;
   }
+  
 }
 
 
 
 
+/* ================= HEADER FIX (MAIN PAGE) ================= */
+.table-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 15px;
+  padding: 6px 10px;
+}
+
+/* TITLE */
+.table-header h2 {
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* SEARCH INPUT */
+.search-input {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 220px;
+}

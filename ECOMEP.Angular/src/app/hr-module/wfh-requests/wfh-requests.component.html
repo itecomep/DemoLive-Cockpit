@@ -1,28 +1,77 @@
 <div class="meetings-container">
+  <!-- <div class="table-header">
 
-  <div class="table-header">
+  <div class="header-left">
     <h2>Work From Home Requests</h2>
 
-    <div class="summary-box">
-      <span>Total Days</span>
-      <h3>{{ getTotalDays() }}</h3>
+    <div class="search-box">
+      <input
+        type="text"
+        placeholder="Search..."
+        [(ngModel)]="searchText"
+        (input)="applyFilter()"
+      />
     </div>
   </div>
 
+  <div class="summary-box">
+    <span>Total Days</span>
+    <h3>{{ getTotalDays() }}</h3>
+  </div>
+
+</div> -->
+
+<div class="table-header">
+
+  <h2>Work From Home Requests</h2>
+
+  <input
+    type="text"
+    class="search-input"
+    placeholder="Search..."
+    [(ngModel)]="searchText"
+    (input)="applyFilter()"
+  />
+
+  <div class="summary-box">
+    <span>Total Days</span>
+    <h3>{{ getTotalDays() }}</h3>
+  </div>
+
+</div>
+
   <table class="meetings-table">
 
-    <thead>
-      <tr>
-        <th>Employee</th>
-        <th>Start Date</th>
-        <th>End Date</th>
-        <th>Days</th>
-        <th>Reason</th>
-        <th>Attachment</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
+  <thead>
+  <tr>
+    <th (click)="sort('employeeName')">
+      Employee
+      <span>
+        {{ sortColumn === 'employeeName' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}
+      </span>
+    </th>
+
+    <th (click)="sort('startDate')">
+      Start Date
+      <span>
+        {{ sortColumn === 'startDate' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}
+      </span>
+    </th>
+
+    <th (click)="sort('endDate')">
+      End Date
+      <span>
+        {{ sortColumn === 'endDate' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}
+      </span>
+    </th>
+
+    <th>Days</th>
+    <th>Reason</th>
+    <th>Attachment</th>
+    <th>Status</th>
+    <th>Actions</th>
+  </tr>
+</thead>
 
     <tbody>
 
