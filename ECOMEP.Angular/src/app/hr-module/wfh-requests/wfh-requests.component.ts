@@ -17,20 +17,26 @@ export class WfhRequestsComponent implements OnInit {
 
   requests: any[] = [];
 
-  editingRowId: number | null = null;
+  // editingRowId: number | null = null;  
   backupRow: any = null;
 
   existingFiles: any[] = [];
   newFiles: File[] = [];
-  sortColumn: string = '';
-sortDirection: 'asc' | 'desc' = 'asc';
-searchText: string = '';
-filteredRequests: any[] = [];
 
   constructor(
     private hrService: HrModuleService,
     private authService: AuthService
   ) {}
+
+
+  editingRowId: any = null;
+  editedRow: any = {};
+  filteredRequests: any[] = [];
+  filters = {
+    employeeName: '',
+    startDate: '',
+    endDate: ''
+  };
 
   ngOnInit(): void {
     this.loadRequests();
@@ -57,6 +63,8 @@ filteredRequests: any[] = [];
               'Unknown',
             attachments: Array.isArray(x.attachments) ? x.attachments : []
           }));
+
+          this.filteredRequests = [...this.requests];
       },
       error: err => console.error(err)
     });
@@ -157,17 +165,31 @@ filteredRequests: any[] = [];
     return `${year}-${month}-${day}`;
   }
 
-  getTotalDays(): number {
-    let total = 0;
+  // getTotalDays(): number {
+  //   let total = 0;
 
-    this.requests.forEach(req => {
-      if (req.startDate && req.endDate) {
-        total += this.getDays(req.startDate, req.endDate);
-      }
-    });
+  //   this.requests.forEach(req => {
+  //     if (req.startDate && req.endDate) {
+  //       total += this.getDays(req.startDate, req.endDate);
+  //     }
+  //   });
 
-    return total;
-  }
+  //   return total;
+  // }
+
+getTotalDays(): number {
+  let total = 0;
+
+  this.filteredRequests.forEach(req => {
+    if (req.startDate && req.endDate) {
+      total += this.getDays(req.startDate, req.endDate);
+    }
+  });
+
+  return total;
+}
+
+
 
   getDays(start: Date, end: Date): number {
     const diff = new Date(end).getTime() - new Date(start).getTime();
@@ -203,53 +225,64 @@ filteredRequests: any[] = [];
   }
 
 
+  applyFilters(): void {
 
+  this.filteredRequests = this.requests.filter(req => {
 
+    const reqStart = this.formatDate(req.startDate);
+    const reqEnd = this.formatDate(req.endDate);
 
+    const filterStart = this.filters.startDate;
+    const filterEnd = this.filters.endDate;
 
-  sort(column: string) {
-  if (this.sortColumn === column) {
-    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-  } else {
-    this.sortColumn = column;
-    this.sortDirection = 'asc';
-  }
+    const empMatch = this.filters.employeeName
+      ? req.employeeName?.toLowerCase().includes(this.filters.employeeName.toLowerCase())
+      : true;
 
-  this.requests.sort((a, b) => {
-    let valueA = a[column];
-    let valueB = b[column];
+    let dateMatch = true;
 
-    // ✅ Date sorting
-    if (column === 'startDate' || column === 'endDate') {
-      valueA = new Date(valueA).getTime();
-      valueB = new Date(valueB).getTime();
+    if (filterStart && filterEnd) {
+
+      // ✅ AUTO SORT DATES (IMPORTANT FIX)
+      const from = filterStart < filterEnd ? filterStart : filterEnd;
+      const to = filterStart > filterEnd ? filterStart : filterEnd;
+
+      // ✅ RANGE MATCH
+      dateMatch = reqStart >= from && reqEnd <= to;
+    }
+    else if (filterStart) {
+      dateMatch = reqStart === filterStart;
+    }
+    else if (filterEnd) {
+      dateMatch = reqEnd === filterEnd;
     }
 
-    // ✅ String sorting
-    if (column === 'employeeName') {
-      valueA = valueA?.toLowerCase();
-      valueB = valueB?.toLowerCase();
-    }
-
-    if (valueA < valueB) return this.sortDirection === 'asc' ? -1 : 1;
-    if (valueA > valueB) return this.sortDirection === 'asc' ? 1 : -1;
-    return 0;
+    return empMatch && dateMatch;
   });
+
 }
 
-applyFilter(): void {
-  const value = this.searchText.toLowerCase().trim();
+resetFilters(): void {
+  this.filters = {
+    employeeName: '',
+    startDate: '',
+    endDate: ''
+  };
 
-  if (!value) {
-    this.filteredRequests = [...this.requests];
-    return;
-  }
+  this.filteredRequests = [...this.requests];
+}
 
-  this.filteredRequests = this.requests.filter(req =>
-    req.employeeName?.toLowerCase().includes(value) ||
-    req.reason?.toLowerCase().includes(value) ||
-    req.status?.toLowerCase().includes(value)
-  );
+formatDate(date: any): string {
+  if (!date) return '';
+
+  const d = new Date(date);
+
+  // ✅ Convert to YYYY-MM-DD (safe format)
+  const year = d.getFullYear();
+  const month = ('0' + (d.getMonth() + 1)).slice(-2);
+  const day = ('0' + d.getDate()).slice(-2);
+
+  return `${year}-${month}-${day}`;
 }
 
 }

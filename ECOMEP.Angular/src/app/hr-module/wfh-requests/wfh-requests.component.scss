@@ -31,7 +31,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2px;
+  margin-bottom: 15px;
 
   h2 {
     font-size: 22px;
@@ -67,7 +67,6 @@
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-   margin-top: 0;
 }
 
 .meetings-table thead {
@@ -560,28 +559,32 @@
   border-radius: 10px;
 }
 
-/* HEADER SAME AS LEAVES */
-.table-header {
+
+
+
+.filter-bar {
   display: flex;
-  align-items: center;
-  gap: 15px;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
 }
 
-/* TITLE */
-.table-header h2 {
-  margin: 0;
-  white-space: nowrap;
-}
-
-/* SEARCH */
-.search-input {
+.filter-bar input {
   padding: 6px 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #c8e6c9;
   border-radius: 6px;
-  width: 220px;
+  font-size: 12px;
 }
 
-/* PUSH SUMMARY TO RIGHT */
-.summary-box {
-  margin-left: auto;   /* 👈 IMPORTANT */
+.filter-bar button {
+  background: #2e7d32;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.filter-bar button:hover {
+  background: #1b5e20;
 }

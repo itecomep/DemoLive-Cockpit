@@ -4,20 +4,34 @@
   <div class="table-header">
     <h2>Meetings Module</h2>
 
-    <input
-      type="text"
-      class="search-input"
-      placeholder="Search..."
-      [(ngModel)]="searchText"
-      (input)="applyFilter()"
-    />
-
+    
     <!-- Right side summary -->
     <div class="total-box">
       <label>Total Meetings</label>
       <h3>{{ meetings.length }}</h3>
     </div>
   </div>
+
+
+
+  <div class="filter-bar">
+
+  <input
+    type="text"
+    placeholder="Search Staff..."
+    [(ngModel)]="filters.staffName"
+    (input)="applyFilters()"
+  />
+
+  <input
+    type="date"
+    [(ngModel)]="filters.startDate"
+    (change)="applyFilters()"
+  />
+
+  <button (click)="resetFilters()">Reset</button>
+
+</div>
 
   <!-- TABLE -->
   <table class="meetings-table">
@@ -63,3 +77,4 @@
   </table>
 
 </div>
+

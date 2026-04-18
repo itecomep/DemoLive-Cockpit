@@ -11,7 +11,15 @@ import { FormsModule } from '@angular/forms';
 export class MeetingsComponent {
 
   searchText: string = '';
-filteredMeetings: any[] = [];
+
+
+  filteredMeetings: any[] = [];
+
+filters = {
+  staffName: '',
+  startDate: ''
+};
+
 
   // ✅ FORM-BASED DUMMY DATA
   meetings = [
@@ -83,19 +91,54 @@ filteredMeetings: any[] = [];
     return this.meetings.reduce((sum, m) => sum + this.getTravelHours(m), 0);
   }
 
-  applyFilter() {
-  const search = this.searchText.toLowerCase();
+applyFilters(): void {
 
-  this.filteredMeetings = this.meetings.filter((m: any) =>
-    m.createdBy?.toLowerCase().includes(search) ||
-    m.title?.toLowerCase().includes(search) ||
-    m.project?.title?.toLowerCase().includes(search) ||
-    m.purpose?.toLowerCase().includes(search) ||
-    m.location?.toLowerCase().includes(search)
-  );
+  this.filteredMeetings = this.meetings.filter((m: any) => {
+
+    const meetingDate = this.formatDate(m.startDate);
+    const filterDate = this.filters.startDate;
+
+    // 👤 Staff filter
+    const staffMatch = this.filters.staffName
+      ? m.createdBy?.toLowerCase().includes(this.filters.staffName.toLowerCase())
+      : true;
+
+    // 📅 Date filter (EXACT match)
+    const dateMatch = filterDate
+      ? meetingDate === filterDate
+      : true;
+
+    return staffMatch && dateMatch;
+  });
+
 }
+
+
+resetFilters(): void {
+  this.filters = {
+    staffName: '',
+    startDate: ''
+  };
+
+  this.filteredMeetings = [...this.meetings];
+}
+
 
 ngOnInit() {
-  this.filteredMeetings = this.meetings;
+  this.filteredMeetings = [...this.meetings];
 }
+
+formatDate(date: any): string {
+  if (!date) return '';
+
+  const d = new Date(date);
+
+  const year = d.getFullYear();
+  const month = ('0' + (d.getMonth() + 1)).slice(-2);
+  const day = ('0' + d.getDate()).slice(-2);
+
+  return `${year}-${month}-${day}`;
+}
+
+
 }

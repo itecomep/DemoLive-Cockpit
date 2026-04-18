@@ -1,43 +1,90 @@
 <div class="meetings-container">
-   <div class="header-left">
+
+  <div class="table-header">
     <h2>Work From Home Requests</h2>
 
-    <div class="search-box">
-      <input
-        type="text"
-        placeholder="Search..."
-        [(ngModel)]="searchText"
-        (input)="applyFilter()"
-      />
-    </div>
   </div>
+
+
+  <div class="filter-bar">
+
+
+
+     
+  <label class="radio-option">
+    <input 
+      type="radio" 
+      name="wfhType" 
+      value="all"
+      [(ngModel)]="activeTab"
+      (change)="onFilterTypeChange()" />
+    All Requests
+  </label>
+
+  <label class="radio-option">
+    <input 
+      type="radio" 
+      name="wfhType" 
+      value="team"
+      [(ngModel)]="activeTab"
+      (change)="onFilterTypeChange()" />
+    Team Leaders
+  </label>
+
+  <input
+    type="text"
+    placeholder="Search Employee..."
+    [(ngModel)]="filters.employeeName"
+    (input)="applyFilters()"
+  />
+
+  <input
+    type="date"
+    [(ngModel)]="filters.startDate"
+    (change)="applyFilters()"
+  />
+
+  <input
+    type="date"
+    [(ngModel)]="filters.endDate"
+    (change)="applyFilters()"
+  />
+
+  <button (click)="resetFilters()">Reset</button>
+
+
+   <button 
+  class="month-btn"
+  [class.active]="activeMonthFilter === 'current'"
+  (click)="toggleFilter('current')">
+  Current Month
+</button>
+
+<button 
+  class="month-btn"
+  [class.active]="activeMonthFilter === 'last'"
+  (click)="toggleFilter('last')">
+  Last Month
+</button>
+
+
+</div>
+
 
   <table class="meetings-table">
 
     <thead>
-  <tr>
-    <th (click)="sort('employeeName')">
-      Employee
-      <span>{{ sortColumn === 'employeeName' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}</span>
-    </th>
-
-    <th (click)="sort('startDate')">
-      Start Date
-      <span>{{ sortColumn === 'startDate' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}</span>
-    </th>
-
-    <th (click)="sort('endDate')">
-      End Date
-      <span>{{ sortColumn === 'endDate' ? (sortDirection === 'asc' ? '↑' : '↓') : '' }}</span>
-    </th>
-
-    <th>Days</th>
-    <th>Reason</th>
-    <th>Attachment</th>
-    <th>Status</th>
-    <th>Edit</th>
-  </tr>
-</thead>
+      <tr>
+        <th>Employee</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Days</th>
+        <th>Reason</th>
+        <th>Attachment</th>
+        <th>Status</th>
+        <th>Edit</th>
+      </tr>
+    </thead>
 
     <tbody>
 
@@ -45,8 +92,8 @@
         <td colspan="8" class="text-center">No WFH requests found</td>
       </tr>
 
-      <!-- <tr *ngFor="let req of requests"> -->
         <tr *ngFor="let req of filteredRequests">
+
 
         <td>
           <div class="employee-cell">
@@ -133,6 +180,7 @@
           </div>
 
           <ng-template #editAttachment>
+
             <div *ngIf="editedRow.attachments?.length > 0">
               <div class="file-chip editable" *ngFor="let file of editedRow.attachments; let i = index">
                 <span>{{ getCleanFileName(file.fileName) }}</span>

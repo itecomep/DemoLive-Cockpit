@@ -23,8 +23,8 @@ endDate: string;
 })
 export class HrModuleService {
 
-  private baseUrl = 'http://localhost:5054/api/WorkFromHome'; 
-   private baseleaveUrl = 'http://localhost:5054/Leave';
+  private baseUrl = 'http://localhost:5054/api/WorkFromHome';
+  private baseleaveUrl = 'http://localhost:5054/Leave';
 
   constructor(private http: HttpClient) {}
 
@@ -42,6 +42,10 @@ export class HrModuleService {
     });
   }
 
+  getContactTeams() {
+    return this.http.get<any[]>(`http://localhost:5054/ContactTeam`);
+  }
+
   updateRequest(id: number, data: any): Observable<any> {
     return this.http.put(`${this.baseUrl}/update/${id}`, data);
   }
@@ -52,7 +56,7 @@ export class HrModuleService {
 
   updateLeaveStatus(id: number, status: string): Observable<any> {
     return this.http.put(`${this.baseleaveUrl}/update-status/${id}`, {
-      status: status
+       status: status
     });
   }
 
