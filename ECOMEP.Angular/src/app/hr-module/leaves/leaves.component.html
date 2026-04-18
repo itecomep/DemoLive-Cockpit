@@ -1,7 +1,27 @@
 <div class="table-container">
-
+  
   <!-- 🔥 FILTER BAR -->
   <div class="filter-bar">
+
+    <label class="radio-option">
+      <input 
+        type="radio"
+        name="leaveType"
+        value="all"
+        [(ngModel)]="activeTab"
+        (change)="onFilterTypeChange()" />
+      All Leaves
+    </label>
+
+    <label class="radio-option">
+      <input 
+        type="radio"
+        name="leaveType"
+        value="team"
+        [(ngModel)]="activeTab"
+        (change)="onFilterTypeChange()" />
+      Team Leaders
+    </label>
 
     <!-- SEARCH -->
     <input
@@ -28,6 +48,7 @@
 
     <!-- MONTH FILTER -->
     <div class="month-tabs">
+
       <button 
         class="month-btn"
         [class.active]="selectedMonthTab === 'current'"
@@ -41,11 +62,12 @@
         (click)="selectedMonthTab='last'; applyFilters()">
         Last Month
       </button>
+
     </div>
 
   </div>
 
-  <!-- 🔥 TABLE HEADER -->
+  <!-- 🔥 HEADER -->
   <div class="table-header">
     <h2>Leaves</h2>
   </div>

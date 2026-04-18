@@ -29,16 +29,21 @@ export class LeavesComponent implements OnInit, AfterViewInit {
   @ViewChild('cvViewerDialog') cvViewerDialog!: TemplateRef<any>;
   @ViewChild(MatSort) sort!: MatSort;
 
-  // ✅ TABLE DATA
-  dataSource = new MatTableDataSource<any>([]);
-  originalData: any[] = []; // 🔥 raw data storage
+  // ================= DATA =================
 
-  // ✅ CV VIEWER
+  dataSource = new MatTableDataSource<any>([]);
+  originalData: any[] = [];
+
+  // ================= VIEWER =================
+
   selectedCvUrl: SafeResourceUrl | null = null;
   rawCvUrl: string = '';
   selectedEmployeeName: string = '';
 
-  // ✅ FILTERS
+  // ================= FILTERS =================
+
+  activeTab: 'all' | 'team' = 'all';
+
   filters = {
     employeeName: '',
     startDate: '',
@@ -47,7 +52,8 @@ export class LeavesComponent implements OnInit, AfterViewInit {
 
   selectedMonthTab: 'current' | 'last' = 'current';
 
-  // ✅ TABLE COLUMNS
+  // ================= TABLE =================
+
   displayedColumns: string[] = [
     'employee',
     'reason',
@@ -75,31 +81,92 @@ export class LeavesComponent implements OnInit, AfterViewInit {
     this.dataSource.sort = this.sort;
   }
 
-  // ================= LOAD DATA =================
+  // ================= LOAD ALL =================
 
   loadLeaves() {
     this.service.getLeaves().subscribe({
       next: (res: any[]) => {
-
-        this.originalData = res.map(x => ({
-          id: x.id,
-          employeeName: x.employeeName,
-          reason: x.reason,
-          type: x.applicationType,
-          start: new Date(x.startDate),
-          end: new Date(x.endDate),
-          total: x.days,
-          statusFlag: x.statusFlag,
-          attachmentUrl: x.attachmentUrl || ''
-        }));
-
-        this.applyFilters(); // 🔥 always apply filters after load
+        this.originalData = res.map(x => this.mapLeave(x));
+        this.applyFilters();
       },
-      error: (err) => console.error('Error fetching leaves:', err)
+      error: err => console.error('Error fetching leaves:', err)
     });
   }
 
-  // ================= FILTER LOGIC =================
+  // ================= LOAD TEAM LEADERS =================
+
+  loadTeamLeaderLeaves() {
+
+    this.service.getContactTeams().subscribe((teams: any[]) => {
+
+      const leaderNames: string[] = [];
+
+      teams.forEach(team => {
+        team.members?.forEach((m: any) => {
+          if (m.contactID === team.leaderID) {
+            const name = m.contact?.name?.toLowerCase().trim();
+            if (name && !leaderNames.includes(name)) {
+              leaderNames.push(name);
+            }
+          }
+        });
+      });
+
+      this.service.getLeaves().subscribe((leaves: any[]) => {
+
+        this.originalData = leaves
+          .filter((l: any) => {
+            const empName = l.employeeName?.toLowerCase().trim();
+
+            return leaderNames.some(name =>
+              empName === name || empName?.includes(name)
+            );
+          })
+          .map(x => this.mapLeave(x));
+
+        this.applyFilters();
+      });
+
+    });
+  }
+
+  // ================= MAP DATA =================
+
+  mapLeave(x: any) {
+    return {
+      id: x.id,
+      employeeName: x.employeeName,
+      reason: x.reason,
+      type: x.applicationType,
+      start: new Date(x.startDate),
+      end: new Date(x.endDate),
+      total: x.days,
+      statusFlag: x.statusFlag,
+      attachmentUrl: x.attachmentUrl || ''
+    };
+  }
+
+  // ================= SWITCH FILTER =================
+
+  onFilterTypeChange() {
+
+    // reset filters when switching
+    this.filters = {
+      employeeName: '',
+      startDate: '',
+      endDate: ''
+    };
+
+    this.selectedMonthTab = 'current';
+
+    if (this.activeTab === 'all') {
+      this.loadLeaves();
+    } else {
+      this.loadTeamLeaderLeaves();
+    }
+  }
+
+  // ================= MAIN FILTER =================
 
   applyFilters() {
 
@@ -112,7 +179,7 @@ export class LeavesComponent implements OnInit, AfterViewInit {
       );
     }
 
-    // 🔹 Date Range Filter
+    // 🔹 Date Range
     if (this.filters.startDate && this.filters.endDate) {
       const from = new Date(this.filters.startDate);
       const to = new Date(this.filters.endDate);
@@ -141,7 +208,6 @@ export class LeavesComponent implements OnInit, AfterViewInit {
       );
     }
 
-    // ✅ UPDATE TABLE
     this.dataSource.data = data;
   }
 
@@ -154,15 +220,13 @@ export class LeavesComponent implements OnInit, AfterViewInit {
     this.service.updateLeaveStatus(row.id, status).subscribe({
       next: () => {
         console.log('Status updated');
-        this.loadLeaves(); // 🔥 refresh data
+        this.loadLeaves();
       },
-      error: (err: any) => {
-        console.error('Error updating status', err);
-      }
+      error: err => console.error('Error updating status', err)
     });
   }
 
-  // ================= UI HELPERS =================
+  // ================= UI =================
 
   openCvViewer(element: any) {
     this.selectedEmployeeName = element.employeeName;

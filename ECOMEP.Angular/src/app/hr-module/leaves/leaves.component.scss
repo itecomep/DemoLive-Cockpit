@@ -94,26 +94,10 @@
 }
 
 /* 🔥 ATTACHMENT ICON */
-
-/* ✅ TARGET COLUMN DIRECTLY (BEST WAY) */
-::ng-deep .mat-column-attachment {
-  text-align: center;
-  justify-content: center;
-  align-items: center;
-}
-
-/* ICON CENTER */
-::ng-deep .mat-column-attachment mat-icon {
+::ng-deep .mat-mdc-cell:nth-child(8) mat-icon {
   font-size: 20px;
   color: #247a34;
-  display: block;
-  margin: 0 auto;
-  cursor: pointer;
   transition: transform 0.2s ease;
-}
-
-::ng-deep .mat-column-attachment mat-icon:hover {
-  transform: scale(1.2);
 }
 
 ::ng-deep .mat-mdc-cell:nth-child(8) mat-icon:hover {
@@ -589,31 +573,82 @@
     border-radius: 16px !important;
     overflow: hidden;
   }
-  
 }
 
-
-
-
-/* ================= HEADER FIX (MAIN PAGE) ================= */
-.table-header {
+.filter-bar {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 15px;
-  padding: 6px 10px;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
 }
 
-/* TITLE */
-.table-header h2 {
-  margin: 0;
-  white-space: nowrap;
-}
-
-/* SEARCH INPUT */
-.search-input {
+.filter-bar input {
   padding: 6px 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #c8e6c9;
   border-radius: 6px;
-  width: 220px;
+  font-size: 12px;
 }
+
+.filter-bar button {
+  background: #2e7d32;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.filter-bar button:hover {
+  background: #609263;
+}
+
+
+
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #528155;
+  cursor: pointer;
+}
+
+.radio-option input {
+  accent-color: #6ca16e;
+  cursor: pointer;
+}
+
+
+
+.filter-bar button {
+  transition: all 0.2s ease;
+}
+
+/* DEFAULT STATE */
+.filter-bar button.month-btn {
+  background: #e8f5e9;
+  color: #1b5e20;
+  border: 1px solid #a5d6a7;
+}
+
+/* HOVER */
+.filter-bar button.month-btn:hover {
+  background: #c8e6c9;
+}
+
+/* ACTIVE (ENABLED) STATE */
+.filter-bar button.month-btn.active {
+  background: #2e7d32;
+  color: #ffffff;
+  border: 1px solid #1b5e20;
+  transform: scale(1.03);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* DISABLED LOOK (when not active but clickable) */
+.filter-bar button.month-btn:not(.active) {
+  opacity: 0.85;
+}
+
+
