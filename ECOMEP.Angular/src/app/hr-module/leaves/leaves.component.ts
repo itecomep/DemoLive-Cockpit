@@ -1,11 +1,12 @@
-import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { HrModuleService } from '../hr-module.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -17,35 +18,41 @@ import { FormsModule } from '@angular/forms';
     MatIconModule,
     MatTooltipModule,
     MatDialogModule,
+    MatSortModule,
     FormsModule
   ],
   templateUrl: './leaves.component.html',
   styleUrls: ['./leaves.component.scss']
 })
-export class LeavesComponent implements OnInit {
+export class LeavesComponent implements OnInit, AfterViewInit {
 
   @ViewChild('cvViewerDialog') cvViewerDialog!: TemplateRef<any>;
+  @ViewChild(MatSort) sort!: MatSort;
+
+  // ================= DATA =================
+
+  dataSource = new MatTableDataSource<any>([]);
+  originalData: any[] = [];
+
+  // ================= VIEWER =================
 
   selectedCvUrl: SafeResourceUrl | null = null;
   rawCvUrl: string = '';
   selectedEmployeeName: string = '';
 
+  // ================= FILTERS =================
+
   activeTab: 'all' | 'team' = 'all';
-
-  filteredRequests: any[] = [];
-  dataSource: any[] = [];
-  
-
-  // 🔥 MONTH FILTER
-  selectedMonthTab: string = 'current';
-
-  // availableMonths: { key: string, label: string }[] = [];
 
   filters = {
     employeeName: '',
     startDate: '',
     endDate: ''
   };
+
+  selectedMonthTab: 'current' | 'last' = 'current';
+
+  // ================= TABLE =================
 
   displayedColumns: string[] = [
     'employee',
@@ -64,63 +71,29 @@ export class LeavesComponent implements OnInit {
     private sanitizer: DomSanitizer
   ) {}
 
+  // ================= INIT =================
+
   ngOnInit(): void {
     this.loadLeaves();
-  
   }
 
-  // ================= MONTH TABS =================
-
-
-filterByMonth(type: string) {
-  // prevents unnecessary re-trigger
-  if (this.selectedMonthTab === type) return;
-
-  this.selectedMonthTab = type;
-  this.applyFilters();
-}
-
-getSelectedMonth(): { month: number, year: number } | null {
-  const now = new Date();
-
-  if (this.selectedMonthTab === 'current') {
-    return { month: now.getMonth(), year: now.getFullYear() };
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
   }
 
-  if (this.selectedMonthTab === 'last') {
-    const last = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    return { month: last.getMonth(), year: last.getFullYear() };
-  }
-
-  return null;
-}
-
-
-  // ================= DATA LOAD =================
-
-  mapLeave(x: any) {
-    return {
-      id: x.id,
-      employeeName: x.employeeName,
-      reason: x.reason,
-      type: x.applicationType,
-      start: new Date(x.startDate),
-      end: new Date(x.endDate),
-      total: x.days,
-      statusFlag: x.status === 'Approved' ? 1 : x.status === 'Rejected' ? -1 : 0,
-      attachmentUrl: x.attachmentUrl || ''
-    };
-  }
+  // ================= LOAD ALL =================
 
   loadLeaves() {
     this.service.getLeaves().subscribe({
       next: (res: any[]) => {
-        this.dataSource = res.map(x => this.mapLeave(x));
+        this.originalData = res.map(x => this.mapLeave(x));
         this.applyFilters();
       },
-      error: (err) => console.error('Error fetching leaves:', err)
+      error: err => console.error('Error fetching leaves:', err)
     });
   }
+
+  // ================= LOAD TEAM LEADERS =================
 
   loadTeamLeaderLeaves() {
 
@@ -130,10 +103,8 @@ getSelectedMonth(): { month: number, year: number } | null {
 
       teams.forEach(team => {
         team.members?.forEach((m: any) => {
-
           if (m.contactID === team.leaderID) {
             const name = m.contact?.name?.toLowerCase().trim();
-
             if (name && !leaderNames.includes(name)) {
               leaderNames.push(name);
             }
@@ -143,9 +114,10 @@ getSelectedMonth(): { month: number, year: number } | null {
 
       this.service.getLeaves().subscribe((leaves: any[]) => {
 
-        this.dataSource = leaves
+        this.originalData = leaves
           .filter((l: any) => {
             const empName = l.employeeName?.toLowerCase().trim();
+
             return leaderNames.some(name =>
               empName === name || empName?.includes(name)
             );
@@ -158,8 +130,34 @@ getSelectedMonth(): { month: number, year: number } | null {
     });
   }
 
+  // ================= MAP DATA =================
+
+  mapLeave(x: any) {
+    return {
+      id: x.id,
+      employeeName: x.employeeName,
+      reason: x.reason,
+      type: x.applicationType,
+      start: new Date(x.startDate),
+      end: new Date(x.endDate),
+      total: x.days,
+      statusFlag: x.statusFlag,
+      attachmentUrl: x.attachmentUrl || ''
+    };
+  }
+
+  // ================= SWITCH FILTER =================
+
   onFilterTypeChange() {
-    this.resetFilters();
+
+    // reset filters when switching
+    this.filters = {
+      employeeName: '',
+      startDate: '',
+      endDate: ''
+    };
+
+    this.selectedMonthTab = 'current';
 
     if (this.activeTab === 'all') {
       this.loadLeaves();
@@ -168,73 +166,74 @@ getSelectedMonth(): { month: number, year: number } | null {
     }
   }
 
-  // ================= MAIN FILTER PIPE =================
+  // ================= MAIN FILTER =================
 
-  applyFilters(): void {
+  applyFilters() {
 
-    const monthFilter = this.getSelectedMonth();
+    let data = [...this.originalData];
 
-    this.filteredRequests = this.dataSource.filter((req: any) => {
+    // 🔹 Employee Search
+    if (this.filters.employeeName) {
+      data = data.filter(x =>
+        x.employeeName?.toLowerCase().includes(this.filters.employeeName.toLowerCase())
+      );
+    }
 
-      const reqStart = new Date(req.start);
+    // 🔹 Date Range
+    if (this.filters.startDate && this.filters.endDate) {
+      const from = new Date(this.filters.startDate);
+      const to = new Date(this.filters.endDate);
 
-      // employee filter
-      const empMatch = this.filters.employeeName
-        ? req.employeeName?.toLowerCase().includes(this.filters.employeeName.toLowerCase())
-        : true;
+      data = data.filter(x =>
+        x.start >= from && x.end <= to
+      );
+    }
 
-      // date range filter (existing)
-      const reqStartStr = this.formatDate(req.start);
-      const reqEndStr = this.formatDate(req.end);
+    // 🔹 Month Filter
+    const now = new Date();
 
-      const filterStart = this.filters.startDate;
-      const filterEnd = this.filters.endDate;
+    if (this.selectedMonthTab === 'current') {
+      data = data.filter(x =>
+        x.start.getMonth() === now.getMonth() &&
+        x.start.getFullYear() === now.getFullYear()
+      );
+    }
 
-      let dateMatch = true;
+    if (this.selectedMonthTab === 'last') {
+      const last = new Date(now.getFullYear(), now.getMonth() - 1, 1);
 
-      if (filterStart && filterEnd) {
-        const from = filterStart < filterEnd ? filterStart : filterEnd;
-        const to = filterStart > filterEnd ? filterStart : filterEnd;
+      data = data.filter(x =>
+        x.start.getMonth() === last.getMonth() &&
+        x.start.getFullYear() === last.getFullYear()
+      );
+    }
 
-        dateMatch = reqStartStr >= from && reqEndStr <= to;
-      }
-      else if (filterStart) {
-        dateMatch = reqStartStr === filterStart;
-      }
-      else if (filterEnd) {
-        dateMatch = reqEndStr === filterEnd;
-      }
+    this.dataSource.data = data;
+  }
 
-      // 🔥 MONTH FILTER
-      let monthMatch = true;
+  // ================= STATUS =================
 
-      if (monthFilter) {
-        monthMatch =
-          reqStart.getMonth() === monthFilter.month &&
-          reqStart.getFullYear() === monthFilter.year;
-      }
+  updateStatus(row: any, status: 'Approved' | 'Rejected') {
 
-      return empMatch && dateMatch && monthMatch;
+    row.statusFlag = status === 'Approved' ? 1 : -1;
+
+    this.service.updateLeaveStatus(row.id, status).subscribe({
+      next: () => {
+        console.log('Status updated');
+        this.loadLeaves();
+      },
+      error: err => console.error('Error updating status', err)
     });
   }
 
-  resetFilters(): void {
-    this.filters = {
-      employeeName: '',
-      startDate: '',
-      endDate: ''
-    };
-
-    this.selectedMonthTab = 'current';
-    this.applyFilters();
-  }
-
-  // ================= UI HELPERS =================
+  // ================= UI =================
 
   openCvViewer(element: any) {
     this.selectedEmployeeName = element.employeeName;
     this.rawCvUrl = element.attachmentUrl;
-    this.selectedCvUrl = this.sanitizer.bypassSecurityTrustResourceUrl(element.attachmentUrl);
+
+    this.selectedCvUrl =
+      this.sanitizer.bypassSecurityTrustResourceUrl(element.attachmentUrl);
 
     this.dialog.open(this.cvViewerDialog, {
       width: '950px',
@@ -251,24 +250,4 @@ getSelectedMonth(): { month: number, year: number } | null {
     row.expanded = !row.expanded;
   }
 
-  updateStatus(row: any, status: 'Approved' | 'Rejected') {
-    row.statusFlag = status === 'Approved' ? 1 : -1;
-
-    this.service.updateStatus(row.id, status).subscribe({
-      next: () => console.log('Status updated'),
-      error: (err: any) => console.error('Error updating status', err)
-    });
-  }
-
-  formatDate(date: any): string {
-    if (!date) return '';
-
-    const d = new Date(date);
-
-    const year = d.getFullYear();
-    const month = ('0' + (d.getMonth() + 1)).slice(-2);
-    const day = ('0' + d.getDate()).slice(-2);
-
-    return `${year}-${month}-${day}`;
-  }
 }
