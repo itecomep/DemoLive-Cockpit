@@ -8,6 +8,8 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { FormsModule } from '@angular/forms';
+import { ContactApiService } from 'src/app/contact/services/contact-api.service';
+
 
 @Component({
   selector: 'app-leaves',
@@ -19,7 +21,7 @@ import { FormsModule } from '@angular/forms';
     MatTooltipModule,
     MatDialogModule,
     MatSortModule,
-    FormsModule
+    FormsModule,
   ],
   templateUrl: './leaves.component.html',
   styleUrls: ['./leaves.component.scss']
@@ -68,6 +70,7 @@ export class LeavesComponent implements OnInit, AfterViewInit {
   ];
 
   constructor(
+      private contactService: ContactApiService,  // ✅ THIS is correct
     private service: HrModuleService,
     private dialog: MatDialog,
     private sanitizer: DomSanitizer
@@ -85,15 +88,49 @@ export class LeavesComponent implements OnInit, AfterViewInit {
 
   // ================= LOAD ALL =================
 
-  loadLeaves() {
-    this.service.getLeaves().subscribe({
-      next: (res: any[]) => {
-        this.originalData = res.map(x => this.mapLeave(x));
-        this.applyFilters();
-      },
-      error: err => console.error('Error fetching leaves:', err)
+  // loadLeaves() {
+  //   this.service.getLeaves().subscribe({
+  //     next: (res: any[]) => {
+  //       this.originalData = res.map(x => this.mapLeave(x));
+  //       this.applyFilters();
+  //     },
+  //     error: err => console.error('Error fetching leaves:', err)
+  //   });
+  // }
+
+
+loadLeaves() {
+  this.service.getLeaves().subscribe((leaves: any[]) => {
+
+    this.contactService.get([]).subscribe((contacts: any[]) => {
+
+      this.originalData = leaves.map(leave => {
+
+        const contact = contacts.find(c =>
+          c.name?.toLowerCase().trim() === leave.employeeName?.toLowerCase().trim()
+        );
+
+        return {
+          id: leave.id,
+          employeeName: leave.employeeName,
+          reason: leave.reason,
+          type: leave.applicationType,
+          start: new Date(leave.startDate),
+          end: new Date(leave.endDate),
+          total: leave.days,
+          statusFlag: leave.statusFlag,
+          attachmentUrl: leave.attachmentUrl || '',
+          photoUrl: contact?.photoUrl || ''
+        };
+      });
+
+      this.applyFilters();
     });
-  }
+
+  });
+}
+
+
 
   // ================= LOAD TEAM LEADERS =================
 
@@ -144,7 +181,8 @@ export class LeavesComponent implements OnInit, AfterViewInit {
       end: new Date(x.endDate),
       total: x.days,
       statusFlag: x.statusFlag,
-      attachmentUrl: x.attachmentUrl || ''
+      attachmentUrl: x.attachmentUrl || '',
+      photoUrl: x.contact?.photoUrl || ''   // 🔥 ADD THIS
     };
   }
 
