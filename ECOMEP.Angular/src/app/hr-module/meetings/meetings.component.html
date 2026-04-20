@@ -32,50 +32,6 @@
   <button (click)="resetFilters()">Reset</button>
 
 </div>
-
-  <!-- TABLE -->
-  <!-- <table class="meetings-table">
-
-    <thead>
-      <tr>
-        <th>Internal Attendee</th>
-        <th>Start Date</th>
-        <th>End Date</th>
-        <th>Event</th>
-         <th>Project</th>
-        <th>Purpose</th>
-        <th>Location</th>
-        <th>Meeting Hours</th>
-        <th>Total</th>
-      </tr>
-    </thead>
-
-    <tbody>
-        <tr *ngFor="let m of filteredMeetings">
-
-        <td><b>{{ m.createdBy }}</b></td>
-
-        <td>{{ m.startDate | date:'dd MMM y' }}</td>
-
-        <td>{{ m.title }}</td>
-
-        <td>{{ m.project?.title }}</td>
-
-        <td>{{ m.purpose }}</td>
-
-        <td>{{ m.location }}</td>
-
-        <td>{{ getMeetingHours(m) }} hrs</td>
-
-        <td>
-          <b>{{ getMeetingHours(m) }} hrs</b>
-        </td>
-
-      </tr>
-    </tbody>
-
-  </table> -->
-
   <table class="meetings-table">
 
   <thead>
@@ -87,7 +43,7 @@
       <th>Event / Project</th>
       <th>Purpose</th>
       <th>Location</th>
-      <th>Hours</th>
+      <th>Travelling Hours</th>
     </tr>
   </thead>
 
