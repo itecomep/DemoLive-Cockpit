@@ -232,13 +232,24 @@
             </button>
           </ng-container>
 
-          <span *ngIf="req.status === 'approved'" class="approved">
+          <!-- <span *ngIf="req.status === 'approved'" class="approved">
             Approved
           </span>
 
           <span *ngIf="req.status === 'rejected'" class="rejected">
             Rejected
-          </span>
+          </span> -->
+
+          <span *ngIf="req.status === 'approved'" class="approved">
+  <span class="material-icons status-icon">thumb_up</span>
+  Approved
+</span>
+
+<span *ngIf="req.status === 'rejected'" class="rejected">
+  <span class="material-icons status-icon">thumb_down</span>
+  Rejected
+</span>
+
 
         </td>
 

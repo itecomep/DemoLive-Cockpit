@@ -158,9 +158,25 @@
         </td>
 
         <td>
-          <span class="status-badge" [ngClass]="req.status">
+          <!-- <span class="status-badge" [ngClass]="req.status">
             {{ req.status || 'Pending' }}
-          </span>
+          </span> -->
+
+          <span 
+  class="status-badge" 
+  [ngClass]="req.status?.toLowerCase()">
+
+  <span class="material-icons status-icon">
+    {{
+      req.status?.toLowerCase() === 'approved' ? 'thumb_up' :
+      req.status?.toLowerCase() === 'rejected' ? 'thumb_down' :
+      'schedule'
+    }}
+  </span>
+
+  {{ req.status || 'Pending' }}
+</span>
+
         </td>
 
         <td class="action-cell">
