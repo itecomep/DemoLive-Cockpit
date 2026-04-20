@@ -171,7 +171,11 @@ namespace MyCockpitView.WebApi.MeetingModule.Controllers
         public async Task<IActionResult> Create([FromBody] MeetingDto Dto)
         {
             var _attendees = Dto.Attendees;
-            var obj = _mapper.Map<MeetingDto>(await _service.GetById(await _service.Create(_mapper.Map<Meeting>(Dto))));
+            var meetingEntity = _mapper.Map<Meeting>(Dto);
+            meetingEntity.TypeFlag = Dto.SubjectType == "Event" ? 1 : 0;
+            var createdId = await _service.Create(meetingEntity);
+            var obj = _mapper.Map<MeetingDto>(await _service.GetById(createdId));
+
             if (obj == null) throw new BadRequestException($"{nameof(Meeting)} could not be created!");
 
             var _statusMasters = await statusMasterService.Get()
@@ -195,6 +199,7 @@ namespace MyCockpitView.WebApi.MeetingModule.Controllers
                                                                     );
             }
             await wFTaskService.StartFlow(nameof(Meeting), obj.TypeFlag, obj.ID, ProjectID: obj.ProjectID);
+
             // ================= NOTIFICATION (ONLY INTERNAL ATTENDEES) =================
 
             var meeting = await _db.Meetings
@@ -230,7 +235,6 @@ namespace MyCockpitView.WebApi.MeetingModule.Controllers
 
                     _db.Notifications.Add(notification);
 
-                    // 🔔 REAL-TIME
                     if (NotificationHub.UserConnections.TryGetValue(user.Username, out var connectionId))
                     {
                         await _hub.Clients.Client(connectionId)
@@ -462,5 +466,58 @@ namespace MyCockpitView.WebApi.MeetingModule.Controllers
             };
 
         }
+
+        [Authorize]
+        [HttpGet("summary")]
+        public async Task<IActionResult> GetMeetingSummary()
+        {            
+            var meetings = await _db.Meetings
+                .Include(m => m.Attendees)
+                .OrderByDescending(m => m.StartDate) 
+                .ToListAsync();
+
+            var tasks = await _db.WFTasks
+                .Include(t => t.TimeEntries)
+                .Where(t => t.Entity == nameof(Meeting))
+                .ToListAsync();
+
+            var result = meetings
+                .SelectMany(m =>
+                {
+                    var meetingTasks = tasks
+                        .Where(t => t.EntityID == m.ID)
+                        .ToList();
+
+                    Console.WriteLine($"MeetingId: {m.ID}, TypeFlag: {m.TypeFlag}");
+
+                    return m.Attendees
+                        .Where(a => a.TypeFlag == McvConstant.MEETING_ATTENDEE_INTERNAL)
+                        .Select(a =>
+                        {
+                            var travelHours = meetingTasks
+                                .SelectMany(t => t.TimeEntries)
+                                .Where(te => te.ContactID == a.ContactID)
+                                .Sum(te => te.ManHours);
+
+                            return new MeetingSummaryDto
+                            {
+                                AttendeeName = a.Name,
+                                StartTime = m.StartDate,
+                                EndTime = m.EndDate,
+                                Type = m.TypeFlag == 0 ? "Project" :
+                                       m.TypeFlag == 1 ? "Event" :
+                                       "Unknown",
+                                Title = m.Title,
+                                Purpose = m.Purpose,
+                                Location = m.Location,
+                                TravellingHours = travelHours
+                            };
+                        });
+                })
+                .ToList();
+
+            return Ok(result);
+        }
+
     }
 }

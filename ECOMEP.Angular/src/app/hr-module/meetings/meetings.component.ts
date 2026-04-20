@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 
-/* ✅ INTERFACE (VERY IMPORTANT) */
 interface Meeting {
+  attendeeName: string;
+  startTime: string;
+  endTime: string;
+  type: string;
   title: string;
-  createdBy: string;
-  startDate: string;
-  endDate: string;
-  subjectType: 'Project' | 'Event';
-  project?: { title: string };
   purpose: string;
   location: string;
+  travellingHours: number;
 }
 
 @Component({
@@ -23,93 +23,45 @@ interface Meeting {
 })
 export class MeetingsComponent implements OnInit {
 
-  /* ✅ FILTERS */
   filters = {
     staffName: '',
     startDate: ''
   };
 
-  /* ✅ MAIN DATA */
-  meetings: Meeting[] = [
-    {
-      title: 'Client Meeting - IoT',
-      createdBy: 'Ravi Kumar',
-      startDate: '2026-04-01T10:00:00',
-      endDate: '2026-04-01T12:00:00',
-      subjectType: 'Project',
-      project: { title: 'Smart IoT' },
-      purpose: 'Meeting',
-      location: 'Mumbai Office'
-    },
-    {
-      title: 'Site Visit - Digital Twin',
-      createdBy: 'Anita Sharma',
-      startDate: '2026-04-02T11:30:00',
-      endDate: '2026-04-02T14:30:00',
-      subjectType: 'Project',
-      project: { title: 'Digital Twin' },
-      purpose: 'Site Visit',
-      location: 'Pune Site'
-    },
-    {
-      title: 'HR Planning',
-      createdBy: 'John Mathew',
-      startDate: '2026-04-03T09:00:00',
-      endDate: '2026-04-03T11:30:00',
-      subjectType: 'Event',
-      purpose: 'Meeting',
-      location: 'Head Office'
-    },
-    {
-      title: 'Automation Review',
-      createdBy: 'Priya Singh',
-      startDate: '2026-04-04T14:00:00',
-      endDate: '2026-04-04T18:00:00',
-      subjectType: 'Project',
-      project: { title: 'Automation' },
-      purpose: 'Inspection',
-      location: 'Factory'
-    },
-    {
-      title: 'Analytics Strategy',
-      createdBy: 'Aman Verma',
-      startDate: '2026-04-05T16:00:00',
-      endDate: '2026-04-05T18:30:00',
-      subjectType: 'Event',
-      purpose: 'Meeting',
-      location: 'Conference Room'
-    }
-  ];
-
-  /* ✅ FILTERED DATA */
+  meetings: Meeting[] = [];
   filteredMeetings: Meeting[] = [];
 
-  /* ✅ INIT */
+  constructor(private http: HttpClient) {}
+
   ngOnInit(): void {
-    this.filteredMeetings = [...this.meetings];
+    this.loadMeetings();
   }
 
-  /* ✅ CALCULATE HOURS */
-  getMeetingHours(m: Meeting): number {
-    const start = new Date(m.startDate).getTime();
-    const end = new Date(m.endDate).getTime();
-    return +( (end - start) / (1000 * 60 * 60) ).toFixed(2);
+  loadMeetings(): void {
+    this.http.get<Meeting[]>('http://localhost:5054/Meeting/summary')
+      .subscribe({
+        next: (data) => {
+          this.meetings = data;
+          this.filteredMeetings = [...this.meetings];
+        },
+        error: (err) => {
+          console.error('Error loading meetings:', err);
+        }
+      });
   }
 
-  /* ✅ FILTER LOGIC */
   applyFilters(): void {
-
     this.filteredMeetings = this.meetings.filter((m: Meeting) => {
 
-      const meetingDate = this.formatDate(m.startDate);
+      const meetingDate = this.formatDate(m.startTime);
       const filterDate = this.filters.startDate;
 
       /* 👤 STAFF FILTER */
       const staffMatch = this.filters.staffName
-        ? m.createdBy.toLowerCase().includes(this.filters.staffName.toLowerCase())
+        ? m.attendeeName.toLowerCase().includes(this.filters.staffName.toLowerCase())
         : true;
 
-      /* 📅 DATE FILTER */
+      
       const dateMatch = filterDate
         ? meetingDate === filterDate
         : true;
@@ -118,7 +70,6 @@ export class MeetingsComponent implements OnInit {
     });
   }
 
-  /* 🔄 RESET */
   resetFilters(): void {
     this.filters = {
       staffName: '',
@@ -128,7 +79,6 @@ export class MeetingsComponent implements OnInit {
     this.filteredMeetings = [...this.meetings];
   }
 
-  /* 📅 FORMAT DATE (IMPORTANT FOR FILTER) */
   formatDate(date: string): string {
     const d = new Date(date);
 
@@ -139,11 +89,11 @@ export class MeetingsComponent implements OnInit {
     return `${year}-${month}-${day}`;
   }
 
-  /* ✅ OPTIONAL TOTALS (for future UI) */
-  getTotalMeetingHours(): number {
+  getTotalTravelHours(): number {
     return this.filteredMeetings.reduce(
-      (sum, m) => sum + this.getMeetingHours(m),
+      (sum, m) => sum + m.travellingHours,
       0
     );
   }
+
 }

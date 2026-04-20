@@ -1,102 +1,103 @@
- <div class="meetings-container">
+<div class="meetings-container">
 
-  <!-- ✅ HEADER (WFH STYLE) -->
   <div class="table-header">
     <h2>Meetings Module</h2>
 
-    
-    <!-- Right side summary -->
     <div class="total-box">
-      <label>Total Meetings</label>
-      <h3>{{ meetings.length }}</h3>
+      <label>Total Records</label>
+      <h3>{{ filteredMeetings.length }}</h3>
     </div>
   </div>
 
-
-
   <div class="filter-bar">
 
-  <input
-    type="text"
-    placeholder="Search Staff..."
-    [(ngModel)]="filters.staffName"
-    (input)="applyFilters()"
-  />
+    <input
+      type="text"
+      placeholder="Search Attendee..."
+      [(ngModel)]="filters.staffName"
+      (input)="applyFilters()"
+    />
 
-  <input
-    type="date"
-    [(ngModel)]="filters.startDate"
-    (change)="applyFilters()"
-  />
+    <input
+      type="date"
+      [(ngModel)]="filters.startDate"
+      (change)="applyFilters()"
+    />
 
-  <button (click)="resetFilters()">Reset</button>
+    <button (click)="resetFilters()">Reset</button>
 
-</div>
+  </div>
+
   <table class="meetings-table">
 
-  <thead>
-    <tr>
-      <th>Internal Attendee</th>
-      <th>Start</th>
-      <th>End</th>
-      <th>Type</th>
-      <th>Event / Project</th>
-      <th>Purpose</th>
-      <th>Location</th>
-      <th>Travelling Hours</th>
-    </tr>
-  </thead>
+    <thead>
+      <tr>
+        <th>Internal Attendee</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Type</th>
+        <th>Event / Project</th>
+        <th>Purpose</th>
+        <th>Location</th>
+        <th>Travelling Hours</th>
+      </tr>
+    </thead>
 
-  <tbody>
-    <tr *ngFor="let m of filteredMeetings">
+    <tbody>
 
-      <!-- 👤 STAFF -->
-      <td><b>{{ m.createdBy }}</b></td>
+      <!-- ✅ NO DATA -->
+      <tr *ngIf="filteredMeetings.length === 0">
+        <td colspan="8" style="text-align:center; padding: 20px;">
+          No meetings found
+        </td>
+      </tr>
 
-      <!-- ⏱ START -->
-      <td>
-        {{ m.startDate | date:'dd MMM y' }} <br>
-        <small>{{ m.startDate | date:'HH:mm' }}</small>
-      </td>
+      <tr *ngFor="let m of filteredMeetings">
 
-      <!-- ⏱ END -->
-      <td>
-        {{ m.endDate | date:'dd MMM y' }} <br>
-        <small>{{ m.endDate | date:'HH:mm' }}</small>
-      </td>
+        <td>
+          <b>{{ m.attendeeName }}</b>
+        </td>
 
-      <!-- 📌 TYPE -->
-      <td>
-        <span class="badge"
-          [ngClass]="{
-            'project': m.project,
-            'event': !m.project
-          }">
-          {{ m.project ? 'Project' : 'Event' }}
-        </span>
-      </td>
+        <td>
+          {{ m.startTime | date:'dd MMM y' }} <br>
+          <small>{{ m.startTime | date:'HH:mm' }}</small>
+        </td>
 
-      <!-- 📂 EVENT / PROJECT -->
-      <td>
-        {{ m.project?.title || m.title }}
-      </td>
+        <td>
+          {{ m.endTime | date:'dd MMM y' }} <br>
+          <small>{{ m.endTime | date:'HH:mm' }}</small>
+        </td>
 
-      <!-- 🎯 PURPOSE -->
-      <td>{{ m.purpose }}</td>
+        <td>
+          <span class="badge"
+            [ngClass]="{
+              'project': m.type === 'Project',
+              'event': m.type === 'Event'
+            }">
+            {{ m.type }}
+          </span>
+        </td>
 
-      <!-- 📍 LOCATION -->
-      <td>{{ m.location }}</td>
+        <td>
+          {{ m.title }}
+        </td>
 
-      <!-- ⏳ HOURS -->
-      <td>
-        <b>{{ getMeetingHours(m) }} hrs</b>
-      </td>
+        <td>
+          {{ m.purpose }}
+        </td>
 
-    </tr>
-  </tbody>
+        <td>
+          {{ m.location }}
+        </td>
 
-</table>
+        <td>
+          <b>{{ m.travellingHours }} hrs</b>
+        </td>
 
+      </tr>
+
+    </tbody>
+
+  </table>
 
 </div>
-
