@@ -1,10 +1,19 @@
 <div class="meetings-container">
 
-  <div class="table-header">
+  <!-- <div class="table-header">
     <h2>Work From Home Requests</h2>
 
-  </div>
+  </div> -->
 
+
+  <div class="table-header">
+  <h2>Work From Home Requests</h2>
+
+  <div class="summary-box">
+    <span>Total Days</span>
+    <h3>{{ getTotalDays() }}</h3>
+  </div>
+</div>
 
   <div class="filter-bar">
 
@@ -18,7 +27,7 @@
       value="all"
       [(ngModel)]="activeTab"
       (change)="onFilterTypeChange()" />
-    All Requests
+    All 
   </label>
 
   <label class="radio-option">

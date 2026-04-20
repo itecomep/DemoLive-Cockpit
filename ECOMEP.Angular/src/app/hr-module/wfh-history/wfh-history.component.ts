@@ -20,7 +20,7 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
   @Input() requests: any[] = [];
   @Output() refresh = new EventEmitter<void>();
 
-  constructor(private hrService: HrModuleService) {}
+  constructor(private hrService: HrModuleService) { }
 
   // =========================
   // STATE
@@ -42,7 +42,7 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
   // =========================
   // INIT
   // =========================
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['requests'] && this.requests) {
@@ -60,22 +60,22 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
   // =========================
   // TOGGLE FILTER BUTTONS
   // =========================
- 
 
-toggleFilter(type: 'current' | 'last') {
 
-  // 🔥 TOGGLE ON/OFF LOGIC
-  if (
-    (type === 'current' && this.activeMonthFilter === 'current') ||
-    (type === 'last' && this.activeMonthFilter === 'last')
-  ) {
-    this.activeMonthFilter = 'none';   // disable
-  } else {
-    this.activeMonthFilter = type;     // enable
+  toggleFilter(type: 'current' | 'last') {
+
+    // 🔥 TOGGLE ON/OFF LOGIC
+    if (
+      (type === 'current' && this.activeMonthFilter === 'current') ||
+      (type === 'last' && this.activeMonthFilter === 'last')
+    ) {
+      this.activeMonthFilter = 'none';   // disable
+    } else {
+      this.activeMonthFilter = type;     // enable
+    }
+
+    this.applyAllFilters();
   }
-
-  this.applyAllFilters();
-}
 
 
   onFilterTypeChange() {
@@ -109,33 +109,33 @@ toggleFilter(type: 'current' | 'last') {
 
   applyAllFilters(): void {
 
-  let data = [...this.requests];
+    let data = [...this.requests];
 
-  // SEARCH FILTER
-  if (this.filters.employeeName) {
-    data = data.filter(req =>
-      req.employeeName?.toLowerCase()
-        .includes(this.filters.employeeName.toLowerCase())
-    );
+    // SEARCH FILTER
+    if (this.filters.employeeName) {
+      data = data.filter(req =>
+        req.employeeName?.toLowerCase()
+          .includes(this.filters.employeeName.toLowerCase())
+      );
+    }
+
+    // DATE FILTER (MONTH TOGGLE)
+    if (this.activeMonthFilter !== 'none') {
+
+      const range = this.getMonthRange(
+        this.activeMonthFilter === 'current' ? 'current' : 'last'
+      );
+
+      data = data.filter(req => {
+        const start = this.formatDate(req.startDate);
+        const end = this.formatDate(req.endDate);
+
+        return start <= range.end && end >= range.start;
+      });
+    }
+
+    this.filteredRequests = data;
   }
-
-  // DATE FILTER (MONTH TOGGLE)
-  if (this.activeMonthFilter !== 'none') {
-
-    const range = this.getMonthRange(
-      this.activeMonthFilter === 'current' ? 'current' : 'last'
-    );
-
-    data = data.filter(req => {
-      const start = this.formatDate(req.startDate);
-      const end = this.formatDate(req.endDate);
-
-      return start <= range.end && end >= range.start;
-    });
-  }
-
-  this.filteredRequests = data;
-}
 
   // =========================
   // MONTH RANGE
@@ -193,6 +193,9 @@ toggleFilter(type: 'current' | 'last') {
       startDate: '',
       endDate: ''
     };
+
+    this.activeMonthFilter = 'none';   // 🔥 important
+    this.filteredRequests = [...this.requests];
   }
 
   // =========================
@@ -331,10 +334,24 @@ toggleFilter(type: 'current' | 'last') {
   }
 
   getCleanFileName(fileName: string): string {
-  if (!fileName) return '';
+    if (!fileName) return '';
 
-  const index = fileName.indexOf('_');
-  return index !== -1 ? fileName.substring(index + 1) : fileName;
-}
+    const index = fileName.indexOf('_');
+    return index !== -1 ? fileName.substring(index + 1) : fileName;
+  }
+
+
+  getTotalDays(): number {
+    let total = 0;
+
+    this.filteredRequests.forEach(req => {
+      if (req.startDate && req.endDate) {
+        total += this.getDays(req.startDate, req.endDate);
+      }
+    });
+
+    return total;
+  }
+
 
 }

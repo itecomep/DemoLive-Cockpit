@@ -60,10 +60,8 @@
         </td>
       </tr>
 
-      <!-- <tr *ngFor="let req of requests"> -->
-       <tr *ngFor="let req of filteredRequests">
+      <tr *ngFor="let req of filteredRequests">
 
-        <!-- EMPLOYEE -->
         <td>
           <div class="employee-cell">
             <div class="avatar">
@@ -78,7 +76,6 @@
           </div>
         </td>
 
-        <!-- START DATE -->
         <td>
           <span *ngIf="editingRowId !== req.id">
             {{ req.startDate ? (req.startDate | date:'mediumDate') : '—' }}
@@ -86,7 +83,6 @@
           <input *ngIf="editingRowId === req.id" type="date" [(ngModel)]="req.startDate" />
         </td>
 
-        <!-- END DATE -->
         <td>
           <span *ngIf="editingRowId !== req.id">
             {{ req.endDate ? (req.endDate | date:'mediumDate') : '—' }}
@@ -94,14 +90,12 @@
           <input *ngIf="editingRowId === req.id" type="date" [(ngModel)]="req.endDate" />
         </td>
 
-        <!-- DAYS -->
         <td>
           <span class="badge">
             {{ req.startDate && req.endDate ? getDays(req.startDate, req.endDate) : 0 }}
           </span>
         </td>
 
-        <!-- REASON -->
         <td class="reason">
           <div *ngIf="editingRowId !== req.id">
             <div class="reason-text" [class.expanded]="req.expanded">
@@ -116,10 +110,8 @@
           <textarea *ngIf="editingRowId === req.id" rows="2" [(ngModel)]="req.reason"></textarea>
         </td>
 
-        <!-- ATTACHMENT (FINAL CLEAN BLOCK) -->
         <td class="attachment-cell">
 
-          <!-- VIEW MODE -->
           <ng-container *ngIf="editingRowId !== req.id; else editAttachment">
 
             <div class="attachment-box" *ngIf="req.attachments?.length > 0; else noFile">
@@ -137,12 +129,10 @@
 
           </ng-container>
 
-          <!-- EDIT MODE -->
           <ng-template #editAttachment>
 
             <div class="attachment-edit-box">
 
-              <!-- EXISTING FILES -->
               <div class="file-chip" *ngFor="let file of existingFiles; let i = index">
                 <span class="file-name">
                   {{ getCleanFileName(file.fileName || file.name) }}
@@ -150,7 +140,6 @@
                 <span class="remove-icon" (click)="removeExistingFile(i)">✕</span>
               </div>
 
-              <!-- NEW FILES -->
               <div class="file-chip" *ngFor="let file of newFiles; let i = index">
                 <span class="file-name">{{ file.name }}</span>
                 <span class="remove-icon" (click)="removeNewFile(i)">✕</span>
@@ -168,14 +157,12 @@
 
         </td>
 
-        <!-- STATUS -->
         <td>
           <span class="status-badge" [ngClass]="req.status">
             {{ req.status || 'Pending' }}
           </span>
         </td>
 
-        <!-- ACTION -->
         <td class="action-cell">
 
           <div *ngIf="editingRowId === req.id">

@@ -1,104 +1,1068 @@
+// .meetings-container {
+//   padding: 20px;
+//   background: #f4fbf6;
+//   font-family: Arial, sans-serif;  /* ✅ added */
+//   font-size: 12px;                 /* ✅*/
+  
+// }
+
+// .meetings-table td,
+// .employee-name,
+// .reason-text,
+// .file-name,
+// .badge,
+// .status-badge,
+// .toggle,
+// .action-cell button {
+//   font-size: 12px;   /* ✅ */
+// }
+
+
+// .table-header h2 {
+//   font-size: 16px;   /* ✅ */
+//   font-weight: 600;
+//   color: #1b5e20;
+//   margin: 0;
+// }
+
+
+// /* HEADER */
+// .table-header {
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+//   margin-bottom: 15px;
+
+//   h2 {
+//     font-size: 22px;
+//     font-weight: 600;
+//     color: #1b5e20;
+//     margin: 0;
+//   }
+// }
+
+// /* SUMMARY BOX */
+// // .summary-box {
+// //   background: #e8f5e9;
+// //   padding: 8px 14px;
+// //   border-radius: 8px;
+// //   text-align: center;
+
+// //   span {
+// //     font-size: 12px;
+// //     color: #2e7d32;
+// //   }
+
+// //   h3 {
+// //     margin: 0;
+// //     color: #1b5e20;
+// //   }
+// // }
+
+
+// /* 🔥 SUMMARY BOX (MATCH LEAVE PAGE STYLE) */
+// .summary-box {
+//   background: linear-gradient(135deg, #e8f5e9, #f1f8f4);
+//   border: 1px solid #a5d6a7;
+
+//   padding: 8px 16px;
+//   border-radius: 12px;
+
+//   text-align: center;
+//   min-width: 110px;
+
+//   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+//   transition: all 0.25s ease;
+// }
+
+// /* HOVER EFFECT */
+// .summary-box:hover {
+//   transform: translateY(-2px);
+//   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+// }
+
+// /* LABEL */
+// .summary-box span {
+//   display: block;
+//   font-size: 11px;
+//   color: #2e7d32;
+//   font-weight: 500;
+//   margin-bottom: 2px;
+// }
+
+// /* VALUE */
+// .summary-box h3 {
+//   margin: 0;
+//   font-size: 18px;
+//   font-weight: 700;
+//   color: #1b5e20;
+// }
+
+
+// /* TABLE */
+// .meetings-table {
+//   width: 100%;
+//   border-collapse: collapse;
+//   background: #ffffff;
+//   border-radius: 10px;
+//   overflow: hidden;
+//   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+// }
+
+// .meetings-table thead {
+//   background: #2e7d32;
+//   color: white;
+// }
+
+// .meetings-table th {
+//   padding: 14px;
+//   text-align: left;
+//   font-size: 14px;
+  
+// }
+
+// .meetings-table td {
+//   padding: 12px;
+//   border-bottom: 1px solid #e8f5e9;
+// }
+
+// .meetings-table tbody tr:nth-child(even) {
+//   background: #f6fcf7;
+// }
+
+// .meetings-table tbody tr:hover {
+//   background: #e8f5e9;
+// }
+
+// /* EMPLOYEE CELL */
+// .employee-cell {
+//   display: flex;
+//   align-items: center;
+//   gap: 8px;
+// }
+
+// .avatar {
+//   width: 30px;
+//   height: 30px;
+//   border-radius: 50%;
+//   background: #2e7d32;
+//   color: white;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+// }
+
+// /* BADGE */
+// .badge {
+//   background: #c8e6c9;
+//   padding: 4px 8px;
+//   border-radius: 6px;
+//   color: #1b5e20;
+// }
+
+// /* REASON */
+// .reason {
+//   max-width: 200px;
+//   word-break: break-word;
+// }
+
+// /* ATTACHMENT */
+// .attachment-link {
+//   color: #2e7d32;
+//   cursor: pointer;
+//   text-decoration: underline;
+// }
+
+// .reason {
+//   max-width: 220px;
+// }
+
+// /* TEXT LIMIT */
+// .reason-text {
+//   display: -webkit-box;
+//   -webkit-line-clamp: 2;   // 👈 SHOW ONLY 2 LINES
+//     line-clamp: 2; 
+//   -webkit-box-orient: vertical;
+//   overflow: hidden;
+//   text-overflow: ellipsis;
+//   line-height: 1.4;
+//   max-height: 2.8em; // fallback
+//   transition: all 0.2s ease;
+// }
+
+// /* EXPANDED STATE */
+// .reason-text.expanded {
+//   -webkit-line-clamp: unset;
+//   line-clamp: unset;
+//   max-height: none;
+// }
+
+// /* TOGGLE BUTTON */
+// .toggle {
+//   display: inline-block;
+//   margin-top: 4px;
+//   font-size: 12px;
+//   color: #2e7d32;
+//   cursor: pointer;
+//   font-weight: 500;
+// }
+
+// .toggle:hover {
+//   text-decoration: underline;
+// }
+
+// .attachment-cell {
+//   max-width: 260px;
+// }
+
+
+
+// .file-row {
+//   display: flex;
+//   flex-wrap: wrap;
+//   gap: 8px;
+//   align-items: center;
+//   width: 100%;
+// }
+
+
+// /* LINK */
+// .attachment-link {
+//   color: #2e7d32;
+//   cursor: pointer;
+//   text-decoration: underline;
+// }
+
+// .attachment-link:hover {
+//   color: #14532d;
+// }
+
+
+// /* ROW (2 FILES PER ROW) */
+// .file-row {
+//   display: flex;
+//   gap: 6px;
+// }
+
+
+
+// /* FILE TEXT */
+// .file-name {
+//   cursor: pointer;
+//   color: #1b5e20;
+//   white-space: nowrap;
+//   overflow: hidden;
+//   text-overflow: ellipsis;
+// }
+
+// .meetings-table tbody tr {
+//   height: 70px;  
+//   max-height: 70px;
+// }
+
+// .meetings-table td {
+//   overflow: hidden;
+//   vertical-align: middle;
+// }
+
+// .employee-cell span {
+//   max-width: 120px;
+//   overflow: hidden;
+//   text-overflow: ellipsis;
+//   white-space: nowrap;
+// }
+// /* =========================
+//    ACTION BUTTON BASE
+// ========================= */
+// .action-cell button {
+//   margin-right: 6px;
+//   font-weight: 600;
+//   font-size: 12px;
+//   padding: 6px 12px;
+//   border-radius: 8px;
+//   cursor: pointer;
+//   border: none;
+//   transition: all 0.25s ease;
+//   letter-spacing: 0.3px;
+// }
+
+// /* =========================
+//    ✏️ EDIT BUTTON (SOFT INDIGO)
+// ========================= */
+// .btn-edit {
+//   background: #eef2ff;
+//   color: #4f46e5;
+//   border: 1px solid #c7d2fe;
+// }
+
+// .btn-edit:hover {
+//   background: #4f46e5;
+//   color: #ffffff;
+//   transform: translateY(-2px);
+//   box-shadow: 0 6px 14px rgba(79, 70, 229, 0.25);
+// }
+
+// /* =========================
+//    🗑 DELETE BUTTON (SOFT ROSE RED)
+// ========================= */
+// .btn-delete {
+//   background: #fff1f2;
+//   color: #e11d48;
+//   border: 1px solid #fecdd3;
+// }
+
+// .btn-delete:hover {
+//   background: #e11d48;
+//   color: #ffffff;
+//   transform: translateY(-2px);
+//   box-shadow: 0 6px 14px rgba(225, 29, 72, 0.25);
+// }
+
+// /* =========================
+//    💾 SAVE BUTTON (SOFT GREEN)
+// ========================= */
+// .btn-save {
+//   background: #ecfdf5;
+//   color: #059669;
+//   border: 1px solid #a7f3d0;
+// }
+
+// .btn-save:hover {
+//   background: #059669;
+//   color: #ffffff;
+//   transform: translateY(-2px);
+//   box-shadow: 0 6px 14px rgba(5, 150, 105, 0.25);
+// }
+
+// /* =========================
+//    ❌ CANCEL BUTTON (SOFT GRAY)
+// ========================= */
+// .btn-cancel {
+//   background: #f3f4f6;
+//   color: #374151;
+//   border: 1px solid #d1d5db;
+// }
+
+// .btn-cancel:hover {
+//   background: #374151;
+//   color: #ffffff;
+//   transform: translateY(-2px);
+//   box-shadow: 0 6px 14px rgba(55, 65, 81, 0.25);
+// }
+
+// /* spacing */
+// .action-cell button {
+//   margin-right: 8px;
+// }
+// .remove-icon {
+//   cursor: pointer;
+//   color: #c62828;
+//   font-size: 16px;
+//   margin-left: 8px;
+//   font-weight: bold;
+//   transition: 0.2s ease;
+// }
+
+// .remove-icon:hover {
+//   color: #8e0000;
+//   transform: scale(1.2);
+// }
+
+// .status-badge {
+//   font-weight: 600;
+//   text-transform: capitalize;
+// }
+
+// /* APPROVED → GREEN */
+// .status-badge.approved {
+//   color: #2e7d32; /* dark green */
+// }
+
+// /* PENDING → YELLOW */
+// .status-badge.pending {
+//   color: #f9a825; /* amber */
+// }
+
+// /* REJECTED → RED */
+// .status-badge.rejected {
+//   color: #c62828; /* red */
+// }
+
+
+// .attachment-cell {
+//   max-width: 320px; /* Gives enough room for side-by-side links */
+//   vertical-align: middle;
+// }
+
+
+
+// /* Chrome/Safari Scrollbar styling to match the thin grey look */
+// .attachment-box::-webkit-scrollbar {
+//   width: 4px;
+// }
+// .attachment-box::-webkit-scrollbar-thumb {
+//   background: #ccc;
+//   border-radius: 10px;
+// }
+
+// /* THE LINKS (Matching your screenshot) */
+// .file-row {
+//   display: flex;
+//   flex-wrap: wrap;
+//   gap: 8px; /* Space between links */
+//   align-items: center;
+// }
+
+
+
+// .file-link {
+//   display: inline-block;
+//   max-width: 100%;
+  
+//   color: #1976d2;
+//   text-decoration: underline;
+//   font-size: 11px;
+//   cursor: pointer;
+
+//   white-space: nowrap;
+//   overflow: hidden;
+//   text-overflow: ellipsis;
+
+//   padding: 2px 4px;
+// }
+
+
+// .file-link:hover {
+//   color: #0d47a1;
+// }
+
+// /* EDIT MODE CHIPS (If you want them to stay as chips) */
+// .attachment-edit-box {
+//   display: flex;
+//   flex-wrap: wrap;
+//   gap: 5px;
+// }
+
+// .file-chip {
+//   background: #f1f1f1;
+//   padding: 2px 8px;
+//   border-radius: 4px;
+//   font-size: 11px;
+//   display: flex;
+//   align-items: center;
+// }
+
+// .attachment-cell {
+//   max-width: 320px; /* Gives enough room for side-by-side links */
+//   vertical-align: middle;
+// }
+
+
+
+// /* Chrome/Safari Scrollbar styling to match the thin grey look */
+// .attachment-box::-webkit-scrollbar {
+//   width: 4px;
+// }
+// .attachment-box::-webkit-scrollbar-thumb {
+//   background: #ccc;
+//   border-radius: 10px;
+// }
+
+// /* THE LINKS (Matching your screenshot) */
+// .file-row {
+//   display: flex;
+//   flex-wrap: wrap;
+//   gap: 8px; /* Space between links */
+//   align-items: center;
+// }
+
+// .file-link {
+//   color: #1976d2 !important; /* The specific blue from your screenshot */
+//   text-decoration: underline;
+//   font-size: 11px;
+//   cursor: pointer;
+//   white-space: nowrap;
+//   font-weight: 500;
+//   transition: color 0.2s;
+// }
+
+// .file-link:hover {
+//   color: #0d47a1;
+// }
+
+// /* EDIT MODE CHIPS (If you want them to stay as chips) */
+// .attachment-edit-box {
+//   display: flex;
+//   flex-wrap: wrap;
+//   gap: 5px;
+// }
+
+// .file-chip {
+//   background: #f1f1f1;
+//   padding: 2px 8px;
+//   border-radius: 4px;
+//   font-size: 11px;
+//   display: flex;
+//   align-items: center;
+// }
+
+// /* ATTACHMENT CELL CONTAINER */
+// .attachment-cell {
+//   max-width: 300px;
+//   min-width: 200px;
+//   vertical-align: middle;
+// }
+
+
+
+// /* Scrollbar Styling for Chrome/Safari */
+// .attachment-box::-webkit-scrollbar {
+//   width: 4px;
+// }
+// .attachment-box::-webkit-scrollbar-thumb {
+//   background: #ccd1d1;
+//   border-radius: 10px;
+// }
+
+// /* FILE ROW & LINKS */
+// .file-row {
+//   display: flex;
+//   flex-wrap: wrap;
+//   gap: 10px; /* Space between links in a row */
+//   width: 100%;
+// }
+
+// .file-link {
+//   color: #1976d2 !important; /* Blue link color */
+//   text-decoration: underline;
+//   font-size: 11px;
+//   font-weight: 500;
+//   cursor: pointer;
+//   white-space: nowrap;
+//   transition: color 0.2s ease;
+// }
+
+// .file-link:hover {
+//   color: #0d47a1;
+// }
+
+// /* EDIT MODE STYLING */
+// .attachment-edit-box {
+//   display: flex;
+//   flex-wrap: wrap;
+//   gap: 6px;
+//   max-width: 280px;
+// }
+
+// .file-chip {
+//   background: #f1f3f4;
+//   border: 1px solid #dadce0;
+//   padding: 2px 8px;
+//   border-radius: 4px;
+//   display: flex;
+//   align-items: center;
+//   font-size: 11px;
+// }
+
+// .remove-icon {
+//   margin-left: 6px;
+//   color: #d93025;
+//   cursor: pointer;
+//   font-weight: bold;
+// }
+
+// .attachment-box {
+//   max-height: 60px; /* adjust if needed */
+//   overflow-y: auto;
+//   overflow-x: hidden;
+
+//   display: flex;
+//   flex-direction: column;
+//   gap: 4px;
+
+//   padding-right: 6px;
+
+//   /* prevents layout shift when scrollbar appears */
+//   scrollbar-gutter: stable;
+//   box-sizing: border-box;
+
+//   scrollbar-width: thin;
+// }
+
+// /* Chrome scrollbar */
+// .attachment-box::-webkit-scrollbar {
+//   width: 4px;
+// }
+
+// .attachment-box::-webkit-scrollbar-thumb {
+//   background: #cfcfcf;
+//   border-radius: 10px;
+// }
+
+
+
+
+// .filter-bar {
+//   display: flex;
+//   gap: 10px;
+//   margin-bottom: 12px;
+//   flex-wrap: wrap;
+// }
+
+// .filter-bar input {
+//   padding: 6px 10px;
+//   border: 1px solid #c8e6c9;
+//   border-radius: 6px;
+//   font-size: 12px;
+// }
+
+// .filter-bar button {
+//   background: #2e7d32;
+//   color: white;
+//   border: none;
+//   padding: 6px 12px;
+//   border-radius: 6px;
+//   cursor: pointer;
+// }
+
+// .filter-bar button:hover {
+//   background: #1b5e20;
+// }
+
+
+
+
+
+
+
+
+
+  // /* =========================
+  //   CONTAINER
+  // ========================= */
+  // .meetings-container {
+  //   padding: 20px;
+  //   background: #f4fbf6;
+  //   font-family: Arial, sans-serif;
+  //   font-size: 12px;
+  // }
+
+
+  // /* =========================
+  //   HEADER
+  // ========================= */
+  // .table-header {
+  //   display: flex;
+  //   justify-content: space-between;
+  //   align-items: center;
+  //   margin-bottom: 15px;
+  // }
+
+  // // .table-header h2 {
+  // //   font-size: 18px;
+  // //   font-weight: 600;
+  // //   color: #1b5e20;
+  // //   margin: 0;
+  // // }
+
+
+  // .table-header h2 {
+  //   font-size: 24px;      /* 🔥 increased from 18px */
+  //   font-weight: 700;     /* slightly bolder */
+  //   color: #1b5e20;
+  //   margin: 0;
+  //   letter-spacing: 0.3px; /* optional: cleaner look */
+  // }
+
+
+  // /* =========================
+  //   SUMMARY BOX
+  // ========================= */
+  // .summary-box {
+  //   background: linear-gradient(135deg, #e8f5e9, #f1f8f4);
+  //   border: 1px solid #a5d6a7;
+  //   padding: 8px 16px;
+  //   border-radius: 12px;
+  //   text-align: center;
+  //   min-width: 110px;
+  // }
+
+  // .summary-box span {
+  //   font-size: 11px;
+  //   color: #2e7d32;
+  // }
+
+  // .summary-box h3 {
+  //   margin: 0;
+  //   font-size: 18px;
+  //   font-weight: 700;
+  //   color: #1b5e20;
+  // }
+
+
+  // /* =========================
+  //   TABLE
+  // ========================= */
+  // .meetings-table {
+  //   width: 100%;
+  //   border-collapse: collapse;
+  //   background: #fff;
+  //   border-radius: 10px;
+  //   overflow: hidden;
+  // }
+
+  // .meetings-table thead {
+  //   background: #2e7d32;
+  //   color: #fff;
+  // }
+
+  // .meetings-table th {
+  //   padding: 14px;
+  //   font-size: 14px;
+  // }
+
+  // .meetings-table td {
+  //   padding: 12px;
+  //   border-bottom: 1px solid #e8f5e9;
+  //   vertical-align: middle;
+  // }
+
+  // .meetings-table tbody tr:nth-child(even) {
+  //   background: #f6fcf7;
+  // }
+
+
+  // /* =========================
+  //   EMPLOYEE FIX (IMPORTANT)
+  // ========================= */
+  // .employee-cell {
+  //   display: flex;
+  //   align-items: center;
+  //   gap: 10px;
+  //   min-width: 180px;
+  // }
+
+  // .avatar {
+  //   width: 30px;
+  //   height: 30px;
+  //   border-radius: 50%;
+  //   background: #2e7d32;
+  //   color: white;
+  //   display: flex;
+  //   align-items: center;
+  //   justify-content: center;
+  // }
+
+  // /* 🔥 FIXED NAME ISSUE */
+  // .employee-name {
+  //   flex: 1;
+  //   min-width: 0;
+  //   max-width: 220px;
+  //   overflow: hidden;
+  //   text-overflow: ellipsis;
+  //   white-space: nowrap;
+  // }
+
+
+  // /* =========================
+  //   BADGE
+  // ========================= */
+  // .badge {
+  //   background: #c8e6c9;
+  //   padding: 4px 8px;
+  //   border-radius: 6px;
+  //   color: #1b5e20;
+  // }
+
+
+  // /* =========================
+  //   REASON
+  // ========================= */
+  // .reason {
+  //   max-width: 220px;
+  // }
+
+  // .reason-text {
+  //   display: -webkit-box;
+  //   -webkit-line-clamp: 2;
+  //   -webkit-box-orient: vertical;
+  //   overflow: hidden;
+  // }
+
+  // .reason-text.expanded {
+  //   -webkit-line-clamp: unset;
+  // }
+
+  // .toggle {
+  //   font-size: 11px;
+  //   color: #2e7d32;
+  //   cursor: pointer;
+  // }
+
+
+  // /* =========================
+  //   ATTACHMENT (CLEAN)
+  // ========================= */
+  // .attachment-cell {
+  //   max-width: 300px;
+  // }
+
+  // .attachment-box {
+  //   max-height: 60px;
+  //   overflow-y: auto;
+  //   display: flex;
+  //   flex-direction: column;
+  //   gap: 4px;
+  // }
+
+  // /* row */
+  // .file-row {
+  //   display: flex;
+  //   flex-wrap: wrap;
+  //   gap: 8px;
+  // }
+
+  // /* link */
+  // .file-link {
+  //   color: #1976d2;
+  //   text-decoration: underline;
+  //   font-size: 11px;
+  //   cursor: pointer;
+  //   white-space: nowrap;
+  // }
+
+  // .file-link:hover {
+  //   color: #0d47a1;
+  // }
+
+
+  // /* =========================
+  //   STATUS
+  // ========================= */
+  // .status-badge {
+  //   font-weight: 600;
+  // }
+
+  // .status-badge.approved { color: #2e7d32; }
+  // .status-badge.pending { color: #f9a825; }
+  // .status-badge.rejected { color: #c62828; }
+
+
+  // /* =========================
+  //   ACTION BUTTONS
+  // ========================= */
+  // .action-cell button {
+  //   margin-right: 8px;
+  //   padding: 6px 12px;
+  //   border-radius: 8px;
+  //   border: none;
+  //   cursor: pointer;
+  //   font-size: 12px;
+  // }
+
+  // .btn-edit {
+  //   background: #eef2ff;
+  //   color: #4f46e5;
+  // }
+
+  // .btn-delete {
+  //   background: #fff1f2;
+  //   color: #e11d48;
+  // }
+
+  // .btn-save {
+  //   background: #ecfdf5;
+  //   color: #059669;
+  // }
+
+  // .btn-cancel {
+  //   background: #f3f4f6;
+  //   color: #374151;
+  // }
+
+
+  // /* =========================
+  //   FILTER BAR
+  // ========================= */
+  // .filter-bar {
+  //   display: flex;
+  //   gap: 10px;
+  //   margin-bottom: 12px;
+  //   flex-wrap: wrap;
+  // }
+
+  // .filter-bar input {
+  //   padding: 6px 10px;
+  //   border: 1px solid #c8e6c9;
+  //   border-radius: 6px;
+  // }
+
+  // .filter-bar button {
+  //   background: #2e7d32;
+  //   color: white;
+  //   border: none;
+  //   padding: 6px 12px;
+  //   border-radius: 6px;
+  // }
+
+
+  // /* FILTER BAR UPGRADE */
+  // .filter-bar {
+  //   display: flex;
+  //   align-items: center;
+  //   gap: 10px;
+  //   flex-wrap: wrap;
+  // }
+
+  // /* RADIO */
+  // .radio {
+  //   display: flex;
+  //   align-items: center;
+  //   gap: 4px;
+  //   font-size: 12px;
+  //   color: #1b5e20;
+  // }
+
+  // /* RESET BUTTON */
+  // .btn-reset {
+  //   background: #2e7d32;
+  //   color: #fff;
+  //   border: none;
+  //   padding: 6px 14px;
+  //   border-radius: 6px;
+  //   cursor: pointer;
+  // }
+
+  // .btn-reset:hover {
+  //   background: #1b5e20;
+  // }
+
+  // /* OUTLINE BUTTONS */
+  // .btn-outline {
+  //   background: #e8f5e9;
+  //   color: #1b5e20;
+  //   border: 1px solid #a5d6a7;
+  //   padding: 6px 12px;
+  //   border-radius: 6px;
+  //   cursor: pointer;
+  //   transition: 0.2s;
+  // }
+
+  // .btn-outline:hover {
+  //   background: #c8e6c9;
+  // }
+
+
+
+
+
+
+
+
+
+
+  /* =========================
+   CONTAINER
+========================= */
 .meetings-container {
   padding: 20px;
   background: #f4fbf6;
-  font-family: Arial, sans-serif;  /* ✅ added */
-  font-size: 12px;                 /* ✅*/
-  
-}
-
-.meetings-table td,
-.employee-name,
-.reason-text,
-.file-name,
-.badge,
-.status-badge,
-.toggle,
-.action-cell button {
-  font-size: 12px;   /* ✅ */
-}
+  font-family: Arial, sans-serif;
+  // font-size: 12px;
+  font-size: 14px;   /* ✅ increased base size */
+} 
 
 
-.table-header h2 {
-  font-size: 16px;   /* ✅ */
-  font-weight: 600;
-  color: #1b5e20;
-  margin: 0;
-}
-
-
-/* HEADER */
+/* =========================
+   HEADER
+========================= */
 .table-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
-
-  h2 {
-    font-size: 22px;
-    font-weight: 600;
-    color: #1b5e20;
-    margin: 0;
-  }
 }
 
-/* SUMMARY BOX */
+.table-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1b5e20;
+  margin: 0;
+  letter-spacing: 0.3px;
+}
+
+
+/* =========================
+   SUMMARY BOX
+========================= */
 .summary-box {
-  background: #e8f5e9;
-  padding: 8px 14px;
-  border-radius: 8px;
+  background: linear-gradient(135deg, #e8f5e9, #f1f8f4);
+  border: 1px solid #a5d6a7;
+  padding: 8px 16px;
+  border-radius: 12px;
   text-align: center;
-
-  span {
-    font-size: 12px;
-    color: #2e7d32;
-  }
-
-  h3 {
-    margin: 0;
-    color: #1b5e20;
-  }
+  min-width: 110px;
 }
 
-/* TABLE */
+.summary-box span {
+  font-size: 11px;
+  color: #2e7d32;
+}
+
+.summary-box h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1b5e20;
+}
+
+
+/* =========================
+   TABLE
+========================= */
 .meetings-table {
   width: 100%;
   border-collapse: collapse;
-  background: #ffffff;
+  background: #fff;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
 }
 
 .meetings-table thead {
   background: #2e7d32;
-  color: white;
+  color: #fff;
 }
 
+/* 🔥 HEADER */
 .meetings-table th {
   padding: 14px;
-  text-align: left;
-  font-size: 14px;
-  
+  font-size: 15px;
+  color: #ffffff;
 }
 
+/* 🔥 BODY TEXT DARK FIX */
 .meetings-table td {
   padding: 12px;
   border-bottom: 1px solid #e8f5e9;
+  vertical-align: middle;
+  color: #111 !important;      /* ✅ DARK BLACK */
+  font-weight: 500;
+    font-size: 14px; 
 }
 
 .meetings-table tbody tr:nth-child(even) {
   background: #f6fcf7;
 }
 
-.meetings-table tbody tr:hover {
-  background: #e8f5e9;
-}
 
-/* EMPLOYEE CELL */
+/* =========================
+   EMPLOYEE
+========================= */
 .employee-cell {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  min-width: 180px;
 }
 
 .avatar {
@@ -112,143 +1076,180 @@
   justify-content: center;
 }
 
-/* BADGE */
+/* 🔥 DARK NAME */
+.employee-name {
+  flex: 1;
+  min-width: 0;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #111;
+  font-weight: 600;
+    font-size: 14px;
+}
+
+
+/* =========================
+   BADGE
+========================= */
 .badge {
   background: #c8e6c9;
   padding: 4px 8px;
   border-radius: 6px;
-  color: #1b5e20;
+  color: #0f3d1e;   /* 🔥 darker green */
+  font-weight: 700;
 }
 
-/* REASON */
-.reason {
-  max-width: 200px;
-  word-break: break-word;
-}
 
-/* ATTACHMENT */
-.attachment-link {
-  color: #2e7d32;
-  cursor: pointer;
-  text-decoration: underline;
-}
-
+/* =========================
+   REASON
+========================= */
 .reason {
   max-width: 220px;
 }
 
-/* TEXT LIMIT */
 .reason-text {
   display: -webkit-box;
-  -webkit-line-clamp: 2;   // 👈 SHOW ONLY 2 LINES
-    line-clamp: 2; 
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.4;
-  max-height: 2.8em; // fallback
-  transition: all 0.2s ease;
+  color: #111;   /* 🔥 dark text */
+   font-size: 14px;
 }
 
-/* EXPANDED STATE */
 .reason-text.expanded {
   -webkit-line-clamp: unset;
-  line-clamp: unset;
-  max-height: none;
 }
 
-/* TOGGLE BUTTON */
 .toggle {
-  display: inline-block;
-  margin-top: 4px;
-  font-size: 12px;
+  font-size: 11px;
   color: #2e7d32;
   cursor: pointer;
-  font-weight: 500;
 }
 
-.toggle:hover {
-  text-decoration: underline;
-}
 
+/* =========================
+   ATTACHMENT
+========================= */
 .attachment-cell {
-  max-width: 260px;
+  max-width: 300px;
 }
 
-
+.attachment-box {
+  max-height: 60px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 
 .file-row {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  align-items: center;
-  width: 100%;
 }
 
-
-/* LINK */
-.attachment-link {
-  color: #2e7d32;
-  cursor: pointer;
+/* 🔥 better link color */
+.file-link {
+  color: #0d47a1;
   text-decoration: underline;
-}
-
-.attachment-link:hover {
-  color: #14532d;
-}
-
-
-/* ROW (2 FILES PER ROW) */
-.file-row {
-  display: flex;
-  gap: 6px;
-}
-
-
-
-/* FILE TEXT */
-.file-name {
+  font-size: 12px;
   cursor: pointer;
-  color: #1b5e20;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-weight: 500;
 }
 
-.meetings-table tbody tr {
-  height: 70px;  
-  max-height: 70px;
+.file-link:hover {
+  color: #002171;
 }
 
-.meetings-table td {
-  overflow: hidden;
-  vertical-align: middle;
-}
 
-.employee-cell span {
-  max-width: 120px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 /* =========================
-   ACTION BUTTON BASE
+   STATUS
+========================= */
+.status-badge {
+  font-weight: 700;
+}
+
+.status-badge.approved { color: #1b5e20; }
+.status-badge.pending { color: #e65100; }
+.status-badge.rejected { color: #b71c1c; }
+
+
+/* =========================
+   ACTION BUTTONS
 ========================= */
 .action-cell button {
-  margin-right: 6px;
-  font-weight: 600;
-  font-size: 12px;
+  margin-right: 8px;
   padding: 6px 12px;
   border-radius: 8px;
-  cursor: pointer;
   border: none;
-  transition: all 0.25s ease;
-  letter-spacing: 0.3px;
+  cursor: pointer;
+  font-size: 12px;
 }
 
+.btn-edit {
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.btn-delete {
+  background: #fff1f2;
+  color: #e11d48;
+}
+
+.btn-save {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.btn-cancel {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+
 /* =========================
-   ✏️ EDIT BUTTON (SOFT INDIGO)
+   FILTER BAR
 ========================= */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.filter-bar input {
+  padding: 6px 10px;
+  border: 1px solid #c8e6c9;
+  border-radius: 6px;
+}
+
+.filter-bar button {
+  background: #2e7d32;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+.filter-bar button:hover {
+  background: #1b5e20;
+}
+
+
+/* =========================
+   EDIT MODE INPUTS
+========================= */
+.meetings-table input,
+.meetings-table textarea {
+  color: #111;
+  font-weight: 300;
+}
+
+
 .btn-edit {
   background: #eef2ff;
   color: #4f46e5;
@@ -310,281 +1311,6 @@
   box-shadow: 0 6px 14px rgba(55, 65, 81, 0.25);
 }
 
-/* spacing */
-.action-cell button {
-  margin-right: 8px;
-}
-.remove-icon {
-  cursor: pointer;
-  color: #c62828;
-  font-size: 16px;
-  margin-left: 8px;
-  font-weight: bold;
-  transition: 0.2s ease;
-}
-
-.remove-icon:hover {
-  color: #8e0000;
-  transform: scale(1.2);
-}
-
 .status-badge {
-  font-weight: 600;
   text-transform: capitalize;
-}
-
-/* APPROVED → GREEN */
-.status-badge.approved {
-  color: #2e7d32; /* dark green */
-}
-
-/* PENDING → YELLOW */
-.status-badge.pending {
-  color: #f9a825; /* amber */
-}
-
-/* REJECTED → RED */
-.status-badge.rejected {
-  color: #c62828; /* red */
-}
-
-
-.attachment-cell {
-  max-width: 320px; /* Gives enough room for side-by-side links */
-  vertical-align: middle;
-}
-
-
-
-/* Chrome/Safari Scrollbar styling to match the thin grey look */
-.attachment-box::-webkit-scrollbar {
-  width: 4px;
-}
-.attachment-box::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 10px;
-}
-
-/* THE LINKS (Matching your screenshot) */
-.file-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px; /* Space between links */
-  align-items: center;
-}
-
-
-
-.file-link {
-  display: inline-block;
-  max-width: 100%;
-  
-  color: #1976d2;
-  text-decoration: underline;
-  font-size: 11px;
-  cursor: pointer;
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-
-  padding: 2px 4px;
-}
-
-
-.file-link:hover {
-  color: #0d47a1;
-}
-
-/* EDIT MODE CHIPS (If you want them to stay as chips) */
-.attachment-edit-box {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-}
-
-.file-chip {
-  background: #f1f1f1;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  display: flex;
-  align-items: center;
-}
-
-.attachment-cell {
-  max-width: 320px; /* Gives enough room for side-by-side links */
-  vertical-align: middle;
-}
-
-
-
-/* Chrome/Safari Scrollbar styling to match the thin grey look */
-.attachment-box::-webkit-scrollbar {
-  width: 4px;
-}
-.attachment-box::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 10px;
-}
-
-/* THE LINKS (Matching your screenshot) */
-.file-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px; /* Space between links */
-  align-items: center;
-}
-
-.file-link {
-  color: #1976d2 !important; /* The specific blue from your screenshot */
-  text-decoration: underline;
-  font-size: 11px;
-  cursor: pointer;
-  white-space: nowrap;
-  font-weight: 500;
-  transition: color 0.2s;
-}
-
-.file-link:hover {
-  color: #0d47a1;
-}
-
-/* EDIT MODE CHIPS (If you want them to stay as chips) */
-.attachment-edit-box {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-}
-
-.file-chip {
-  background: #f1f1f1;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  display: flex;
-  align-items: center;
-}
-
-/* ATTACHMENT CELL CONTAINER */
-.attachment-cell {
-  max-width: 300px;
-  min-width: 200px;
-  vertical-align: middle;
-}
-
-
-
-/* Scrollbar Styling for Chrome/Safari */
-.attachment-box::-webkit-scrollbar {
-  width: 4px;
-}
-.attachment-box::-webkit-scrollbar-thumb {
-  background: #ccd1d1;
-  border-radius: 10px;
-}
-
-/* FILE ROW & LINKS */
-.file-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px; /* Space between links in a row */
-  width: 100%;
-}
-
-.file-link {
-  color: #1976d2 !important; /* Blue link color */
-  text-decoration: underline;
-  font-size: 11px;
-  font-weight: 500;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: color 0.2s ease;
-}
-
-.file-link:hover {
-  color: #0d47a1;
-}
-
-/* EDIT MODE STYLING */
-.attachment-edit-box {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  max-width: 280px;
-}
-
-.file-chip {
-  background: #f1f3f4;
-  border: 1px solid #dadce0;
-  padding: 2px 8px;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  font-size: 11px;
-}
-
-.remove-icon {
-  margin-left: 6px;
-  color: #d93025;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.attachment-box {
-  max-height: 60px; /* adjust if needed */
-  overflow-y: auto;
-  overflow-x: hidden;
-
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-
-  padding-right: 6px;
-
-  /* prevents layout shift when scrollbar appears */
-  scrollbar-gutter: stable;
-  box-sizing: border-box;
-
-  scrollbar-width: thin;
-}
-
-/* Chrome scrollbar */
-.attachment-box::-webkit-scrollbar {
-  width: 4px;
-}
-
-.attachment-box::-webkit-scrollbar-thumb {
-  background: #cfcfcf;
-  border-radius: 10px;
-}
-
-
-
-
-.filter-bar {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-}
-
-.filter-bar input {
-  padding: 6px 10px;
-  border: 1px solid #c8e6c9;
-  border-radius: 6px;
-  font-size: 12px;
-}
-
-.filter-bar button {
-  background: #2e7d32;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.filter-bar button:hover {
-  background: #1b5e20;
 }

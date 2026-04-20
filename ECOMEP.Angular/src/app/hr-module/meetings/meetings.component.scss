@@ -28,23 +28,65 @@
 }
 
 /* RIGHT SIDE BOX */
+// .total-box {
+//   margin-left: auto;
+//   background: #e8f5e9;
+//   padding: 8px 14px;
+//   border-radius: 10px;
+//   text-align: center;
+// }
+
+// .total-box label {
+//   font-size: 12px;
+//   color: #2e7d32;
+// }
+
+// .total-box h3 {
+//   margin: 2px 0 0;
+//   color: #1b5e20;
+// }
+
+
+/* 🔥 TOTAL BOX (MATCH LEAVE PAGE STYLE) */
 .total-box {
   margin-left: auto;
-  background: #e8f5e9;
-  padding: 8px 14px;
-  border-radius: 10px;
+
+  background: linear-gradient(135deg, #e8f5e9, #f1f8f4);
+  border: 1px solid #a5d6a7;
+
+  padding: 8px 16px;
+  border-radius: 12px;
+
   text-align: center;
+  min-width: 120px;
+
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s ease;
 }
 
+/* HOVER EFFECT */
+.total-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* LABEL */
 .total-box label {
-  font-size: 12px;
+  display: block;
+  font-size: 11px;
   color: #2e7d32;
+  font-weight: 500;
+  margin-bottom: 2px;
 }
 
+/* VALUE */
 .total-box h3 {
-  margin: 2px 0 0;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
   color: #1b5e20;
 }
+
 
 .header {
   display: flex;
@@ -177,6 +219,24 @@
 .filter-bar button:active {
   transform: scale(0.96);
 }
+
+.badge {
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.badge.project {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.badge.event {
+  background: #fce4ec;
+  color: #ad1457;
+}
+
 
 /* OPTIONAL: SMALL SCREEN RESPONSIVE */
 @media (max-width: 600px) {

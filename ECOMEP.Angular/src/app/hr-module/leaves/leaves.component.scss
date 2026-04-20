@@ -1,3 +1,9 @@
+.full-table {
+  width: 100%;
+  table-layout: fixed; /* 🔥 IMPORTANT */
+}
+
+
 /* 🔥 CONTAINER */
 .table-container {
   padding: 20px;
@@ -14,23 +20,24 @@
 }
 
 /* 🔥 HEADER ROW */
-::ng-deep .mat-mdc-header-row {
-  background: #247a34 !important; /* rich green */
-  height: 48px;
-}
+// ::ng-deep .mat-mdc-header-row {
+//   background: #247a34 !important; /* rich green */
+//   height: 48px;
+// }
 
 /* HEADER CELL */
-::ng-deep .mat-mdc-header-cell {
-  color: #ffffff !important;
-  font-weight: 600;
-  font-size: 13px;
-  border-bottom: none !important;
-}
+// ::ng-deep .mat-mdc-header-cell {
+//   color: #ffffff !important;
+//   font-weight: 600;
+//   font-size: 13px;
+//   border-bottom: none !important;
+// }
 
 /* 🔥 ROW */
 ::ng-deep .mat-mdc-row {
   transition: background 0.2s ease;
-  border-bottom: 1px solid #f0f0f0;
+  // border-bottom: 1px solid #f0f0f0;
+  border-bottom: none !important;
 }
 
 /* ROW HOVER */
@@ -41,8 +48,10 @@
 /* CELL */
 ::ng-deep .mat-mdc-cell {
   font-size: 13px;
-  color: #333;
+  // color: #333;
+  color: #111111 !important; 
   padding: 12px 10px;
+  font-weight: 500
 }
 
 /* 🔥 EMPLOYEE CELL */
@@ -74,13 +83,13 @@
 //   color: #2e7d32;
 // }
 /* 🔥 DAYS COLUMN FIX */
-::ng-deep .mat-column-total {
-  // display: flex;
-  justify-content: center;   /* center content */
-  align-items: center;
-  font-weight: 600;
-  color: #2e7d32;
-}
+// ::ng-deep .mat-column-total {
+//   // display: flex;
+//   justify-content: center;   /* center content */
+//   align-items: center;
+//   font-weight: 600;
+//   color: #2e7d32;
+// }
 
 /* 🔥 HEADER ALIGNMENT FOR DAYS */
 ::ng-deep .mat-mdc-header-cell.mat-column-total {
@@ -140,18 +149,18 @@
 }
 
 /* TOGGLE BUTTON */
-.toggle {
-  display: inline-block;
-  margin-top: 4px;
-  font-size: 11px;
-  color: #247a34;
-  cursor: pointer;
-  font-weight: 500;
-}
+// .toggle {
+//   display: inline-block;
+//   margin-top: 4px;
+//   font-size: 11px;
+//   color: #247a34;
+//   cursor: pointer;
+//   font-weight: 500;
+// }
 
-.toggle:hover {
-  text-decoration: underline;
-}
+// .toggle:hover {
+//   text-decoration: underline;
+// }
 
 /* 🔥 HEADER ROW (match meetings-table thead) */
 ::ng-deep .mat-mdc-header-row {
@@ -169,18 +178,13 @@
   border-bottom: none !important;
 }
 
-
-
-
-
-
-
-
 /* 🔥 STATUS CELL */
 .status-cell {
   display: flex;
   align-items: center;
   gap: 8px;
+  justify-content: flex-start;
+  min-height: 40px;
 }
 
 /* 🔥 BUTTON BASE */
@@ -235,24 +239,31 @@
 
 
 /* 🔥 CENTER ALIGNMENT HELPER */
+// ::ng-deep .text-center-cell {
+//   text-align: center !important;
+//   justify-content: center !important;
+//   display: flex-cell; /* Ensures Material flex behaves */
+// }
+
 ::ng-deep .text-center-cell {
   text-align: center !important;
   justify-content: center !important;
-  display: flex-cell; /* Ensures Material flex behaves */
+  display: flex;
 }
 
+
 /* 🔥 DAYS BADGE STYLING */
-.days-badge {
-  display: inline-block;
-  background-color: #e8f5e9; /* Light green background */
-  color: #2e7d32;            /* Dark green text */
-  font-weight: 700;
-  padding: 4px 12px;
-  border-radius: 20px;       /* Pill shape */
-  font-size: 12px;
-  min-width: 30px;
-  text-align: center;
-}
+// .days-badge {
+//   display: inline-block;
+//   background-color: #e8f5e9; /* Light green background */
+//   color: #2e7d32;            /* Dark green text */
+//   font-weight: 700;
+//   padding: 4px 12px;
+//   border-radius: 20px;       /* Pill shape */
+//   font-size: 12px;
+//   min-width: 30px;
+//   text-align: center;
+// }
 
 /* 🔥 FIXING THE HEADER FOR THE TOTAL COLUMN */
 ::ng-deep .mat-mdc-header-cell.mat-column-total {
@@ -261,26 +272,19 @@
 }
 
 /* Ensure the cell itself centers the badge */
-::ng-deep .mat-mdc-cell.mat-column-total {
-  display: table-cell;      /* Override flex if needed */
-  vertical-align: middle;
-  text-align: center;
-}
+// ::ng-deep .mat-mdc-cell.mat-column-total {
+//   display: table-cell;      /* Override flex if needed */
+//   vertical-align: middle;
+//   text-align: center;
+// }
 
 .table-header h2 {
-  font-size: 20px;   /* ✅ */
+  font-size: 22px;   /* 🔥 bigger & closer to modern UI */
   font-weight: 800;
   color: #1b5e20;
   margin: 0;
+  letter-spacing: 0.5px;
 }
-
-
-
-
-
-
-
-
 
 /* 1. Trigger Icon Styling */
 .attachment-trigger {
@@ -398,19 +402,6 @@
     overflow: hidden;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* --- Unique CV Modal Design --- */
 
@@ -650,5 +641,245 @@
 .filter-bar button.month-btn:not(.active) {
   opacity: 0.85;
 }
+
+
+/* HEADER LAYOUT */
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+/* TITLE */
+// .table-header h2 {
+//   font-size: 18px;
+//   font-weight: 600;
+//   color: #1b5e20;
+//   margin: 0;
+// }
+
+/* 🔥 TOTAL DAYS SUMMARY (MATCHING YOUR STYLE) */
+.summary-box {
+  background: linear-gradient(135deg, #e8f5e9, #f1f8f4);
+  border: 1px solid #a5d6a7;
+
+  padding: 10px 18px;
+  border-radius: 12px;
+
+  text-align: center;
+  min-width: 110px;
+
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+  transition: all 0.25s ease;
+}
+
+/* HOVER */
+.summary-box:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* LABEL */
+.summary-box span {
+  display: block;
+  font-size: 11px;
+  color: #2e7d32;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+/* VALUE */
+.summary-box h3 {
+  margin: 2px 0 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1b5e20;
+}
+
+
+/* 🔥 ONLY TABLE DATA (td) CONTENT - MAKE IT DARK BLACK */
+
+::ng-deep .mat-mdc-cell.mat-column-employee,
+::ng-deep .mat-mdc-cell.mat-column-reason,
+::ng-deep .mat-mdc-cell.mat-column-start,
+::ng-deep .mat-mdc-cell.mat-column-end,
+::ng-deep .mat-mdc-cell.mat-column-type {
+  color: #111111 !important;
+  font-weight: 500;
+}
+
+/* 🔥 FORCE INNER ELEMENTS ALSO BLACK */
+::ng-deep .mat-mdc-cell.mat-column-employee *,
+::ng-deep .mat-mdc-cell.mat-column-reason *,
+::ng-deep .mat-mdc-cell.mat-column-start *,
+::ng-deep .mat-mdc-cell.mat-column-end *,
+::ng-deep .mat-mdc-cell.mat-column-type * {
+  color: #000 !important;
+  opacity: 1 !important;
+}
+::ng-deep .mat-column-total,
+::ng-deep .mat-mdc-cell.mat-column-total,
+::ng-deep .mat-mdc-header-cell.mat-column-total {
+  text-align: center !important;
+  justify-content: center;
+}
+
+
+::ng-deep .mat-column-total,
+::ng-deep .mat-mdc-cell.mat-column-total {
+  text-decoration: none !important;
+}
+
+
+/* 1. CONTENT DATA STYLING (The Backend Data) */
+::ng-deep .mat-mdc-cell {
+  font-size: 13.5px !important;    /* Matches WFH content size */
+  color: #1a1a1a !important;      /* Stronger black tone */
+  font-weight: 500 !important;    /* Consistent weight */
+  padding: 12px 10px !important;
+  border-bottom: 1px solid #f0f0f0 !important; 
+  vertical-align: middle !important;
+  overflow: visible !important;
+  border-bottom: 1px solid #e8f5e9 !important;
+}
+
+/* Employee Name Specifics */
+.emp-cell span {
+  font-size: 13.5px;
+  color: #111;
+  font-weight: 600;               /* Matches .employee-name from WFH */
+}
+
+/* 2. TABLE HEADERS (Only Font Sync, No Size Change) */
+::ng-deep .mat-mdc-header-cell {
+  background: #2e7d32 !important;
+  color: #ffffff !important;
+  font-size: 12px !important;     /* Sync header font size to WFH */
+  font-weight: 600 !important;
+  padding: 14px !important;
+}
+
+/* 3. REASON & TOGGLE SYNC */
+.reason-text {
+  font-size: 13.5px;
+  color: #111;
+  line-height: 1.4;
+}
+
+// .toggle {
+//   font-size: 11px;
+//   font-weight: 600;
+//   color: #2e7d32;
+//   background: #e8f5e9;            /* Light green background pill */
+//   padding: 2px 8px;
+//   border-radius: 12px;
+//   cursor: pointer;
+//   display: inline-block;
+//   margin-top: 4px;
+//   transition: all 0.2s ease;
+// }
+
+// .toggle:hover {
+//   background: #2e7d32;
+//   color: #ffffff;
+// }
+
+
+
+
+.toggle {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 600;
+
+  color: #2e7d32 !important;   /* 🔥 FORCE GREEN */
+  cursor: pointer;
+
+  text-decoration: underline;
+  text-underline-offset: 2px;
+
+  background: transparent !important;
+}
+
+
+/* 4. DAYS BADGE SYNC */
+.days-badge {
+  background: #c8e6c9;            /* Matches .badge from WFH */
+  color: #1b5e20;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  display: inline-block;
+  align-items: center;
+  justify-content: center;
+  margin: 4px 0; 
+}
+
+/* 5. STATUS LABELS SYNC */
+.approved {
+  color: #2e7d32 !important;
+  background: #e8f5e9 !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.rejected {
+  color: #c62828 !important;
+  background: #fdecea !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+/* 6. FILTER BAR TEXT SYNC */
+.filter-bar input, 
+.radio-option {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Fix for the 'Days' column specifically */
+// ::ng-deep .mat-column-total {
+//   border-bottom: 1px solid #f0f0f0 !important;
+// }
+::ng-deep .mat-column-total {
+  width: 90px;
+  min-width: 90px;
+  max-width: 90px;
+}
+
+
+
+::ng-deep .mat-mdc-cell.mat-column-total {
+  border-bottom: none !important;
+}
+
+
+/* 🔥 FIX: DAYS HEADER BORDER ALIGNMENT */
+::ng-deep th.mat-mdc-header-cell.mat-column-total {
+  border-bottom: none !important;
+  text-align: center !important;
+}
+
+::ng-deep .mat-column-status {
+  width: 160px;
+  min-width: 160px;
+}
+
+::ng-deep .mat-mdc-cell,
+::ng-deep .mat-mdc-header-cell {
+  padding-left: 14px;
+  padding-right: 14px;
+}
+
+
+
 
 

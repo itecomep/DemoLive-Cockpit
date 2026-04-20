@@ -50,7 +50,9 @@ export class LeavesComponent implements OnInit, AfterViewInit {
     endDate: ''
   };
 
-  selectedMonthTab: 'current' | 'last' = 'current';
+  // selectedMonthTab: 'current' | 'last' = 'current';
+  selectedMonthTab: 'none' | 'current' | 'last' = 'none';
+
 
   // ================= TABLE =================
 
@@ -157,7 +159,8 @@ export class LeavesComponent implements OnInit, AfterViewInit {
       endDate: ''
     };
 
-    this.selectedMonthTab = 'current';
+    // this.selectedMonthTab = 'current';
+    this.selectedMonthTab = 'none'; // ✅ not 'current'
 
     if (this.activeTab === 'all') {
       this.loadLeaves();
@@ -190,23 +193,45 @@ export class LeavesComponent implements OnInit, AfterViewInit {
     }
 
     // 🔹 Month Filter
-    const now = new Date();
+    // const now = new Date();
 
-    if (this.selectedMonthTab === 'current') {
-      data = data.filter(x =>
-        x.start.getMonth() === now.getMonth() &&
-        x.start.getFullYear() === now.getFullYear()
-      );
-    }
+    // if (this.selectedMonthTab === 'current') {
+    //   data = data.filter(x =>
+    //     x.start.getMonth() === now.getMonth() &&
+    //     x.start.getFullYear() === now.getFullYear()
+    //   );
+    // }
 
-    if (this.selectedMonthTab === 'last') {
-      const last = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    // if (this.selectedMonthTab === 'last') {
+    //   const last = new Date(now.getFullYear(), now.getMonth() - 1, 1);
 
-      data = data.filter(x =>
-        x.start.getMonth() === last.getMonth() &&
-        x.start.getFullYear() === last.getFullYear()
-      );
-    }
+    //   data = data.filter(x =>
+    //     x.start.getMonth() === last.getMonth() &&
+    //     x.start.getFullYear() === last.getFullYear()
+    //   );
+    // }
+
+    // 🔹 Month Filter (ONLY when selected)
+const now = new Date();
+
+if (this.selectedMonthTab === 'current') {
+  data = data.filter(x =>
+    x.start.getMonth() === now.getMonth() &&
+    x.start.getFullYear() === now.getFullYear()
+  );
+}
+
+else if (this.selectedMonthTab === 'last') {
+  const last = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+  data = data.filter(x =>
+    x.start.getMonth() === last.getMonth() &&
+    x.start.getFullYear() === last.getFullYear()
+  );
+}
+
+// 🔥 if 'none' → no filtering → ALL data
+
 
     this.dataSource.data = data;
   }
@@ -249,5 +274,25 @@ export class LeavesComponent implements OnInit, AfterViewInit {
   toggleReason(row: any): void {
     row.expanded = !row.expanded;
   }
+
+   resetFilters(): void {
+    this.filters = {
+      employeeName: '',
+      startDate: '',
+      endDate: ''
+    };
+
+    // this.selectedMonthTab = 'current';
+     this.selectedMonthTab = 'none'; // ✅ reset to ALL
+    this.applyFilters();
+  }
+
+
+  getTotalDays(): number {
+  return this.dataSource.data.reduce((sum, row) => {
+    return sum + (row.total || 0);
+  }, 0);
+}
+
 
 }

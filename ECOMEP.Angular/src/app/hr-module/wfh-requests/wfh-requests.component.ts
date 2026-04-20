@@ -20,7 +20,7 @@ export class WfhRequestsComponent implements OnInit {
   // editingRowId: number | null = null;  
   backupRow: any = null;
 
-  existingFiles: any[] = [];
+  existingFiles: any[] = [];  
   newFiles: File[] = [];
 
   constructor(
@@ -54,7 +54,9 @@ export class WfhRequestsComponent implements OnInit {
           .filter(x => x.userId === userId)
           .map(x => ({
             ...x,
-            status: (x.status || 'PENDING').toLowerCase(),
+            // status: (x.status || 'PENDING').toLowerCase(),
+            status: x.status || 'PENDING',
+
             employeeName:
               x.userName ||
               x.name ||

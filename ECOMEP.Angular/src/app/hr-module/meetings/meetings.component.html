@@ -34,14 +34,15 @@
 </div>
 
   <!-- TABLE -->
-  <table class="meetings-table">
+  <!-- <table class="meetings-table">
 
     <thead>
       <tr>
-        <th>Staff Name</th>
-        <th>Date</th>
-        <th>Title</th>
-        <th>Project</th>
+        <th>Internal Attendee</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Event</th>
+         <th>Project</th>
         <th>Purpose</th>
         <th>Location</th>
         <th>Meeting Hours</th>
@@ -50,7 +51,6 @@
     </thead>
 
     <tbody>
-      <!-- <tr *ngFor="let m of meetings"> -->
         <tr *ngFor="let m of filteredMeetings">
 
         <td><b>{{ m.createdBy }}</b></td>
@@ -74,7 +74,73 @@
       </tr>
     </tbody>
 
-  </table>
+  </table> -->
+
+  <table class="meetings-table">
+
+  <thead>
+    <tr>
+      <th>Internal Attendee</th>
+      <th>Start</th>
+      <th>End</th>
+      <th>Type</th>
+      <th>Event / Project</th>
+      <th>Purpose</th>
+      <th>Location</th>
+      <th>Hours</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let m of filteredMeetings">
+
+      <!-- 👤 STAFF -->
+      <td><b>{{ m.createdBy }}</b></td>
+
+      <!-- ⏱ START -->
+      <td>
+        {{ m.startDate | date:'dd MMM y' }} <br>
+        <small>{{ m.startDate | date:'HH:mm' }}</small>
+      </td>
+
+      <!-- ⏱ END -->
+      <td>
+        {{ m.endDate | date:'dd MMM y' }} <br>
+        <small>{{ m.endDate | date:'HH:mm' }}</small>
+      </td>
+
+      <!-- 📌 TYPE -->
+      <td>
+        <span class="badge"
+          [ngClass]="{
+            'project': m.project,
+            'event': !m.project
+          }">
+          {{ m.project ? 'Project' : 'Event' }}
+        </span>
+      </td>
+
+      <!-- 📂 EVENT / PROJECT -->
+      <td>
+        {{ m.project?.title || m.title }}
+      </td>
+
+      <!-- 🎯 PURPOSE -->
+      <td>{{ m.purpose }}</td>
+
+      <!-- 📍 LOCATION -->
+      <td>{{ m.location }}</td>
+
+      <!-- ⏳ HOURS -->
+      <td>
+        <b>{{ getMeetingHours(m) }} hrs</b>
+      </td>
+
+    </tr>
+  </tbody>
+
+</table>
+
 
 </div>
 
