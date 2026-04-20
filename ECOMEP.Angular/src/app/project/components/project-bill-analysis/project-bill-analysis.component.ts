@@ -319,85 +319,85 @@ export class ProjectBillAnalysisComponent implements OnInit
 
 
 
-  private async getData()
-  {
-    this.dataList = await firstValueFrom(this.projectBillService.getAnalysis('full', this.filters, this.searchKey,
-      this.sort));
+  // private async getData()
+  // {
+  //   this.dataList = await firstValueFrom(this.projectBillService.getAnalysis('full', this.filters, this.searchKey,
+  //     this.sort));
 
-    this.total = new ProjectBillAnalysis();
-    this.dataList.forEach(x =>
-    {
-      this.total.dueAmount += x.dueAmount;
-      // this.total.tds += x.tds;
-      // this.total.tdsBalance += x.tdsBalance;
-      this.total.cgstAmount += x.cgstAmount;
-      this.total.sgstAmount += x.sgstAmount;
-      // this.total.gstAmount += x.gstAmount;
-      this.total.billAmount += x.billAmount;
-      this.total.igstAmount += x.igstAmount;
-      this.total.payableAmount += x.payableAmount;
-      this.total.pendingPayment += x.pendingPayment;
-      // this.total.tdsPaid += x.tdsPaid;
+  //   this.total = new ProjectBillAnalysis();
+  //   this.dataList.forEach(x =>
+  //   {
+  //     this.total.dueAmount += x.dueAmount;
+  //     // this.total.tds += x.tds;
+  //     // this.total.tdsBalance += x.tdsBalance;
+  //     this.total.cgstAmount += x.cgstAmount;
+  //     this.total.sgstAmount += x.sgstAmount;
+  //     // this.total.gstAmount += x.gstAmount;
+  //     this.total.billAmount += x.billAmount;
+  //     this.total.igstAmount += x.igstAmount;
+  //     this.total.payableAmount += x.payableAmount;
+  //     this.total.pendingPayment += x.pendingPayment;
+  //     // this.total.tdsPaid += x.tdsPaid;
+  //   });
+  // }
+
+
+
+private async getData()
+{
+  // 🔒 ALWAYS restrict data to logged-in user's teams
+  const userTeamIds = this.authService.getCurrentUserTeamIds();
+
+  // remove any existing team filters
+  this.filters = this.filters.filter(f => f.key !== 'teamID');
+
+  // add only user's teams
+  userTeamIds.forEach(id => {
+    this.filters.push({
+      key: 'teamID',
+      value: id.toString()
     });
-  }
+  });
 
+  // 🔥 Step 1: Get projects
+  const projectResponse = await firstValueFrom(
+    this.projectService.getPages(
+      0,
+      1000,
+      this.filters,
+      this.searchKey,
+      this.sort
+    )
+  );
 
+  const projectIds = projectResponse.list.map((p: Project) => p.id);
 
-// private async getData()
-// {
-//   // 🔒 ALWAYS restrict data to logged-in user's teams
-//   const userTeamIds = this.authService.getCurrentUserTeamIds();
+  // 🔥 Step 2: Prepare filters for bill API
+  const updatedFilters = [...this.filters];
 
-//   // remove any existing team filters
-//   this.filters = this.filters.filter(f => f.key !== 'teamID');
+  const filtered = updatedFilters.filter(f => f.key !== 'ProjectID');
 
-//   // add only user's teams
-//   userTeamIds.forEach(id => {
-//     this.filters.push({
-//       key: 'teamID',
-//       value: id.toString()
-//     });
-//   });
+  projectIds.forEach((id: number) => {
+    filtered.push({ key: 'ProjectID', value: id.toString() });
+  });
 
-//   // 🔥 Step 1: Get projects
-//   const projectResponse = await firstValueFrom(
-//     this.projectService.getPages(
-//       0,
-//       1000,
-//       this.filters,
-//       this.searchKey,
-//       this.sort
-//     )
-//   );
+  // 🔥 Step 3: Call bill analysis API
+  this.dataList = await firstValueFrom(
+    this.projectBillService.getAnalysis('full', filtered, this.searchKey, this.sort)
+  );
 
-//   const projectIds = projectResponse.list.map((p: Project) => p.id);
-
-//   // 🔥 Step 2: Prepare filters for bill API
-//   const updatedFilters = [...this.filters];
-
-//   const filtered = updatedFilters.filter(f => f.key !== 'ProjectID');
-
-//   projectIds.forEach((id: number) => {
-//     filtered.push({ key: 'ProjectID', value: id.toString() });
-//   });
-
-//   // 🔥 Step 3: Call bill analysis API
-//   this.dataList = await firstValueFrom(
-//     this.projectBillService.getAnalysis('full', filtered, this.searchKey, this.sort)
-//   );
-
-//   // totals calculation
-//   this.total = new ProjectBillAnalysis();
-//   this.dataList.forEach(x => {
-//     this.total.dueAmount += x.dueAmount;
-//     this.total.cgstAmount += x.cgstAmount;
-//     this.total.sgstAmount += x.sgstAmount;
-//     this.total.billAmount += x.billAmount;
-//     this.total.igstAmount += x.igstAmount;
-//     this.total.payableAmount += x.payableAmount;
-//     this.total.pendingPayment += x.pendingPayment;
-//   });
-// }
+  // totals calculation
+  this.total = new ProjectBillAnalysis();
+  this.dataList.forEach(x => {
+    this.total.dueAmount += x.dueAmount;
+    this.total.cgstAmount += x.cgstAmount;
+    this.total.sgstAmount += x.sgstAmount;
+    this.total.billAmount += x.billAmount;
+    this.total.igstAmount += x.igstAmount;
+    this.total.payableAmount += x.payableAmount;
+    this.total.pendingPayment += x.pendingPayment;
+  });
+}
 
 
   refresh()
