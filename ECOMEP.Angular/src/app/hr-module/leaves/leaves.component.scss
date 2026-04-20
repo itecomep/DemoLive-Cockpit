@@ -70,12 +70,19 @@
 }
 
 /* 🔥 REASON TEXT */
+// ::ng-deep .mat-mdc-cell:nth-child(2) {
+//   max-width: 220px;
+//   white-space: nowrap;
+//   overflow: hidden;
+//   text-overflow: ellipsis;
+// }
+
 ::ng-deep .mat-mdc-cell:nth-child(2) {
-  max-width: 220px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  max-width: 250px;
+  white-space: normal;        /* ✅ allow wrapping */
+  overflow: visible;          /* ✅ allow expansion */
 }
+
 
 /* 🔥 DAYS BADGE */
 // ::ng-deep .mat-mdc-cell:nth-child(6) {
@@ -596,17 +603,30 @@
 
 
 
+// .radio-option {
+//   display: flex;
+//   align-items: center;
+//   gap: 4px;
+//   font-size: 12px;
+//   color: #528155;
+//   cursor: pointer;
+// }
+
 .radio-option {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  color: #528155;
+  gap: 6px;
+
+  font-size: 14.5px;     /* 🔥 increase size */
+  font-weight: 600;      /* 🔥 stronger look */
+
+  color: #1b5e20;        /* 🔥 DARK GREEN (matches header) */
   cursor: pointer;
 }
 
+
 .radio-option input {
-  accent-color: #6ca16e;
+  accent-color: #1b5e20;
   cursor: pointer;
 }
 
@@ -839,8 +859,7 @@
 }
 
 /* 6. FILTER BAR TEXT SYNC */
-.filter-bar input, 
-.radio-option {
+.filter-bar input {
   font-size: 12px;
   font-weight: 500;
 }
@@ -883,3 +902,34 @@
 
 
 
+/* FIX STATUS ALIGNMENT */
+.approved,
+.rejected {
+  display: inline-flex;     /* 🔥 KEY FIX */
+  align-items: center;      /* 🔥 vertical align */
+  gap: 6px;                 /* space between icon + text */
+}
+
+/* ICON FIX */
+.status-icon {
+  font-size: 18px;          /* slightly bigger looks better */
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+
+  display: flex;            /* 🔥 forces perfect centering */
+  align-items: center;
+  justify-content: center;
+}
+.approve-btn,
+.reject-btn {
+  display: inline-flex;     /* 🔥 align icon + text */
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-icon {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+}

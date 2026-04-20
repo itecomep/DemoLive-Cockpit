@@ -173,10 +173,28 @@
         <div *ngIf="teamOptions && teamOptions.length > 0">
             <mat-form-field appearance="outline">
                 <mat-label>Team</mat-label>
-                <mat-select [formControl]="teamFC" multiple placeholder="Team">
+                <!-- <mat-select [formControl]="teamFC" multiple placeholder="Team">
                     <mat-option *ngFor=" let item of teamOptions" [value]="item">{{ item.title
                         }}</mat-option>
-                </mat-select>
+                </mat-select> -->
+
+                <mat-select 
+  [formControl]="teamFC" 
+  multiple 
+  placeholder="Team"
+  [disabled]="!isAdmin">
+
+  <mat-option 
+    *ngFor="let item of teamOptions" 
+    [value]="item"
+    [disabled]="!isAdmin">
+    
+    {{ item.title }}
+    
+  </mat-option>
+
+</mat-select>
+
             </mat-form-field>
         </div>
 
