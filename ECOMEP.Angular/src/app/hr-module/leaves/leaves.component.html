@@ -61,10 +61,34 @@
         Employee
       </th>
       <td mat-cell *matCellDef="let element">
-        <div class="emp-cell">
+        <!-- <div class="emp-cell">
           <img src="assets/images/user.png" [matTooltip]="element.employeeName" class="user-img" />
           <span>{{ element.employeeName }}</span>
-        </div>
+        </div> -->
+
+
+        <div class="employee-cell">
+
+  <img 
+    *ngIf="element.photoUrl; else fallbackAvatar"
+    [src]="element.photoUrl"
+    class="avatar-img"
+  />
+
+  <ng-template #fallbackAvatar>
+    <div class="avatar">
+      {{ element.employeeName?.charAt(0) }}
+    </div>
+  </ng-template>
+
+  <div class="employee-info">
+    <span class="employee-name">
+      {{ element.employeeName }}
+    </span>
+  </div>
+
+</div>
+
       </td>
     </ng-container>
 
