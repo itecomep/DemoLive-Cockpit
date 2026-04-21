@@ -39,7 +39,7 @@
         <th>Event / Project</th>
         <th>Purpose</th>
         <th>Location</th>
-        <th>Travelling Hours</th>
+        <th>Total Hours</th>
       </tr>
     </thead>
 
@@ -55,17 +55,36 @@
       <tr *ngFor="let m of filteredMeetings">
 
         <td>
-          <b>{{ m.attendeeName }}</b>
+          <div class="attendee-cell">
+
+            <!-- If image exists -->
+            <img *ngIf="m.photoUrl; else nameAvatar"
+                [src]="m.photoUrl"
+                class="avatar-img" />
+
+            <!-- Fallback Initial Avatar -->
+            <ng-template #nameAvatar>
+              <div class="avatar">
+                {{ m.attendeeName?.charAt(0) }}
+              </div>
+            </ng-template>
+
+            <!-- Name -->
+            <span class="attendee-name">
+              {{ m.attendeeName }}
+            </span>
+
+          </div>
         </td>
 
         <td>
           {{ m.startTime | date:'dd MMM y' }} <br>
-          <small>{{ m.startTime | date:'HH:mm' }}</small>
+          <small><b>{{ m.startTime | date:'HH:mm' }}</b></small>
         </td>
 
         <td>
           {{ m.endTime | date:'dd MMM y' }} <br>
-          <small>{{ m.endTime | date:'HH:mm' }}</small>
+          <small><b>{{ m.endTime | date:'HH:mm' }}</b></small>
         </td>
 
         <td>
@@ -90,8 +109,10 @@
           {{ m.location }}
         </td>
 
-        <td>
-          <b>{{ m.travellingHours }} hrs</b>
+        <td>         
+          <span class="hours-box">
+            {{ formatHours(m.totalHours) }}
+          </span>
         </td>
 
       </tr>

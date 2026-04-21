@@ -3,7 +3,7 @@
   background: #f5f7fb;
 }
 
-/* 🔥 HEADER SAME AS WFH */
+/* HEADER */
 .table-header {
   display: flex;
   align-items: center;
@@ -11,7 +11,6 @@
   padding: 6px 10px;
 }
 
-/* TITLE */
 .table-header h2 {
   margin: 0;
   font-size: 20px;
@@ -19,67 +18,30 @@
   color: #1b5e20;
 }
 
-/* SEARCH */
-.search-input {
-  padding: 6px 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  width: 220px;
-}
-
-/* RIGHT SIDE BOX */
-// .total-box {
-//   margin-left: auto;
-//   background: #e8f5e9;
-//   padding: 8px 14px;
-//   border-radius: 10px;
-//   text-align: center;
-// }
-
-// .total-box label {
-//   font-size: 12px;
-//   color: #2e7d32;
-// }
-
-// .total-box h3 {
-//   margin: 2px 0 0;
-//   color: #1b5e20;
-// }
-
-
-/* 🔥 TOTAL BOX (MATCH LEAVE PAGE STYLE) */
+/* 🔥 TOTAL RECORD BOX */
 .total-box {
   margin-left: auto;
-
   background: linear-gradient(135deg, #e8f5e9, #f1f8f4);
   border: 1px solid #a5d6a7;
-
   padding: 8px 16px;
   border-radius: 12px;
-
   text-align: center;
   min-width: 120px;
-
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   transition: all 0.25s ease;
 }
 
-/* HOVER EFFECT */
 .total-box:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
 }
 
-/* LABEL */
 .total-box label {
   display: block;
   font-size: 11px;
   color: #2e7d32;
-  font-weight: 500;
-  margin-bottom: 2px;
 }
 
-/* VALUE */
 .total-box h3 {
   margin: 0;
   font-size: 18px;
@@ -87,78 +49,9 @@
   color: #1b5e20;
 }
 
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-
-  // background: #eef0ee; /* light green background */
-  padding: 12px 16px;
-  border-radius: 8px;
-
- h2 {
-  margin: 0;
-  font-size: 22px;
-  color: #2e7d32; /* same green as table header */
-  font-weight: 600;
-}
-}
-
-.summary {
-  display: flex;
-  gap: 12px;
-}
-
-.box {
-  background: #fff;
-  padding: 10px 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-
-  label {
-    font-size: 12px;
-    color: #666;
-  }
-
-  h3 {
-    margin: 5px 0 0;
-  }
-}
-
-.meetings-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-
-  th {
-    text-align: left;
-    padding: 12px;
-    background:#2e7d32;;
-    color: white;
-  }
-
-  td {
-    padding: 12px;
-    border-bottom: 1px solid #eee;
-  }
-
-  tbody tr:hover {
-    background: #f1f7ff;
-  }
-
-  tfoot td {
-    background: #fafafa;
-    font-weight: bold;
-  }
-}
-
-
-/* 🔥 FILTER BAR CONTAINER */
+/* 🔥 FILTER BAR */
 .filter-bar {
   display: flex;
-  align-items: center;
   gap: 12px;
   margin: 12px 0 16px;
   flex-wrap: wrap;
@@ -169,32 +62,20 @@
   border: 1px solid #e0f2e9;
 }
 
-/* INPUT FIELDS */
 .filter-bar input {
   padding: 7px 10px;
   border: 1px solid #c8e6c9;
   border-radius: 6px;
   font-size: 12px;
-
-  outline: none;
-  transition: all 0.2s ease;
-
   min-width: 160px;
+  transition: 0.2s ease;
 }
 
-/* INPUT FOCUS EFFECT */
 .filter-bar input:focus {
   border-color: #2e7d32;
   box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.15);
 }
 
-/* PLACEHOLDER */
-.filter-bar input::placeholder {
-  color: #9e9e9e;
-  font-size: 11px;
-}
-
-/* BUTTON */
 .filter-bar button {
   background: #2e7d32;
   color: white;
@@ -202,27 +83,62 @@
   padding: 7px 14px;
   border-radius: 6px;
   cursor: pointer;
-
   font-size: 12px;
   font-weight: 600;
+  transition: 0.2s ease;
+}
 
+.filter-bar button:hover {
+  background: #1b5e20;
+}
+
+/* 🔥 TABLE DESIGN */
+.meetings-table {
+  width: 100%;
+  border-collapse: separate; /* IMPORTANT */
+  border-spacing: 0;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* HEADER */
+.meetings-table th {
+  text-align: left;
+  padding: 14px 12px;
+  background: #2e7d32;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* BODY CELLS */
+.meetings-table td {
+  padding: 12px;
+  font-size: 13px;
+  border-bottom: 1px solid #edf2f7; /* 🔥 smooth line */
+}
+
+/* REMOVE LAST BORDER */
+.meetings-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ROW HOVER */
+.meetings-table tbody tr {
   transition: all 0.2s ease;
 }
 
-/* BUTTON HOVER */
-.filter-bar button:hover {
-  background: #1b5e20;
-  transform: translateY(-1px);
+.meetings-table tbody tr:hover {
+  background: #f4fbf6;  
 }
 
-/* BUTTON ACTIVE CLICK */
-.filter-bar button:active {
-  transform: scale(0.96);
-}
-
+/* 🔥 TYPE BADGES */
 .badge {
-  padding: 3px 8px;
-  border-radius: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
   font-size: 11px;
   font-weight: 600;
 }
@@ -237,16 +153,123 @@
   color: #ad1457;
 }
 
+/* 🔥 TOTAL HOURS GREEN BOX (NEW 🔥) */
+.hours-box {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: #e8f5e9;
+  color: #1b5e20;
+  font-weight: 600;
+  font-size: 12px;
+  border: 1px solid #a5d6a7;
+}
 
-/* OPTIONAL: SMALL SCREEN RESPONSIVE */
+/* EMPTY STATE */
+.meetings-table td[colspan] {
+  color: #777;
+  font-size: 13px;
+}
+
+/* RESPONSIVE */
 @media (max-width: 600px) {
   .filter-bar {
     flex-direction: column;
-    align-items: stretch;
   }
 
   .filter-bar input,
   .filter-bar button {
     width: 100%;
   }
+}
+
+/* 🔥 ATTENDEE CELL */
+.attendee-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 🔥 IMAGE AVATAR */
+.avatar-img {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e0f2e9;
+}
+
+/* 🔥 INITIAL AVATAR (LIKE YOUR LEAVE PAGE) */
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(135deg, #2e7d32, #66bb6a);
+  color: white;
+
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* 🔥 NAME */
+.attendee-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #111;
+}
+
+/* 🔥 FIX TABLE LAYOUT */
+.meetings-table {
+  table-layout: fixed;  /* ✅ KEY FIX */
+  width: 100%;
+}
+
+/* 🔥 COLUMN WIDTH CONTROL */
+.meetings-table th:nth-child(1),
+.meetings-table td:nth-child(1) {
+  width: 200px; /* Attendee */
+}
+
+.meetings-table th:nth-child(2),
+.meetings-table td:nth-child(2) {
+  width: 120px; /* Start */
+}
+
+.meetings-table th:nth-child(3),
+.meetings-table td:nth-child(3) {
+  width: 120px; /* End */
+}
+
+.meetings-table th:nth-child(4),
+.meetings-table td:nth-child(4) {
+  width: 100px; /* Type */
+}
+
+.meetings-table th:nth-child(5),
+.meetings-table td:nth-child(5) {
+  width: 320px; /* Event / Project (big text) */
+}
+
+.meetings-table th:nth-child(6),
+.meetings-table td:nth-child(6) {
+  width: 140px; /* Purpose */
+}
+
+.meetings-table th:nth-child(7),
+.meetings-table td:nth-child(7) {
+  width: 140px; /* Location */
+}
+
+.meetings-table th:nth-child(8),
+.meetings-table td:nth-child(8) {
+  width: 110px; /* Total Hours */
+  text-align: center;
 }

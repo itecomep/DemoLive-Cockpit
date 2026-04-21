@@ -11,7 +11,8 @@ interface Meeting {
   title: string;
   purpose: string;
   location: string;
-  travellingHours: number;
+  totalHours: number;
+  photoUrl?: string;
 }
 
 @Component({
@@ -91,9 +92,19 @@ export class MeetingsComponent implements OnInit {
 
   getTotalTravelHours(): number {
     return this.filteredMeetings.reduce(
-      (sum, m) => sum + m.travellingHours,
+      (sum, m) => sum + m.totalHours,
       0
     );
   }
+
+  formatHours(hours: number): string {
+  if (!hours) return '0h';
+
+  const h = Math.floor(hours);
+  const m = Math.round((hours - h) * 60);
+
+  return m > 0 ? `${h}h ${m}m` : `${h}h`;
+}
+
 
 }
