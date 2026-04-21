@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using MyCockpitView.WebApi.NotificationModule;
-using MyCockpitView.WebApi.NotificationModule.Entities;
-using AutoMapper;
+﻿using AutoMapper;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using MyCockpitView.CoreModule;
 using MyCockpitView.Utility.Common;
@@ -15,9 +13,12 @@ using MyCockpitView.WebApi.Exceptions;
 using MyCockpitView.WebApi.MeetingModule.Dtos;
 using MyCockpitView.WebApi.MeetingModule.Entities;
 using MyCockpitView.WebApi.MeetingModule.Services;
+using MyCockpitView.WebApi.NotificationModule;
+using MyCockpitView.WebApi.NotificationModule.Entities;
 using MyCockpitView.WebApi.Responses;
 using MyCockpitView.WebApi.Services;
 using MyCockpitView.WebApi.StatusMasterModule;
+using MyCockpitView.WebApi.WFTaskModule.Entities;
 using MyCockpitView.WebApi.WFTaskModule.Services;
 using Newtonsoft.Json;
 
@@ -470,10 +471,10 @@ namespace MyCockpitView.WebApi.MeetingModule.Controllers
         [Authorize]
         [HttpGet("summary")]
         public async Task<IActionResult> GetMeetingSummary()
-        {            
+        {
             var meetings = await _db.Meetings
                 .Include(m => m.Attendees)
-                .OrderByDescending(m => m.StartDate) 
+                .OrderByDescending(m => m.StartDate)
                 .ToListAsync();
 
             var tasks = await _db.WFTasks
@@ -488,14 +489,13 @@ namespace MyCockpitView.WebApi.MeetingModule.Controllers
                         .Where(t => t.EntityID == m.ID)
                         .ToList();
 
-                    Console.WriteLine($"MeetingId: {m.ID}, TypeFlag: {m.TypeFlag}");
-
                     return m.Attendees
                         .Where(a => a.TypeFlag == McvConstant.MEETING_ATTENDEE_INTERNAL)
                         .Select(a =>
                         {
-                            var travelHours = meetingTasks
-                                .SelectMany(t => t.TimeEntries)
+                            // ✅ TOTAL HOURS (since no travel flag exists)
+                            var totalHours = meetingTasks
+                                .SelectMany(t => t.TimeEntries ?? new List<TimeEntry>())
                                 .Where(te => te.ContactID == a.ContactID)
                                 .Sum(te => te.ManHours);
 
@@ -510,7 +510,9 @@ namespace MyCockpitView.WebApi.MeetingModule.Controllers
                                 Title = m.Title,
                                 Purpose = m.Purpose,
                                 Location = m.Location,
-                                TravellingHours = travelHours
+
+                                // ⚠️ IMPORTANT: This is NOT travel, it's total
+                                TravellingHours = totalHours
                             };
                         });
                 })
