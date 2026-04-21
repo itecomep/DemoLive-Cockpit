@@ -9,6 +9,6 @@
         public string Title { get; set; }
         public string Purpose { get; set; }
         public string Location { get; set; }
-        public decimal TravellingHours { get; set; }
+        public decimal TotalHours { get; set; }
     }
 }

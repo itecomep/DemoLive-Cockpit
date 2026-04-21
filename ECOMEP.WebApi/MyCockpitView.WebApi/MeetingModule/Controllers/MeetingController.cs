@@ -477,27 +477,17 @@ namespace MyCockpitView.WebApi.MeetingModule.Controllers
                 .OrderByDescending(m => m.StartDate)
                 .ToListAsync();
 
-            var tasks = await _db.WFTasks
-                .Include(t => t.TimeEntries)
-                .Where(t => t.Entity == nameof(Meeting))
-                .ToListAsync();
-
             var result = meetings
                 .SelectMany(m =>
                 {
-                    var meetingTasks = tasks
-                        .Where(t => t.EntityID == m.ID)
-                        .ToList();
-
                     return m.Attendees
                         .Where(a => a.TypeFlag == McvConstant.MEETING_ATTENDEE_INTERNAL)
                         .Select(a =>
                         {
-                            // ✅ TOTAL HOURS (since no travel flag exists)
-                            var totalHours = meetingTasks
-                                .SelectMany(t => t.TimeEntries ?? new List<TimeEntry>())
-                                .Where(te => te.ContactID == a.ContactID)
-                                .Sum(te => te.ManHours);
+                            // ✅ TOTAL HOURS FROM START & END TIME
+                            var totalHours = m.EndDate != null && m.StartDate != null
+                                ? (decimal)(m.EndDate - m.StartDate).TotalHours
+                                : 0;
 
                             return new MeetingSummaryDto
                             {
@@ -511,8 +501,8 @@ namespace MyCockpitView.WebApi.MeetingModule.Controllers
                                 Purpose = m.Purpose,
                                 Location = m.Location,
 
-                                // ⚠️ IMPORTANT: This is NOT travel, it's total
-                                TravellingHours = totalHours
+                                // 🔥 Now this is actual total duration
+                                TotalHours = totalHours
                             };
                         });
                 })
