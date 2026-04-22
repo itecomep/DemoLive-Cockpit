@@ -60,14 +60,21 @@ export const ROOT_ROUTES: Routes = [
   },
 
   
-{
-  path: 'hr-module',
-  loadComponent: () =>
-    import('./hr-module/hr-module.component').then(m => m.HrModuleComponent)
-},
+  {
+    path: 'hr-module',
+    loadComponent: () =>
+      import('./hr-module/hr-module.component').then(m => m.HrModuleComponent)
+  },
 
+  {
+    path: 'wfh-request-status',
+    loadComponent: () =>
+      import('./hr-module/wfh-requests/wfh-requests.component')
+        .then(m => m.WfhRequestsComponent)
+  },
 
-{ path: '', redirectTo: 'cockpit', pathMatch: 'full' },
+  { path: '', redirectTo: 'cockpit', pathMatch: 'full' },
+
   { path: '**', redirectTo: '/cockpit', pathMatch: 'full' },
 ];
 

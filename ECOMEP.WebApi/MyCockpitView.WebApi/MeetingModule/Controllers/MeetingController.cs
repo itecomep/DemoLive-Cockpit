@@ -484,7 +484,6 @@ namespace MyCockpitView.WebApi.MeetingModule.Controllers
                         .Where(a => a.TypeFlag == McvConstant.MEETING_ATTENDEE_INTERNAL)
                         .Select(a =>
                         {
-                            // ✅ TOTAL HOURS FROM START & END TIME
                             var totalHours = m.EndDate != null && m.StartDate != null
                                 ? (decimal)(m.EndDate - m.StartDate).TotalHours
                                 : 0;
@@ -501,7 +500,6 @@ namespace MyCockpitView.WebApi.MeetingModule.Controllers
                                 Purpose = m.Purpose,
                                 Location = m.Location,
 
-                                // 🔥 Now this is actual total duration
                                 TotalHours = totalHours
                             };
                         });

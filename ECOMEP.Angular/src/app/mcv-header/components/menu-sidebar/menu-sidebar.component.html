@@ -104,14 +104,15 @@
       </a>
     </li>
 
-    <li *ngIf="isPermissionWorkFromHome">
-     
-      <a
-  [routerLink]="['/hr-module']"
-  routerLinkActive="active"
-  (click)="closeMenuDelayed()"
->
+    <li *ngIf="isPermissionWorkFromHome">     
+      <a [routerLink]="['/hr-module']" routerLinkActive="active" (click)="closeMenuDelayed()">
         <h5>HR Module</h5>
+      </a>
+    </li>
+
+    <li *ngIf="isPermissionWorkFromHome">
+      <a [routerLink]="['/wfh-request-status']" routerLinkActive="active" (click)="closeMenuDelayed()">
+        <h5>WFH Request Status</h5>
       </a>
     </li>
 

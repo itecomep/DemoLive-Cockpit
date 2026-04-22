@@ -5,11 +5,12 @@ import { FormsModule } from '@angular/forms';
 
 import { HrModuleService } from '../hr-module.service';
 import { AuthService } from 'src/app/auth/services/auth.service';
+import { HeaderComponent } from 'src/app/mcv-header/components/header/header.component';
 
 @Component({
   selector: 'app-wfh-requests',
   standalone: true,
-  imports: [CommonModule, MatTableModule, FormsModule],
+  imports: [CommonModule, MatTableModule, FormsModule, HeaderComponent],
   templateUrl: './wfh-requests.component.html',
   styleUrls: ['./wfh-requests.component.scss']
 })
@@ -54,8 +55,8 @@ export class WfhRequestsComponent implements OnInit {
           .filter(x => x.userId === userId)
           .map(x => ({
             ...x,
-            // status: (x.status || 'PENDING').toLowerCase(),
-            status: x.status || 'PENDING',
+             status: (x.status || 'PENDING').toLowerCase(),
+            // status: x.status || 'PENDING',
 
             employeeName:
               x.userName ||
@@ -121,15 +122,21 @@ export class WfhRequestsComponent implements OnInit {
     this.newFiles = [];
   }
 
-  deleteRequest(req: any): void {
-    if (req.status !== 'pending') return;
+    deleteRequest(req: any): void {
+      if (req.status !== 'pending') return;
 
-    if (!confirm('Are you sure you want to delete this request?')) return;
+      if (!confirm('Are you sure you want to delete this request?')) return;
 
-    this.hrService.deleteRequest(req.id).subscribe(() => {
-      this.requests = this.requests.filter(r => r.id !== req.id);
-    });
-  }
+      this.hrService.deleteRequest(req.id).subscribe(() => {
+
+        // remove from main list
+        this.requests = this.requests.filter(r => r.id !== req.id);
+
+        // 🔥 IMPORTANT: refresh filtered list
+        this.applyFilters();
+
+      });
+    }
 
   // ================= FILE =================
   onFileSelected(event: any): void {

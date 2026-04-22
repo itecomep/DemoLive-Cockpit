@@ -292,8 +292,24 @@
 ========================= */
 .meetings-table input,
 .meetings-table textarea {
-  color: #111;
-  font-weight: 300;
+  color: #111 !important;
+  font-weight: 500;            /* 🔥 make it readable */
+  background: #ffffff;
+  border: 1px solid #c8e6c9;
+  border-radius: 6px;
+  padding: 4px 6px;
+}
+
+/* 🔥 date input fix (important) */
+.meetings-table input[type="date"] {
+  color: #111 !important;
+  filter: none;
+}
+
+/* 🔥 placeholder color fix */
+.meetings-table input::placeholder,
+.meetings-table textarea::placeholder {
+  color: #777;
 }
 
 
