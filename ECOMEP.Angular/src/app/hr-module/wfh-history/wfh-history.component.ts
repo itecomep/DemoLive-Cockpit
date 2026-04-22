@@ -353,5 +353,35 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
     return total;
   }
 
+  getApprovedDays(): number {
+    let total = 0;
+
+    this.filteredRequests.forEach(req => {
+      if (
+        req.status?.toLowerCase() === 'approved' &&
+        req.startDate && req.endDate
+      ) {
+        total += this.getDays(req.startDate, req.endDate);
+      }
+    });
+
+    return total;
+  }
+
+  getRejectedDays(): number {
+    let total = 0;
+
+    this.filteredRequests.forEach(req => {
+      if (
+        req.status?.toLowerCase() === 'rejected' &&
+        req.startDate && req.endDate
+      ) {
+        total += this.getDays(req.startDate, req.endDate);
+      }
+    });
+
+    return total;
+  }
+
 
 }

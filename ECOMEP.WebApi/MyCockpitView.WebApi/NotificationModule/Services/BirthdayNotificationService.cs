@@ -32,11 +32,19 @@ namespace MyCockpitView.WebApi.NotificationModule.Services
 
             // 🎂 get today's birthdays
             var birthdays = await _db.Contacts
-                .Where(c => c.Birth.HasValue &&
-                            c.Birth.Value.Month == today.Month &&
-                            c.Birth.Value.Day == today.Day &&
-                            !c.IsDeleted)
-                .ToListAsync();
+             .Where(c => c.Birth.HasValue &&
+                         c.Birth.Value.Month == today.Month &&
+                         c.Birth.Value.Day == today.Day &&
+                         !c.IsDeleted)
+
+             // 🔥 NEW CONDITION
+             .Where(c => _db.ContactAppointments.Any(a =>
+                 a.ContactID == c.ID &&
+                 !a.IsDeleted &&
+                 (a.StatusFlag == 0 || a.StatusFlag == 2)
+             ))
+
+             .ToListAsync();
 
             if (!birthdays.Any())
                 return;

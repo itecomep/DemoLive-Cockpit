@@ -1,11 +1,14 @@
 ﻿using Azure.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using MyCockpitView.WebApi.AppSettingMasterModule;
 using MyCockpitView.WebApi.AzureBlobsModule;
 using MyCockpitView.WebApi.HrModule.Dtos;
 using MyCockpitView.WebApi.HrModule.Entities;
+using MyCockpitView.WebApi.NotificationModule;
+using MyCockpitView.WebApi.NotificationModule.Entities;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -18,15 +21,18 @@ namespace MyCockpitView.WebApi.HrModule.Controller
         private readonly EntitiesContext _db;
         private readonly IAzureBlobService _blobService;
         private readonly IAppSettingMasterService _appSetting;
+        private readonly IHubContext<NotificationHub> _hub;
 
         public WorkFromHomeController(
             EntitiesContext db,
             IAzureBlobService blobService,
-            IAppSettingMasterService appSetting)
+            IAppSettingMasterService appSetting,
+            IHubContext<NotificationHub> hub)
         {
             _db = db;
             _blobService = blobService;
             _appSetting = appSetting;
+            _hub = hub;
         }
 
         // ================= CREATE =================
@@ -173,10 +179,48 @@ namespace MyCockpitView.WebApi.HrModule.Controller
             if (request == null)
                 return NotFound("Request not found");
 
-            request.Status = dto.Status; 
+            // 🔹 update status
+            request.Status = dto.Status.ToUpper(); // ensure consistent
             request.Modified = DateTime.UtcNow.AddHours(5).AddMinutes(30);
 
             await _db.SaveChangesAsync();
+
+            // 🔥 GET CORRECT USERNAME USING USERID (IMPORTANT FIX)
+            var contact = await _db.Contacts
+                .FirstOrDefaultAsync(x => x.ID == request.UserID);
+
+            var username = contact?.Username;
+
+            if (!string.IsNullOrEmpty(username))
+            {
+                // 🔹 format dates
+                var startDate = request.StartDate.ToString("dd MMM yyyy");
+                var endDate = request.EndDate.ToString("dd MMM yyyy");
+
+                // 🔹 message
+                var message = request.Status == "APPROVED"
+                    ? $"🏠✅ Your WFH request from {startDate} to {endDate} has been approved"
+                    : $"🏠❌ Your WFH request from {startDate} to {endDate} has been rejected";
+
+                var notification = new Notification
+                {
+                    Username = username,
+                    Message = message,
+                    Source = "wfh-status",
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _db.Notifications.Add(notification);
+
+                // 🔥 realtime push
+                if (NotificationHub.UserConnections.TryGetValue(username, out var connectionId))
+                {
+                    await _hub.Clients.Client(connectionId)
+                        .SendAsync("ReceiveNotification", notification);
+                }
+
+                await _db.SaveChangesAsync();
+            }
 
             return Ok(new { message = "Status updated ✅" });
         }

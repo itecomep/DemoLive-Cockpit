@@ -51,13 +51,21 @@
   >
     Birthday
   </button>
+
+  <button
+    mat-button
+    [color]="selectedTab === 'hr' ? 'primary' : ''"
+    (click)="selectTab('hr')"
+  >
+    HR
+  </button>
 </div>
 
 <!-- DATE FILTER -->
 
 <div
   class="date-filter-tabs"
-  *ngIf="['all', 'meeting', 'event', 'todo', 'birthday'].includes(selectedTab)"
+  *ngIf="['all', 'meeting', 'event', 'todo', 'birthday', 'hr'].includes(selectedTab)"
 >
   <div class="filter-row">
     <!-- ✅ ADD THIS WRAPPER -->

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using MyCockpitView.CoreModule;
 using MyCockpitView.Utility.Common;
@@ -10,6 +11,8 @@ using MyCockpitView.WebApi.Exceptions;
 using MyCockpitView.WebApi.LeaveModule.Dtos;
 using MyCockpitView.WebApi.LeaveModule.Entities;
 using MyCockpitView.WebApi.LeaveModule.Services;
+using MyCockpitView.WebApi.NotificationModule;
+using MyCockpitView.WebApi.NotificationModule.Entities;
 using MyCockpitView.WebApi.Responses;
 using MyCockpitView.WebApi.Services;
 using MyCockpitView.WebApi.WFTaskModule.Services;
@@ -30,6 +33,7 @@ public class LeaveController : ControllerBase
     private readonly ISharedService sharedService;
     private readonly EntitiesContext db;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IHubContext<NotificationHub> _hub;
     public LeaveController(
          ILogger<LeaveController> logger,
          EntitiesContext entitiesContext,
@@ -39,7 +43,8 @@ public class LeaveController : ControllerBase
          IWFTaskService wFTaskService,
          ISharedService sharedService,
          IContactService contactService,
-         ICurrentUserService currentUserService
+         ICurrentUserService currentUserService,
+         IHubContext<NotificationHub> hub
          )
     {
         this.logger = logger;
@@ -51,6 +56,7 @@ public class LeaveController : ControllerBase
         this.sharedService = sharedService;
         this.contactService = contactService;
         _currentUserService = currentUserService;
+        _hub = hub;
     }
 
 
@@ -336,12 +342,58 @@ public class LeaveController : ControllerBase
     [HttpPut("update-status/{id}")]
     public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateStatusDto body)
     {
-        var leave = await service.GetById(id);
+        var leave = await service.Get()
+            .Include(x => x.Contact)
+            .FirstOrDefaultAsync(x => x.ID == id);
+
         if (leave == null) return NotFound();
 
+        // 🔹 update status
         leave.StatusFlag = body.Status == "Approved" ? 1 : -1;
 
         await service.Update(leave);
+
+        // 🔥 SEND NOTIFICATION
+        var username = leave.Contact?.Username;
+
+        if (!string.IsNullOrEmpty(username))
+        {
+            // 🔹 GET LEAVE TYPE FROM TYPEMASTERS
+            var typeMasters = await db.TypeMasters
+                .Where(x => x.Entity == nameof(Leave))
+                .ToListAsync();
+
+            var leaveType = typeMasters
+                .FirstOrDefault(x => x.Value == leave.TypeFlag)?.Title ?? "Leave";
+
+            // 🔹 FORMAT DATES
+            var startDate = leave.Start.ToString("dd MMM yyyy");
+            var endDate = leave.End.ToString("dd MMM yyyy");
+
+            // 🔹 CREATE MESSAGE
+            var message = leave.StatusFlag == 1
+                ? $"✅ Your {leaveType} from {startDate} to {endDate} has been approved"
+                : $"❌ Your {leaveType} from {startDate} to {endDate} has been rejected";
+
+            var notification = new Notification
+            {
+                Username = username,
+                Message = message,
+                Source = "leave-status",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            db.Notifications.Add(notification);
+
+            // 🔥 REALTIME PUSH
+            if (NotificationHub.UserConnections.TryGetValue(username, out var connectionId))
+            {
+                await _hub.Clients.Client(connectionId)
+                    .SendAsync("ReceiveNotification", notification);
+            }
+
+            await db.SaveChangesAsync();
+        }
 
         return Ok();
     }
