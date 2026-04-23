@@ -1,42 +1,44 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { MatTableModule } from "@angular/material/table";
+import { FormsModule } from "@angular/forms";
 
-import { HrModuleService } from '../hr-module.service';
-import { AuthService } from 'src/app/auth/services/auth.service';
-import { HeaderComponent } from 'src/app/mcv-header/components/header/header.component';
+import { HrModuleService } from "../hr-module.service";
+import { AuthService } from "src/app/auth/services/auth.service";
+import { HeaderComponent } from "src/app/mcv-header/components/header/header.component";
+import { MatDialog } from "@angular/material/dialog";
+import { WorkFromHomeComponent } from "../../work-from-home/work-from-home/work-from-home.component";
 
 @Component({
-  selector: 'app-wfh-requests',
+  selector: "app-wfh-requests",
   standalone: true,
   imports: [CommonModule, MatTableModule, FormsModule, HeaderComponent],
-  templateUrl: './wfh-requests.component.html',
-  styleUrls: ['./wfh-requests.component.scss']
+  templateUrl: "./wfh-requests.component.html",
+  styleUrls: ["./wfh-requests.component.scss"],
 })
 export class WfhRequestsComponent implements OnInit {
-
+  activeMonthFilter: "none" | "current" | "last" = "none";
   requests: any[] = [];
 
-  // editingRowId: number | null = null;  
+  // editingRowId: number | null = null;
   backupRow: any = null;
 
-  existingFiles: any[] = [];  
+  existingFiles: any[] = [];
   newFiles: File[] = [];
 
   constructor(
     private hrService: HrModuleService,
-    private authService: AuthService
+    private authService: AuthService,
+    private dialog: MatDialog,
   ) {}
-
 
   editingRowId: any = null;
   editedRow: any = {};
   filteredRequests: any[] = [];
   filters = {
-    employeeName: '',
-    startDate: '',
-    endDate: ''
+    employeeName: "",
+    startDate: "",
+    endDate: "",
   };
 
   ngOnInit(): void {
@@ -50,12 +52,11 @@ export class WfhRequestsComponent implements OnInit {
 
     this.hrService.getRequests().subscribe({
       next: (data: any[]) => {
-
         this.requests = data
-          .filter(x => x.userId === userId)
-          .map(x => ({
+          .filter((x) => x.userId === userId)
+          .map((x) => ({
             ...x,
-             status: (x.status || 'PENDING').toLowerCase(),
+            status: (x.status || "PENDING").toLowerCase(),
             // status: x.status || 'PENDING',
 
             employeeName:
@@ -63,19 +64,19 @@ export class WfhRequestsComponent implements OnInit {
               x.name ||
               x.user?.name ||
               currentUser?.contact?.name ||
-              'Unknown',
-            attachments: Array.isArray(x.attachments) ? x.attachments : []
+              "Unknown",
+            attachments: Array.isArray(x.attachments) ? x.attachments : [],
           }));
 
-          this.filteredRequests = [...this.requests];
+        this.filteredRequests = [...this.requests];
       },
-      error: err => console.error(err)
+      error: (err) => console.error(err),
     });
   }
 
   // ================= EDIT =================
   openEdit(req: any): void {
-    if (req.status !== 'pending') return;
+    if (req.status !== "pending") return;
 
     this.editingRowId = req.id;
     this.backupRow = { ...req };
@@ -88,16 +89,15 @@ export class WfhRequestsComponent implements OnInit {
   }
 
   saveEdit(req: any): void {
-
     const formData = new FormData();
 
-    formData.append('startDate', this.toSafeDate(req.startDate));
-    formData.append('endDate', this.toSafeDate(req.endDate));
-    formData.append('reason', req.reason);
-    formData.append('existingFiles', JSON.stringify(this.existingFiles));
+    formData.append("startDate", this.toSafeDate(req.startDate));
+    formData.append("endDate", this.toSafeDate(req.endDate));
+    formData.append("reason", req.reason);
+    formData.append("existingFiles", JSON.stringify(this.existingFiles));
 
-    this.newFiles.forEach(file => {
-      formData.append('files', file);
+    this.newFiles.forEach((file) => {
+      formData.append("files", file);
     });
 
     this.hrService.updateRequest(req.id, formData).subscribe(() => {
@@ -110,7 +110,7 @@ export class WfhRequestsComponent implements OnInit {
   }
 
   cancelEdit(req: any): void {
-    const index = this.requests.findIndex(r => r.id === req.id);
+    const index = this.requests.findIndex((r) => r.id === req.id);
 
     if (index !== -1 && this.backupRow) {
       this.requests[index] = { ...this.backupRow };
@@ -122,21 +122,19 @@ export class WfhRequestsComponent implements OnInit {
     this.newFiles = [];
   }
 
-    deleteRequest(req: any): void {
-      if (req.status !== 'pending') return;
+  deleteRequest(req: any): void {
+    if (req.status !== "pending") return;
 
-      if (!confirm('Are you sure you want to delete this request?')) return;
+    if (!confirm("Are you sure you want to delete this request?")) return;
 
-      this.hrService.deleteRequest(req.id).subscribe(() => {
+    this.hrService.deleteRequest(req.id).subscribe(() => {
+      // remove from main list
+      this.requests = this.requests.filter((r) => r.id !== req.id);
 
-        // remove from main list
-        this.requests = this.requests.filter(r => r.id !== req.id);
-
-        // 🔥 IMPORTANT: refresh filtered list
-        this.applyFilters();
-
-      });
-    }
+      // 🔥 IMPORTANT: refresh filtered list
+      this.applyFilters();
+    });
+  }
 
   // ================= FILE =================
   onFileSelected(event: any): void {
@@ -160,45 +158,31 @@ export class WfhRequestsComponent implements OnInit {
 
   // ================= HELPERS =================
   toSafeDate(dateStr: string): string {
-    return dateStr + 'T12:00:00';
+    return dateStr + "T12:00:00";
   }
 
   formatDateForInput(date: any): string {
-    if (!date) return '';
+    if (!date) return "";
 
     const d = new Date(date);
     const year = d.getFullYear();
-    const month = ('0' + (d.getMonth() + 1)).slice(-2);
-    const day = ('0' + d.getDate()).slice(-2);
+    const month = ("0" + (d.getMonth() + 1)).slice(-2);
+    const day = ("0" + d.getDate()).slice(-2);
 
     return `${year}-${month}-${day}`;
   }
 
-  // getTotalDays(): number {
-  //   let total = 0;
+  getTotalDays(): number {
+    let total = 0;
 
-  //   this.requests.forEach(req => {
-  //     if (req.startDate && req.endDate) {
-  //       total += this.getDays(req.startDate, req.endDate);
-  //     }
-  //   });
+    this.filteredRequests.forEach((req) => {
+      if (req.startDate && req.endDate) {
+        total += this.getDays(req.startDate, req.endDate);
+      }
+    });
 
-  //   return total;
-  // }
-
-getTotalDays(): number {
-  let total = 0;
-
-  this.filteredRequests.forEach(req => {
-    if (req.startDate && req.endDate) {
-      total += this.getDays(req.startDate, req.endDate);
-    }
-  });
-
-  return total;
-}
-
-
+    return total;
+  }
 
   getDays(start: Date, end: Date): number {
     const diff = new Date(end).getTime() - new Date(start).getTime();
@@ -206,7 +190,7 @@ getTotalDays(): number {
   }
 
   openFile(file: any): void {
-    if (file?.url) window.open(file.url, '_blank');
+    if (file?.url) window.open(file.url, "_blank");
   }
 
   toggleReason(req: any): void {
@@ -227,71 +211,158 @@ getTotalDays(): number {
   }
 
   getCleanFileName(fileName: string): string {
-    if (!fileName) return '';
+    if (!fileName) return "";
 
-    const parts = fileName.split('_');
-    return parts.length > 1 ? parts.slice(1).join('_') : fileName;
+    const parts = fileName.split("_");
+    return parts.length > 1 ? parts.slice(1).join("_") : fileName;
   }
 
-
   applyFilters(): void {
+    let data = [...this.requests];
 
-  this.filteredRequests = this.requests.filter(req => {
-
-    const reqStart = this.formatDate(req.startDate);
-    const reqEnd = this.formatDate(req.endDate);
-
-    const filterStart = this.filters.startDate;
-    const filterEnd = this.filters.endDate;
-
-    const empMatch = this.filters.employeeName
-      ? req.employeeName?.toLowerCase().includes(this.filters.employeeName.toLowerCase())
-      : true;
-
-    let dateMatch = true;
-
-    if (filterStart && filterEnd) {
-
-      // ✅ AUTO SORT DATES (IMPORTANT FIX)
-      const from = filterStart < filterEnd ? filterStart : filterEnd;
-      const to = filterStart > filterEnd ? filterStart : filterEnd;
-
-      // ✅ RANGE MATCH
-      dateMatch = reqStart >= from && reqEnd <= to;
-    }
-    else if (filterStart) {
-      dateMatch = reqStart === filterStart;
-    }
-    else if (filterEnd) {
-      dateMatch = reqEnd === filterEnd;
+    // 🔍 Employee search
+    if (this.filters.employeeName) {
+      data = data.filter((req) =>
+        req.employeeName
+          ?.toLowerCase()
+          .includes(this.filters.employeeName.toLowerCase()),
+      );
     }
 
-    return empMatch && dateMatch;
-  });
+    // 📅 Month filter (NEW)
+    if (this.activeMonthFilter !== "none") {
+      const range = this.getMonthRange(this.activeMonthFilter);
 
-}
+      data = data.filter((req) => {
+        const start = this.formatDate(req.startDate);
+        const end = this.formatDate(req.endDate);
 
-resetFilters(): void {
-  this.filters = {
-    employeeName: '',
-    startDate: '',
-    endDate: ''
-  };
+        return start <= range.end && end >= range.start;
+      });
+    }
 
-  this.filteredRequests = [...this.requests];
-}
+    // 📅 Manual date filter (existing)
+    else if (this.filters.startDate && this.filters.endDate) {
+      const from =
+        this.filters.startDate < this.filters.endDate
+          ? this.filters.startDate
+          : this.filters.endDate;
 
-formatDate(date: any): string {
-  if (!date) return '';
+      const to =
+        this.filters.startDate > this.filters.endDate
+          ? this.filters.startDate
+          : this.filters.endDate;
 
-  const d = new Date(date);
+      data = data.filter((req) => {
+        const reqStart = this.formatDate(req.startDate);
+        const reqEnd = this.formatDate(req.endDate);
 
-  // ✅ Convert to YYYY-MM-DD (safe format)
-  const year = d.getFullYear();
-  const month = ('0' + (d.getMonth() + 1)).slice(-2);
-  const day = ('0' + d.getDate()).slice(-2);
+        return reqStart >= from && reqEnd <= to;
+      });
+    }
 
-  return `${year}-${month}-${day}`;
-}
+    this.filteredRequests = data;
+  }
 
+  resetFilters(): void {
+    this.filters = {
+      employeeName: "",
+      startDate: "",
+      endDate: "",
+    };
+
+    this.activeMonthFilter = "none"; // 🔥 add this
+    this.filteredRequests = [...this.requests];
+  }
+
+  formatDate(date: any): string {
+    if (!date) return "";
+
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = ("0" + (d.getMonth() + 1)).slice(-2);
+    const day = ("0" + d.getDate()).slice(-2);
+
+    return `${year}-${month}-${day}`;
+  }
+
+  toggleFilter(type: "current" | "last") {
+    if (
+      (type === "current" && this.activeMonthFilter === "current") ||
+      (type === "last" && this.activeMonthFilter === "last")
+    ) {
+      this.activeMonthFilter = "none";
+    } else {
+      this.activeMonthFilter = type;
+    }
+
+    this.applyFilters();
+  }
+
+  getMonthRange(type: "current" | "last") {
+    const now = new Date();
+
+    let start: Date;
+    let end: Date;
+
+    if (type === "current") {
+      start = new Date(now.getFullYear(), now.getMonth(), 1);
+      end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    } else {
+      start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      end = new Date(now.getFullYear(), now.getMonth(), 0);
+    }
+
+    return {
+      start: this.formatDate(start),
+      end: this.formatDate(end),
+    };
+  }
+
+  getApprovedDays(): number {
+    let total = 0;
+
+    this.filteredRequests.forEach((req) => {
+      if (
+        req.status?.toLowerCase() === "approved" &&
+        req.startDate &&
+        req.endDate
+      ) {
+        total += this.getDays(req.startDate, req.endDate);
+      }
+    });
+
+    return total;
+  }
+
+  getRejectedDays(): number {
+    let total = 0;
+
+    this.filteredRequests.forEach((req) => {
+      if (
+        req.status?.toLowerCase() === "rejected" &&
+        req.startDate &&
+        req.endDate
+      ) {
+        total += this.getDays(req.startDate, req.endDate);
+      }
+    });
+
+    return total;
+  }
+
+  onNewRequest(): void {
+    const dialogRef = this.dialog.open(WorkFromHomeComponent, {
+      width: "1000px",
+      maxWidth: "95vw",
+      maxHeight: "95vh",
+      panelClass: "custom-dialog-container",
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loadRequests();
+      }
+    });
+  }
 }

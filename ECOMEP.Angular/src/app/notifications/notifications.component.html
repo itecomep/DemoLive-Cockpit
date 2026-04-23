@@ -65,7 +65,9 @@
 
 <div
   class="date-filter-tabs"
-  *ngIf="['all', 'meeting', 'event', 'todo', 'birthday', 'hr'].includes(selectedTab)"
+  *ngIf="
+    ['all', 'meeting', 'event', 'todo', 'birthday', 'hr'].includes(selectedTab)
+  "
 >
   <div class="filter-row">
     <!-- ✅ ADD THIS WRAPPER -->

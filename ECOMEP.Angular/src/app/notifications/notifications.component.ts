@@ -160,15 +160,12 @@ export class NotificationsComponent implements OnInit {
 
     // TAB FILTER
     if (this.selectedTab !== "all") {
-
       if (this.selectedTab === "hr") {
-        filtered = filtered.filter(n =>
-          n.source === "leave-status" || n.source === "wfh-status"
+        filtered = filtered.filter(
+          (n) => n.source === "leave-status" || n.source === "wfh-status",
         );
-      }
-
-      else {
-        filtered = filtered.filter(n => n.source === this.selectedTab);
+      } else {
+        filtered = filtered.filter((n) => n.source === this.selectedTab);
       }
     }
 

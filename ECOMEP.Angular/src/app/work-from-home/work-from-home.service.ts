@@ -1,9 +1,9 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Injectable, inject } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Observable } from "rxjs";
 
 // ✅ AUTH SERVICE
-import { AuthService } from 'src/app/auth/services/auth.service';
+import { AuthService } from "src/app/auth/services/auth.service";
 
 // ================= INTERFACES =================
 
@@ -31,11 +31,10 @@ export interface WfhRequest {
 // ================= SERVICE =================
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class WorkFromHomeService {
-
-  private readonly baseUrl = 'http://localhost:5054/api/WorkFromHome';
+  private readonly baseUrl = "http://localhost:5054/api/WorkFromHome";
 
   private authService = inject(AuthService);
 
@@ -47,7 +46,7 @@ export class WorkFromHomeService {
 
     return {
       userId: user?.contact?.id ?? 0,
-      userName: user?.contact?.name || user?.username || ''
+      userName: user?.contact?.name || user?.username || "",
     };
   }
 
@@ -63,13 +62,12 @@ export class WorkFromHomeService {
 
   // ================= CREATE =================
   create(data: FormData): Observable<any> {
-
     // ✅ FIXED: use correct keys (userId, userName)
-    if (!data.has('userId')) {
+    if (!data.has("userId")) {
       const user = this.getCurrentUser();
 
-      data.append('userId', user.userId.toString());
-      data.append('userName', user.userName);
+      data.append("userId", user.userId.toString());
+      data.append("userName", user.userName);
     }
 
     return this.http.post(`${this.baseUrl}/create`, data);
@@ -77,13 +75,12 @@ export class WorkFromHomeService {
 
   // ================= UPDATE =================
   update(id: number, data: FormData): Observable<any> {
-
     // ✅ FIXED: same logic here
-    if (!data.has('userId')) {
+    if (!data.has("userId")) {
       const user = this.getCurrentUser();
 
-      data.append('userId', user.userId.toString());
-      data.append('userName', user.userName);
+      data.append("userId", user.userId.toString());
+      data.append("userName", user.userName);
     }
 
     return this.http.put(`${this.baseUrl}/${id}`, data);
@@ -96,19 +93,16 @@ export class WorkFromHomeService {
 
   // ================= FILE DELETE =================
   deleteFile(requestId: number, fileName: string): Observable<any> {
-    return this.http.delete(
-      `${this.baseUrl}/${requestId}/file`,
-      {
-        params: { fileName }
-      }
-    );
+    return this.http.delete(`${this.baseUrl}/${requestId}/file`, {
+      params: { fileName },
+    });
   }
 
   // ================= FILE URL =================
   getFileUrl(path: string): string {
-    if (!path) return '';
+    if (!path) return "";
 
-    if (path.startsWith('http')) return path;
+    if (path.startsWith("http")) return path;
 
     return `${window.location.origin}${path}`;
   }

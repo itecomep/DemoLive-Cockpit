@@ -57,7 +57,6 @@ import { McvFileComponent } from "src/app/mcv-file/components/mcv-file/mcv-file.
   styleUrls: ["./work-from-home.component.scss"],
 })
 export class WorkFromHomeComponent implements OnInit {
-
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<WorkFromHomeComponent>);
   private utilityService = inject(UtilityService);
@@ -100,8 +99,8 @@ export class WorkFromHomeComponent implements OnInit {
       this.contactService.get(
         [{ key: "usersOnly", value: "true" }],
         "",
-        "fullName"
-      )
+        "fullName",
+      ),
     );
 
     this.filteredContacts$ = this.form
@@ -114,10 +113,10 @@ export class WorkFromHomeComponent implements OnInit {
 
           return name
             ? this.contactOptions.filter((c) =>
-                c.name.toLowerCase().includes(name.toLowerCase())
+                c.name.toLowerCase().includes(name.toLowerCase()),
               )
             : this.contactOptions.slice();
-        })
+        }),
       );
   }
 
@@ -147,7 +146,7 @@ export class WorkFromHomeComponent implements OnInit {
       this.utilityService.showSwalToast(
         "Error",
         "Fill required fields",
-        "error"
+        "error",
       );
       return;
     }
@@ -167,12 +166,9 @@ export class WorkFromHomeComponent implements OnInit {
 
     formData.append(
       "startDate",
-      new Date(this.form.value.startDate).toISOString()
+      new Date(this.form.value.startDate).toISOString(),
     );
-    formData.append(
-      "endDate",
-      new Date(this.form.value.endDate).toISOString()
-    );
+    formData.append("endDate", new Date(this.form.value.endDate).toISOString());
     formData.append("reason", this.form.value.reason);
 
     this.selectedFiles.forEach((file) => {
@@ -188,7 +184,7 @@ export class WorkFromHomeComponent implements OnInit {
         this.utilityService.showSwalToast(
           "Error",
           "Something went wrong",
-          "error"
+          "error",
         );
       },
     });

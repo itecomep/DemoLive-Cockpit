@@ -10,10 +10,6 @@ export interface Notification {
   source: string;
   isRead: boolean;
 
-
-
-
-  
   createdAt: Date;
 }
 
@@ -72,20 +68,19 @@ export class NotificationService {
 
   // 🔹 Mark notification as read
   markAsRead(id: number) {
+    const notif = this.notifications.find((n) => n.id === id);
 
-  const notif = this.notifications.find(n => n.id === id);
+    if (notif) {
+      notif.isRead = true;
 
-  if (notif) {
-    notif.isRead = true;
+      // 🔥 IMPORTANT: trigger UI update everywhere (header + page)
+      this.notifications = [...this.notifications];
+      this.notificationsSubject.next(this.notifications);
 
-    // 🔥 IMPORTANT: trigger UI update everywhere (header + page)
-    this.notifications = [...this.notifications];
-    this.notificationsSubject.next(this.notifications);
-
-    // Update DB
-    this.markAsReadInApi(id).subscribe();
+      // Update DB
+      this.markAsReadInApi(id).subscribe();
+    }
   }
-}
 
   markAsReadInApi(id: number) {
     return this.http.put(

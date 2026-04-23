@@ -1,206 +1,254 @@
 <app-header title="WFH Request Status"></app-header>
 
 <div class="page-wrapper full-width-page">
-<div class="meetings-container">
+  <div class="meetings-container">
+    <div class="table-header">
+      <h2>🏠 Work From Home Requests Status</h2>
 
-  <div class="table-header">
-    <h2>Work From Home Requests</h2>
+      <!-- ✅ FIXED: GROUPED SUMMARY -->
+      <div class="summary-container">
+        <div class="summary-box approved-box">
+          <span>Approved 👍</span>
+          <h3>{{ getApprovedDays() }}</h3>
+        </div>
 
-    <div class="summary-box">
-      <span>Total Days</span>
-      <h3>{{ getTotalDays() }}</h3>
+        <div class="summary-box rejected-box">
+          <span>Rejected 👎</span>
+          <h3>{{ getRejectedDays() }}</h3>
+        </div>
+
+        <div class="summary-box total-box">
+          <span>Total Days</span>
+          <h3>{{ getTotalDays() }}</h3>
+        </div>
+      </div>
     </div>
-  </div>
 
+    <div class="filter-bar">
+      <button class="new-btn" (click)="onNewRequest()">
+        <span class="material-icons btn-icon">add</span>
+        New
+      </button>
 
-  
-  <div class="filter-bar">
+      <input
+        type="text"
+        placeholder="Search Employee..."
+        [(ngModel)]="filters.employeeName"
+        (input)="applyFilters()"
+      />
 
-  <input
-    type="text"
-    placeholder="Search Employee..."
-    [(ngModel)]="filters.employeeName"
-    (input)="applyFilters()"
-  />
+      <input
+        type="date"
+        [(ngModel)]="filters.startDate"
+        (change)="applyFilters()"
+      />
 
-  <input
-    type="date"
-    [(ngModel)]="filters.startDate"
-    (change)="applyFilters()"
-  />
+      <input
+        type="date"
+        [(ngModel)]="filters.endDate"
+        (change)="applyFilters()"
+      />
 
-  <input
-    type="date"
-    [(ngModel)]="filters.endDate"
-    (change)="applyFilters()"
-  />
+      <button (click)="resetFilters()">Reset</button>
 
-  <button (click)="resetFilters()">Reset</button>
+      <button
+        class="month-btn"
+        [class.active]="activeMonthFilter === 'current'"
+        (click)="toggleFilter('current')"
+      >
+        Current Month
+      </button>
 
-</div>
+      <button
+        class="month-btn"
+        [class.active]="activeMonthFilter === 'last'"
+        (click)="toggleFilter('last')"
+      >
+        Last Month
+      </button>
+    </div>
 
+    <table class="meetings-table">
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Days</th>
+          <th>Reason</th>
+          <th>Attachment</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
 
-  <table class="meetings-table">
+      <tbody>
+        <tr *ngIf="requests.length === 0">
+          <td colspan="8" class="text-center">No WFH requests found</td>
+        </tr>
 
-    <thead>
-      <tr>
-        <th>Employee</th>
-        <th>Start Date</th>
-        <th>End Date</th>
-        <th>Days</th>
-        <th>Reason</th>
-        <th>Attachment</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
+        <tr *ngFor="let req of filteredRequests">
+          <td>
+            <div class="employee-cell">
+              <div class="avatar">
+                {{ (req.employeeName || "U").trim().charAt(0).toUpperCase() }}
+              </div>
 
-    <tbody>
+              <span class="employee-name">
+                {{ req.employeeName || "Unknown" }}
+              </span>
+            </div>
+          </td>
 
-      <tr *ngIf="requests.length === 0">
-        <td colspan="8" class="text-center">
-          No WFH requests found
-        </td>
-      </tr>
+          <td>
+            <span *ngIf="editingRowId !== req.id">
+              {{ req.startDate ? (req.startDate | date: "mediumDate") : "—" }}
+            </span>
+            <input
+              *ngIf="editingRowId === req.id"
+              type="date"
+              [(ngModel)]="req.startDate"
+            />
+          </td>
 
-      <tr *ngFor="let req of filteredRequests">
+          <td>
+            <span *ngIf="editingRowId !== req.id">
+              {{ req.endDate ? (req.endDate | date: "mediumDate") : "—" }}
+            </span>
+            <input
+              *ngIf="editingRowId === req.id"
+              type="date"
+              [(ngModel)]="req.endDate"
+            />
+          </td>
 
-        <td>
-          <div class="employee-cell">
-            <div class="avatar">
+          <td>
+            <span class="badge">
               {{
-                (req.employeeName || 'U').trim().charAt(0).toUpperCase()
+                req.startDate && req.endDate
+                  ? getDays(req.startDate, req.endDate)
+                  : 0
               }}
-            </div>
-
-            <span class="employee-name">
-              {{ req.employeeName || 'Unknown' }}
             </span>
-          </div>
-        </td>
+          </td>
 
-        <td>
-          <span *ngIf="editingRowId !== req.id">
-            {{ req.startDate ? (req.startDate | date:'mediumDate') : '—' }}
-          </span>
-          <input *ngIf="editingRowId === req.id" type="date" [(ngModel)]="req.startDate" />
-        </td>
+          <td class="reason">
+            <div *ngIf="editingRowId !== req.id">
+              <div class="reason-text" [class.expanded]="req.expanded">
+                {{ req.reason || "—" }}
+              </div>
 
-        <td>
-          <span *ngIf="editingRowId !== req.id">
-            {{ req.endDate ? (req.endDate | date:'mediumDate') : '—' }}
-          </span>
-          <input *ngIf="editingRowId === req.id" type="date" [(ngModel)]="req.endDate" />
-        </td>
-
-        <td>
-          <span class="badge">
-            {{ req.startDate && req.endDate ? getDays(req.startDate, req.endDate) : 0 }}
-          </span>
-        </td>
-
-        <td class="reason">
-          <div *ngIf="editingRowId !== req.id">
-            <div class="reason-text" [class.expanded]="req.expanded">
-              {{ req.reason || '—' }}
+              <span
+                class="toggle"
+                *ngIf="req.reason?.length > 80"
+                (click)="toggleReason(req)"
+              >
+                {{ req.expanded ? "Show Less" : "Show More" }}
+              </span>
             </div>
 
-            <span class="toggle" *ngIf="req.reason?.length > 80" (click)="toggleReason(req)">
-              {{ req.expanded ? 'Show Less' : 'Show More' }}
+            <textarea
+              *ngIf="editingRowId === req.id"
+              rows="2"
+              [(ngModel)]="req.reason"
+            ></textarea>
+          </td>
+
+          <td class="attachment-cell">
+            <ng-container *ngIf="editingRowId !== req.id; else editAttachment">
+              <div
+                class="attachment-box"
+                *ngIf="req.attachments?.length > 0; else noFile"
+              >
+                <div
+                  class="file-row"
+                  *ngFor="let chunk of getFileChunks(req.attachments)"
+                >
+                  <span
+                    class="file-link"
+                    *ngFor="let file of chunk"
+                    (click)="openFile(file)"
+                  >
+                    {{ getCleanFileName(file.fileName || file.name) }}
+                  </span>
+                </div>
+              </div>
+            </ng-container>
+
+            <ng-template #editAttachment>
+              <div class="attachment-edit-box">
+                <div
+                  class="file-chip"
+                  *ngFor="let file of existingFiles; let i = index"
+                >
+                  <span class="file-name">
+                    {{ getCleanFileName(file.fileName || file.name) }}
+                  </span>
+                  <span class="remove-icon" (click)="removeExistingFile(i)"
+                    >✕</span
+                  >
+                </div>
+
+                <div
+                  class="file-chip"
+                  *ngFor="let file of newFiles; let i = index"
+                >
+                  <span class="file-name">{{ file.name }}</span>
+                  <span class="remove-icon" (click)="removeNewFile(i)">✕</span>
+                </div>
+
+                <input type="file" multiple (change)="onFileSelected($event)" />
+              </div>
+            </ng-template>
+
+            <ng-template #noFile>
+              <span class="no-attachment">—</span>
+            </ng-template>
+          </td>
+
+          <td>
+            <span class="status-badge" [ngClass]="req.status?.toLowerCase()">
+              <span class="material-icons status-icon">
+                {{
+                  req.status?.toLowerCase() === "approved"
+                    ? "thumb_up"
+                    : req.status?.toLowerCase() === "rejected"
+                      ? "thumb_down"
+                      : "schedule"
+                }}
+              </span>
+
+              {{ req.status || "Pending" }}
             </span>
-          </div>
+          </td>
 
-          <textarea *ngIf="editingRowId === req.id" rows="2" [(ngModel)]="req.reason"></textarea>
-        </td>
-
-        <td class="attachment-cell">
-
-          <ng-container *ngIf="editingRowId !== req.id; else editAttachment">
-
-            <div class="attachment-box" *ngIf="req.attachments?.length > 0; else noFile">
-
-              <div class="file-row" *ngFor="let chunk of getFileChunks(req.attachments)">
-                <span
-                  class="file-link"
-                  *ngFor="let file of chunk"
-                  (click)="openFile(file)">
-                  {{ getCleanFileName(file.fileName || file.name) }}
-                </span>
-              </div>
-
+          <td class="action-cell">
+            <div *ngIf="editingRowId === req.id">
+              <button class="btn-save" (click)="saveEdit(req)">Save</button>
+              <button class="btn-cancel" (click)="cancelEdit(req)">
+                Cancel
+              </button>
             </div>
 
-          </ng-container>
-
-          <ng-template #editAttachment>
-
-            <div class="attachment-edit-box">
-
-              <div class="file-chip" *ngFor="let file of existingFiles; let i = index">
-                <span class="file-name">
-                  {{ getCleanFileName(file.fileName || file.name) }}
-                </span>
-                <span class="remove-icon" (click)="removeExistingFile(i)">✕</span>
-              </div>
-
-              <div class="file-chip" *ngFor="let file of newFiles; let i = index">
-                <span class="file-name">{{ file.name }}</span>
-                <span class="remove-icon" (click)="removeNewFile(i)">✕</span>
-              </div>
-
-              <input type="file" multiple (change)="onFileSelected($event)" />
-
+            <div *ngIf="editingRowId !== req.id">
+              <button
+                class="btn-edit"
+                *ngIf="req.status === 'pending'"
+                (click)="openEdit(req)"
+              >
+                Edit
+              </button>
+              <button
+                class="btn-delete"
+                *ngIf="req.status === 'pending'"
+                (click)="deleteRequest(req)"
+              >
+                Delete
+              </button>
             </div>
-
-          </ng-template>
-
-          <ng-template #noFile>
-            <span class="no-attachment">—</span>
-          </ng-template>
-
-        </td>
-
-        <td>
-          <!-- <span class="status-badge" [ngClass]="req.status">
-            {{ req.status || 'Pending' }}
-          </span> -->
-
-          <span 
-  class="status-badge" 
-  [ngClass]="req.status?.toLowerCase()">
-
-  <span class="material-icons status-icon">
-    {{
-      req.status?.toLowerCase() === 'approved' ? 'thumb_up' :
-      req.status?.toLowerCase() === 'rejected' ? 'thumb_down' :
-      'schedule'
-    }}
-  </span>
-
-  {{ req.status || 'Pending' }}
-</span>
-
-        </td>
-
-        <td class="action-cell">
-
-          <div *ngIf="editingRowId === req.id">
-            <button class="btn-save" (click)="saveEdit(req)">Save</button>
-            <button class="btn-cancel" (click)="cancelEdit(req)">Cancel</button>
-          </div>
-
-          <div *ngIf="editingRowId !== req.id">
-            <button class="btn-edit" *ngIf="req.status === 'pending'" (click)="openEdit(req)">Edit</button>
-            <button class="btn-delete" *ngIf="req.status === 'pending'" (click)="deleteRequest(req)">Delete</button>
-          </div>
-
-        </td>
-
-      </tr>
-
-    </tbody>
-
-  </table>
-
-</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

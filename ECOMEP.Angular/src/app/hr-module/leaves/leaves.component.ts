@@ -339,5 +339,4 @@ export class LeavesComponent implements OnInit, AfterViewInit {
       return sum;
     }, 0);
   }
-
 }
