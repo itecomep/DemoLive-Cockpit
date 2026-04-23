@@ -4,6 +4,7 @@ import { ApiFilter } from 'src/app/shared/models/api-filters';
 import { McvBaseApiService } from 'src/app/shared/services/mcv-base-api.service';
 import { ProjectBill } from '../models/project-bill.model';
 import { ChartDataDto } from 'src/app/shared/models/chart-data-dto';
+import { HttpParams } from '@angular/common/http'; // ✅ REQUIRED
 
 @Injectable({
   providedIn: 'root'
@@ -121,4 +122,31 @@ export class ProjectBillApiService extends McvBaseApiService {
   ): Observable<ProjectBill> {
     return this.http.get<ProjectBill>(this.apiRoute + '/draft/' + projectID+'/'+typeFlag,{params:{isPreDated:isPreDated.toString()}});
   }
+
+  override getPages(
+  page: number,
+  pageSize: number,
+  filters?: ApiFilter[],
+  search?: string,
+  sort?: string
+): Observable<any> {
+
+  let params = new HttpParams()
+    .set('page', page.toString())
+    .set('pageSize', pageSize.toString());
+
+  if (filters?.length) {
+    params = params.set('filters', JSON.stringify({ filters }));
+  }
+
+  if (search) {
+    params = params.set('search', search);
+  }
+
+  if (sort) {
+    params = params.set('sort', sort);
+  }
+
+  return this.http.get<any>(`${this.apiRoute}/Pages`, { params });
+}
 }

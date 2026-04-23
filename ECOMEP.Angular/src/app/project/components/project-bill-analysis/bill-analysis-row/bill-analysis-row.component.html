@@ -169,10 +169,36 @@
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full-width">
+    <!-- <mat-form-field appearance="outline" class="full-width">
       <mat-label>Communicated To</mat-label>
       <input matInput [(ngModel)]="formData.communicatedTo">
-    </mat-form-field>
+    </mat-form-field> -->
+
+    <!-- <mat-form-field appearance="outline" class="full-width">
+  <mat-label>Communicated To</mat-label>
+
+  <textarea matInput rows="3" [(ngModel)]="formData.communicatedTo"></textarea>
+
+</mat-form-field> -->
+
+
+<mat-form-field appearance="outline" class="full-width">
+  <mat-label>Communicated To</mat-label>
+
+  <mat-select [(ngModel)]="formData.communicatedTo">
+
+    <mat-option *ngFor="let c of projectContacts" 
+      [value]="formatContact(c)">
+      
+      {{ c.contact?.fullName }} 
+      ({{ c.contact?.email }}) 
+      {{ c.contact?.phone }}
+
+    </mat-option>
+
+  </mat-select>
+
+</mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Next Follow-Up Date</mat-label>

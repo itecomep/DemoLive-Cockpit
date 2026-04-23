@@ -34,6 +34,9 @@ import { BillAnalysisRowComponent } from './bill-analysis-row/bill-analysis-row.
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { AuthService } from 'src/app/auth/services/auth.service';
+import { BillAnalysisRowService } from './bill-analysis-row/bill-analysis-row.service';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+
 
 
 @Component({
@@ -42,7 +45,7 @@ import { AuthService } from 'src/app/auth/services/auth.service';
   imports: [NgIf, NgFor, NgClass,
      MatSelectModule, ReactiveFormsModule, FormsModule, MatMenuModule,McvSelectAllComponent,
      MatOptionModule, FooterComponent, MatIconModule, MatFormFieldModule, MatInputModule, MatDatepickerModule, MatButtonModule, MatTooltipModule, FilterToggleDirective, DecimalPipe, CurrencyPipe, DatePipe,
-     McvFilterSidenavComponent,BillAnalysisRowComponent
+     McvFilterSidenavComponent,BillAnalysisRowComponent,MatSlideToggleModule
     ],
   templateUrl: './project-bill-analysis.component.html',
   styleUrls: ['./project-bill-analysis.component.scss']
@@ -57,9 +60,34 @@ export class ProjectBillAnalysisComponent implements OnInit
   private readonly statusMasterService = inject(StatusMasterService);
   private readonly projectService = inject(ProjectApiService);
   private readonly contactTeamService = inject(ContactTeamApiService);
+   private followUpService = inject(BillAnalysisRowService); // ✅ ADD THIS
+   private isPeriodUpdating = false;
   private router = inject(Router);
   private dialog = inject(MatDialog);
   private authService = inject(AuthService);
+
+                     //for billing analysis for hiding the another check box from other users
+pageIndex = 0;
+pageSize = 100;
+totalRecords = 0;
+usePagesApi: boolean = true;
+showZeroAmount = true; // ON by default
+
+                        // for displaying next followup column 
+followUpMap: { [billId: number]: Date | null } = {};
+
+
+periodOptions = [
+   { label: 'Current Year', value: 'current' },
+   { label: 'Last 6 Months', value: '6m' },
+   { label: 'Last 1 Year', value: '1y' },
+   { label: 'Last 2 Years', value: '2y' }
+];
+
+// periodFC = new FormControl('current');
+periodFC = new FormControl<string | null>(null);
+sortDirection: { [key: string]: 'asc' | 'desc' } = {};
+
 
 
   today = new Date();
@@ -68,7 +96,7 @@ export class ProjectBillAnalysisComponent implements OnInit
   total = new ProjectBillAnalysis();
   companyFC = new FormControl();
   companyOptions: Company[] = [];
-
+fullDataList: ProjectBillAnalysis[] = [];
 
   sortFC = new FormControl();
   searchFC = new FormControl();
@@ -82,21 +110,31 @@ export class ProjectBillAnalysisComponent implements OnInit
   projectStatusFC = new FormControl();
   teamOptions: ContactTeam[] = [];
 
-  dateFC = new FormGroup({
-    start: new FormControl(this.utilityService.getFYearStart()),
-    end: new FormControl(this.utilityService.getFYearEnd()),
-  });
+  // dateFC = new FormGroup({
+  //   start: new FormControl(this.utilityService.getFYearStart()),
+  //   end: new FormControl(this.utilityService.getFYearEnd()),
+  // });
 
+
+//   dateFC = new FormGroup({
+//   start: new FormControl(null),
+//   end: new FormControl(null),
+// });
+
+dateFC = new FormGroup({
+  start: new FormControl<Date | null>(null),
+  end: new FormControl<Date | null>(null),
+});
 
   filters: ApiFilter[] = [
     { key: 'TypeFlag', value: this.projectBillService.PROJECT_BILL_TYPEFLAG_TAX_INVOICE.toString() },
-    { key: "RangeStart", value: this.utilityService.getFYearStart().toISOString() },
-    { key: "RangeEnd", value: this.utilityService.getFYearEnd().toISOString() },
+   
   ];
   searchKey?: string;
-  sort: string = 'billdate';
-  sortOptions: any[] = [  // { label: 'Code', sortKey: 'code', icon: 'north' },
-    // { label: 'Code', sortKey: 'code desc', icon: 'south' },
+  // sort: string = 'billdate';
+  sort: string = '';
+
+  sortOptions: any[] = [ 
     { label: 'Bill Date', sortKey: 'billdate', icon: 'north' },
     { label: 'Bill Date', sortKey: 'billdate desc', icon: 'south' },
   ];
@@ -110,25 +148,21 @@ export class ProjectBillAnalysisComponent implements OnInit
 
   get totalBillAmount(){
     return this.dataList
-    // .filter(x => x.typeFlag == this.PROJECT_BILL_TYPE_FLAG_INVOICE)
     .reduce((a, b) => a + b.dueAmount, 0);
   }
 
   get totalGstAmount(){
     return this.dataList
-    // .filter(x => x.typeFlag == this.PROJECT_BILL_TYPE_FLAG_INVOICE)
     .reduce((a, b) => a + b.cgstAmount + b.igstAmount+ b.sgstAmount, 0);
   }
 
   get totalPayable(){
     return this.dataList
-    // .filter(x => x.typeFlag == this.PROJECT_BILL_TYPE_FLAG_INVOICE)
     .reduce((a, b) => a + b.payableAmount, 0);
   }
 
   get totalReceivedAmount(){
     return this.dataList
-    // .filter(x => x.typeFlag == this.PROJECT_BILL_TYPE_FLAG_INVOICE)
     .reduce((a, b) => a + this.getReceivedPayment(b), 0);
   }
   async ngOnInit()
@@ -137,6 +171,77 @@ export class ProjectBillAnalysisComponent implements OnInit
     this.teamOptions = await firstValueFrom(this.contactTeamService.get());
     this.companyFC.setValue(this.companyOptions, { emitEvent: false });
     this.filters.push(...this.companyOptions.map(x => { return { key: 'CompanyID', value: x.id.toString() } }));
+
+      this.filters.push(...this.companyOptions.map(x => {
+    return { key: 'CompanyID', value: x.id.toString() }
+  }));
+
+  // 🔒 ADD THIS BLOCK HERE (IMPORTANT POSITION)
+  if (!this.isAdmin) {
+    const userTeams = this.authService.currentUserStore?.teams || [];
+
+    this.filters = this.filters.filter(f => f.key !== 'teamID');
+
+    userTeams.forEach(team => {
+      this.filters.push({
+        key: 'teamID',
+        value: team.id.toString()
+      });
+    });
+  }
+
+this.periodFC.valueChanges.subscribe(value => {
+
+  const today = new Date();
+  let start: Date;
+  let end: Date = new Date();
+
+  end.setHours(23, 59, 59, 999);
+
+  switch (value) {
+  case '6m':
+    start = new Date(today);
+    start.setMonth(start.getMonth() - 6);
+    break;
+
+  case '1y':
+    start = new Date(today);
+    start.setFullYear(start.getFullYear() - 1);
+    break;
+
+  case '2y':
+    start = new Date(today);
+    start.setFullYear(start.getFullYear() - 2);
+    break;
+
+  case 'current':
+  default:
+    start = new Date(this.utilityService.getFYearStart());
+    end = new Date(this.utilityService.getFYearEnd());
+    break;
+}
+
+
+  start.setHours(0, 0, 0, 0);
+
+  // 🚨 IMPORTANT: stop other triggers
+  this.isPeriodUpdating = true;
+
+  this.dateFC.setValue({ start, end }, { emitEvent: false });
+
+  this.filters = this.filters.filter(
+    f => f.key !== 'RangeStart' && f.key !== 'RangeEnd'
+  );
+
+  this.filters.push(
+    { key: 'RangeStart', value: start.toISOString() },
+    { key: 'RangeEnd', value: end.toISOString() }
+  );
+
+  this.getData();
+
+  this.isPeriodUpdating = false;
+});
 
     this.typeOptions = await firstValueFrom(this.typeMasterService.get([{ key: 'Entity', value: this.projectBillService.nameOfEntity }]));
 
@@ -150,46 +255,40 @@ export class ProjectBillAnalysisComponent implements OnInit
 
     this.sortFC.setValue(this.sortOptions.find(x => x.sortKey == this.sort), { emitEvent: false });
 
+
     this.typeFC.valueChanges
-      .pipe(
-        debounceTime(400),
-        distinctUntilChanged()
-      )
-      .subscribe(
-        (element) =>
-        {
-          if (element)
-          {
-            this.filters = this.filters.filter(i => i.key !== "TypeFlag");
-            // value.forEach((element: TypeMaster) =>
-            // {
-              this.addFilter('TypeFlag', element.value.toString());
-            // });
-            this.getData();
-          }
-        }
-      );
+  .pipe(debounceTime(400), distinctUntilChanged())
+  .subscribe((element) =>
+  {
+    if (element)
+    {
+      this.filters = this.filters.filter(i => i.key !== "TypeFlag");
 
+      this.addFilter('TypeFlag', element.value.toString());
+
+      this.pageIndex = 0;   // ✅ ADD THIS
+      this.getData();
+    }
+  });
+
+     
       this.projectStatusFC.valueChanges
-      .pipe(
-        debounceTime(400),
-        distinctUntilChanged()
-      )
-      .subscribe(
-        (value) =>
-        {
-          if (value)
-          {
-            this.filters = this.filters.filter(i => i.key !== "ProjectStatusFlag");
-            value.forEach((element: StatusMaster) =>
-            {
-              this.addFilter('ProjectStatusFlag', element.value.toString());
-            });
-            this.getData();
-          }
-        }
-      );
+  .pipe(debounceTime(400), distinctUntilChanged())
+  .subscribe((value) =>
+  {
+    if (value)
+    {
+      this.filters = this.filters.filter(i => i.key !== "ProjectStatusFlag");
 
+      value.forEach((element: StatusMaster) =>
+      {
+        this.addFilter('ProjectStatusFlag', element.value.toString());
+      });
+
+      this.pageIndex = 0;   // ✅ ADD THIS
+      this.getData();
+    }
+  });
     this.sortFC.valueChanges
       .pipe(
         debounceTime(400),
@@ -206,38 +305,23 @@ export class ProjectBillAnalysisComponent implements OnInit
         }
       );
 
-    this.searchFC.valueChanges
-      .pipe(
-        debounceTime(400),
-        distinctUntilChanged()
-      )
-      .subscribe((value) =>
+    this.companyFC.valueChanges
+  .pipe(debounceTime(400), distinctUntilChanged())
+  .subscribe((value) =>
+  {
+    if (value)
+    {
+      this.filters = this.filters.filter(i => i.key !== "CompanyID");
+
+      value.forEach((element: Company) =>
       {
-        this.searchKey = value;
-        this.getData();
+        this.addFilter('CompanyID', element.id.toString())
       });
 
-    this.companyFC.valueChanges
-      .pipe(
-        debounceTime(400),
-        distinctUntilChanged()
-      )
-      .subscribe(
-        (value) =>
-        {
-          // console.log(value);
-          if (value)
-          {
-            this.filters = this.filters.filter(i => i.key !== "CompanyID");
-            value.forEach((element: Company) =>
-            {
-              this.addFilter('CompanyID', element.id.toString())
-            });
-
-            this.getData();
-          }
-        }
-      );
+      this.pageIndex = 0;   // ✅ ADD THIS
+      this.getData();
+    }
+  });
 
     this.stagePercentageStartFC.valueChanges
       .pipe(
@@ -277,118 +361,135 @@ export class ProjectBillAnalysisComponent implements OnInit
         }
       );
 
-    this.dateFC.valueChanges
-      .pipe(debounceTime(400), distinctUntilChanged())
-      .subscribe((value) =>
-      {
-        if (value && value.start && value.end)
-        {
-          this.filters = this.filters.filter(
-            (x) => x.key !== "RangeStart" && x.key != "RangeEnd"
-          );
-          this.filters.push({
-            key: "RangeStart",
-            value: value.start.toISOString(),
-          });
-          this.filters.push({
-            key: "RangeEnd",
-            value: value.end.toISOString(),
-          });
 
-          this.getData();
-        }
+  //   this.dateFC.valueChanges
+  // .pipe(debounceTime(400), distinctUntilChanged())
+  // .subscribe((value) =>
+  // {
+  //   if (value && value.start && value.end)
+  //   {
+  //     this.filters = this.filters.filter(
+  //       (x) => x.key !== "RangeStart" && x.key != "RangeEnd"
+  //     );
+
+  //     this.filters.push({
+  //       key: "RangeStart",
+  //       value: value.start.toISOString(),
+  //     });
+
+  //     this.filters.push({
+  //       key: "RangeEnd",
+  //       value: value.end.toISOString(),
+  //     });
+
+  //     this.pageIndex = 0;   // ✅ ADD THIS
+  //     this.getData();
+  //   }
+  // });
+
+
+  this.dateFC.valueChanges
+  .pipe(debounceTime(400), distinctUntilChanged())
+  .subscribe((value) =>
+  {
+    if (value && value.start && value.end)
+    {
+      // ✅ ADD THIS (VERY IMPORTANT)
+      const start = value.start as Date;
+      const end = value.end as Date;
+
+      this.filters = this.filters.filter(
+        (x) => x.key !== "RangeStart" && x.key != "RangeEnd"
+      );
+
+      this.filters.push({
+        key: "RangeStart",
+        value: start.toISOString(),   // ✅ FIXED
       });
 
-      this.teamFC.valueChanges
-      .pipe(
-        debounceTime(400),
-        distinctUntilChanged()
-      )
-      .subscribe(
-        (value) => {
-          if (value) {
-            this.filters = this.filters.filter(i => i.key !== "teamID");
-            value.forEach((element: ContactTeam) => {
-              this.addFilter('teamID', element.id.toString());
-            });
-            this.getData();
-          }
-        }
-      );
+      this.filters.push({
+        key: "RangeEnd",
+        value: end.toISOString(),     // ✅ FIXED
+      });
+
+      this.pageIndex = 0;
+      this.getData();
+    }
+  });
+  
+  this.teamFC.valueChanges
+  .pipe(debounceTime(400), distinctUntilChanged())
+  .subscribe((value) => {
+    if (value) {
+      this.filters = this.filters.filter(i => i.key !== "teamID");
+
+      value.forEach((element: ContactTeam) => {
+        this.addFilter('teamID', element.id.toString());
+      });
+
+      this.pageIndex = 0;   // ✅ ADD THIS
+      this.getData();
+    }
+  });
   }
-
-
-
-  // private async getData()
-  // {
-  //   this.dataList = await firstValueFrom(this.projectBillService.getAnalysis('full', this.filters, this.searchKey,
-  //     this.sort));
-
-  //   this.total = new ProjectBillAnalysis();
-  //   this.dataList.forEach(x =>
-  //   {
-  //     this.total.dueAmount += x.dueAmount;
-  //     // this.total.tds += x.tds;
-  //     // this.total.tdsBalance += x.tdsBalance;
-  //     this.total.cgstAmount += x.cgstAmount;
-  //     this.total.sgstAmount += x.sgstAmount;
-  //     // this.total.gstAmount += x.gstAmount;
-  //     this.total.billAmount += x.billAmount;
-  //     this.total.igstAmount += x.igstAmount;
-  //     this.total.payableAmount += x.payableAmount;
-  //     this.total.pendingPayment += x.pendingPayment;
-  //     // this.total.tdsPaid += x.tdsPaid;
-  //   });
-  // }
-
 
 
 private async getData()
 {
-  // 🔒 ALWAYS restrict data to logged-in user's teams
-  const userTeamIds = this.authService.getCurrentUserTeamIds();
+  // 🔒 Always apply user restriction
+  if (!this.isAdmin) {
+    const userTeams = this.authService.currentUserStore?.teams || [];
 
-  // remove any existing team filters
-  this.filters = this.filters.filter(f => f.key !== 'teamID');
+    this.filters = this.filters.filter(f => f.key !== 'teamID');
 
-  // add only user's teams
-  userTeamIds.forEach(id => {
-    this.filters.push({
-      key: 'teamID',
-      value: id.toString()
+    userTeams.forEach(team => {
+      this.filters.push({
+        key: 'teamID',
+        value: team.id.toString()
+      });
     });
-  });
+  }
 
-  // 🔥 Step 1: Get projects
-  const projectResponse = await firstValueFrom(
-    this.projectService.getPages(
-      0,
-      1000,
+
+  const [pageResponse, fullData] = await Promise.all([
+  firstValueFrom(
+    this.projectBillService.getPages(
+      this.pageIndex,
+      this.pageSize,
       this.filters,
       this.searchKey,
       this.sort
     )
+  ),
+  firstValueFrom(
+    this.projectBillService.getAnalysis(
+      'full',
+      this.filters,
+      this.searchKey,
+      this.sort
+    )
+  )
+]);
+
+// this.dataList = pageResponse.list;
+this.dataList = pageResponse.list;
+this.fullDataList = [...this.dataList]; // ✅ ADD THIS
+if (!this.showZeroAmount) {
+  this.dataList = this.dataList.filter(
+    // bill => this.getReceivedPayment(bill) !== 0
+    (bill: ProjectBillAnalysis) => this.getReceivedPayment(bill) !== 0
   );
+}
+this.totalRecords = pageResponse.totalCount;
 
-  const projectIds = projectResponse.list.map((p: Project) => p.id);
+await this.loadFollowUps();
 
-  // 🔥 Step 2: Prepare filters for bill API
-  const updatedFilters = [...this.filters];
-
-  const filtered = updatedFilters.filter(f => f.key !== 'ProjectID');
-
-  projectIds.forEach((id: number) => {
-    filtered.push({ key: 'ProjectID', value: id.toString() });
-  });
-
-  // 🔥 Step 3: Call bill analysis API
-  this.dataList = await firstValueFrom(
-    this.projectBillService.getAnalysis('full', filtered, this.searchKey, this.sort)
-  );
-
-  // totals calculation
+  // ✅ Use full data for totals
   this.total = new ProjectBillAnalysis();
-  this.dataList.forEach(x => {
+
+  // fullData.forEach(x =>
+  fullData.forEach((x: ProjectBillAnalysis) =>
+  {
     this.total.dueAmount += x.dueAmount;
     this.total.cgstAmount += x.cgstAmount;
     this.total.sgstAmount += x.sgstAmount;
@@ -398,6 +499,7 @@ private async getData()
     this.total.pendingPayment += x.pendingPayment;
   });
 }
+
 
 
   refresh()
@@ -443,53 +545,147 @@ private async getData()
   
 
                                  //filtering 
+toggleSort(column: string) {
 
-  toggleSort(column: string) {
 
-  // ===== PROJECT CODE (NUMERIC SORT) =====
+  if (column === 'billdate') {
+
+  const isDesc = this.sort === 'billdate desc';
+
+  this.sort = isDesc ? 'billdate' : 'billdate desc';
+
+  this.getData(); // only now API is called
+
+  return;
+}
+
+
+  if (column === 'received') {
+  const isDesc = this.sort === 'received desc';
+
+  this.sort = isDesc ? 'received' : 'received desc';
+
+  this.dataList.sort((a: ProjectBillAnalysis, b: ProjectBillAnalysis) => {
+    const receivedA = this.getReceivedPayment(a) || 0;
+    const receivedB = this.getReceivedPayment(b) || 0;
+
+    return isDesc
+      ? receivedA - receivedB   // ASC
+      : receivedB - receivedA;  // DESC
+  });
+
+  return;
+}
+
+if (column === 'days') {
+
+  this.sortDirection['days'] =
+    this.sortDirection['days'] === 'asc' ? 'desc' : 'asc';
+
+  const isAsc = this.sortDirection['days'] === 'asc';
+
+  this.dataList = [...this.dataList].sort((a, b) => {
+
+    const valA = this.getDaysSinceBill(a);
+    const valB = this.getDaysSinceBill(b);
+
+    let daysA: number;
+    let daysB: number;
+
+    if (isAsc) {
+      // 🔥 ASC → push '-' to bottom
+      daysA = valA === '-' ? Number.MAX_SAFE_INTEGER : parseInt(valA);
+      daysB = valB === '-' ? Number.MAX_SAFE_INTEGER : parseInt(valB);
+
+      return daysA - daysB;
+    } else {
+      // 🔥 DESC → push '-' to bottom
+      daysA = valA === '-' ? Number.MIN_SAFE_INTEGER : parseInt(valA);
+      daysB = valB === '-' ? Number.MIN_SAFE_INTEGER : parseInt(valB);
+
+      return daysB - daysA;
+    }
+
+  });
+
+  return;
+}
+
+// // ===== NEXT FOLLOW-UP SORT =====
+if (column === 'followUp') {
+
+  this.sortDirection['followUp'] =
+    this.sortDirection['followUp'] === 'asc' ? 'desc' : 'asc';
+
+  const isAsc = this.sortDirection['followUp'] === 'asc';
+
+  this.dataList = [...this.dataList].sort((a, b) => {
+
+    const valA = this.followUpMap[a.id];
+    const valB = this.followUpMap[b.id];
+
+    let dateA: number;
+    let dateB: number;
+
+    if (isAsc) {
+      // 🔥 ASC → push null to bottom
+      dateA = valA ? new Date(valA).getTime() : Number.MAX_SAFE_INTEGER;
+      dateB = valB ? new Date(valB).getTime() : Number.MAX_SAFE_INTEGER;
+
+      return dateA - dateB;
+    } else {
+      // 🔥 DESC → push null to bottom
+      dateA = valA ? new Date(valA).getTime() : Number.MIN_SAFE_INTEGER;
+      dateB = valB ? new Date(valB).getTime() : Number.MIN_SAFE_INTEGER;
+
+      return dateB - dateA;
+    }
+
+  });
+
+  return;
+}
+  // ===== OTHER FRONTEND SORTS =====
   if (column === 'projectCode') {
     const isDesc = this.sort === 'projectCode';
-
     this.sort = isDesc ? 'projectCode desc' : 'projectCode';
 
-    this.dataList.sort((a, b) => {
+    this.dataList = [...this.dataList].sort((a, b) => {
       const numA = parseInt(a.projectCode) || 0;
       const numB = parseInt(b.projectCode) || 0;
-
       return isDesc ? numB - numA : numA - numB;
     });
 
     return;
   }
 
-  // ===== CLIENT NAME (ALPHABETICAL SORT) =====
   if (column === 'clientName') {
-
     const isDesc = this.sort === 'clientName';
-
     this.sort = isDesc ? 'clientName desc' : 'clientName';
 
-    this.dataList.sort((a, b) => {
-      const nameA = (a.clientName || '').toLowerCase();
-      const nameB = (b.clientName || '').toLowerCase();
-
+    this.dataList = [...this.dataList].sort((a, b) => {
       return isDesc
-        ? nameB.localeCompare(nameA)
-        : nameA.localeCompare(nameB);
+        ? (b.clientName || '').localeCompare(a.clientName || '')
+        : (a.clientName || '').localeCompare(b.clientName || '');
     });
 
     return;
   }
 
-  // ===== BILL DATE (API SORT - KEEP AS IT IS) =====
+  // ===== API SORT (ONLY FOR BACKEND FIELDS) =====
   if (this.sort === column) {
     this.sort = column + ' desc';
   } else {
     this.sort = column;
   }
 
-  this.getData();
+  this.getData(); // only for API fields like billdate
 }
+
+
+
+
+
 // till here //
 
 
@@ -499,9 +695,19 @@ private async getData()
     }
   }
 
-  getReceivedPayment(bill: ProjectBillAnalysis) {
-    return bill.payments.reduce((a, b) => a + b.amount, 0)
+
+
+getReceivedPayment(bill: ProjectBillAnalysis) {
+  const payment = (bill.payments || []).reduce((a, b) => a + b.amount, 0);
+
+  // 👇 fallback for proforma
+  if (payment === 0 && bill.typeFlag === this.PROJECT_BILL_TYPEFLAG_PROFORMA_INVOICE) {
+    return bill.dueAmount || 0; // OR payableAmount depending on your logic
   }
+
+  return payment;
+}
+
 
   getPendingPayment(bill: ProjectBillAnalysis) {
     return bill.payableAmount - bill.payments.reduce((a, b) => a + b.amount, 0);
@@ -523,20 +729,118 @@ private async getData()
     this.searchFC.reset();
   }
 
+ 
   onFollowUp(bill: ProjectBillAnalysis) {
-      this.dialog.open(BillAnalysisRowComponent, {
-          width: '1000px',
-          maxWidth: '90vw',
-          height: 'auto',
-          data: { bill: bill }
-      });
-  }
+  this.dialog.open(BillAnalysisRowComponent, {
+    width: '1000px',
+    maxWidth: '90vw',
+    height: 'auto',
+    data: { 
+      bill: bill,
+      contact: {
+        name: bill.clientName,
+        email: (bill as any)?.clientEmail,
+        phone: (bill as any)?.clientPhone
+      }
+    }
+  });
+}
 
-  
+
+                                         //billing analysis for admin
   get isAdmin(): boolean {
   return this.authService.isInRole('ADMIN');
 }
+                                         // next follow update 
+async loadFollowUps() {
+  for (let bill of this.dataList) {
 
+    try {
+      const res: any[] = await firstValueFrom(
+        this.followUpService.get(bill.id)
+      );
+
+      if (res && res.length > 0) {
+        // get latest nextFollowUpDate
+        const latest = res
+          .filter(x => x.nextFollowUpDate)
+          .sort((a, b) =>
+            new Date(b.nextFollowUpDate).getTime() -
+            new Date(a.nextFollowUpDate).getTime()
+          )[0];
+
+        this.followUpMap[bill.id] = latest?.nextFollowUpDate || null;
+
+      } else {
+        this.followUpMap[bill.id] = null;
+      }
+
+    } catch (err) {
+      this.followUpMap[bill.id] = null;
+    }
+  }
+}
+
+
+
+
+getDaysSinceBill(bill: ProjectBillAnalysis): string {
+  const pending = this.getPendingPayment(bill);
+
+  // ✅ If no pending → show "-"
+  if (!pending || pending <= 0) {
+    return '-';
+  }
+
+  if (!bill.billDate) return '-';
+
+  const today = new Date();
+  const billDate = new Date(bill.billDate);
+
+  // normalize (avoid timezone bugs)
+  today.setHours(0, 0, 0, 0);
+  billDate.setHours(0, 0, 0, 0);
+
+  const diffTime = today.getTime() - billDate.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+  return diffDays.toString();
+}
+
+
+nextPage() {
+  this.pageIndex++;
+  this.getData();
+}
+
+prevPage() {
+  if (this.pageIndex > 0) {
+    this.pageIndex--;
+    this.getData();
+  }
+}
+
+// getTotalPages(): number {
+//   return Math.ceil(this.totalRecords / this.pageSize);
+// }
+
+getTotalPages(): number {
+  if (!this.totalRecords || !this.pageSize) return 0;
+  return Math.ceil(this.totalRecords / this.pageSize);
+}
+
+toggleZeroAmount() {
+
+  if (this.showZeroAmount) {
+    // ✅ show all
+    this.dataList = [...this.fullDataList];
+  } else {
+    // ❌ remove rows where received = 0
+    this.dataList = this.fullDataList.filter(
+      bill => this.getReceivedPayment(bill) !== 0
+    );
+  }
+}
 }
 
 

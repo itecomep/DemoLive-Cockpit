@@ -31,10 +31,33 @@
                     <th>Bill No.</th>
                     <th>Bill %</th>
                     <th>Bill Amount</th>
-                    <th>GST</th>
+                    <!-- <th>GST</th> -->
                     <th>Payable</th>
-                    <th>Received</th>
+                    <!-- <th>Received</th> -->
+                    <th (click)="toggleSort('received')" style="cursor:pointer">
+                        Received
+                        <mat-icon *ngIf="sort.startsWith('received')">
+                            {{ sort.includes('desc') ? 'arrow_downward' : 'arrow_upward' }}
+                        </mat-icon>
+                    </th>
+
                     <th>TDS</th>
+                    <!-- <th>No. of Days</th> -->
+                    <th (click)="toggleSort('days')" style="cursor:pointer">
+                        No. of Days
+                        <mat-icon *ngIf="sortDirection['days']">
+                            {{ sortDirection['days'] === 'desc' ? 'arrow_downward' : 'arrow_upward' }}
+                        </mat-icon>
+                    </th>
+
+                    <!-- <th>Next Follow-Up</th> -->
+
+                    <th (click)="toggleSort('followUp')" style="cursor:pointer">
+                        Next Follow-Up
+                        <mat-icon *ngIf="sortDirection['followUp']">
+                            {{ sortDirection['followUp'] === 'desc' ? 'arrow_downward' : 'arrow_upward' }}
+                        </mat-icon>
+                    </th>
                     <th></th>
                 </tr>
                 <tr class="total">
@@ -63,10 +86,10 @@
                         </td>
                         <td class="align-center">{{bill.billPercentage |number:'1.0-1'}}%</td>
                         <td class="align-right">{{bill.dueAmount | currency:'INR'}}</td>
-                        <td class="align-right">
+                        <!-- <td class="align-right">
                             <h6>{{(bill.sgstAmount+bill.cgstAmount+bill.igstAmount) | currency:'INR'}}</h6>
                             <small>({{bill.sgstShare + bill.cgstShare + bill.igstShare}}%)</small>
-                        </td>
+                        </td> -->
                         <td class="align-right">
                             <h6>{{bill.payableAmount | currency:'INR'}}</h6>
                             <!-- <small>{{getPaymentMode(bill)}} Amount: {{getPaymentWithoutTDS(bill) |
@@ -81,6 +104,30 @@
                                 | currency:'INR'}}</small>
                         </td>
                         <td class="align-right">{{bill.tdsAmount | currency:'INR'}}</td>
+
+                        <!-- <td class="align-center">
+                            {{
+                            bill.nextFollowUpDate
+                            ? (bill.nextFollowUpDate | date:'dd MMM y')
+                            : '-'
+                            }}
+                        </td> -->
+
+
+                        <td class="align-center">
+                            {{ getDaysSinceBill(bill) }}
+                        </td>
+
+
+                        <td class="align-center">
+                            {{
+                            followUpMap[bill.id]
+                            ? (followUpMap[bill.id] | date:'dd MMM y')
+                            : '-'
+                            }}
+                        </td>
+
+
                         <td class="align-center">
                             <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="context-menu">
                                 <mat-icon>more_vert</mat-icon>
@@ -89,8 +136,8 @@
                                 <button mat-menu-item (click)="onDownloadPdf(bill.proformaInvoiceUrl)"
                                     *ngIf="bill.proformaInvoiceUrl">
                                     <mat-icon>download</mat-icon> -->
-                                    <!-- <img src="assets/icons/file-pdf.png" /> -->
-                                    <!-- <span>Proforma Invoice</span>
+                            <!-- <img src="assets/icons/file-pdf.png" /> -->
+                            <!-- <span>Proforma Invoice</span>
                                 </button>
                                 <button mat-menu-item (click)="onDownloadPdf(bill.taxInvoiceUrl)"
                                     *ngIf="bill.taxInvoiceUrl">
@@ -122,6 +169,32 @@
                 </ng-container>
             </tbody>
         </table>
+
+
+        <div class="pagination">
+
+  <button mat-button 
+    (click)="prevPage()" 
+    [disabled]="pageIndex === 0">
+    Previous
+  </button>
+
+  <span>
+   <!-- Page {{ pageIndex + 1 }} of {{ getTotalPages() }} -->
+   Page {{ pageIndex + 1 }} of {{ getTotalPages() || 0 }}
+</span>
+
+  <button mat-button 
+    (click)="nextPage()" 
+    [disabled]="(pageIndex + 1) * pageSize >= totalRecords">
+    Next
+  </button>
+
+</div>
+
+
+
+
     </div>
 </div>
 
@@ -178,25 +251,40 @@
                         }}</mat-option>
                 </mat-select> -->
 
-                <mat-select
-  [formControl]="teamFC" 
-  multiple 
-  placeholder="Team"
-  [disabled]="!isAdmin">
+                <mat-select [formControl]="teamFC" multiple placeholder="Team" [disabled]="!isAdmin">
 
-  <mat-option 
-    *ngFor="let item of teamOptions" 
-    [value]="item"
-    [disabled]="!isAdmin">
-    
-    {{ item.title }}
-    
-  </mat-option>
+                    <mat-option *ngFor="let item of teamOptions" [value]="item" [disabled]="!isAdmin">
 
-</mat-select>
+                        {{ item.title }}
+
+                    </mat-option>
+
+                </mat-select>
 
             </mat-form-field>
         </div>
+
+
+        <div>
+            <mat-form-field appearance="outline">
+                <mat-label>Period</mat-label>
+                <mat-select [formControl]="periodFC">
+                    <mat-option *ngFor="let p of periodOptions" [value]="p.value">
+                        {{ p.label }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            
+        </div>
+
+        <div style="display:flex; align-items:center; gap:10px; margin-left:10px;">
+  <mat-slide-toggle 
+    [(ngModel)]="showZeroAmount" 
+    (change)="toggleZeroAmount()">
+    ₹0
+  </mat-slide-toggle>
+</div>
+
 
     </div>
 
