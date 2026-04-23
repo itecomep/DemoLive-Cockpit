@@ -472,14 +472,35 @@ private async getData()
 ]);
 
 // this.dataList = pageResponse.list;
+// this.dataList = pageResponse.list;
+// this.fullDataList = [...this.dataList]; // ✅ ADD THIS
+// if (!this.showZeroAmount) {
+//   this.dataList = this.dataList.filter(
+//     // bill => this.getReceivedPayment(bill) !== 0
+//     (bill: ProjectBillAnalysis) => this.getReceivedPayment(bill) !== 0
+//   );
+// }
+// this.totalRecords = pageResponse.totalCount;
+
+// await this.loadFollowUps();
+
+
 this.dataList = pageResponse.list;
-this.fullDataList = [...this.dataList]; // ✅ ADD THIS
+
+// 🔥 IMPORTANT FIX: handle empty next page
+if (this.dataList.length === 0 && this.pageIndex > 0) {
+  this.pageIndex--;   // go back to previous page
+  return;             // stop execution
+}
+
+this.fullDataList = [...this.dataList]; // keep original copy
+
 if (!this.showZeroAmount) {
   this.dataList = this.dataList.filter(
-    // bill => this.getReceivedPayment(bill) !== 0
     (bill: ProjectBillAnalysis) => this.getReceivedPayment(bill) !== 0
   );
 }
+
 this.totalRecords = pageResponse.totalCount;
 
 await this.loadFollowUps();
@@ -808,7 +829,19 @@ getDaysSinceBill(bill: ProjectBillAnalysis): string {
 }
 
 
+// nextPage() {
+//   this.pageIndex++;
+//   this.getData();
+// }
+
 nextPage() {
+  const nextPageStart = (this.pageIndex + 1) * this.pageSize;
+
+  // ❌ stop if no more data
+  if (nextPageStart >= this.totalRecords) {
+    return;
+  }
+
   this.pageIndex++;
   this.getData();
 }

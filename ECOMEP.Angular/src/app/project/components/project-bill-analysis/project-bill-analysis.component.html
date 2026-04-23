@@ -184,11 +184,17 @@
    Page {{ pageIndex + 1 }} of {{ getTotalPages() || 0 }}
 </span>
 
-  <button mat-button 
+  <!-- <button mat-button 
     (click)="nextPage()" 
     [disabled]="(pageIndex + 1) * pageSize >= totalRecords">
     Next
-  </button>
+  </button> -->
+
+  <button mat-button 
+  (click)="nextPage()" 
+  [disabled]="dataList.length < pageSize || (pageIndex + 1) * pageSize >= totalRecords">
+  Next
+</button>
 
 </div>
 

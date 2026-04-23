@@ -19,7 +19,7 @@
       <div class="card-section">
         <h6 class="section-title">REQUEST SETTINGS</h6>
 
-        <mat-form-field appearance="outline" class="full-width">
+        <!-- <mat-form-field appearance="outline" class="full-width">
           <mat-label>Application User</mat-label>
 
           <input
@@ -42,7 +42,36 @@
           </mat-autocomplete>
 
           <mat-icon matSuffix>person</mat-icon>
-        </mat-form-field>
+        </mat-form-field> -->
+
+        <!-- ✅ HR USER -->
+<mat-form-field appearance="outline" class="full-width" *ngIf="canSelectUser">
+  <mat-label>Application User</mat-label>
+
+  <input
+    matInput
+    formControlName="applicationUser"
+    [matAutocomplete]="autoUser"
+    placeholder="Select user"
+  />
+
+  <mat-autocomplete #autoUser="matAutocomplete" [displayWith]="displayFnContact">
+    <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
+      {{ option.name }}
+    </mat-option>
+  </mat-autocomplete>
+
+  <mat-icon matSuffix>person</mat-icon>
+</mat-form-field>
+
+<!-- 🔒 NORMAL USER -->
+<!-- <mat-form-field appearance="outline" class="full-width" *ngIf="!canSelectUser">
+  <mat-label>Application User</mat-label>
+
+  <input matInput [value]="form.value.applicationUser?.name" disabled />
+
+  <mat-icon matSuffix>person</mat-icon>
+</mat-form-field> -->
 
         <div class="grid-layout mt-2">
           <div class="date-range-group">

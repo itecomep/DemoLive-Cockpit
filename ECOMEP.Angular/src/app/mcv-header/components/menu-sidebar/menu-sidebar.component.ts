@@ -45,7 +45,7 @@ export class MenuSidebarComponent {
     private readonly router = inject(Router);
 
   showMenu: boolean = false;
-  isPermissionWorkFromHome: boolean =  true;
+  // isPermissionWorkFromHome: boolean =  true;
 
   get isPermissionContactList() { return this.contactService.isPermissionList; }
   get isPermissionTeamList(): boolean { return this.contactService.isPermissionTeamList; }
@@ -61,6 +61,10 @@ export class MenuSidebarComponent {
   get isPermissionAllowedIpView(): boolean { return this.authService.isAllowedIpBypassView;}
   get isPermissionAnalysisListView(): boolean { return this.authService.isAnalysisListView; }
   get isPermissionTaskView(): boolean { return this.authService.isTaskView; }
+
+  get isPermissionWorkFromHome(): boolean {
+  return this.authService.isInAnyRole([this.permissions.HR_MODULE]);
+}
  
 
   ngOnInit(): void {
