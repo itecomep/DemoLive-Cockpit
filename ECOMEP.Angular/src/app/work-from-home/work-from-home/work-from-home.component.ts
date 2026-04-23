@@ -35,6 +35,8 @@ import {
 } from "rxjs";
 
 import { McvFileComponent } from "src/app/mcv-file/components/mcv-file/mcv-file.component";
+import { AuthService } from "src/app/auth/services/auth.service";
+import { AppPermissions } from "src/app/app.permissions";
 
 @Component({
   selector: "app-work-from-home",
@@ -64,6 +66,9 @@ export class WorkFromHomeComponent implements OnInit {
   private config = inject(AppConfig);
   private wfhService = inject(WorkFromHomeService);
   private contactService = inject(ContactApiService);
+
+  private authService = inject(AuthService);
+private permissions = inject(AppPermissions);
 
   form!: FormGroup;
 
@@ -193,4 +198,7 @@ export class WorkFromHomeComponent implements OnInit {
   onClose() {
     this.dialogRef.close();
   }
+  get canSelectUser(): boolean {
+  return this.authService.isInAnyRole([this.permissions.HR_SELECT_USER]);
+}
 }
