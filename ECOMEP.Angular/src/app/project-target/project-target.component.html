@@ -1,123 +1,299 @@
+  <!-- <app-header title="Project Target"></app-header>
 <div class="page-wrapper">
-  <h2>Project Target</h2>
 
-  <!-- ================= FORM ================= -->
-  <div class="card">
-    <div class="form-row">
-      <!-- Project -->
-      <div class="form-group">
-        <label>Project</label>
-        <select [(ngModel)]="form.projectId" (change)="onProjectChange()">
-          <option [ngValue]="null">Select Project</option>
-          <option
-            *ngFor="let p of projects; trackBy: trackById"
-            [ngValue]="p.id"
-          >
-            {{ p.title || "Project #" + p.id }}
-          </option>
-        </select>
-      </div>
-
-      <!-- Stage -->
-      <div class="form-group">
-        <label>Stage</label>
-        <select [(ngModel)]="form.stage" [disabled]="!form.projectId">
-          <option value="">Select Stage</option>
-          <option
-            *ngFor="let s of stages"
-            [ngValue]="s.title"
-            [disabled]="completedStages.includes(s.title)"
-          >
-            {{ s.title }}
-          </option>
-        </select>
-      </div>
-
-      <!-- Status -->
-      <div class="form-group">
-        <label>Status</label>
-        <select [(ngModel)]="form.stageStatus">
-          <option [ngValue]="null">Select Status</option>
-          <option *ngFor="let s of statuses" [ngValue]="s">
-            {{ s }}
-          </option>
-        </select>
-      </div>
-
-      <!-- Target Date -->
-      <div class="form-group">
-        <label>Target Date</label>
-        <input type="date" [(ngModel)]="form.targetDate" />
-      </div>
-
-      <!-- Feedback -->
-      <div class="form-group">
-        <label>Feedback</label>
-        <input
-          type="text"
-          [(ngModel)]="form.feedback"
-          placeholder="Enter feedback"
-        />
-      </div>
-
-      <!-- Save Button -->
-      <div class="form-group btn-group">
-        <button (click)="save()" class="primary-btn">
-          {{ isEdit ? "Update" : "Save" }}
-        </button>
-
-        <button *ngIf="isEdit" (click)="resetForm()" class="secondary-btn">
-          Cancel
-        </button>
-      </div>
-    </div>
+ 
+  <div class="page-header"> -->
+    <!-- <div>
+      <h2>Project Target History</h2>
+      <p class="subtitle">Track all project stages, status updates, and deadlines</p>
+    </div> -->
+<!-- 
+    <button class="primary-btn" (click)="openForm()">
+      + Create Target
+    </button>
   </div>
 
-  <!-- ================= TABLE ================= -->
+  
   <div class="card">
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Project</th>
-          <th>Stage</th>
-          <th>Status</th>
-          <th>Target Date</th>
-          <th>Feedback</th>
-          <th>Action</th>
-        </tr>
-      </thead>
 
-      <tbody>
-        <tr *ngFor="let t of targets">
-          <td>{{ t.id }}</td>
-          <td>{{ getProjectName(t.projectId) }}</td>
-          <td>{{ t.stage }}</td>
+   
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Project</th>
+            <th>Stage</th>
+            <th>Status</th>
+            <th>Target Date</th>
+            <th>Feedback</th>
+            <th class="action-col">Action</th>
+          </tr>
+        </thead> -->
 
-          <!-- 🔥 Status Badge -->
-          <td>
-            <span [ngClass]="getStatusClass(t.stageStatus)">
-              {{ t.stageStatus }}
-            </span>
-          </td>
+        <!-- <tbody>
+          <tr *ngFor="let t of targets; trackBy: trackById">
 
-          <!-- 🔥 Highlight expired -->
-          <td [ngClass]="{ expired: isExpired(t.targetDate) }">
-            {{ t.targetDate | date: "dd MMM yyyy" }}
-          </td>
+            <td class="id-badge">#{{ t.id }}</td>
 
-          <td>{{ t.feedback }}</td>
+            <td class="project-name">
+              {{ getProjectName(t.projectId) }}
+            </td>
 
-          <td>
-            <button class="edit-btn" (click)="edit(t)">Edit</button>
-            <button class="delete-btn" (click)="delete(t.id)">Delete</button>
-          </td>
-        </tr>
+            <td>{{ t.stage }}</td>
 
-        <tr *ngIf="targets.length === 0">
-          <td colspan="7" class="no-data">No records found</td>
-        </tr>
-      </tbody>
-    </table>
+            <td>
+              <span class="status-badge" [ngClass]="getStatusClass(t.stageStatus)">
+                {{ t.stageStatus }}
+              </span>
+            </td>
+
+            <td [ngClass]="{ 'expired': isExpired(t.targetDate) }">
+              {{ t.targetDate | date: 'dd MMM yyyy' }}
+            </td>
+
+            <td class="feedback">
+              {{ t.feedback || '-' }}
+            </td>
+
+            <td class="actions">
+              <button class="edit-btn" (click)="edit(t)">Edit</button>
+              <button class="delete-btn" (click)="delete(t.id)">Delete</button>
+            </td>
+
+          </tr>
+
+          <tr *ngIf="targets.length === 0">
+            <td colspan="7" class="no-data">
+              No history records found
+            </td>
+          </tr>
+        </tbody> -->
+<!-- 
+        <tbody>
+  <tr *ngFor="let t of targets; trackBy: trackById">
+
+   
+    <td class="id-badge">#{{ t.id }}</td>
+
+
+    <td>
+      {{ getProjectName(t.projectId) }}
+    </td>
+
+
+    <td>
+      <ng-container *ngIf="editId !== t.id; else editStage">
+        {{ t.stage }}
+      </ng-container>
+
+      <ng-template #editStage>
+        <mat-form-field appearance="outline">
+          <mat-select [(ngModel)]="editRow.stage">
+            <mat-option *ngFor="let s of stages" [value]="s.title">
+              {{ s.title }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-template>
+    </td>
+
+
+    <td>
+      <ng-container *ngIf="editId !== t.id; else editStatus">
+        <span class="status-badge" [ngClass]="getStatusClass(t.stageStatus)">
+          {{ t.stageStatus }}
+        </span>
+      </ng-container>
+
+      <ng-template #editStatus>
+        <mat-form-field appearance="outline">
+          <mat-select [(ngModel)]="editRow.stageStatus">
+            <mat-option *ngFor="let s of statuses" [value]="s">
+              {{ s }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-template>
+    </td>
+
+    <td>
+      <ng-container *ngIf="editId !== t.id; else editDate">
+        <span [ngClass]="{ 'expired': isExpired(t.targetDate) }">
+          {{ t.targetDate | date: 'dd MMM yyyy' }}
+        </span>
+      </ng-container>
+
+      <ng-template #editDate>
+        <input type="date" [(ngModel)]="editRow.targetDate" />
+      </ng-template>
+    </td>
+
+  
+    <td>
+      <ng-container *ngIf="editId !== t.id; else editFeedback">
+        {{ t.feedback || '-' }}
+      </ng-container>
+
+      <ng-template #editFeedback>
+        <input type="text" [(ngModel)]="editRow.feedback" />
+      </ng-template>
+    </td>
+
+   
+    <td class="actions">
+
+      <ng-container *ngIf="editId !== t.id; else editActions">
+        <button class="edit-btn" (click)="startEdit(t)">Edit</button>
+        <button class="delete-btn" (click)="delete(t.id)">Delete</button>
+      </ng-container>
+
+      <ng-template #editActions>
+        <button class="primary-btn" (click)="saveEdit()">Save</button>
+        <button class="secondary-btn" (click)="cancelEdit()">Cancel</button>
+      </ng-template>
+
+    </td>
+
+  </tr>
+
+  <tr *ngIf="targets.length === 0">
+    <td colspan="7" class="no-data">
+      No history records found
+    </td>
+  </tr>
+</tbody>
+      </table>
+    </div>
+
+  </div>
+</div> -->
+
+
+
+
+
+
+
+
+
+
+<app-header title="Project Target"></app-header>
+
+<div class="page-wrapper">
+
+  <!-- TOP ACTION BAR -->
+  <div class="page-actions">
+    <button class="primary-btn" (click)="openForm()">
+      + Create Target
+    </button>
+  </div>
+
+  <!-- CARD -->
+  <div class="card">
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Project</th>
+            <th>Stage</th>
+            <th>Status</th>
+            <th>Target Date</th>
+            <th>Feedback</th>
+            <th class="action-col">Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let t of targets; trackBy: trackById">
+
+            <td class="id-badge">#{{ t.id }}</td>
+
+            <td>{{ getProjectName(t.projectId) }}</td>
+
+            <td>
+              <ng-container *ngIf="editId !== t.id; else editStage">
+                {{ t.stage }}
+              </ng-container>
+
+              <ng-template #editStage>
+                <mat-form-field appearance="outline">
+                  <mat-select [(ngModel)]="editRow.stage">
+                    <mat-option *ngFor="let s of stages" [value]="s.title">
+                      {{ s.title }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </ng-template>
+            </td>
+
+            <td>
+              <ng-container *ngIf="editId !== t.id; else editStatus">
+                <span class="status-badge" [ngClass]="getStatusClass(t.stageStatus)">
+                  {{ t.stageStatus }}
+                </span>
+              </ng-container>
+
+              <ng-template #editStatus>
+                <mat-form-field appearance="outline">
+                  <mat-select [(ngModel)]="editRow.stageStatus">
+                    <mat-option *ngFor="let s of statuses" [value]="s">
+                      {{ s }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </ng-template>
+            </td>
+
+            <td>
+              <ng-container *ngIf="editId !== t.id; else editDate">
+                <span [ngClass]="{ 'expired': isExpired(t.targetDate) }">
+                  {{ t.targetDate | date: 'dd MMM yyyy' }}
+                </span>
+              </ng-container>
+
+              <ng-template #editDate>
+                <input type="date" [(ngModel)]="editRow.targetDate" />
+              </ng-template>
+            </td>
+
+            <td>
+              <ng-container *ngIf="editId !== t.id; else editFeedback">
+                {{ t.feedback || '-' }}
+              </ng-container>
+
+              <ng-template #editFeedback>
+                <input type="text" [(ngModel)]="editRow.feedback" />
+              </ng-template>
+            </td>
+
+            <td class="actions">
+
+              <ng-container *ngIf="editId !== t.id; else editActions">
+                <button class="edit-btn" (click)="startEdit(t)">Edit</button>
+                <button class="delete-btn" (click)="delete(t.id)">Delete</button>
+              </ng-container>
+
+              <ng-template #editActions>
+                <button class="primary-btn" (click)="saveEdit()">Save</button>
+                <button class="secondary-btn" (click)="cancelEdit()">Cancel</button>
+              </ng-template>
+
+            </td>
+
+          </tr>
+
+          <tr *ngIf="targets.length === 0">
+            <td colspan="7" class="no-data">
+              No history records found
+            </td>
+          </tr>
+        </tbody>
+
+      </table>
+    </div>
+
   </div>
 </div>
