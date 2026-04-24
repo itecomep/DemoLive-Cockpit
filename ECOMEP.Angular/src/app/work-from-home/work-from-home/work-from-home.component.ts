@@ -89,14 +89,32 @@ private permissions = inject(AppPermissions);
   }
 
   // ================= FORM =================
+  // buildForm() {
+  //   this.form = this.fb.group({
+  //     applicationUser: [null],
+  //     startDate: ["", Validators.required],
+  //     endDate: ["", Validators.required],
+  //     reason: ["", Validators.required],
+  //   });
+  // }
+
   buildForm() {
-    this.form = this.fb.group({
-      applicationUser: [null],
-      startDate: ["", Validators.required],
-      endDate: ["", Validators.required],
-      reason: ["", Validators.required],
-    });
-  }
+  const currentUser = this.wfhService["getCurrentUser"]();
+
+  this.form = this.fb.group({
+    applicationUser: [
+      this.canSelectUser
+        ? null
+        : {
+            id: currentUser.userId,
+            name: currentUser.userName
+          }
+    ],
+    startDate: ["", Validators.required],
+    endDate: ["", Validators.required],
+    reason: ["", Validators.required],
+  });
+}
 
   // ================= CONTACT LOAD =================
   async loadContacts() {

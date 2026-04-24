@@ -11,19 +11,30 @@ import { CommonModule } from "@angular/common";
 import { MatTableModule } from "@angular/material/table";
 import { FormsModule } from "@angular/forms";
 import { HrModuleService } from "../hr-module.service";
+import { MatDialog } from '@angular/material/dialog';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { ViewChild, TemplateRef } from '@angular/core';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: "app-wfh-history",
   standalone: true,
-  imports: [CommonModule, MatTableModule, FormsModule],
+  imports: [CommonModule, MatTableModule, FormsModule,MatDialogModule,  MatIconModule,],
   templateUrl: "./wfh-history.component.html",
   styleUrls: ["./wfh-history.component.scss"],
 })
 export class WfhHistoryComponent implements OnInit, OnChanges {
   @Input() requests: any[] = [];
   @Output() refresh = new EventEmitter<void>();
+  @ViewChild("fileViewerDialog",{ static: true }) fileViewerDialog!: TemplateRef<any>;
 
-  constructor(private hrService: HrModuleService) {}
+selectedFileUrl: SafeResourceUrl | null = null;
+rawFileUrl: string = "";
+selectedEmployeeName: string = "";
+
+  constructor(private hrService: HrModuleService, private dialog: MatDialog,
+  private sanitizer: DomSanitizer) {}
 
   // =========================
   // STATE
@@ -373,4 +384,62 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
 
     return total;
   }
+
+  closeDialog() {
+  this.dialog.closeAll();
+}
+
+openViewer(file: any, req: any) {
+  const fileUrl = file?.url;
+
+  if (!fileUrl) {
+    console.error("File URL missing", file);
+    return;
+  }
+
+  this.selectedEmployeeName = req?.employeeName || "Employee";
+  this.rawFileUrl = fileUrl;
+
+  this.selectedFileUrl =
+    this.sanitizer.bypassSecurityTrustResourceUrl(fileUrl);
+
+  if (!this.fileViewerDialog) {
+    console.error("Dialog template not found!");
+    return;
+  }
+
+  this.dialog.open(this.fileViewerDialog, {
+    width: '80vw',
+  height: '90vh',
+  panelClass: 'custom-cv-dialog'  
+  });
+}
+
+downloadFile() {
+  if (!this.rawFileUrl) return;
+
+  fetch(this.rawFileUrl)
+    .then(res => res.blob())
+    .then(blob => {
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = this.getFileName(this.rawFileUrl);
+
+      document.body.appendChild(a);
+      a.click();
+
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    })
+    .catch(err => console.error("Download failed", err));
+}
+
+getFileName(url: string): string {
+  return url.split('/').pop() || 'file';
+}
+
+
+
 }

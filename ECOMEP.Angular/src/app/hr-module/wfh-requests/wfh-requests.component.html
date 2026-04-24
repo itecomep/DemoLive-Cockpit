@@ -167,7 +167,7 @@
                   <span
                     class="file-link"
                     *ngFor="let file of chunk"
-                    (click)="openFile(file)"
+                    (click)="openViewer(file, req)"
                   >
                     {{ getCleanFileName(file.fileName || file.name) }}
                   </span>
@@ -252,3 +252,92 @@
     </table>
   </div>
 </div>
+
+<ng-template #fileViewerDialog>
+  <div class="unique-modal-container">
+
+    <!-- <header class="modal-glass-header">
+      <div class="header-content">
+        <div class="title-group">
+          <h3>Document Viewer — {{ selectedEmployeeName }}</h3>
+        </div>
+
+        <button class="close-circle" (click)="closeDialog()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </header> -->
+
+
+    <header class="modal-glass-header">
+  <div class="header-content">
+
+    <div class="title-group">
+      <h3>Document Viewer — {{ selectedEmployeeName }}</h3>
+    </div>
+
+    <!-- ✅ RIGHT SIDE CLOSE -->
+    <button class="close-circle" (click)="closeDialog()">
+      <mat-icon>close</mat-icon>
+    </button>
+
+  </div>
+</header>
+
+    <div class="workspace-body">
+      <div class="accent-bar"></div>
+
+      <div class="document-container">
+
+        <!-- PDF -->
+        <iframe
+          *ngIf="rawFileUrl?.includes('pdf')"
+          [src]="selectedFileUrl">
+        </iframe>
+
+        <!-- IMAGE -->
+        <img
+          *ngIf="!rawFileUrl?.includes('pdf')"
+          [src]="rawFileUrl" />
+
+      </div>
+    </div>
+
+    <!-- <footer class="modal-action-footer">
+      <div class="action-group">
+
+        <a [href]="rawFileUrl" target="_blank" class="btn-neo secondary">
+          <mat-icon>open_in_new</mat-icon>
+          <span>Preview Mode</span>
+        </a>
+
+        <button (click)="downloadFile()" class="btn-neo primary">
+          <mat-icon>cloud_download</mat-icon>
+          <span>Get Copy</span>
+        </button>
+
+      </div>
+    </footer> -->
+
+
+
+    <footer class="modal-action-footer">
+  <div class="action-group">
+
+    <!-- PREVIEW -->
+    <a [href]="rawFileUrl" target="_blank" class="btn-neo outline">
+      <mat-icon>open_in_new</mat-icon>
+      <span>Preview Mode</span>
+    </a>
+
+    <!-- DOWNLOAD -->
+    <button (click)="downloadFile()" class="btn-neo solid">
+      <mat-icon>cloud_download</mat-icon>
+      <span>Download</span>
+    </button>
+
+  </div>
+</footer>
+
+  </div>
+</ng-template>

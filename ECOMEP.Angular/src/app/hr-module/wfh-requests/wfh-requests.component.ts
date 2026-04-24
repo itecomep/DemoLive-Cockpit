@@ -9,10 +9,16 @@ import { HeaderComponent } from "src/app/mcv-header/components/header/header.com
 import { MatDialog } from "@angular/material/dialog";
 import { WorkFromHomeComponent } from "../../work-from-home/work-from-home/work-from-home.component";
 
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { ViewChild, TemplateRef } from '@angular/core';
+
 @Component({
   selector: "app-wfh-requests",
   standalone: true,
-  imports: [CommonModule, MatTableModule, FormsModule, HeaderComponent],
+  imports: [CommonModule, MatTableModule, FormsModule, HeaderComponent,MatDialogModule,
+  MatIconModule],
   templateUrl: "./wfh-requests.component.html",
   styleUrls: ["./wfh-requests.component.scss"],
 })
@@ -25,11 +31,17 @@ export class WfhRequestsComponent implements OnInit {
 
   existingFiles: any[] = [];
   newFiles: File[] = [];
+  @ViewChild("fileViewerDialog", { static: true }) fileViewerDialog!: TemplateRef<any>;
+
+selectedFileUrl: SafeResourceUrl | null = null;
+rawFileUrl: string = "";
+selectedEmployeeName: string = "";
 
   constructor(
     private hrService: HrModuleService,
     private authService: AuthService,
     private dialog: MatDialog,
+     private sanitizer: DomSanitizer
   ) {}
 
   editingRowId: any = null;
@@ -365,4 +377,54 @@ export class WfhRequestsComponent implements OnInit {
       }
     });
   }
+
+
+  openViewer(file: any, req: any) {
+  const fileUrl = file?.url;
+
+  if (!fileUrl) {
+    console.error("File URL missing", file);
+    return;
+  }
+
+  this.selectedEmployeeName = req?.employeeName || "Employee";
+  this.rawFileUrl = fileUrl;
+
+  this.selectedFileUrl =
+    this.sanitizer.bypassSecurityTrustResourceUrl(fileUrl);
+
+  this.dialog.open(this.fileViewerDialog, {
+    width: '80vw',
+    height: '90vh',
+    panelClass: 'custom-cv-dialog'
+  });
+}
+
+closeDialog() {
+  this.dialog.closeAll();
+}
+
+downloadFile() {
+  if (!this.rawFileUrl) return;
+
+  fetch(this.rawFileUrl)
+    .then(res => res.blob())
+    .then(blob => {
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = this.getFileName(this.rawFileUrl);
+
+      document.body.appendChild(a);
+      a.click();
+
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    });
+}
+
+getFileName(url: string): string {
+  return url.split('/').pop() || 'file';
+}
 }

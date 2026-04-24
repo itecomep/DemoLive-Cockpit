@@ -339,4 +339,12 @@ export class LeavesComponent implements OnInit, AfterViewInit {
       return sum;
     }, 0);
   }
+
+  isImage(url: string): boolean {
+  return url.match(/\.(jpeg|jpg|png|gif|webp)$/i) != null;
+}
+
+isPdf(url: string): boolean {
+  return url.match(/\.pdf$/i) != null;
+}
 }

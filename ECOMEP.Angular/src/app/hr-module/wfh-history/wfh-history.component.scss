@@ -567,3 +567,265 @@ body, .meetings-container {
 .total-box h3 {
   color: #e65100;
 }
+
+
+/* 🔥 Dialog container */
+::ng-deep .custom-cv-dialog .mat-mdc-dialog-container {
+  padding: 0 !important;
+  border-radius: 16px;
+  overflow: hidden;
+  
+}
+
+/* 🔥 Main wrapper */
+.unique-modal-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background: #f7f9fb;
+}
+
+/* ================= HEADER ================= */
+
+.modal-glass-header {
+  background: linear-gradient(135deg, #2e7d32, #4caf50);
+  color: white;
+  padding: 12px 18px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.title-group h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Badge */
+.badge {
+  background: #ffffff;
+  color: #2e7d32;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+/* Close button */
+.close-circle {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 16px;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.close-circle:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* ================= BODY ================= */
+
+.workspace-body {
+  flex: 1;
+  padding: 12px;
+  overflow: hidden;
+}
+
+/* Document area */
+.document-container {
+  height: 100%;
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* PDF iframe */
+.document-container iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;   
+}
+
+/* Image preview */
+.document-container img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* ================= FOOTER ================= */
+
+.modal-action-footer {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 12px;
+  border-top: 1px solid #e0e0e0;
+  background: #ffffff;
+}
+
+/* Buttons */
+.modal-action-footer a {
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+/* Preview button */
+.modal-action-footer a:first-child {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.modal-action-footer a:first-child:hover {
+  background: #bbdefb;
+}
+
+/* Download button */
+.modal-action-footer a:last-child {
+  background: #2e7d32;
+  color: white;
+}
+
+.modal-action-footer a:last-child:hover {
+  background: #1b5e20;
+}
+
+
+
+/* 🔥 BODY FIX */
+.workspace-body {
+  flex: 1;
+  display: flex;               /* ✅ REQUIRED */
+  padding: 20px;
+  background: #e2e8f0;         /* grey background like screenshot */
+  overflow: hidden;
+}
+
+/* 🔥 LEFT GREEN LINE */
+.accent-bar {
+  width: 6px;
+  background: linear-gradient(to bottom, #247a34, #a5d6a7);
+  border-radius: 10px;
+  margin-right: 15px;
+}
+
+/* 🔥 DOCUMENT CONTAINER */
+.document-container {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* 🔥 IMPORTANT (PDF FULL HEIGHT) */
+
+
+/* IMAGE */
+.document-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+::ng-deep .custom-cv-dialog .mat-mdc-dialog-container {
+  padding: 0 !important;
+  border-radius: 16px !important;
+  overflow: hidden;
+}
+
+/* BUTTON GROUP */
+.action-group {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+/* COMMON BUTTON STYLE */
+.btn-neo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+
+  transition: all 0.2s ease;
+}
+
+/* PREVIEW BUTTON */
+.btn-neo.secondary {
+  background: #eef2f7;
+  color: #334155;
+}
+
+.btn-neo.secondary:hover {
+  background: #e2e8f0;
+}
+
+/* DOWNLOAD BUTTON */
+.btn-neo.primary {
+  background: #1e293b;
+  color: white;
+}
+
+.btn-neo.primary:hover {
+  background: #0f172a;
+}
+
+/* ICON SIZE */
+.btn-neo mat-icon {
+  font-size: 16px;
+}
+
+.workspace-body {
+  overflow: hidden;        /* already good */
+}
+
+.document-container {
+  overflow: hidden;        /* ✅ ADD THIS */
+
+  .close-circle {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 16px;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+}
+}

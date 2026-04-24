@@ -284,10 +284,28 @@
     <div class="workspace-body">
       <div class="accent-bar"></div>
 
-      <div class="document-container">
+      <!-- <div class="document-container">
         <iframe *ngIf="selectedCvUrl" [src]="selectedCvUrl" frameborder="0">
         </iframe>
-      </div>
+      </div> -->
+
+      <div class="document-container">
+
+  <!-- ✅ IMAGE VIEW -->
+  <img
+    *ngIf="selectedCvUrl && isImage(rawCvUrl)"
+    [src]="rawCvUrl"
+    class="doc-image"
+  />
+
+  <!-- ✅ PDF VIEW -->
+  <iframe
+    *ngIf="selectedCvUrl && isPdf(rawCvUrl)"
+    [src]="selectedCvUrl"
+    frameborder="0"
+  ></iframe>
+
+</div>
     </div>
 
     <footer class="modal-action-footer">
