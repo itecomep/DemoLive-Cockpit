@@ -25,8 +25,8 @@ body, .meetings-container {
 .meetings-table td {
   // font-size: 12px;   /* content */
    font-size: 13.5px;        /* increased from 12px */
-  color: #1a1a1a;           /* stronger black tone */
-  font-weight: 500;
+  color: #111;           /* stronger black tone */
+  font-weight: 400;
 }
 
 
@@ -118,7 +118,7 @@ body, .meetings-container {
   max-width: 160px;
   font-size: 13.5px;
   color: #111;              /* deeper black */
-  font-weight: 600;
+  font-weight: 400;
 }
 
 /* BADGE */
@@ -247,7 +247,7 @@ body, .meetings-container {
 
 /* STATUS TEXT */
 .approved {
-  color: #2e7d32;
+  color: #4caf50;
   font-weight: 600;
   background: #e8f5e9;
   padding: 4px 8px;
@@ -255,7 +255,7 @@ body, .meetings-container {
 }
 
 .rejected {
-  color: #c62828;
+  color: #eb2e2e;
   font-weight: 600;
   background: #fdecea;
   padding: 4px 8px;

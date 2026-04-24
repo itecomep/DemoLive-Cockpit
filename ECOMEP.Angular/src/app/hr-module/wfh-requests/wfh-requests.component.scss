@@ -83,7 +83,7 @@
   border-bottom: 1px solid #e8f5e9;
   vertical-align: middle;
   color: #111 !important;      /* ✅ DARK BLACK */
-  font-weight: 500;
+  font-weight: 400;
     font-size: 14px; 
 }
 
@@ -122,7 +122,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   color: #111;
-  font-weight: 600;
+  font-weight: 400;
     font-size: 14px;
 }
 
@@ -216,12 +216,12 @@
    STATUS
 ========================= */
 .status-badge {
-  font-weight: 700;
+  font-weight: 400;
 }
 
-.status-badge.approved { color: #1b5e20; }
+.status-badge.approved { color: #4caf50; }
 .status-badge.pending { color: #e65100; }
-.status-badge.rejected { color: #b71c1c; }
+.status-badge.rejected { color: #eb2e2e; }
 
 
 /* =========================
