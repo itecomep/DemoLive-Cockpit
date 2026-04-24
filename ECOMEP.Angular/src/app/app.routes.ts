@@ -73,12 +73,30 @@ export const ROOT_ROUTES: Routes = [
         .then(m => m.WfhRequestsComponent)
   },
 
+  // {
+  //   path: 'project-target',
+  //   loadComponent: () =>
+  //     import('./project-target/project-target.component')
+  //       .then(m => m.ProjectTargetComponent)
+  // },
+
   {
-    path: 'project-target',
-    loadComponent: () =>
-      import('./project-target/project-target.component')
-        .then(m => m.ProjectTargetComponent)
-  },
+  path: 'project-target',
+  children: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./project-target/project-target.component')
+          .then(m => m.ProjectTargetComponent)
+    },
+    {
+      path: 'create',
+      loadComponent: () =>
+        import('./project-target/project-target-form/project-target-form.component')
+          .then(m => m.ProjectTargetFormComponent)
+    },
+  ]
+},
 
   { path: '', redirectTo: 'cockpit', pathMatch: 'full' },
 
