@@ -4,14 +4,16 @@
   <!-- ================= FORM ================= -->
   <div class="card">
     <div class="form-row">
-
       <!-- Project -->
       <div class="form-group">
         <label>Project</label>
         <select [(ngModel)]="form.projectId" (change)="onProjectChange()">
           <option [ngValue]="null">Select Project</option>
-          <option *ngFor="let p of projects; trackBy: trackById" [ngValue]="p.id">
-            {{ p.title || ('Project #' + p.id) }}
+          <option
+            *ngFor="let p of projects; trackBy: trackById"
+            [ngValue]="p.id"
+          >
+            {{ p.title || "Project #" + p.id }}
           </option>
         </select>
       </div>
@@ -21,7 +23,11 @@
         <label>Stage</label>
         <select [(ngModel)]="form.stage" [disabled]="!form.projectId">
           <option value="">Select Stage</option>
-          <option *ngFor="let s of stages" [value]="s.title">
+          <option
+            *ngFor="let s of stages"
+            [value]="s.title"
+            [disabled]="completedStages.includes(s.title)"
+          >
             {{ s.title }}
           </option>
         </select>
@@ -47,7 +53,11 @@
       <!-- Feedback -->
       <div class="form-group">
         <label>Feedback</label>
-        <input type="text" [(ngModel)]="form.feedback" placeholder="Enter feedback" />
+        <input
+          type="text"
+          [(ngModel)]="form.feedback"
+          placeholder="Enter feedback"
+        />
       </div>
 
       <!-- Save Button -->
@@ -60,13 +70,11 @@
           Cancel
         </button>
       </div>
-
     </div>
   </div>
 
   <!-- ================= TABLE ================= -->
   <div class="card">
-
     <table>
       <thead>
         <tr>
@@ -94,7 +102,7 @@
           </td>
 
           <!-- 🔥 Highlight expired -->
-          <td [ngClass]="{'expired': isExpired(t.targetDate)}">
+          <td [ngClass]="{ expired: isExpired(t.targetDate) }">
             {{ t.targetDate | date: "dd MMM yyyy" }}
           </td>
 
@@ -111,6 +119,5 @@
         </tr>
       </tbody>
     </table>
-
   </div>
 </div>

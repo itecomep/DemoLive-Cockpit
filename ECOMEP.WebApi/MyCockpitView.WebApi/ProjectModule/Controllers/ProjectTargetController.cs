@@ -83,6 +83,19 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
                 IsDeleted = false
             };
 
+            // 🔥 Prevent duplicate completed stage
+            var alreadyCompleted = await _db.ProjectTargets
+                .AnyAsync(x =>
+                    x.ProjectId == dto.ProjectId &&
+                    x.Stage == dto.Stage &&
+                    x.StageStatus == "Complete & Generate Invoice" &&
+                    !x.IsDeleted);
+
+            if (alreadyCompleted)
+            {
+                return BadRequest("This stage is already completed for this project.");
+            }
+
             _db.ProjectTargets.Add(entity);
             await _db.SaveChangesAsync();
 

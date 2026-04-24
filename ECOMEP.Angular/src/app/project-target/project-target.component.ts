@@ -1,17 +1,3 @@
-// import { Component } from '@angular/core';
-// import { CommonModule } from '@angular/common';
-
-// @Component({
-//   selector: 'app-project-target',
-//   standalone: true,
-//   imports: [CommonModule],
-//   templateUrl: './project-target.component.html',
-//   styleUrls: ['./project-target.component.scss']
-// })
-// export class ProjectTargetComponent {
-
-// }
-
 import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -25,6 +11,7 @@ import { ProjectTargetService } from "./project-target.service";
   styleUrls: ["./project-target.component.scss"],
 })
 export class ProjectTargetComponent implements OnInit {
+  completedStages: string[] = [];
   isEdit = false;
   editId: number | null = null;
   // 🔹 Dropdown data
@@ -54,19 +41,6 @@ export class ProjectTargetComponent implements OnInit {
 
   // ================= LOAD DATA =================
 
-  // loadFormData() {
-  //   this.service.getFormData().subscribe({
-  //     next: (res: any) => {
-  //       this.projects = res.projects || [];
-  //       this.stages = res.stages || [];
-  //       this.statuses = res.statuses || [];
-  //     },
-  //     error: (err) => {
-  //       console.error('Error loading form data', err);
-  //     }
-  //   });
-  // }
-
   loadFormData() {
     this.service.getFormData().subscribe((res) => {
       console.log("Projects:", res.projects); // 👈 CHECK THIS
@@ -77,10 +51,26 @@ export class ProjectTargetComponent implements OnInit {
     });
   }
 
+  // loadTargets() {
+  //   this.service.getAll().subscribe({
+  //     next: (res) => {
+  //       this.targets = res || [];
+  //     },
+  //     error: (err) => {
+  //       console.error("Error loading targets", err);
+  //     },
+  //   });
+  // }
+
   loadTargets() {
     this.service.getAll().subscribe({
       next: (res) => {
         this.targets = res || [];
+
+        // 🔥 Recalculate if project already selected
+        if (this.form.projectId) {
+          this.onProjectChange();
+        }
       },
       error: (err) => {
         console.error("Error loading targets", err);
@@ -92,63 +82,50 @@ export class ProjectTargetComponent implements OnInit {
 
   onProjectChange() {
     if (!this.form.projectId) {
-      console.log("Project ID is empty");
       this.stages = [];
+      this.completedStages = [];
       return;
     }
 
+    // load stages
     this.service.getStagesByProject(this.form.projectId).subscribe({
       next: (res) => (this.stages = res || []),
       error: (err) => console.error("Error loading stages", err),
     });
+
+    // 🔥 filter completed stages from targets
+    this.completedStages = this.targets
+      .filter(
+        (t) =>
+          t.projectId === this.form.projectId &&
+          t.stageStatus === "Complete & Generate Invoice",
+      )
+      .map((t) => t.stage);
   }
-
-  // 🔥 Auto Target Date Logic
-  // onStatusChange() {
-  //   if (
-  //     this.form.stageStatus &&
-  //     this.form.stageStatus !== "Complete & Generate Invoice"
-  //   ) {
-  //     const date = new Date();
-  //     date.setDate(date.getDate() + 15);
-
-  //     // format yyyy-MM-dd for input[type=date]
-  //     this.form.targetDate = date.toISOString().substring(0, 10);
-  //   }
-  // }
 
   // ================= ACTIONS =================
 
-save() {
-  if (!this.form.projectId || !this.form.stage || !this.form.stageStatus) {
-    alert("Please fill all required fields");
-    return;
+  save() {
+    if (!this.form.projectId || !this.form.stage || !this.form.stageStatus) {
+      alert("Please fill all required fields");
+      return;
+    }
+
+    const payload = {
+      ...this.form,
+      targetDate: this.form.targetDate ? new Date(this.form.targetDate) : null,
+    };
+
+    if (this.isEdit && this.editId) {
+      this.service.update(this.editId, payload).subscribe(() => {
+        this.afterSave();
+      });
+    } else {
+      this.service.create(payload).subscribe(() => {
+        this.afterSave();
+      });
+    }
   }
-
-// const payload = {
-//   ...this.form,
-//   targetDate: this.form.targetDate
-//     ? this.form.targetDate + 'T00:00:00'
-//     : null
-// };
-
-const payload = {
-  ...this.form,
-  targetDate: this.form.targetDate
-    ? new Date(this.form.targetDate)
-    : null
-};
-
-  if (this.isEdit && this.editId) {
-    this.service.update(this.editId, payload).subscribe(() => {
-      this.afterSave();
-    });
-  } else {
-    this.service.create(payload).subscribe(() => {
-      this.afterSave();
-    });
-  }
-}
 
   afterSave() {
     this.resetForm();
@@ -184,62 +161,69 @@ const payload = {
     this.stages = [];
   }
 
-trackById(index: number, item: any) {
-  return item.id;
-}
-
-edit(item: any) {
-  this.isEdit = true;
-  this.editId = item.id;
-
-  const matchedStatus = this.statuses.find(
-    s => s.trim().toLowerCase() === (item.stageStatus || '').trim().toLowerCase()
-  );
-
-  // ✅ FIX: force LOCAL date (ignore timezone completely)
-  let formattedDate = null;
-
-  if (item.targetDate) {
-    const d = new Date(item.targetDate);
-    formattedDate = d.getFullYear() + '-' +
-      String(d.getMonth() + 1).padStart(2, '0') + '-' +
-      String(d.getDate()).padStart(2, '0');
+  trackById(index: number, item: any) {
+    return item.id;
   }
 
-  this.form = {
-    projectId: item.projectId,
-    stage: item.stage,
-    stageStatus: matchedStatus || null,
-    targetDate: formattedDate,
-    feedback: item.feedback
-  };
+  edit(item: any) {
+    this.isEdit = true;
+    this.editId = item.id;
 
-  this.service.getStagesByProject(item.projectId).subscribe(res => {
-    this.stages = res || [];
-  });
-}
+    const matchedStatus = this.statuses.find(
+      (s) =>
+        s.trim().toLowerCase() ===
+        (item.stageStatus || "").trim().toLowerCase(),
+    );
 
-getProjectName(id: number): string {
-  const p = this.projects.find(x => x.id === id);
-  return p ? p.title : 'id';
-}
+    // ✅ FIX: force LOCAL date (ignore timezone completely)
+    let formattedDate = null;
 
-isExpired(date: any): boolean {
-  if (!date) return false;
+    if (item.targetDate) {
+      const d = new Date(item.targetDate);
+      formattedDate =
+        d.getFullYear() +
+        "-" +
+        String(d.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(d.getDate()).padStart(2, "0");
+    }
 
-  // ✅ NO timezone shift
-  const d = new Date(date + 'T00:00:00');
-  const today = new Date();
+    this.form = {
+      projectId: item.projectId,
+      stage: item.stage,
+      stageStatus: matchedStatus || null,
+      targetDate: formattedDate,
+      feedback: item.feedback,
+    };
 
-  return d < today;
-}
-
-getStatusClass(status: string): string {
-  switch (status) {
-    case 'Complete & Generate Invoice': return 'status-complete';
-    case 'In Progress': return 'status-progress';
-    case 'On Hold': return 'status-hold';
-    default: return 'status-default';
+    this.service.getStagesByProject(item.projectId).subscribe((res) => {
+      this.stages = res || [];
+    });
   }
-}
+
+  getProjectName(id: number): string {
+    const p = this.projects.find((x) => x.id === id);
+    return p ? p.title : "id";
+  }
+
+  isExpired(date: any): boolean {
+    if (!date) return false;
+    const d = new Date(date + "T00:00:00");
+    const today = new Date();
+
+    return d < today;
+  }
+
+  getStatusClass(status: string): string {
+    switch (status) {
+      case "Complete & Generate Invoice":
+        return "status-complete";
+      case "In Progress":
+        return "status-progress";
+      case "On Hold":
+        return "status-hold";
+      default:
+        return "status-default";
+    }
+  }
 }
