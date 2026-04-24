@@ -138,7 +138,7 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
 
             await _db.SaveChangesAsync();
 
-            return Ok("Deleted");
+            return Ok();
         }
 
         // ✅ FORM DATA
