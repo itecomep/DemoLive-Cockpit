@@ -95,7 +95,7 @@
 
           <!-- 🔥 Highlight expired -->
           <td [ngClass]="{'expired': isExpired(t.targetDate)}">
-            {{ t.targetDate?.split('T')[0] | date: "dd MMM yyyy" }}
+            {{ t.targetDate | date: "dd MMM yyyy" }}
           </td>
 
           <td>{{ t.feedback }}</td>

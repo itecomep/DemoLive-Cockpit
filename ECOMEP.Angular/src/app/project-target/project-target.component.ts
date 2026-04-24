@@ -125,10 +125,19 @@ save() {
     return;
   }
 
-  const payload = {
-    ...this.form,
-    targetDate: this.form.targetDate || null
-  };
+// const payload = {
+//   ...this.form,
+//   targetDate: this.form.targetDate
+//     ? this.form.targetDate + 'T00:00:00'
+//     : null
+// };
+
+const payload = {
+  ...this.form,
+  targetDate: this.form.targetDate
+    ? new Date(this.form.targetDate)
+    : null
+};
 
   if (this.isEdit && this.editId) {
     this.service.update(this.editId, payload).subscribe(() => {
@@ -187,16 +196,21 @@ edit(item: any) {
     s => s.trim().toLowerCase() === (item.stageStatus || '').trim().toLowerCase()
   );
 
+  // ✅ FIX: force LOCAL date (ignore timezone completely)
+  let formattedDate = null;
+
+  if (item.targetDate) {
+    const d = new Date(item.targetDate);
+    formattedDate = d.getFullYear() + '-' +
+      String(d.getMonth() + 1).padStart(2, '0') + '-' +
+      String(d.getDate()).padStart(2, '0');
+  }
+
   this.form = {
     projectId: item.projectId,
     stage: item.stage,
     stageStatus: matchedStatus || null,
-
-    // ✅ FIX DATE (NO CONVERSION)
-    targetDate: item.targetDate
-      ? item.targetDate.split('T')[0]
-      : null,
-
+    targetDate: formattedDate,
     feedback: item.feedback
   };
 
@@ -204,15 +218,6 @@ edit(item: any) {
     this.stages = res || [];
   });
 }
-
-// formatDate(date: any): string | null {
-//   if (!date) return null;
-
-//   // 🔥 Take only date part BEFORE timezone conversion
-//   const dateStr = date.toString().split('T')[0];
-
-//   return dateStr;
-// }
 
 getProjectName(id: number): string {
   const p = this.projects.find(x => x.id === id);

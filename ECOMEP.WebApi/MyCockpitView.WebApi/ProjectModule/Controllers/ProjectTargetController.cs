@@ -101,7 +101,7 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
 
             // 🔥 FIXED: timezone-safe date
             entity.TargetDate = dto.TargetDate.HasValue
-                ? DateTime.SpecifyKind(dto.TargetDate.Value.Date, DateTimeKind.Unspecified)
+                ? DateTime.SpecifyKind(dto.TargetDate.Value, DateTimeKind.Local).Date
                 : null;
 
             entity.StageStatus = dto.StageStatus;
