@@ -125,32 +125,32 @@ export class ProjectTargetComponent implements OnInit {
     return item.id;
   }
 
-startEdit(row: any) {
-  this.editId = row.id;
+  startEdit(row: any) {
+    this.editId = row.id;
 
-  let formattedDate = null;
+    let formattedDate = null;
 
-  if (row.targetDate) {
-    const d = new Date(row.targetDate);
+    if (row.targetDate) {
+      const d = new Date(row.targetDate);
 
-    // ✅ FIX: LOCAL DATE ONLY (NO SHIFT)
-    formattedDate =
-      d.getFullYear() +
-      '-' +
-      String(d.getMonth() + 1).padStart(2, '0') +
-      '-' +
-      String(d.getDate()).padStart(2, '0');
+      // ✅ FIX: LOCAL DATE ONLY (NO SHIFT)
+      formattedDate =
+        d.getFullYear() +
+        "-" +
+        String(d.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(d.getDate()).padStart(2, "0");
+    }
+
+    this.editRow = {
+      stage: row.stage,
+      stageStatus: row.stageStatus,
+      targetDate: formattedDate,
+      feedback: row.feedback,
+    };
+
+    this.loadStages(row.projectId);
   }
-
-  this.editRow = {
-    stage: row.stage,
-    stageStatus: row.stageStatus,
-    targetDate: formattedDate,
-    feedback: row.feedback,
-  };
-
-  this.loadStages(row.projectId);
-}
 
   // CANCEL EDIT
   cancelEdit() {
@@ -160,42 +160,53 @@ startEdit(row: any) {
 
   // SAVE EDIT
 
-saveEdit() {
-  const original = this.targets.find((t) => t.id === this.editId);
+  saveEdit() {
+    const original = this.targets.find((t) => t.id === this.editId);
 
-  let fixedDate = null;
+    let fixedDate = null;
 
-  if (this.editRow.targetDate) {
-    const d = new Date(this.editRow.targetDate);
+    if (this.editRow.targetDate) {
+      const d = new Date(this.editRow.targetDate);
 
-    // ✅ ADD 1 DAY to counter backend timezone shift
-    d.setDate(d.getDate() + 1);
+      // ✅ ADD 1 DAY to counter backend timezone shift
+      d.setDate(d.getDate() + 1);
 
-    fixedDate =
-      d.getFullYear() +
-      '-' +
-      String(d.getMonth() + 1).padStart(2, '0') +
-      '-' +
-      String(d.getDate()).padStart(2, '0') +
-      'T00:00:00';
+      fixedDate =
+        d.getFullYear() +
+        "-" +
+        String(d.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(d.getDate()).padStart(2, "0") +
+        "T00:00:00";
+    }
+
+    const payload = {
+      projectId: original.projectId,
+      stage: this.editRow.stage,
+      stageStatus: this.editRow.stageStatus,
+      targetDate: fixedDate,
+      feedback: this.editRow.feedback,
+    };
+
+    this.service.update(this.editId!, payload).subscribe(() => {
+      this.editId = null;
+      this.loadTargets();
+    });
   }
 
-  const payload = {
-    projectId: original.projectId,
-    stage: this.editRow.stage,
-    stageStatus: this.editRow.stageStatus,
-    targetDate: fixedDate,
-    feedback: this.editRow.feedback,
-  };
-
-  this.service.update(this.editId!, payload).subscribe(() => {
-    this.editId = null;
-    this.loadTargets();
-  });
-}
   loadStages(projectId: number) {
     this.service.getStagesByProject(projectId).subscribe((res: any) => {
       this.stages = res || [];
     });
   }
+  
+getLatestHistory(row: any, field: string) {
+  if (!row.history) return null;
+
+  return row.history
+    .filter((h: any) => h.fieldName === field)
+    .sort((a: any, b: any) =>
+      new Date(b.changedOn).getTime() - new Date(a.changedOn).getTime()
+    )[0];
+}
 }

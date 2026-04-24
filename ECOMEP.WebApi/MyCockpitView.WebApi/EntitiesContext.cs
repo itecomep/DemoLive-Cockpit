@@ -397,6 +397,7 @@ public class EntitiesContext : IdentityDbContext<User, Role, Guid, IdentityUserC
     public DbSet<WorkFromHomeRequest> WorkFromHomeRequests { get; set; }
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<ProjectTarget> ProjectTargets { get; set; }
+    public DbSet<ProjectTargetHistory> ProjectTargetHistories { get; set; }
     // END
 
     private IDbContextTransaction _transaction;

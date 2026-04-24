@@ -29,10 +29,13 @@
         <tbody>
           <tr *ngFor="let t of targets; trackBy: trackById">
 
+            <!-- ID -->
             <td class="id-badge">#{{ t.id }}</td>
 
+            <!-- PROJECT -->
             <td>{{ getProjectName(t.projectId) }}</td>
 
+            <!-- STAGE -->
             <td>
               <ng-container *ngIf="editId !== t.id; else editStage">
                 {{ t.stage }}
@@ -49,11 +52,25 @@
               </ng-template>
             </td>
 
+            <!-- STATUS -->
             <td>
               <ng-container *ngIf="editId !== t.id; else editStatus">
-                <span class="status-badge" [ngClass]="getStatusClass(t.stageStatus)">
-                  {{ t.stageStatus }}
-                </span>
+
+                <!-- NEW VALUE -->
+                <div class="main-value">
+                  <span class="status-badge" [ngClass]="getStatusClass(t.stageStatus)">
+                    {{ t.stageStatus }}
+                  </span>
+                </div>
+
+                <!-- OLD VALUE -->
+                <div class="history-value" *ngIf="getLatestHistory(t, 'StageStatus') as h">
+                  {{ h.oldValue }}
+                  <span class="history-date">
+                    ({{ h.changedOn | date:'dd MMM' }})
+                  </span>
+                </div>
+
               </ng-container>
 
               <ng-template #editStatus>
@@ -67,11 +84,23 @@
               </ng-template>
             </td>
 
+            <!-- TARGET DATE -->
             <td>
               <ng-container *ngIf="editId !== t.id; else editDate">
-                <span [ngClass]="{ 'expired': isExpired(t.targetDate) }">
+
+                <!-- NEW VALUE -->
+                <div class="main-value">
                   {{ t.targetDate | date: 'dd MMM yyyy' }}
-                </span>
+                </div>
+
+                <!-- OLD VALUE -->
+                <div class="history-value" *ngIf="getLatestHistory(t, 'TargetDate') as h">
+                  {{ h.oldValue | date: 'dd MMM yyyy' }}
+                  <span class="history-date">
+                    ({{ h.changedOn | date:'dd MMM' }})
+                  </span>
+                </div>
+
               </ng-container>
 
               <ng-template #editDate>
@@ -79,9 +108,23 @@
               </ng-template>
             </td>
 
+            <!-- FEEDBACK -->
             <td>
               <ng-container *ngIf="editId !== t.id; else editFeedback">
-                {{ t.feedback || '-' }}
+
+                <!-- NEW VALUE -->
+                <div class="main-value">
+                  {{ t.feedback || '-' }}
+                </div>
+
+                <!-- OLD VALUE -->
+                <div class="history-value" *ngIf="getLatestHistory(t, 'Feedback') as h">
+                  {{ h.oldValue }}
+                  <span class="history-date">
+                    ({{ h.changedOn | date:'dd MMM' }})
+                  </span>
+                </div>
+
               </ng-container>
 
               <ng-template #editFeedback>
@@ -89,18 +132,16 @@
               </ng-template>
             </td>
 
+            <!-- ACTION -->
             <td class="actions">
-
               <ng-container *ngIf="editId !== t.id; else editActions">
                 <button class="edit-btn" (click)="startEdit(t)">Edit</button>
-                <!-- <button class="delete-btn" (click)="delete(t.id)">Delete</button> -->
               </ng-container>
 
               <ng-template #editActions>
                 <button class="primary-btn" (click)="saveEdit()">Save</button>
                 <button class="secondary-btn" (click)="cancelEdit()">Cancel</button>
               </ng-template>
-
             </td>
 
           </tr>
