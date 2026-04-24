@@ -125,19 +125,32 @@ export class ProjectTargetComponent implements OnInit {
     return item.id;
   }
 
-  startEdit(row: any) {
-    this.editId = row.id;
+startEdit(row: any) {
+  this.editId = row.id;
 
-    this.editRow = {
-      stage: row.stage,
-      stageStatus: row.stageStatus,
-      targetDate: row.targetDate ? row.targetDate.split("T")[0] : null,
-      feedback: row.feedback,
-    };
+  let formattedDate = null;
 
-    // only for dependent dropdown
-    this.loadStages(row.projectId);
+  if (row.targetDate) {
+    const d = new Date(row.targetDate);
+
+    // ✅ FIX: LOCAL DATE ONLY (NO SHIFT)
+    formattedDate =
+      d.getFullYear() +
+      '-' +
+      String(d.getMonth() + 1).padStart(2, '0') +
+      '-' +
+      String(d.getDate()).padStart(2, '0');
   }
+
+  this.editRow = {
+    stage: row.stage,
+    stageStatus: row.stageStatus,
+    targetDate: formattedDate,
+    feedback: row.feedback,
+  };
+
+  this.loadStages(row.projectId);
+}
 
   // CANCEL EDIT
   cancelEdit() {
@@ -147,22 +160,39 @@ export class ProjectTargetComponent implements OnInit {
 
   // SAVE EDIT
 
-  saveEdit() {
-    const original = this.targets.find((t) => t.id === this.editId);
+saveEdit() {
+  const original = this.targets.find((t) => t.id === this.editId);
 
-    const payload = {
-      projectId: original.projectId, // ✅ KEEP THIS
-      stage: this.editRow.stage,
-      stageStatus: this.editRow.stageStatus,
-      targetDate: this.editRow.targetDate,
-      feedback: this.editRow.feedback,
-    };
+  let fixedDate = null;
 
-    this.service.update(this.editId!, payload).subscribe(() => {
-      this.editId = null;
-      this.loadTargets();
-    });
+  if (this.editRow.targetDate) {
+    const d = new Date(this.editRow.targetDate);
+
+    // ✅ ADD 1 DAY to counter backend timezone shift
+    d.setDate(d.getDate() + 1);
+
+    fixedDate =
+      d.getFullYear() +
+      '-' +
+      String(d.getMonth() + 1).padStart(2, '0') +
+      '-' +
+      String(d.getDate()).padStart(2, '0') +
+      'T00:00:00';
   }
+
+  const payload = {
+    projectId: original.projectId,
+    stage: this.editRow.stage,
+    stageStatus: this.editRow.stageStatus,
+    targetDate: fixedDate,
+    feedback: this.editRow.feedback,
+  };
+
+  this.service.update(this.editId!, payload).subscribe(() => {
+    this.editId = null;
+    this.loadTargets();
+  });
+}
   loadStages(projectId: number) {
     this.service.getStagesByProject(projectId).subscribe((res: any) => {
       this.stages = res || [];
