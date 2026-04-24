@@ -83,6 +83,19 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
                 IsDeleted = false
             };
 
+            // 🔥 Prevent duplicate completed stage
+            var alreadyCompleted = await _db.ProjectTargets
+                .AnyAsync(x =>
+                    x.ProjectId == dto.ProjectId &&
+                    x.Stage == dto.Stage &&
+                    x.StageStatus == "Complete & Generate Invoice" &&
+                    !x.IsDeleted);
+
+            if (alreadyCompleted)
+            {
+                return BadRequest("This stage is already completed for this project.");
+            }
+
             _db.ProjectTargets.Add(entity);
             await _db.SaveChangesAsync();
 
@@ -101,7 +114,7 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
 
             // 🔥 FIXED: timezone-safe date
             entity.TargetDate = dto.TargetDate.HasValue
-                ? DateTime.SpecifyKind(dto.TargetDate.Value.Date, DateTimeKind.Unspecified)
+                ? DateTime.SpecifyKind(dto.TargetDate.Value, DateTimeKind.Local).Date
                 : null;
 
             entity.StageStatus = dto.StageStatus;
@@ -125,7 +138,7 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
 
             await _db.SaveChangesAsync();
 
-            return Ok("Deleted");
+            return Ok();
         }
 
         // ✅ FORM DATA
