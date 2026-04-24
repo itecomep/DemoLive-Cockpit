@@ -1,20 +1,20 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ProjectTargetService } from '../project-target.service';
+import { Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { ActivatedRoute, Router } from "@angular/router";
+import { ProjectTargetService } from "../project-target.service";
 // import { CommonModule } from '@angular/common';
 // import { FormsModule } from '@angular/forms';
 
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
+import { MatSelectModule } from "@angular/material/select";
+import { MatButtonModule } from "@angular/material/button";
+import { MatIconModule } from "@angular/material/icon";
 import { HeaderComponent } from "../../mcv-header/components/header/header.component";
 
 @Component({
-  selector: 'app-project-target-form',
+  selector: "app-project-target-form",
   standalone: true,
   imports: [
     CommonModule,
@@ -25,22 +25,22 @@ import { HeaderComponent } from "../../mcv-header/components/header/header.compo
     MatButtonModule,
     MatIconModule,
 
-    HeaderComponent   // ✅ ADD THIS LINE
+    HeaderComponent, // ✅ ADD THIS LINE
   ],
-  templateUrl: './project-target-form.component.html',
-  styleUrls: ['./project-target-form.component.scss']
+  templateUrl: "./project-target-form.component.html",
+  styleUrls: ["./project-target-form.component.scss"],
 })
 export class ProjectTargetFormComponent implements OnInit {
-
+  targets: any[] = [];
   isEdit = false;
   id: number | null = null;
 
   form: any = {
     projectId: null,
-    stage: '',
-    stageStatus: '',
+    stage: "",
+    stageStatus: "",
     targetDate: null,
-    feedback: ''
+    feedback: "",
   };
 
   projects: any[] = [];
@@ -50,20 +50,24 @@ export class ProjectTargetFormComponent implements OnInit {
   constructor(
     private service: ProjectTargetService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {}
 
   // ================= INIT =================
   ngOnInit() {
     this.loadFormData();
 
-    const idParam = this.route.snapshot.paramMap.get('id');
+    const idParam = this.route.snapshot.paramMap.get("id");
 
     if (idParam) {
       this.isEdit = true;
       this.id = +idParam;
       this.loadById(this.id);
     }
+
+    this.service.getAll().subscribe((res: any) => {
+      this.targets = res || [];
+    });
   }
 
   // ================= LOAD DROPDOWNS =================
@@ -97,10 +101,9 @@ export class ProjectTargetFormComponent implements OnInit {
   }
 
   loadStages(projectId: number) {
-    this.service.getStagesByProject(projectId)
-      .subscribe((res: any) => {
-        this.stages = res || [];
-      });
+    this.service.getStagesByProject(projectId).subscribe((res: any) => {
+      this.stages = res || [];
+    });
   }
 
   // ================= SAVE =================
@@ -112,22 +115,28 @@ export class ProjectTargetFormComponent implements OnInit {
 
     if (this.isEdit && this.id) {
       this.service.update(this.id, this.form).subscribe(() => {
-        this.router.navigate(['/project-target']);
+        this.router.navigate(["/project-target"]);
       });
     } else {
       this.service.create(this.form).subscribe(() => {
-        this.router.navigate(['/project-target']);
+        this.router.navigate(["/project-target"]);
       });
     }
   }
 
   // ================= CANCEL =================
   cancel() {
-    this.router.navigate(['/project-target']);
+    this.router.navigate(["/project-target"]);
   }
 
   // ================= TRACK =================
   trackById(index: number, item: any) {
     return item.id;
+  }
+
+  isStageAlreadyUsed(stageTitle: string): boolean {
+    return this.targets?.some(
+      (t: any) => t.projectId === this.form.projectId && t.stage === stageTitle,
+    );
   }
 }
