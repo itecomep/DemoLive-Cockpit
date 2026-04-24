@@ -17,36 +17,38 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
             _db = db;
         }
 
-        // ✅ GET ALL
-        [HttpGet]
-        public async Task<IActionResult> Get()
-        {
-            var today = DateTime.Today;
+        //// ✅ GET ALL
+        //[HttpGet]
+        //public async Task<IActionResult> Get()
+        //{
+        //    var today = DateTime.Today;
 
-            var data = await _db.ProjectTargets
-                .Where(x => !x.IsDeleted)
-                .ToListAsync();
+        //    var data = await _db.ProjectTargets
+        //        .Where(x => !x.IsDeleted)
+        //        .ToListAsync();
 
-            foreach (var item in data)
-            {
-                if (item.TargetDate.HasValue &&
-                    item.TargetDate.Value.Date < today &&
-                    item.StageStatus != "Complete & Generate Invoice")
-                {
-                    // 🔥 FIXED: prevent timezone shift
-                    item.TargetDate = DateTime.SpecifyKind(
-                        today.AddDays(15).Date,
-                        DateTimeKind.Unspecified
-                    );
+        //    foreach (var item in data)
+        //    {
+        //        if (item.TargetDate.HasValue &&
+        //            item.TargetDate.Value.Date < today &&
+        //            item.StageStatus != "Complete & Generate Invoice")
+        //        {
+        //            // 🔥 FIXED: prevent timezone shift
+        //            item.TargetDate = DateTime.SpecifyKind(
+        //                today.AddDays(15).Date,
+        //                DateTimeKind.Unspecified
+        //            );
 
-                    item.ModifiedDate = DateTime.Now;
-                }
-            }
+        //            item.ModifiedDate = DateTime.Now;
+        //        }
+        //    }
 
-            await _db.SaveChangesAsync();
+        //    await _db.SaveChangesAsync();
 
-            return Ok(data.OrderByDescending(x => x.CreatedDate));
-        }
+        //    return Ok(data.OrderByDescending(x => x.CreatedDate));
+        //}
+
+
 
         // ✅ CREATE
         [HttpPost]
@@ -109,17 +111,64 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
             var entity = await _db.ProjectTargets.FindAsync(id);
             if (entity == null) return NotFound();
 
-            entity.ProjectId = dto.ProjectId;
+            var histories = new List<ProjectTargetHistory>();
+
+            // ================= TARGET DATE =================
+            if (dto.TargetDate.HasValue &&
+                entity.TargetDate?.Date != dto.TargetDate.Value.Date)
+            {
+                histories.Add(new ProjectTargetHistory
+                {
+                    ProjectTargetId = entity.Id,
+                    FieldName = "TargetDate",
+                    OldValue = entity.TargetDate?.ToString("yyyy-MM-dd"),
+                    NewValue = dto.TargetDate.Value.ToString("yyyy-MM-dd")
+                });
+
+                entity.TargetDate = DateTime.SpecifyKind(
+                    dto.TargetDate.Value.Date,
+                    DateTimeKind.Unspecified
+                );
+            }
+
+            // ================= STATUS =================
+            if (dto.StageStatus != entity.StageStatus)
+            {
+                histories.Add(new ProjectTargetHistory
+                {
+                    ProjectTargetId = entity.Id,
+                    FieldName = "StageStatus",
+                    OldValue = entity.StageStatus,
+                    NewValue = dto.StageStatus
+                });
+
+                entity.StageStatus = dto.StageStatus;
+            }
+
+            // ================= FEEDBACK =================
+            if (dto.Feedback != entity.Feedback)
+            {
+                histories.Add(new ProjectTargetHistory
+                {
+                    ProjectTargetId = entity.Id,
+                    FieldName = "Feedback",
+                    OldValue = entity.Feedback,
+                    NewValue = dto.Feedback
+                });
+
+                entity.Feedback = dto.Feedback;
+            }
+
+            // ❌ DO NOT TOUCH STAGE OR PROJECT unless needed
             entity.Stage = dto.Stage;
+            entity.ProjectId = dto.ProjectId;
 
-            // 🔥 FIXED: timezone-safe date
-            entity.TargetDate = dto.TargetDate.HasValue
-                ? DateTime.SpecifyKind(dto.TargetDate.Value, DateTimeKind.Local).Date
-                : null;
-
-            entity.StageStatus = dto.StageStatus;
-            entity.Feedback = dto.Feedback;
             entity.ModifiedDate = DateTime.Now;
+
+            if (histories.Any())
+            {
+                _db.ProjectTargetHistories.AddRange(histories);
+            }
 
             await _db.SaveChangesAsync();
 
@@ -182,5 +231,61 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
 
             return Ok(stages);
         }
+
+
+
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            var today = DateTime.Today;
+
+            var data = await _db.ProjectTargets
+                .Where(x => !x.IsDeleted)
+                .ToListAsync();
+
+            // 🔥 EXISTING LOGIC (Auto extend expired date)
+            foreach (var item in data)
+            {
+                if (item.TargetDate.HasValue &&
+                    item.TargetDate.Value.Date < today &&
+                    item.StageStatus != "Complete & Generate Invoice")
+                {
+                    item.TargetDate = DateTime.SpecifyKind(
+                        today.AddDays(15).Date,
+                        DateTimeKind.Unspecified
+                    );
+
+                    item.ModifiedDate = DateTime.Now;
+                }
+            }
+
+            await _db.SaveChangesAsync();
+
+            // 🔥 ADD HISTORY WITH EACH RECORD
+            var result = data
+                .OrderByDescending(x => x.CreatedDate)
+                .Select(x => new
+                {
+                    x.Id,
+                    x.ProjectId,
+                    x.Stage,
+                    x.TargetDate,
+                    x.StageStatus,
+                    x.Feedback,
+
+                    history = _db.ProjectTargetHistories
+                        .Where(h => h.ProjectTargetId == x.Id)
+                        .OrderByDescending(h => h.ChangedOn)
+                        .ToList()
+                });
+
+            return Ok(result);
+        }
+
+
+
     }
 }
