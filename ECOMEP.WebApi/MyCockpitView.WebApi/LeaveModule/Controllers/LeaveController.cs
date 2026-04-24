@@ -304,7 +304,9 @@ public class LeaveController : ControllerBase
             .Include(x => x.Contact)
             .Include(x => x.Attachments);
 
-        var leaves = await query.ToListAsync();
+        var leaves = await query
+            .OrderByDescending(x => x.ID)
+            .ToListAsync();
 
         var statusMasters = await db.StatusMasters
             .Where(x => x.Entity == nameof(Leave))
@@ -348,33 +350,23 @@ public class LeaveController : ControllerBase
 
         if (leave == null) return NotFound();
 
-        // 🔹 update status
         leave.StatusFlag = body.Status == "Approved" ? 1 : -1;
-
         await service.Update(leave);
-
-        // 🔥 SEND NOTIFICATION
         var username = leave.Contact?.Username;
 
         if (!string.IsNullOrEmpty(username))
         {
-            // 🔹 GET LEAVE TYPE FROM TYPEMASTERS
             var typeMasters = await db.TypeMasters
                 .Where(x => x.Entity == nameof(Leave))
                 .ToListAsync();
 
             var leaveType = typeMasters
                 .FirstOrDefault(x => x.Value == leave.TypeFlag)?.Title ?? "Leave";
-
-            // 🔹 FORMAT DATES
             var startDate = leave.Start.ToString("dd MMM yyyy");
             var endDate = leave.End.ToString("dd MMM yyyy");
-
-            // 🔹 CREATE MESSAGE
             var message = leave.StatusFlag == 1
                 ? $"✅ Your {leaveType} from {startDate} to {endDate} has been approved"
                 : $"❌ Your {leaveType} from {startDate} to {endDate} has been rejected";
-
             var notification = new Notification
             {
                 Username = username,
@@ -385,7 +377,6 @@ public class LeaveController : ControllerBase
 
             db.Notifications.Add(notification);
 
-            // 🔥 REALTIME PUSH
             if (NotificationHub.UserConnections.TryGetValue(username, out var connectionId))
             {
                 await _hub.Clients.Client(connectionId)

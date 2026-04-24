@@ -91,16 +91,6 @@ export class LeavesComponent implements OnInit, AfterViewInit {
 
   // ================= LOAD ALL =================
 
-  // loadLeaves() {
-  //   this.service.getLeaves().subscribe({
-  //     next: (res: any[]) => {
-  //       this.originalData = res.map(x => this.mapLeave(x));
-  //       this.applyFilters();
-  //     },
-  //     error: err => console.error('Error fetching leaves:', err)
-  //   });
-  // }
-
   loadLeaves() {
     this.service.getLeaves().subscribe((leaves: any[]) => {
       this.contactService.get([]).subscribe((contacts: any[]) => {
@@ -108,7 +98,7 @@ export class LeavesComponent implements OnInit, AfterViewInit {
           const contact = contacts.find(
             (c) =>
               c.name?.toLowerCase().trim() ===
-              leave.employeeName?.toLowerCase().trim(),
+              leave.employeeName?.toLowerCase().trim()
           );
 
           return {
@@ -125,6 +115,7 @@ export class LeavesComponent implements OnInit, AfterViewInit {
           };
         });
 
+        this.originalData.sort((a, b) => b.id - a.id);
         this.applyFilters();
       });
     });

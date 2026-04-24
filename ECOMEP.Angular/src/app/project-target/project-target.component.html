@@ -1,0 +1,116 @@
+<div class="page-wrapper">
+  <h2>Project Target</h2>
+
+  <!-- ================= FORM ================= -->
+  <div class="card">
+    <div class="form-row">
+
+      <!-- Project -->
+      <div class="form-group">
+        <label>Project</label>
+        <select [(ngModel)]="form.projectId" (change)="onProjectChange()">
+          <option [ngValue]="null">Select Project</option>
+          <option *ngFor="let p of projects; trackBy: trackById" [ngValue]="p.id">
+            {{ p.title || ('Project #' + p.id) }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Stage -->
+      <div class="form-group">
+        <label>Stage</label>
+        <select [(ngModel)]="form.stage" [disabled]="!form.projectId">
+          <option value="">Select Stage</option>
+          <option *ngFor="let s of stages" [value]="s.title">
+            {{ s.title }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Status -->
+      <div class="form-group">
+        <label>Status</label>
+        <select [(ngModel)]="form.stageStatus">
+          <option [ngValue]="null">Select Status</option>
+          <option *ngFor="let s of statuses" [ngValue]="s">
+            {{ s }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Target Date -->
+      <div class="form-group">
+        <label>Target Date</label>
+        <input type="date" [(ngModel)]="form.targetDate" />
+      </div>
+
+      <!-- Feedback -->
+      <div class="form-group">
+        <label>Feedback</label>
+        <input type="text" [(ngModel)]="form.feedback" placeholder="Enter feedback" />
+      </div>
+
+      <!-- Save Button -->
+      <div class="form-group btn-group">
+        <button (click)="save()" class="primary-btn">
+          {{ isEdit ? "Update" : "Save" }}
+        </button>
+
+        <button *ngIf="isEdit" (click)="resetForm()" class="secondary-btn">
+          Cancel
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= TABLE ================= -->
+  <div class="card">
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Project</th>
+          <th>Stage</th>
+          <th>Status</th>
+          <th>Target Date</th>
+          <th>Feedback</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let t of targets">
+          <td>{{ t.id }}</td>
+          <td>{{ getProjectName(t.projectId) }}</td>
+          <td>{{ t.stage }}</td>
+
+          <!-- 🔥 Status Badge -->
+          <td>
+            <span [ngClass]="getStatusClass(t.stageStatus)">
+              {{ t.stageStatus }}
+            </span>
+          </td>
+
+          <!-- 🔥 Highlight expired -->
+          <td [ngClass]="{'expired': isExpired(t.targetDate)}">
+            {{ t.targetDate?.split('T')[0] | date: "dd MMM yyyy" }}
+          </td>
+
+          <td>{{ t.feedback }}</td>
+
+          <td>
+            <button class="edit-btn" (click)="edit(t)">Edit</button>
+            <button class="delete-btn" (click)="delete(t.id)">Delete</button>
+          </td>
+        </tr>
+
+        <tr *ngIf="targets.length === 0">
+          <td colspan="7" class="no-data">No records found</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+</div>

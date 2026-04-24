@@ -116,5 +116,11 @@
       </a>
     </li>
 
+    <li *ngIf="isPermissionProjectList">
+      <a [routerLink]="['/project-target']" routerLinkActive="active" (click)="closeMenuDelayed()">
+        <h5>Project Target</h5>
+      </a>
+    </li>
+
   </ul>
 </nav>
