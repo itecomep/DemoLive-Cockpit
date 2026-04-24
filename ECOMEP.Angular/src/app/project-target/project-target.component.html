@@ -273,7 +273,7 @@
 
               <ng-container *ngIf="editId !== t.id; else editActions">
                 <button class="edit-btn" (click)="startEdit(t)">Edit</button>
-                <button class="delete-btn" (click)="delete(t.id)">Delete</button>
+                <!-- <button class="delete-btn" (click)="delete(t.id)">Delete</button> -->
               </ng-container>
 
               <ng-template #editActions>
