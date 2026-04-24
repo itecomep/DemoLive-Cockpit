@@ -73,6 +73,13 @@ export const ROOT_ROUTES: Routes = [
         .then(m => m.WfhRequestsComponent)
   },
 
+  {
+    path: 'project-target',
+    loadComponent: () =>
+      import('./project-target/project-target.component')
+        .then(m => m.ProjectTargetComponent)
+  },
+
   { path: '', redirectTo: 'cockpit', pathMatch: 'full' },
 
   { path: '**', redirectTo: '/cockpit', pathMatch: 'full' },

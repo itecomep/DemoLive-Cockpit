@@ -1,0 +1,141 @@
+.page-wrapper {
+  padding: 20px;
+}
+
+.card {
+  background: #fff;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+.form-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+select, input {
+  padding: 6px;
+}
+
+button {
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+select {
+  min-width: 180px;
+  max-width: 250px;
+  height: 36px;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+select {
+  height: 36px !important;
+  max-height: 36px;
+  overflow: hidden;
+}
+
+option {
+  height: auto;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: end;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+}
+
+select, input {
+  height: 36px;
+  padding: 5px;
+}
+
+.btn-group {
+  display: flex;
+  gap: 10px;
+}
+
+.primary-btn {
+  background: #1976d2;
+  color: #fff;
+}
+
+.secondary-btn {
+  background: #ccc;
+}
+
+.edit-btn {
+  background: #ffc107;
+}
+
+.delete-btn {
+  background: #dc3545;
+  color: white;
+}
+
+.status-complete { color: green; font-weight: bold; }
+.status-progress { color: orange; }
+.status-hold { color: red; }
+.status-default { color: gray; }
+
+.expired {
+  color: red;
+  font-weight: bold;
+}
+
+.no-data {
+  text-align: center;
+}
