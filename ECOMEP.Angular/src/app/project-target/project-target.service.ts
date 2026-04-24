@@ -8,18 +8,16 @@
 //   constructor() { }
 // }
 
-
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Observable } from "rxjs";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class ProjectTargetService {
-
   // 🔥 Use environment if available, else keep as is
-  private baseUrl = 'http://localhost:5054/api/projecttarget';
+  private baseUrl = "http://localhost:5054/api/projecttarget";
 
   constructor(private http: HttpClient) {}
 
@@ -50,16 +48,15 @@ export class ProjectTargetService {
   // ================= DELETE =================
 
   // 🔹 Soft delete
-  delete(id: number): Observable<any> {
-    return this.http.delete<any>(`${this.baseUrl}/${id}`);
-  }
+  // delete(id: number): Observable<any> {
+  //   return this.http.delete<any>(`${this.baseUrl}/${id}`);
+  // }
 
   update(id: number, data: any) {
-  return this.http.put(`${this.baseUrl}/${id}`, data);
-}
+    return this.http.put(`${this.baseUrl}/${id}`, data);
+  }
 
-
-getById(id: number) {
-  return this.http.get<any>(`${this.baseUrl}/${id}`);
-}
+  getById(id: number) {
+    return this.http.get<any>(`${this.baseUrl}/${id}`);
+  }
 }

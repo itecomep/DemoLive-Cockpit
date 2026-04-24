@@ -21,13 +21,12 @@ import { HeaderComponent } from "../mcv-header/components/header/header.componen
     MatSelectModule,
     MatInputModule,
 
-    HeaderComponent   // ✅ ADD HEADER HERE
+    HeaderComponent, // ✅ ADD HEADER HERE
   ],
   templateUrl: "./project-target.component.html",
   styleUrls: ["./project-target.component.scss"],
 })
 export class ProjectTargetComponent implements OnInit {
-
   isEdit = false;
   editId: number | null = null;
 
@@ -36,11 +35,11 @@ export class ProjectTargetComponent implements OnInit {
   statuses: string[] = [];
   targets: any[] = [];
   editRow: any = {
-  stage: '',
-  stageStatus: '',
-  targetDate: null,
-  feedback: ''
-};
+    stage: "",
+    stageStatus: "",
+    targetDate: null,
+    feedback: "",
+  };
 
   form: any = {
     projectId: null,
@@ -52,7 +51,7 @@ export class ProjectTargetComponent implements OnInit {
 
   constructor(
     private service: ProjectTargetService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -62,7 +61,7 @@ export class ProjectTargetComponent implements OnInit {
 
   // ================= LOAD DATA =================
   loadFormData() {
-    this.service.getFormData().subscribe(res => {
+    this.service.getFormData().subscribe((res) => {
       this.projects = res.projects || [];
       this.stages = res.stages || [];
       this.statuses = res.statuses || [];
@@ -70,7 +69,7 @@ export class ProjectTargetComponent implements OnInit {
   }
 
   loadTargets() {
-    this.service.getAll().subscribe(res => {
+    this.service.getAll().subscribe((res) => {
       this.targets = res || [];
     });
   }
@@ -78,27 +77,27 @@ export class ProjectTargetComponent implements OnInit {
   // ================= NAVIGATION =================
 
   openForm() {
-    this.router.navigate(['/project-target/create']);
+    this.router.navigate(["/project-target/create"]);
   }
 
   edit(item: any) {
-    this.router.navigate(['/project-target/edit', item.id]);
+    this.router.navigate(["/project-target/edit", item.id]);
   }
 
   // ================= ACTIONS =================
 
-  delete(id: number) {
-    if (!confirm("Are you sure you want to delete this record?")) return;
+  // delete(id: number) {
+  //   if (!confirm("Are you sure you want to delete this record?")) return;
 
-    this.service.delete(id).subscribe(() => {
-      this.loadTargets();
-    });
-  }
+  //   this.service.delete(id).subscribe(() => {
+  //     this.loadTargets();
+  //   });
+  // }
 
   // ================= HELPERS =================
 
   getProjectName(id: number): string {
-    const p = this.projects.find(x => x.id === id);
+    const p = this.projects.find((x) => x.id === id);
     return p ? p.title : "id";
   }
 
@@ -111,10 +110,14 @@ export class ProjectTargetComponent implements OnInit {
 
   getStatusClass(status: string): string {
     switch (status) {
-      case "Complete & Generate Invoice": return "status-complete";
-      case "In Progress": return "status-progress";
-      case "On Hold": return "status-hold";
-      default: return "status-default";
+      case "Complete & Generate Invoice":
+        return "status-complete";
+      case "In Progress":
+        return "status-progress";
+      case "On Hold":
+        return "status-hold";
+      default:
+        return "status-default";
     }
   }
 
@@ -122,49 +125,47 @@ export class ProjectTargetComponent implements OnInit {
     return item.id;
   }
 
+  startEdit(row: any) {
+    this.editId = row.id;
 
-startEdit(row: any) {
-  this.editId = row.id;
+    this.editRow = {
+      stage: row.stage,
+      stageStatus: row.stageStatus,
+      targetDate: row.targetDate ? row.targetDate.split("T")[0] : null,
+      feedback: row.feedback,
+    };
 
-  this.editRow = {
-    stage: row.stage,
-    stageStatus: row.stageStatus,
-    targetDate: row.targetDate ? row.targetDate.split('T')[0] : null,
-    feedback: row.feedback
-  };
+    // only for dependent dropdown
+    this.loadStages(row.projectId);
+  }
 
-  // only for dependent dropdown
-  this.loadStages(row.projectId);
-}
-
-// CANCEL EDIT
-cancelEdit() {
-  this.editId = null;
-  this.editRow = {};
-}
-
-// SAVE EDIT
-
-
-saveEdit() {
-  const original = this.targets.find(t => t.id === this.editId);
-
-  const payload = {
-    projectId: original.projectId,   // ✅ KEEP THIS
-    stage: this.editRow.stage,
-    stageStatus: this.editRow.stageStatus,
-    targetDate: this.editRow.targetDate,
-    feedback: this.editRow.feedback
-  };
-
-  this.service.update(this.editId!, payload).subscribe(() => {
+  // CANCEL EDIT
+  cancelEdit() {
     this.editId = null;
-    this.loadTargets();
-  });
-}
-loadStages(projectId: number) {
-  this.service.getStagesByProject(projectId).subscribe((res: any) => {
-    this.stages = res || [];
-  });
-}
+    this.editRow = {};
+  }
+
+  // SAVE EDIT
+
+  saveEdit() {
+    const original = this.targets.find((t) => t.id === this.editId);
+
+    const payload = {
+      projectId: original.projectId, // ✅ KEEP THIS
+      stage: this.editRow.stage,
+      stageStatus: this.editRow.stageStatus,
+      targetDate: this.editRow.targetDate,
+      feedback: this.editRow.feedback,
+    };
+
+    this.service.update(this.editId!, payload).subscribe(() => {
+      this.editId = null;
+      this.loadTargets();
+    });
+  }
+  loadStages(projectId: number) {
+    this.service.getStagesByProject(projectId).subscribe((res: any) => {
+      this.stages = res || [];
+    });
+  }
 }
