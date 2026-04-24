@@ -58,4 +58,8 @@ export class ProjectTargetService {
   return this.http.put(`${this.baseUrl}/${id}`, data);
 }
 
+
+getById(id: number) {
+  return this.http.get<any>(`${this.baseUrl}/${id}`);
+}
 }
