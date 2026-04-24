@@ -188,17 +188,19 @@ export class ProjectTargetComponent implements OnInit {
         String(d.getDate()).padStart(2, "0");
     }
 
-    this.form = {
-      projectId: item.projectId,
-      stage: item.stage,
-      stageStatus: matchedStatus || null,
-      targetDate: formattedDate,
-      feedback: item.feedback,
-    };
+    
 
     this.service.getStagesByProject(item.projectId).subscribe((res) => {
       this.stages = res || [];
     });
+
+    this.form = {
+      projectId: item.projectId,
+       stage: (item.stage || "").trim(),
+      stageStatus: matchedStatus || null,
+      targetDate: formattedDate,
+      feedback: item.feedback,
+    };
   }
 
   getProjectName(id: number): string {
