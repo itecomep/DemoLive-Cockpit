@@ -1,9 +1,7 @@
 <div class="table-container">
-  <!-- 🔥 HEADER -->
   <div class="table-header">
     <h2>🌴 Leaves Requests</h2>
 
-    <!-- ✅ GROUPED SUMMARY -->
     <div class="summary-container">
       <div class="summary-box approved-box">
         <span>Approved 👍</span>
@@ -22,7 +20,6 @@
     </div>
   </div>
 
-  <!-- 🔥 FILTER BAR -->
   <div class="filter-bar">
     <label class="radio-option">
       <input
@@ -46,7 +43,6 @@
       Team Leaders
     </label>
 
-    <!-- SEARCH -->
     <input
       type="text"
       class="search-input"
@@ -55,24 +51,20 @@
       (input)="applyFilters()"
     />
 
-    <!-- START DATE -->
     <input
       type="date"
       [(ngModel)]="filters.startDate"
       (change)="applyFilters()"
     />
 
-    <!-- END DATE -->
     <input
       type="date"
       [(ngModel)]="filters.endDate"
       (change)="applyFilters()"
     />
 
-    <!-- RESET -->
     <button (click)="resetFilters()">Reset</button>
 
-    <!-- MONTH FILTER -->
     <div class="month-tabs">
       <button
         class="month-btn"
@@ -92,24 +84,17 @@
     </div>
   </div>
 
-  <!-- 🔥 TABLE -->
   <table
     mat-table
     [dataSource]="dataSource"
     matSort
     class="mat-elevation-z2 full-table"
   >
-    <!-- EMPLOYEE -->
     <ng-container matColumnDef="employee">
       <th mat-header-cell *matHeaderCellDef mat-sort-header="employee">
         Employee
       </th>
       <td mat-cell *matCellDef="let element">
-        <!-- <div class="emp-cell">
-          <img src="assets/images/user.png" [matTooltip]="element.employeeName" class="user-img" />
-          <span>{{ element.employeeName }}</span>
-        </div> -->
-
         <div class="employee-cell">
           <img
             *ngIf="element.photoUrl; else fallbackAvatar"
@@ -132,7 +117,6 @@
       </td>
     </ng-container>
 
-    <!-- REASON -->
     <ng-container matColumnDef="reason">
       <th mat-header-cell *matHeaderCellDef>Reason</th>
       <td mat-cell *matCellDef="let element">
@@ -152,7 +136,6 @@
       </td>
     </ng-container>
 
-    <!-- TYPE -->
     <ng-container matColumnDef="type">
       <th mat-header-cell *matHeaderCellDef>Leave Type</th>
       <td mat-cell *matCellDef="let element">
@@ -160,7 +143,6 @@
       </td>
     </ng-container>
 
-    <!-- START DATE -->
     <ng-container matColumnDef="start">
       <th mat-header-cell *matHeaderCellDef mat-sort-header="start">
         Start Date
@@ -170,7 +152,6 @@
       </td>
     </ng-container>
 
-    <!-- END DATE -->
     <ng-container matColumnDef="end">
       <th mat-header-cell *matHeaderCellDef mat-sort-header="end">End Date</th>
       <td mat-cell *matCellDef="let element">
@@ -178,7 +159,6 @@
       </td>
     </ng-container>
 
-    <!-- DAYS -->
     <ng-container matColumnDef="total">
       <th mat-header-cell *matHeaderCellDef class="text-center-cell">Days</th>
       <td mat-cell *matCellDef="let element" class="text-center-cell">
@@ -186,12 +166,10 @@
       </td>
     </ng-container>
 
-    <!-- STATUS -->
     <ng-container matColumnDef="status">
       <th mat-header-cell *matHeaderCellDef>Status</th>
       <td mat-cell *matCellDef="let element">
         <div class="status-cell">
-          <!-- PENDING -->
           <ng-container *ngIf="element.statusFlag === 0">
             <button
               class="approve-btn"
@@ -208,23 +186,11 @@
             </button>
           </ng-container>
 
-          <!--          
-          <span *ngIf="element.statusFlag === 1" class="approved">
-            Approved
-          </span>
-
-         
-          <span *ngIf="element.statusFlag === -1" class="rejected">
-            Rejected
-          </span> -->
-
-          <!-- APPROVED -->
           <span *ngIf="element.statusFlag === 1" class="approved">
             <mat-icon class="status-icon">thumb_up</mat-icon>
             Approved
           </span>
 
-          <!-- REJECTED -->
           <span *ngIf="element.statusFlag === -1" class="rejected">
             <mat-icon class="status-icon">thumb_down</mat-icon>
             Rejected
@@ -233,7 +199,6 @@
       </td>
     </ng-container>
 
-    <!-- ATTACHMENT -->
     <ng-container matColumnDef="attachment">
       <th mat-header-cell *matHeaderCellDef class="text-center-cell">
         Attachment
@@ -253,19 +218,16 @@
       </td>
     </ng-container>
 
-    <!-- ROWS -->
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   </table>
 </div>
 
-<!-- 🔥 CV VIEWER MODAL -->
 <ng-template #cvViewerDialog>
   <div class="unique-modal-container">
     <header class="modal-glass-header">
       <div class="header-content">
-        <div class="title-group">
-          <span class="badge">PRO VIEW</span>
+        <div class="title-group">          
           <h3>CV Viewer — {{ selectedEmployeeName }}</h3>
         </div>
 
@@ -273,39 +235,24 @@
           <mat-icon>close</mat-icon>
         </button>
       </div>
-
-      <div class="sub-info">
-        <span><mat-icon>badge</mat-icon> Candidate Document</span>
-        <span class="divider">|</span>
-        <span><mat-icon>verified</mat-icon> Verified Source</span>
-      </div>
     </header>
 
     <div class="workspace-body">
       <div class="accent-bar"></div>
 
-      <!-- <div class="document-container">
-        <iframe *ngIf="selectedCvUrl" [src]="selectedCvUrl" frameborder="0">
-        </iframe>
-      </div> -->
-
       <div class="document-container">
+        <img
+          *ngIf="selectedCvUrl && isImage(rawCvUrl)"
+          [src]="rawCvUrl"
+          class="doc-image"
+        />
 
-  <!-- ✅ IMAGE VIEW -->
-  <img
-    *ngIf="selectedCvUrl && isImage(rawCvUrl)"
-    [src]="rawCvUrl"
-    class="doc-image"
-  />
-
-  <!-- ✅ PDF VIEW -->
-  <iframe
-    *ngIf="selectedCvUrl && isPdf(rawCvUrl)"
-    [src]="selectedCvUrl"
-    frameborder="0"
-  ></iframe>
-
-</div>
+        <iframe
+          *ngIf="selectedCvUrl && isPdf(rawCvUrl)"
+          [src]="selectedCvUrl"
+          frameborder="0"
+        ></iframe>
+      </div>
     </div>
 
     <footer class="modal-action-footer">

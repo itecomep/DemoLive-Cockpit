@@ -35,18 +35,12 @@ export class LeavesComponent implements OnInit, AfterViewInit {
   @ViewChild("cvViewerDialog") cvViewerDialog!: TemplateRef<any>;
   @ViewChild(MatSort) sort!: MatSort;
 
-  // ================= DATA =================
-
   dataSource = new MatTableDataSource<any>([]);
   originalData: any[] = [];
-
-  // ================= VIEWER =================
 
   selectedCvUrl: SafeResourceUrl | null = null;
   rawCvUrl: string = "";
   selectedEmployeeName: string = "";
-
-  // ================= FILTERS =================
 
   activeTab: "all" | "team" = "all";
 
@@ -56,10 +50,7 @@ export class LeavesComponent implements OnInit, AfterViewInit {
     endDate: "",
   };
 
-  // selectedMonthTab: 'current' | 'last' = 'current';
   selectedMonthTab: "none" | "current" | "last" = "none";
-
-  // ================= TABLE =================
 
   displayedColumns: string[] = [
     "employee",
@@ -73,13 +64,11 @@ export class LeavesComponent implements OnInit, AfterViewInit {
   ];
 
   constructor(
-    private contactService: ContactApiService, // ✅ THIS is correct
+    private contactService: ContactApiService,
     private service: HrModuleService,
     private dialog: MatDialog,
     private sanitizer: DomSanitizer,
   ) {}
-
-  // ================= INIT =================
 
   ngOnInit(): void {
     this.loadLeaves();
@@ -88,8 +77,6 @@ export class LeavesComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
   }
-
-  // ================= LOAD ALL =================
 
   loadLeaves() {
     this.service.getLeaves().subscribe((leaves: any[]) => {
@@ -120,8 +107,6 @@ export class LeavesComponent implements OnInit, AfterViewInit {
       });
     });
   }
-
-  // ================= LOAD TEAM LEADERS =================
 
   loadTeamLeaderLeaves() {
     this.service.getContactTeams().subscribe((teams: any[]) => {
@@ -154,8 +139,6 @@ export class LeavesComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // ================= MAP DATA =================
-
   mapLeave(x: any) {
     return {
       id: x.id,
@@ -167,22 +150,18 @@ export class LeavesComponent implements OnInit, AfterViewInit {
       total: x.days,
       statusFlag: x.statusFlag,
       attachmentUrl: x.attachmentUrl || "",
-      photoUrl: x.contact?.photoUrl || "", // 🔥 ADD THIS
+      photoUrl: x.contact?.photoUrl || "",
     };
   }
 
-  // ================= SWITCH FILTER =================
-
   onFilterTypeChange() {
-    // reset filters when switching
     this.filters = {
       employeeName: "",
       startDate: "",
       endDate: "",
     };
 
-    // this.selectedMonthTab = 'current';
-    this.selectedMonthTab = "none"; // ✅ not 'current'
+    this.selectedMonthTab = "none";
 
     if (this.activeTab === "all") {
       this.loadLeaves();
@@ -191,12 +170,9 @@ export class LeavesComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // ================= MAIN FILTER =================
-
   applyFilters() {
     let data = [...this.originalData];
 
-    // 🔹 Employee Search
     if (this.filters.employeeName) {
       data = data.filter((x) =>
         x.employeeName
@@ -205,7 +181,6 @@ export class LeavesComponent implements OnInit, AfterViewInit {
       );
     }
 
-    // 🔹 Date Range
     if (this.filters.startDate && this.filters.endDate) {
       const from = new Date(this.filters.startDate);
       const to = new Date(this.filters.endDate);
@@ -213,26 +188,6 @@ export class LeavesComponent implements OnInit, AfterViewInit {
       data = data.filter((x) => x.start >= from && x.end <= to);
     }
 
-    // 🔹 Month Filter
-    // const now = new Date();
-
-    // if (this.selectedMonthTab === 'current') {
-    //   data = data.filter(x =>
-    //     x.start.getMonth() === now.getMonth() &&
-    //     x.start.getFullYear() === now.getFullYear()
-    //   );
-    // }
-
-    // if (this.selectedMonthTab === 'last') {
-    //   const last = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-
-    //   data = data.filter(x =>
-    //     x.start.getMonth() === last.getMonth() &&
-    //     x.start.getFullYear() === last.getFullYear()
-    //   );
-    // }
-
-    // 🔹 Month Filter (ONLY when selected)
     const now = new Date();
 
     if (this.selectedMonthTab === "current") {
@@ -251,12 +206,8 @@ export class LeavesComponent implements OnInit, AfterViewInit {
       );
     }
 
-    // 🔥 if 'none' → no filtering → ALL data
-
     this.dataSource.data = data;
   }
-
-  // ================= STATUS =================
 
   updateStatus(row: any, status: "Approved" | "Rejected") {
     row.statusFlag = status === "Approved" ? 1 : -1;
@@ -270,8 +221,6 @@ export class LeavesComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // ================= UI =================
-
   openCvViewer(element: any) {
     this.selectedEmployeeName = element.employeeName;
     this.rawCvUrl = element.attachmentUrl;
@@ -281,8 +230,8 @@ export class LeavesComponent implements OnInit, AfterViewInit {
     );
 
     this.dialog.open(this.cvViewerDialog, {
-      width: "950px",
-      height: "95vh",
+      width: "80vw",
+      height: "90vh",
       panelClass: "custom-cv-dialog",
     });
   }
@@ -302,8 +251,7 @@ export class LeavesComponent implements OnInit, AfterViewInit {
       endDate: "",
     };
 
-    // this.selectedMonthTab = 'current';
-    this.selectedMonthTab = "none"; // ✅ reset to ALL
+    this.selectedMonthTab = "none";
     this.applyFilters();
   }
 
@@ -332,10 +280,10 @@ export class LeavesComponent implements OnInit, AfterViewInit {
   }
 
   isImage(url: string): boolean {
-  return url.match(/\.(jpeg|jpg|png|gif|webp)$/i) != null;
-}
+    return url.match(/\.(jpeg|jpg|png|gif|webp)$/i) != null;
+  }
 
-isPdf(url: string): boolean {
-  return url.match(/\.pdf$/i) != null;
-}
+  isPdf(url: string): boolean {
+    return url.match(/\.pdf$/i) != null;
+  }
 }
