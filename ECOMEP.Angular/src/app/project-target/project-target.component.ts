@@ -51,10 +51,6 @@
   expandedRows: { [key: number]: boolean } = {};
   expandedFieldRows: { [key: string]: boolean } = {};
     
-  // Add this to your component.ts
-expandedFeedback: { [key: number]: boolean } = {};
-
-
     constructor(
       private service: ProjectTargetService,
       private router: Router,
@@ -65,11 +61,6 @@ expandedFeedback: { [key: number]: boolean } = {};
       this.loadTargets();
     }
 
-
-    toggleFeedback(event: MouseEvent, id: number) {
-  event.stopPropagation(); // IMPORTANT
-  this.expandedFeedback[id] = !this.expandedFeedback[id];
-}
     // ================= LOAD DATA =================
     loadFormData() {
       this.service.getFormData().subscribe((res) => {
@@ -79,7 +70,26 @@ expandedFeedback: { [key: number]: boolean } = {};
       });
     }
 
-   loadTargets() {
+    // loadTargets() {
+    //   this.service.getAll().subscribe((res) => {
+    //     this.targets = res || [];
+    //   });
+    // }
+
+  //   loadTargets() {
+  //   this.service.getAll().subscribe((res) => {
+  //     this.targets = res || [];
+
+  //     this.targets.forEach(t => {
+  //       if (!t.statusHistory) {
+  //         t.statusHistory = [];
+  //       }
+  //     });
+  //   });
+  // }
+
+
+  loadTargets() {
     this.service.getAll().subscribe((res) => {
       this.targets = res || [];
 
@@ -106,6 +116,17 @@ expandedFeedback: { [key: number]: boolean } = {};
     edit(item: any) {
       this.router.navigate(["/project-target/edit", item.id]);
     }
+
+    // ================= ACTIONS =================
+
+    // delete(id: number) {
+    //   if (!confirm("Are you sure you want to delete this record?")) return;
+
+    //   this.service.delete(id).subscribe(() => {
+    //     this.loadTargets();
+    //   });
+    // }
+
     // ================= HELPERS =================
 
     getProjectName(id: number): string {
@@ -171,6 +192,41 @@ expandedFeedback: { [key: number]: boolean } = {};
     }
 
     // SAVE EDIT
+
+    // saveEdit() {
+    //   const original = this.targets.find((t) => t.id === this.editId);
+
+    //   let fixedDate = null;
+
+    //   if (this.editRow.targetDate) {
+    //     const d = new Date(this.editRow.targetDate);
+
+    //     // ✅ ADD 1 DAY to counter backend timezone shift
+    //     d.setDate(d.getDate() + 1);
+
+    //     fixedDate =
+    //       d.getFullYear() +
+    //       "-" +
+    //       String(d.getMonth() + 1).padStart(2, "0") +
+    //       "-" +
+    //       String(d.getDate()).padStart(2, "0") +
+    //       "T00:00:00";
+    //   }
+
+    //   const payload = {
+    //     projectId: original.projectId,
+    //     stage: this.editRow.stage,
+    //     stageStatus: this.editRow.stageStatus,
+    //     targetDate: fixedDate,
+    //     feedback: this.editRow.feedback,
+    //   };
+
+    //   this.service.update(this.editId!, payload).subscribe(() => {
+    //     this.editId = null;
+    //     this.loadTargets();
+    //   });
+    // }
+
     saveEdit() {
     const original = this.targets.find(t => t.id === this.editId);
 
@@ -218,6 +274,15 @@ expandedFeedback: { [key: number]: boolean } = {};
       });
     }
     
+  // getLatestHistory(row: any, field: string) {
+  //   if (!row.history) return null;
+
+  //   return row.history
+  //     .filter((h: any) => h.fieldName === field)
+  //     .sort((a: any, b: any) =>
+  //       new Date(b.changedOn).getTime() - new Date(a.changedOn).getTime()
+  //     )[0];
+  // }
 
   getLatestStatus(row: any) {
     if (!row?.statusHistory?.length) return null;
