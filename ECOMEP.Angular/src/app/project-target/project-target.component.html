@@ -16,7 +16,8 @@
       <table>
         <thead>
           <tr>
-            <th>ID</th>
+            <th>Sr No</th>
+            <th>Code</th>
             <th>Project</th>
             <th>Stage</th>
             <th>Status</th>
@@ -27,10 +28,10 @@
         </thead>
 
         <tbody>
-          <tr *ngFor="let t of targets; trackBy: trackById">
-
-            <!-- ID -->
-            <td class="id-badge">#{{ t.id }}</td>
+          <tr *ngFor="let t of targets; let i = index; trackBy: trackById">
+            <td>{{ i + 1 }}</td>
+            
+            <td class="id-badge">#{{ t.projectCode || "-" }}</td>
 
             <!-- PROJECT -->
             <td>{{ getProjectName(t.projectId) }}</td>
@@ -55,22 +56,26 @@
             <!-- STATUS -->
             <td>
               <ng-container *ngIf="editId !== t.id; else editStatus">
-
                 <!-- NEW VALUE -->
                 <div class="main-value">
-                  <span class="status-badge" [ngClass]="getStatusClass(t.stageStatus)">
+                  <span
+                    class="status-badge"
+                    [ngClass]="getStatusClass(t.stageStatus)"
+                  >
                     {{ t.stageStatus }}
                   </span>
                 </div>
 
                 <!-- OLD VALUE -->
-                <div class="history-value" *ngIf="getLatestHistory(t, 'StageStatus') as h">
+                <div
+                  class="history-value"
+                  *ngIf="getLatestHistory(t, 'StageStatus') as h"
+                >
                   {{ h.oldValue }}
                   <span class="history-date">
-                    ({{ h.changedOn | date:'dd MMM' }})
+                    ({{ h.changedOn | date: "dd MMM" }})
                   </span>
                 </div>
-
               </ng-container>
 
               <ng-template #editStatus>
@@ -87,20 +92,21 @@
             <!-- TARGET DATE -->
             <td>
               <ng-container *ngIf="editId !== t.id; else editDate">
-
                 <!-- NEW VALUE -->
                 <div class="main-value">
-                  {{ t.targetDate | date: 'dd MMM yyyy' }}
+                  {{ t.targetDate | date: "dd MMM yyyy" }}
                 </div>
 
                 <!-- OLD VALUE -->
-                <div class="history-value" *ngIf="getLatestHistory(t, 'TargetDate') as h">
-                  {{ h.oldValue | date: 'dd MMM yyyy' }}
+                <div
+                  class="history-value"
+                  *ngIf="getLatestHistory(t, 'TargetDate') as h"
+                >
+                  {{ h.oldValue | date: "dd MMM yyyy" }}
                   <span class="history-date">
-                    ({{ h.changedOn | date:'dd MMM' }})
+                    ({{ h.changedOn | date: "dd MMM" }})
                   </span>
                 </div>
-
               </ng-container>
 
               <ng-template #editDate>
@@ -111,20 +117,21 @@
             <!-- FEEDBACK -->
             <td>
               <ng-container *ngIf="editId !== t.id; else editFeedback">
-
                 <!-- NEW VALUE -->
                 <div class="main-value">
-                  {{ t.feedback || '-' }}
+                  {{ t.feedback || "-" }}
                 </div>
 
                 <!-- OLD VALUE -->
-                <div class="history-value" *ngIf="getLatestHistory(t, 'Feedback') as h">
+                <div
+                  class="history-value"
+                  *ngIf="getLatestHistory(t, 'Feedback') as h"
+                >
                   {{ h.oldValue }}
                   <span class="history-date">
-                    ({{ h.changedOn | date:'dd MMM' }})
+                    ({{ h.changedOn | date: "dd MMM" }})
                   </span>
                 </div>
-
               </ng-container>
 
               <ng-template #editFeedback>
