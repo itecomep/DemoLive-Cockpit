@@ -34,16 +34,16 @@
 }
 
 /* ================= TABLE ================= */
-.table-wrapper {
-  overflow-x: auto;
-}
+// .table-wrapper {
+//   overflow-x: auto;
+// }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 900px;
-  table-layout: fixed; /* ✅ FIX ALIGNMENT */
-}
+// table {
+//   width: 100%;
+//   border-collapse: collapse;
+//   min-width: 900px;
+//   table-layout: fixed; /* ✅ FIX ALIGNMENT */
+// }
 
 /* HEADER */
 thead {
@@ -279,19 +279,424 @@ td:nth-child(2) {
 
 
 
+// .main-value {
+//   font-weight: 600;
+//   color: #222;
+// }
+
+// .history-value {
+//   font-size: 12px;
+//   color: #888;
+//   margin-top: 3px;
+// }
+
+// .history-date {
+//   font-size: 11px;
+//   color: #bbb;
+//   margin-left: 4px;
+// }
+
+
+// .main-value {
+//   display: flex;
+//   align-items: center;
+//   gap: 8px;
+// }
+
+// /* Only show pointer if the class is present */
+// .clickable-status {
+//   cursor: pointer;
+  
+//   &:hover .status-badge {
+//     filter: brightness(0.9);
+//   }
+// }
+
+// .dropdown-arrow {
+//   font-size: 9px;
+//   color: #888;
+//   transition: transform 0.2s ease;
+  
+//   &.rotated {
+//     transform: rotate(180deg);
+//   }
+// }
+
+// .history-dropdown {
+//   position: absolute;
+//   background: #ffffff;
+//   border: 1px solid #e0e0e0;
+//   border-radius: 6px;
+//   padding: 10px;
+//   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+//   z-index: 999; /* Ensure it floats above other rows */
+//   min-width: 180px;
+//   margin-top: 4px;
+
+//   .history-item {
+//     display: flex;
+//     justify-content: space-between;
+//     font-size: 11px;
+//     padding: 5px 0;
+//     border-bottom: 1px solid #f5f5f5;
+
+//     &:last-child {
+//       border-bottom: none;
+//     }
+
+//     .old-val { font-weight: 500; color: #444; }
+//     .history-date { color: #999; }
+//   }
+// }
+
+// /* Parent cell needs this for absolute positioning of dropdown */
+// td {
+//   position: relative;
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// /* The container now stays inside the page flow */
+// .history-inline {
+//   position: relative; /* Change from absolute to relative */
+//   display: block;
+//   width: 100%;
+//   background: #f9f9f9; /* Light background to separate from row */
+//   border-left: 2px solid #ddd;
+//   margin-top: 8px;
+//   border-radius: 4px;
+//   padding: 5px;
+//   overflow: hidden;
+// }
+
+// .history-scroll {
+//   max-height: 150px; /* Optional: adds a scrollbar if history is very long */
+//   overflow-y: auto;
+// }
+
+// .history-item {
+//   display: flex;
+//   flex-direction: column; /* Stacks status and date like your image */
+//   padding: 4px 8px;
+//   border-bottom: 1px solid #eee;
+//   font-size: 11px;
+
+//   &:last-child {
+//     border-bottom: none;
+//   }
+// }
+
+// .old-val {
+//   color: #333;
+//   font-weight: 500;
+// }
+
+// .history-date {
+//   color: #888;
+// }
+
+// /* Ensure the table cell aligns content to the top */
+// td {
+//   vertical-align: top !important;
+//   position: relative;
+// }
+
+
+
+// // .dropdown-arrow {
+// //   display: inline-block;
+// //   font-size: 10px;
+// //   color: #888;
+// //   margin-left: 8px;
+// //   transition: transform 0.2s ease-in-out;
+  
+// //   /* Pointing RIGHT by default */
+// //   transform: rotate(0deg); 
+
+// //   &.rotated {
+// //     /* Pointing DOWN when history is open */
+// //     transform: rotate(90deg); 
+// //     color: #222; /* Optional: Make it darker when open */
+// //   }
+// // }
+
+// // .clickable-status {
+// //   cursor: pointer;
+// //   display: flex;
+// //   align-items: center;
+  
+// //   &:hover {
+// //     opacity: 0.8;
+// //   }
+// // }
+
+
+// // .dropdown-arrow {
+// //   display: inline-block;
+// //   font-size: 10px;
+// //   color: #888;
+// //   margin-left: 8px;
+// //   transition: transform 0.2s ease-in-out;
+  
+// //   /* --- ADD THESE 4 LINES TO REMOVE THE BLUE --- */
+// //   user-select: none;                 /* Prevents the blue selection box */
+// //   -webkit-user-select: none;          /* Safari support */
+// //   background-color: transparent !important; /* Ensures no background color */
+// //   -webkit-tap-highlight-color: transparent; /* Removes blue flash on mobile */
+
+// //   /* Pointing RIGHT by default */
+// //   transform: rotate(0deg); 
+
+// //   &.rotated {
+// //     /* Pointing DOWN when history is open */
+// //     transform: rotate(90deg); 
+// //     color: #222; 
+// //   }
+// // }
+
+
+// .dropdown-arrow {
+//   /* ... your existing properties ... */
+//   display: inline-flex;       /* Helps with alignment and click-area */
+//   align-items: center;
+//   justify-content: center;
+  
+//   /* --- THE KILLER STYLES FOR THE BLUE BOX --- */
+//   background: transparent !important;
+//   outline: none !important;             /* Removes the focus border */
+//   box-shadow: none !important;          /* Removes any glow */
+//   -webkit-tap-highlight-color: transparent !important; /* Fixes Chrome/Safari blue flash */
+//   -webkit-touch-callout: none;          /* Fixes long-press menu on mobile */
+//   user-select: none;                    /* Prevents text selection */
+  
+//   /* Ensure no inherited border from a global style */
+//   border: none !important;
+// }
+
+// /* Add this to the parent div as well */
+// .main-value {
+//   -webkit-tap-highlight-color: transparent;
+//   outline: none;
+// }
+
+// /* Also apply to the parent container to be safe */
+// .clickable-status {
+//   user-select: none;
+//   outline: none;
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+/* Parent Cell Alignment */
+td {
+  vertical-align: top !important; /* Keeps row data at the top when history expands */
+  position: relative;
+}
+
 .main-value {
-  font-weight: 600;
-  color: #222;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none; /* Stops the blue highlight on text */
+  -webkit-tap-highlight-color: transparent; /* Stops blue flash on click */
+  outline: none;
 }
 
-.history-value {
-  font-size: 12px;
+.clickable-status {
+  cursor: pointer;
+  &:hover { opacity: 0.8; }
+}
+
+.dropdown-arrow {
+  display: inline-block;
+  font-size: 10px;
   color: #888;
-  margin-top: 3px;
+  transition: transform 0.2s ease-in-out;
+  
+  /* Pointing RIGHT by default */
+  transform: rotate(0deg); 
+
+  /* --- ANTI-BLUE BOX STYLES --- */
+  background-color: transparent !important;
+  user-select: none !important;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
+
+  &.rotated {
+    /* Pointing DOWN when open */
+    transform: rotate(90deg); 
+    color: #222; 
+  }
 }
 
-.history-date {
-  font-size: 11px;
-  color: #bbb;
-  margin-left: 4px;
+.history-inline {
+  display: block;
+  width: 100%;
+  background: #f9f9f9;
+  border-left: 2px solid #ddd;
+  margin-top: 8px;
+  border-radius: 4px;
+  padding: 5px;
 }
+
+.history-item {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 8px;
+  border-bottom: 1px solid #eee;
+  font-size: 11px;
+  &:last-child { border-bottom: none; }
+  
+  .old-val { color: #333; font-weight: 500; }
+  .history-date { color: #888; }
+}
+
+.main-value {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  cursor: pointer;
+
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+
+  user-select: none;
+  -webkit-user-select: none;
+
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+.main-value:focus,
+.main-value:active,
+.main-value:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.dropdown-arrow {
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ================= TABLE STRUCTURE ================= */
+.table-wrapper {
+  overflow-x: auto;
+  background: #fff;
+  border-radius: 8px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  /* Fixed layout ensures cells stay under headers */
+  table-layout: fixed; 
+  min-width: 1000px; /* Adjust based on total columns */
+}
+
+th, td {
+  padding: 12px 15px;
+  text-align: left;
+  vertical-align: top; /* Keeps row content aligned to top during history expansion */
+  word-wrap: break-word; /* Prevents long text from pushing column widths */
+}
+
+/* ================= COLUMN WIDTH DEFINITIONS ================= */
+/* Define specific widths for each column to ensure alignment */
+
+th:nth-child(1), td:nth-child(1) { width: 60px; }   /* ID */
+th:nth-child(2), td:nth-child(2) { width: 180px; }  /* Project */
+th:nth-child(3), td:nth-child(3) { width: 130px; }  /* Stage */
+th:nth-child(4), td:nth-child(4) { width: 150px; }  /* Status */
+th:nth-child(5), td:nth-child(5) { width: 150px; }  /* Target Date */
+th:nth-child(6), td:nth-child(6) { width: 200px; }  /* Feedback */
+th:nth-child(7), td:nth-child(7) { width: 130px; }  /* Action */
+
+/* ================= CONTENT STYLING ================= */
+
+/* Truncate long text in Feedback to keep row height sane */
+.text-truncate-custom {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Ensure form fields don't break column width */
+mat-form-field, .form-control {
+  width: 100% !important;
+  max-width: 100%;
+}
+
+input[type="date"], input[type="text"] {
+  box-sizing: border-box; /* Crucial for width: 100% */
+  width: 100%;
+}
+
+.main-value {
+  display: flex;
+  align-items: flex-start; /* Align arrow to the top of the text */
+  gap: 8px;
+  cursor: pointer;
+  
+  /* Add these lines */
+  white-space: normal;       /* Allows text to go to line 2, 3, etc. */
+  word-break: break-all;     /* Forces "hhhhh" to break if it hits the wall */
+  overflow: visible;         /* Ensures text isn't hidden */
+  text-overflow: clip;       /* Removes the three dots */
+}
+
+/* Fix the specific feedback div you added inline styles to earlier */
+.main-value div {
+  max-width: 100%; 
+  overflow: visible !important; 
+  text-overflow: clip !important; 
+  white-space: normal !important;
+}
+
+
+

@@ -6,12 +6,12 @@
 
         public int ProjectTargetId { get; set; }
 
-        public string FieldName { get; set; }   // TargetDate / StageStatus / Feedback
+        public string? FieldName { get; set; }   // TargetDate / StageStatus / Feedback
 
-        public string OldValue { get; set; }
-        public string NewValue { get; set; }
+        public string? OldValue { get; set; }
+        public string? NewValue { get; set; }
 
-        public DateTime ChangedOn { get; set; } = DateTime.Now;
+        public DateTime? ChangedOn { get; set; } = DateTime.Now;
 
         public ProjectTarget ProjectTarget { get; set; }
     }
