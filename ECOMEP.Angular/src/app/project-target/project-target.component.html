@@ -1,39 +1,55 @@
 <app-header title="Project Target"></app-header>
 
 <div class="page-wrapper">
-
   <!-- TOP ACTION BAR -->
   <div class="page-actions">
-    <button class="primary-btn" (click)="openForm()">
-      + Create Target
-    </button>
+    <button class="primary-btn" (click)="openForm()">+ Create Target</button>
   </div>
 
   <!-- CARD -->
   <div class="card">
-
     <div class="table-wrapper">
       <table>
         <thead>
+
+          <!-- <th>ID</th>
+
+              <th>Project</th>
+              <th>Stage</th>
+              <th>Status</th>
+              <th>Target Date</th>
+              <th>Feedback</th>
+              <th class="action-col">Action</th>
+            </tr> -->
+
           <tr>
-            <th>ID</th>
+            <th>Sr No</th>
+            <th>Code</th>
             <th>Project</th>
             <th>Stage</th>
             <th>Status</th>
             <th>Target Date</th>
             <th>Feedback</th>
-            <th class="action-col">Action</th>
+            <th>Action</th>
           </tr>
         </thead>
 
         <tbody>
-          <tr *ngFor="let t of targets; trackBy: trackById">
+          <tr *ngFor="let t of targets; let i = index; trackBy: trackById">
+            <!-- <tr *ngFor="let t of targets; trackBy: trackById"> -->
 
-            <!-- ID -->
-            <td class="id-badge">#{{ t.id }}</td>
 
-            <!-- PROJECT -->
+            <!-- <td class="id-badge">#{{ t.id }}</td>
+
+           
+              <td>{{ getProjectName(t.projectId) }}</td> -->
+
+            <td>{{ i + 1 }}</td>
+
+            <td class="id-badge">#{{ t.projectCode || t.id }}</td>
+
             <td>{{ getProjectName(t.projectId) }}</td>
+
 
             <!-- STAGE -->
             <td>
@@ -130,17 +146,13 @@
 
                 <div class="feedback-wrapper">
 
-                  <!-- TOP ROW: TEXT + ARROW -->
+                  <!-- TEXT + ARROW -->
                   <div class="feedback-top">
 
-                    <!-- FEEDBACK TEXT -->
                     <div class="feedback-text" [class.expanded]="expandedFeedback[t.id]">
-
                       {{ t.feedback || '-' }}
-
                     </div>
 
-                    <!-- DROPDOWN ARROW -->
                     <span class="dropdown-arrow" *ngIf="t.history?.length"
                       (click)="toggleFieldHistory(t.id, 'Feedback'); $event.stopPropagation()"
                       [class.rotated]="expandedFieldRows[t.id + '_Feedback']">
@@ -149,33 +161,26 @@
 
                   </div>
 
-                  <!-- ACTION ROW -->
+                  <!-- SHOW MORE -->
                   <div class="feedback-actions">
-
-                    <!-- SHOW MORE / LESS -->
                     <a class="show-more" *ngIf="t.feedback && t.feedback.length > 80"
                       (click)="toggleFeedback($event, t.id)">
                       {{ expandedFeedback[t.id] ? 'Show less' : 'Show more' }}
                     </a>
-
                   </div>
 
                 </div>
 
                 <!-- HISTORY -->
                 <div class="history-inline" *ngIf="expandedFieldRows[t.id + '_Feedback'] && t.history?.length">
-
                   <div class="history-scroll">
                     <div class="history-item" *ngFor="let h of getFieldHistory(t.history, 'Feedback')">
-
                       <span class="old-val">{{ h.oldValue || 'N/A' }}</span>
                       <span class="history-date">
                         ({{ h.changedOn | date:'dd MMM yyyy' }})
                       </span>
-
                     </div>
                   </div>
-
                 </div>
 
               </ng-container>
@@ -184,7 +189,6 @@
                 <input type="text" [(ngModel)]="editRow.feedback" class="form-control" />
               </ng-template>
             </td>
-
             <!-- ACTION -->
             <td class="actions">
               <ng-container *ngIf="editId !== t.id; else editActions">
@@ -193,21 +197,21 @@
 
               <ng-template #editActions>
                 <button class="primary-btn" (click)="saveEdit()">Save</button>
-                <button class="secondary-btn" (click)="cancelEdit()">Cancel</button>
+                <button class="secondary-btn" (click)="cancelEdit()">
+                  Cancel
+                </button>
               </ng-template>
             </td>
-
           </tr>
 
+          <!-- <tr *ngIf="targets.length === 0">
+              <td colspan="7" class="no-data">No history records found</td>
+            </tr> -->
           <tr *ngIf="targets.length === 0">
-            <td colspan="7" class="no-data">
-              No history records found
-            </td>
+            <td colspan="8" class="no-data">No history records found</td>
           </tr>
         </tbody>
-
       </table>
     </div>
-
   </div>
 </div>
