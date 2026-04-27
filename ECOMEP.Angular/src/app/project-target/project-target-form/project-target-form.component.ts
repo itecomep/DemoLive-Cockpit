@@ -108,8 +108,13 @@ export class ProjectTargetFormComponent implements OnInit {
 
   // ================= SAVE =================
   save() {
-    if (!this.form.projectId || !this.form.stage || !this.form.stageStatus) {
-      alert("Please fill required fields");
+    if (
+      !this.form.projectId ||
+      !this.form.stage ||
+      !this.form.stageStatus ||
+      !this.form.targetDate
+    ) {
+      alert("Please fill all required fields");
       return;
     }
 
@@ -138,5 +143,11 @@ export class ProjectTargetFormComponent implements OnInit {
     return this.targets?.some(
       (t: any) => t.projectId === this.form.projectId && t.stage === stageTitle,
     );
+  }
+
+  onStageChange() {
+    if (this.form.stage) {
+      this.form.stageStatus = "Yet to Start";
+    }
   }
 }

@@ -25,7 +25,11 @@
       <!-- Stage -->
       <h3>Stage</h3>
       <mat-form-field appearance="outline" class="full-width">
-        <mat-select [(ngModel)]="form.stage" [disabled]="!form.projectId">
+        <mat-select
+          [(ngModel)]="form.stage"
+          [disabled]="!form.projectId"
+          (selectionChange)="onStageChange()"
+        >
           <mat-option value="">Select Stage</mat-option>
           <mat-option
             *ngFor="let s of stages"
