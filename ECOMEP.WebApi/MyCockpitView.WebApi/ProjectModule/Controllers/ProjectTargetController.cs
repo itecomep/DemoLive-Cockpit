@@ -17,16 +17,48 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
             _db = db;
         }
 
+        //// ✅ GET ALL
+        //[HttpGet]
+        //public async Task<IActionResult> Get()
+        //{
+        //    var today = DateTime.Today;
+
+        //    var data = await _db.ProjectTargets
+        //        .Where(x => !x.IsDeleted)
+        //        .ToListAsync();
+
+        //    foreach (var item in data)
+        //    {
+        //        if (item.TargetDate.HasValue &&
+        //            item.TargetDate.Value.Date < today &&
+        //            item.StageStatus != "Complete & Generate Invoice")
+        //        {
+        //            // 🔥 FIXED: prevent timezone shift
+        //            item.TargetDate = DateTime.SpecifyKind(
+        //                today.AddDays(15).Date,
+        //                DateTimeKind.Unspecified
+        //            );
+
+        //            item.ModifiedDate = DateTime.Now;
+        //        }
+        //    }
+
+        //    await _db.SaveChangesAsync();
+
+        //    return Ok(data.OrderByDescending(x => x.CreatedDate));
+        //}
+
+
+
+        // ✅ CREATE
         [HttpPost]
         public async Task<IActionResult> Create(ProjectTargetDto dto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var project = await _db.Projects.FindAsync(dto.ProjectId);
             if (project == null)
                 return BadRequest("Project not found");
 
+            // 🔹 First time entry rule
             var existing = await _db.ProjectTargets
                 .Where(x => x.ProjectId == dto.ProjectId && !x.IsDeleted)
                 .OrderBy(x => x.CreatedDate)
@@ -42,6 +74,7 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
                 ProjectId = dto.ProjectId,
                 Stage = dto.Stage,
 
+                // 🔥 FIXED: timezone-safe date
                 TargetDate = dto.TargetDate.HasValue
                     ? DateTime.SpecifyKind(dto.TargetDate.Value.Date, DateTimeKind.Unspecified)
                     : null,
@@ -52,6 +85,7 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
                 IsDeleted = false
             };
 
+            // 🔥 Prevent duplicate completed stage
             var alreadyCompleted = await _db.ProjectTargets
                 .AnyAsync(x =>
                     x.ProjectId == dto.ProjectId &&
@@ -70,17 +104,16 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
             return Ok(entity);
         }
 
+        // ✅ UPDATE
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, ProjectTargetDto dto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var entity = await _db.ProjectTargets.FindAsync(id);
             if (entity == null) return NotFound();
 
             var histories = new List<ProjectTargetHistory>();
 
+            // ================= TARGET DATE =================
             if (dto.TargetDate.HasValue &&
                 entity.TargetDate?.Date != dto.TargetDate.Value.Date)
             {
@@ -98,6 +131,7 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
                 );
             }
 
+            // ================= STATUS =================
             if (dto.StageStatus != entity.StageStatus)
             {
                 histories.Add(new ProjectTargetHistory
@@ -111,6 +145,7 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
                 entity.StageStatus = dto.StageStatus;
             }
 
+            // ================= FEEDBACK =================
             if (dto.Feedback != entity.Feedback)
             {
                 histories.Add(new ProjectTargetHistory
@@ -124,8 +159,10 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
                 entity.Feedback = dto.Feedback;
             }
 
+            // ❌ DO NOT TOUCH STAGE OR PROJECT unless needed
             entity.Stage = dto.Stage;
             entity.ProjectId = dto.ProjectId;
+
             entity.ModifiedDate = DateTime.Now;
 
             if (histories.Any())
@@ -138,21 +175,22 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
             return Ok(entity);
         }
 
-        ////DELETE (Soft Delete)
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> Delete(int id)
-        //{
-        //    var item = await _db.ProjectTargets.FindAsync(id);
-        //    if (item == null) return NotFound();
+        // ✅ DELETE (Soft Delete)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var item = await _db.ProjectTargets.FindAsync(id);
+            if (item == null) return NotFound();
 
-        //    item.IsDeleted = true;
-        //    item.ModifiedDate = DateTime.Now;
+            item.IsDeleted = true;
+            item.ModifiedDate = DateTime.Now;
 
-        //    await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync();
 
-        //    return Ok();
-        //}
+            return Ok();
+        }
 
+        // ✅ FORM DATA
         [HttpGet("form-data")]
         public async Task<IActionResult> GetFormData(int? projectId = null)
         {
@@ -182,6 +220,7 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
             });
         }
 
+        // ✅ GET STAGES BY PROJECT
         [HttpGet("stages/{projectId}")]
         public async Task<IActionResult> GetStagesByProject(int projectId)
         {
@@ -193,16 +232,21 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
             return Ok(stages);
         }
 
+
+
+
+
+
         [HttpGet]
         public async Task<IActionResult> Get()
         {
             var today = DateTime.Today;
 
             var data = await _db.ProjectTargets
-                .Include(x => x.Project)
                 .Where(x => !x.IsDeleted)
                 .ToListAsync();
 
+            // 🔥 EXISTING LOGIC (Auto extend expired date)
             foreach (var item in data)
             {
                 if (item.TargetDate.HasValue &&
@@ -220,25 +264,28 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
 
             await _db.SaveChangesAsync();
 
+            // 🔥 ADD HISTORY WITH EACH RECORD
             var result = data
                 .OrderByDescending(x => x.CreatedDate)
                 .Select(x => new
                 {
                     x.Id,
                     x.ProjectId,
-                    ProjectCode = x.Project.Code, 
                     x.Stage,
                     x.TargetDate,
                     x.StageStatus,
                     x.Feedback,
 
                     history = _db.ProjectTargetHistories
-                 .Where(h => h.ProjectTargetId == x.Id)
+                        .Where(h => h.ProjectTargetId == x.Id)
                         .OrderByDescending(h => h.ChangedOn)
                         .ToList()
                 });
 
             return Ok(result);
         }
+
+
+
     }
 }

@@ -11,6 +11,17 @@
     <div class="table-wrapper">
       <table>
         <thead>
+
+          <!-- <th>ID</th>
+
+              <th>Project</th>
+              <th>Stage</th>
+              <th>Status</th>
+              <th>Target Date</th>
+              <th>Feedback</th>
+              <th class="action-col">Action</th>
+            </tr> -->
+
           <tr>
             <th>Sr No</th>
             <th>Code</th>
@@ -25,6 +36,14 @@
 
         <tbody>
           <tr *ngFor="let t of targets; let i = index; trackBy: trackById">
+            <!-- <tr *ngFor="let t of targets; trackBy: trackById"> -->
+
+
+            <!-- <td class="id-badge">#{{ t.id }}</td>
+
+           
+              <td>{{ getProjectName(t.projectId) }}</td> -->
+
             <td>{{ i + 1 }}</td>
 
             <td class="id-badge">#{{ t.projectCode || t.id }}</td>
@@ -152,7 +171,7 @@
 
                 </div>
 
-                <!-- HISTORY (ONLY ONCE) -->
+                <!-- HISTORY -->
                 <div class="history-inline" *ngIf="expandedFieldRows[t.id + '_Feedback'] && t.history?.length">
                   <div class="history-scroll">
                     <div class="history-item" *ngFor="let h of getFieldHistory(t.history, 'Feedback')">
@@ -185,6 +204,9 @@
             </td>
           </tr>
 
+          <!-- <tr *ngIf="targets.length === 0">
+              <td colspan="7" class="no-data">No history records found</td>
+            </tr> -->
           <tr *ngIf="targets.length === 0">
             <td colspan="8" class="no-data">No history records found</td>
           </tr>
