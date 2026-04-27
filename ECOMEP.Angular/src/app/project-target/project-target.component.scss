@@ -33,18 +33,6 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-/* ================= TABLE ================= */
-// .table-wrapper {
-//   overflow-x: auto;
-// }
-
-// table {
-//   width: 100%;
-//   border-collapse: collapse;
-//   min-width: 900px;
-//   table-layout: fixed; /* ✅ FIX ALIGNMENT */
-// }
-
 /* HEADER */
 thead {
   background: #4caf50;
@@ -76,40 +64,6 @@ td {
   font-weight: 600;
   color: #111827;
 }
-
-/* ================= STATUS ================= */
-// .status-badge {
-//   display: inline-flex;
-//   align-items: center;
-//   padding: 4px 10px;
-//   border-radius: 20px;
-//   font-size: 12px;
-//   font-weight: 600;
-//   white-space: nowrap;
-// }
-
-// .status-complete {
-//   background: #e8f5e9;
-//   color: #2e7d32;
-// }
-
-// .status-progress {
-//   background: #fff8e1;
-//   color: #f57c00;
-// }
-
-// .status-hold {
-//   background: #ffebee;
-//   color: #c62828;
-// }
-
-// .status-default {
-//   background: #f1f5f9;
-//   color: #374151;
-// }
-
-
-
 
 /* ================= STATUS (TEXT ONLY) ================= */
 .status-badge {
@@ -274,244 +228,6 @@ td:nth-child(2) {
   display: none;
 }
 
-
-
-
-
-
-// .main-value {
-//   font-weight: 600;
-//   color: #222;
-// }
-
-// .history-value {
-//   font-size: 12px;
-//   color: #888;
-//   margin-top: 3px;
-// }
-
-// .history-date {
-//   font-size: 11px;
-//   color: #bbb;
-//   margin-left: 4px;
-// }
-
-
-// .main-value {
-//   display: flex;
-//   align-items: center;
-//   gap: 8px;
-// }
-
-// /* Only show pointer if the class is present */
-// .clickable-status {
-//   cursor: pointer;
-  
-//   &:hover .status-badge {
-//     filter: brightness(0.9);
-//   }
-// }
-
-// .dropdown-arrow {
-//   font-size: 9px;
-//   color: #888;
-//   transition: transform 0.2s ease;
-  
-//   &.rotated {
-//     transform: rotate(180deg);
-//   }
-// }
-
-// .history-dropdown {
-//   position: absolute;
-//   background: #ffffff;
-//   border: 1px solid #e0e0e0;
-//   border-radius: 6px;
-//   padding: 10px;
-//   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-//   z-index: 999; /* Ensure it floats above other rows */
-//   min-width: 180px;
-//   margin-top: 4px;
-
-//   .history-item {
-//     display: flex;
-//     justify-content: space-between;
-//     font-size: 11px;
-//     padding: 5px 0;
-//     border-bottom: 1px solid #f5f5f5;
-
-//     &:last-child {
-//       border-bottom: none;
-//     }
-
-//     .old-val { font-weight: 500; color: #444; }
-//     .history-date { color: #999; }
-//   }
-// }
-
-// /* Parent cell needs this for absolute positioning of dropdown */
-// td {
-//   position: relative;
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// /* The container now stays inside the page flow */
-// .history-inline {
-//   position: relative; /* Change from absolute to relative */
-//   display: block;
-//   width: 100%;
-//   background: #f9f9f9; /* Light background to separate from row */
-//   border-left: 2px solid #ddd;
-//   margin-top: 8px;
-//   border-radius: 4px;
-//   padding: 5px;
-//   overflow: hidden;
-// }
-
-// .history-scroll {
-//   max-height: 150px; /* Optional: adds a scrollbar if history is very long */
-//   overflow-y: auto;
-// }
-
-// .history-item {
-//   display: flex;
-//   flex-direction: column; /* Stacks status and date like your image */
-//   padding: 4px 8px;
-//   border-bottom: 1px solid #eee;
-//   font-size: 11px;
-
-//   &:last-child {
-//     border-bottom: none;
-//   }
-// }
-
-// .old-val {
-//   color: #333;
-//   font-weight: 500;
-// }
-
-// .history-date {
-//   color: #888;
-// }
-
-// /* Ensure the table cell aligns content to the top */
-// td {
-//   vertical-align: top !important;
-//   position: relative;
-// }
-
-
-
-// // .dropdown-arrow {
-// //   display: inline-block;
-// //   font-size: 10px;
-// //   color: #888;
-// //   margin-left: 8px;
-// //   transition: transform 0.2s ease-in-out;
-  
-// //   /* Pointing RIGHT by default */
-// //   transform: rotate(0deg); 
-
-// //   &.rotated {
-// //     /* Pointing DOWN when history is open */
-// //     transform: rotate(90deg); 
-// //     color: #222; /* Optional: Make it darker when open */
-// //   }
-// // }
-
-// // .clickable-status {
-// //   cursor: pointer;
-// //   display: flex;
-// //   align-items: center;
-  
-// //   &:hover {
-// //     opacity: 0.8;
-// //   }
-// // }
-
-
-// // .dropdown-arrow {
-// //   display: inline-block;
-// //   font-size: 10px;
-// //   color: #888;
-// //   margin-left: 8px;
-// //   transition: transform 0.2s ease-in-out;
-  
-// //   /* --- ADD THESE 4 LINES TO REMOVE THE BLUE --- */
-// //   user-select: none;                 /* Prevents the blue selection box */
-// //   -webkit-user-select: none;          /* Safari support */
-// //   background-color: transparent !important; /* Ensures no background color */
-// //   -webkit-tap-highlight-color: transparent; /* Removes blue flash on mobile */
-
-// //   /* Pointing RIGHT by default */
-// //   transform: rotate(0deg); 
-
-// //   &.rotated {
-// //     /* Pointing DOWN when history is open */
-// //     transform: rotate(90deg); 
-// //     color: #222; 
-// //   }
-// // }
-
-
-// .dropdown-arrow {
-//   /* ... your existing properties ... */
-//   display: inline-flex;       /* Helps with alignment and click-area */
-//   align-items: center;
-//   justify-content: center;
-  
-//   /* --- THE KILLER STYLES FOR THE BLUE BOX --- */
-//   background: transparent !important;
-//   outline: none !important;             /* Removes the focus border */
-//   box-shadow: none !important;          /* Removes any glow */
-//   -webkit-tap-highlight-color: transparent !important; /* Fixes Chrome/Safari blue flash */
-//   -webkit-touch-callout: none;          /* Fixes long-press menu on mobile */
-//   user-select: none;                    /* Prevents text selection */
-  
-//   /* Ensure no inherited border from a global style */
-//   border: none !important;
-// }
-
-// /* Add this to the parent div as well */
-// .main-value {
-//   -webkit-tap-highlight-color: transparent;
-//   outline: none;
-// }
-
-// /* Also apply to the parent container to be safe */
-// .clickable-status {
-//   user-select: none;
-//   outline: none;
-// }
-
-
-
-
-
-
-
-
-
-
-
-
 /* Parent Cell Alignment */
 td {
   vertical-align: top !important; /* Keeps row data at the top when history expands */
@@ -608,20 +324,6 @@ td {
   box-shadow: none !important;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* ================= TABLE STRUCTURE ================= */
 .table-wrapper {
   overflow-x: auto;
@@ -700,3 +402,92 @@ input[type="date"], input[type="text"] {
 
 
 
+.feedback-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.feedback-text {
+  max-height: 42px; /* ~2 lines */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: max-height 0.2s ease;
+  white-space: normal;
+}
+
+.feedback-text.expanded {
+  max-height: 200px;
+}
+
+.feedback-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.show-more {
+  font-size: 12px;
+  color: #4caf50;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.show-more:hover {
+  text-decoration: underline;
+}
+
+
+
+
+
+.history-scroll {
+  max-height: 120px;      /* adjust as needed */
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 6px;
+}
+
+/* optional: nicer scrollbar */
+.history-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.history-scroll::-webkit-scrollbar-thumb {
+  background: #c5c5c5;
+  border-radius: 10px;
+}
+
+.history-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+
+.feedback-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.feedback-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.feedback-text {
+  flex: 1;
+  max-height: 42px;
+  overflow: hidden;
+}
+
+.feedback-text.expanded {
+  max-height: 200px;
+}
+
+.dropdown-arrow {
+  cursor: pointer;
+  font-size: 12px;
+  user-select: none;
+}
