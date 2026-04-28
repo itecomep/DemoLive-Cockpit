@@ -109,18 +109,33 @@ th:nth-child(8), td:nth-child(8) { width: 90px; }
   border-left: 3px solid #22c55e;
   border-radius: 6px;
   padding: 6px 8px;
-  width: fit-content;
-  min-width: 220px;
+
+  width: 100%;          
+  max-width: 100%;      
+  box-sizing: border-box;
+}
+
+
+td {
+  overflow: hidden;     
 }
 
 .history-scroll {
-  max-height: 70px;
+  max-height: 80px;
   overflow-y: auto;
+  padding-right: 4px;
 }
 
 .history-item {
   font-size: 12px;
-  margin-bottom: 3px;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #eee;
+}
+
+.history-item:last-child {
+  margin-bottom: 0;
+  border-bottom: none;
 }
 
 .old-val {
