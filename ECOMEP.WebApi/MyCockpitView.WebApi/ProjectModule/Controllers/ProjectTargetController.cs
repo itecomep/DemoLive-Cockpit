@@ -43,7 +43,7 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
                 Stage = dto.Stage,
 
                 TargetDate = dto.TargetDate.HasValue
-                    ? DateTime.SpecifyKind(dto.TargetDate.Value.Date, DateTimeKind.Unspecified)
+                    ? DateTime.Parse(dto.TargetDate.Value.ToString("yyyy-MM-dd"))
                     : null,
 
                 StageStatus = dto.StageStatus,

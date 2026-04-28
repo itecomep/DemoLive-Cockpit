@@ -96,6 +96,17 @@ export class ProjectTargetFormComponent implements OnInit {
     this.service.getById(id).subscribe((res: any) => {
       this.form = res;
 
+      if (this.form?.targetDate) {
+        const d = new Date(this.form.targetDate);
+
+        this.form.targetDate =
+          d.getFullYear() +
+          "-" +
+          String(d.getMonth() + 1).padStart(2, "0") +
+          "-" +
+          String(d.getDate()).padStart(2, "0");
+      }
+
       if (this.form?.projectId) {
         this.loadStages(this.form.projectId);
       }
@@ -128,12 +139,33 @@ export class ProjectTargetFormComponent implements OnInit {
       return;
     }
 
+    let fixedDate = null;
+
+    if (this.form.targetDate) {
+      const d = new Date(this.form.targetDate);
+
+      d.setDate(d.getDate() + 1);
+
+      fixedDate =
+        d.getFullYear() +
+        "-" +
+        String(d.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(d.getDate()).padStart(2, "0") +
+        "T00:00:00";
+    }
+
+    const payload = {
+      ...this.form,
+      targetDate: fixedDate,
+    };
+
     if (this.isEdit && this.id) {
-      this.service.update(this.id, this.form).subscribe(() => {
+      this.service.update(this.id, payload).subscribe(() => {
         this.router.navigate(["/project-target"]);
       });
     } else {
-      this.service.create(this.form).subscribe(() => {
+      this.service.create(payload).subscribe(() => {
         this.router.navigate(["/project-target"]);
       });
     }
