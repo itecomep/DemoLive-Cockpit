@@ -604,3 +604,12 @@ th {
   font-size: 12px;
   width: 180px;
 }
+.feedback-textarea {
+  width: 100%;
+  min-height: 70px;
+  resize: vertical;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+}

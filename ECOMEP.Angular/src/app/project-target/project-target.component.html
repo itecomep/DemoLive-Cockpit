@@ -280,7 +280,11 @@
               </ng-container>
 
               <ng-template #editFeedback>
-                <input type="text" [(ngModel)]="editRow.feedback" />
+                <textarea
+                  [(ngModel)]="editRow.feedback"
+                  rows="3"
+                  class="feedback-textarea"
+                ></textarea>
               </ng-template>
             </td>
 
