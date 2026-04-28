@@ -7,7 +7,7 @@ import { ProjectTargetService } from "./project-target.service";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatSelectModule } from "@angular/material/select";
 import { MatInputModule } from "@angular/material/input";
-import { MatDialog, MatDialogModule } from "@angular/material/dialog"; // ✅ ADDED
+import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 
 import { HeaderComponent } from "../mcv-header/components/header/header.component";
 import { AuthService } from "src/app/auth/services/auth.service";
@@ -21,7 +21,7 @@ import { AuthService } from "src/app/auth/services/auth.service";
     MatFormFieldModule,
     MatSelectModule,
     MatInputModule,
-    MatDialogModule, // ✅ ADDED
+    MatDialogModule,
     HeaderComponent,
   ],
   templateUrl: "./project-target.component.html",
@@ -35,6 +35,15 @@ export class ProjectTargetComponent implements OnInit {
 
   isEdit = false;
   editId: number | null = null;
+
+  sortColumn: string = "";
+  sortDirection: "asc" | "desc" = "asc";
+  searchText: string = "";
+
+  activeTab: string = "all";
+  originalTargets: any[] = [];
+  fromDate: string = "";
+  toDate: string = "";
 
   projects: any[] = [];
   stages: any[] = [];
@@ -52,7 +61,7 @@ export class ProjectTargetComponent implements OnInit {
     private service: ProjectTargetService,
     private router: Router,
     private authService: AuthService,
-    private dialog: MatDialog, // ✅ ADDED
+    private dialog: MatDialog,
   ) {}
 
   // ================= FEEDBACK =================
@@ -65,11 +74,10 @@ export class ProjectTargetComponent implements OnInit {
     return !!text && text.length > 120;
   }
 
-  // 🔥 NEW: OPEN DIALOG
-  dialogData: any[] = []; // ✅ ADD THIS VARIABLE
+  dialogData: any[] = [];
 
   openFeedbackDialog(template: any, row: any) {
-    this.dialogData = this.getFieldHistory(row.history, "Feedback"); // ✅ store manually
+    this.dialogData = this.getFieldHistory(row.history, "Feedback");
 
     this.dialog.open(template, {
       width: "650px",
@@ -82,7 +90,6 @@ export class ProjectTargetComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadFormData();
-    this.loadTargets();
   }
 
   loadFormData() {
@@ -102,21 +109,32 @@ export class ProjectTargetComponent implements OnInit {
 
       this.stages = res.stages || [];
       this.statuses = res.statuses || [];
+
+      this.loadTargets();
     });
   }
 
   loadTargets() {
     this.service.getAll().subscribe((res: any[]) => {
+      let data = res || [];
+
       if (!this.authService.currentUserStore?.roles.includes("MASTER")) {
         const userTeamIds =
           this.authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
 
-        this.targets = (res || []).filter((t: any) =>
+        data = data.filter((t: any) =>
           t.teamIds?.some((id: number) => userTeamIds.includes(id)),
         );
-      } else {
-        this.targets = res || [];
       }
+
+      this.originalTargets = data.map((t) => ({
+        ...t,
+        projectName: this.getProjectName(t.projectId) || "",
+      }));
+
+      this.targets = [...this.originalTargets];
+
+      this.applyProjectNames();
     });
   }
 
@@ -130,14 +148,7 @@ export class ProjectTargetComponent implements OnInit {
 
   getProjectName(id: number): string {
     const p = this.projects.find((x) => x.id === id);
-    return p ? p.title : "id";
-  }
-
-  isExpired(date: any): boolean {
-    if (!date) return false;
-    const d = new Date(date + "T00:00:00");
-    const today = new Date();
-    return d < today;
+    return p ? p.title : "";
   }
 
   getStatusClass(status: string): string {
@@ -153,12 +164,6 @@ export class ProjectTargetComponent implements OnInit {
     }
   }
 
-  trackById(index: number, item: any) {
-    return item.id;
-  }
-
-  // ================= EDIT =================
-
   startEdit(row: any) {
     this.editId = row.id;
 
@@ -166,7 +171,6 @@ export class ProjectTargetComponent implements OnInit {
 
     if (row.targetDate) {
       const d = new Date(row.targetDate);
-
       formattedDate =
         d.getFullYear() +
         "-" +
@@ -228,8 +232,6 @@ export class ProjectTargetComponent implements OnInit {
     });
   }
 
-  // ================= HISTORY =================
-
   toggleHistory(id: number) {
     this.expandedRows[id] = !this.expandedRows[id];
   }
@@ -248,5 +250,172 @@ export class ProjectTargetComponent implements OnInit {
         (a, b) =>
           new Date(b.changedOn).getTime() - new Date(a.changedOn).getTime(),
       );
+  }
+
+  applyProjectNames() {
+    if (!this.projects.length || !this.targets.length) return;
+
+    this.targets = this.targets.map((t) => ({
+      ...t,
+      projectName: this.getProjectName(t.projectId) || "",
+    }));
+
+    this.sortData(this.sortColumn || "date");
+  }
+
+  sortData(column: string) {
+    if (this.sortColumn === column) {
+      this.sortDirection = this.sortDirection === "asc" ? "desc" : "asc";
+    } else {
+      this.sortColumn = column;
+      this.sortDirection = "asc";
+    }
+
+    const cleanName = (name: string) => {
+      return (name || "")
+        .toLowerCase()
+        .replace(/^m\/s\s*/i, "")
+        .replace(/^m\s*s\s*/i, "")
+        .replace(/^v\.\s*d\.?\s*/i, "")
+        .replace(/pvt\.?\s*ltd\.?/i, "")
+        .replace(/[^a-z0-9 ]/g, "")
+        .trim();
+    };
+
+    const parseDate = (d: any) => {
+      if (!d) return 0;
+
+      const parts = d.toString().split("T")[0].split("-");
+      if (parts.length !== 3) return 0;
+
+      const year = Number(parts[0]);
+      const month = Number(parts[1]) - 1;
+      const day = Number(parts[2]);
+
+      return new Date(year, month, day).getTime();
+    };
+
+    this.targets = [...this.targets].sort((a: any, b: any) => {
+      let valueA: any = "";
+      let valueB: any = "";
+
+      switch (column) {
+        case "project":
+          valueA = cleanName(a.projectName);
+          valueB = cleanName(b.projectName);
+          break;
+
+        case "code":
+          valueA = (a.projectCode || "").toLowerCase();
+          valueB = (b.projectCode || "").toLowerCase();
+          break;
+
+        case "stage":
+          valueA = (a.stage || "").toLowerCase();
+          valueB = (b.stage || "").toLowerCase();
+          break;
+
+        case "status":
+          valueA = (a.stageStatus || "").toLowerCase();
+          valueB = (b.stageStatus || "").toLowerCase();
+          break;
+
+        case "date":
+          const timeA = parseDate(a.targetDate);
+          const timeB = parseDate(b.targetDate);
+
+          return this.sortDirection === "asc" ? timeA - timeB : timeB - timeA;
+      }
+
+      return this.sortDirection === "asc"
+        ? valueA.localeCompare(valueB)
+        : valueB.localeCompare(valueA);
+    });
+  }
+
+  applySearch() {
+    const text = this.searchText.toLowerCase();
+
+    this.targets = this.originalTargets.filter((t: any) => {
+      const project = this.getProjectName(t.projectId).toLowerCase();
+      const code = (t.projectCode || "").toLowerCase();
+
+      return project.includes(text) || code.includes(text);
+    });
+
+    this.applyProjectNames();
+  }
+
+  applyFilter(type: string) {
+    this.activeTab = type;
+
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    this.targets = this.originalTargets.filter((t: any) => {
+      if (!t.targetDate) return false;
+
+      const d = new Date(t.targetDate);
+      const month = d.getMonth();
+      const year = d.getFullYear();
+
+      switch (type) {
+        case "all":
+          return true;
+
+        case "current":
+          return month === currentMonth && year === currentYear;
+
+        case "prev":
+          return (
+            (month === currentMonth - 1 && year === currentYear) ||
+            (currentMonth === 0 && month === 11 && year === currentYear - 1)
+          );
+
+        case "next":
+          return (
+            (month === currentMonth + 1 && year === currentYear) ||
+            (currentMonth === 11 && month === 0 && year === currentYear + 1)
+          );
+
+        default:
+          return true;
+      }
+    });
+
+    this.applyProjectNames();
+  }
+
+  applyCustomDate() {
+    if (!this.fromDate || !this.toDate) {
+      // if one date missing → reset
+      this.targets = [...this.originalTargets];
+      this.applyProjectNames();
+      return;
+    }
+
+    const parseDate = (d: any) => {
+      if (!d) return 0;
+
+      const parts = d.toString().split("T")[0].split("-");
+      if (parts.length !== 3) return 0;
+
+      const year = Number(parts[0]);
+      const month = Number(parts[1]) - 1;
+      const day = Number(parts[2]);
+
+      return new Date(year, month, day).getTime();
+    };
+
+    const from = parseDate(this.fromDate);
+    const to = parseDate(this.toDate);
+
+    this.targets = this.originalTargets.filter((t: any) => {
+      const time = parseDate(t.targetDate);
+      return time >= from && time <= to;
+    });
+
+    this.applyProjectNames(); // keep sorting
   }
 }

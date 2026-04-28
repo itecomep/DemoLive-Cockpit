@@ -2,9 +2,49 @@
 
 <div class="page-wrapper">
   <div class="page-actions">
-    <button class="primary-btn" (click)="openForm()">
-      + Create Stage Target
-    </button>
+    <div class="left-actions">
+      <button class="primary-btn" (click)="openForm()">
+        + Create Stage Target
+      </button>
+
+      <input
+        type="text"
+        placeholder="Search Project..."
+        [(ngModel)]="searchText"
+        (input)="applySearch()"
+        class="search-box"
+      />
+
+      <div class="filter-tabs">
+        <button
+          (click)="applyFilter('all')"
+          [class.active]="activeTab === 'all'"
+        >
+          Show All
+        </button>
+        <button
+          (click)="applyFilter('prev')"
+          [class.active]="activeTab === 'prev'"
+        >
+          Previous Month
+        </button>
+        <button
+          (click)="applyFilter('current')"
+          [class.active]="activeTab === 'current'"
+        >
+          Current Month
+        </button>
+        <button
+          (click)="applyFilter('next')"
+          [class.active]="activeTab === 'next'"
+        >
+          Next Month
+        </button>
+      </div>
+
+      <input type="date" [(ngModel)]="fromDate" (change)="applyCustomDate()" />
+      <input type="date" [(ngModel)]="toDate" (change)="applyCustomDate()" />
+    </div>
   </div>
 
   <div class="card">
@@ -13,21 +53,53 @@
         <thead>
           <tr>
             <th>Sr No</th>
-            <th>Code</th>
-            <th>Project</th>
-            <th>Stage</th>
-            <th>Status</th>
-            <th>Target Date</th>
+            <!-- <th>Code</th> -->
+            <th (click)="sortData('code')">
+              Code
+              <span *ngIf="sortColumn === 'code'">
+                {{ sortDirection === "asc" ? "▲" : "▼" }}
+              </span>
+            </th>
+
+            <th (click)="sortData('project')">
+              Project
+              <span *ngIf="sortColumn === 'project'">
+                {{ sortDirection === "asc" ? "▲" : "▼" }}
+              </span>
+            </th>
+
+            <th (click)="sortData('stage')">
+              Stage
+              <span *ngIf="sortColumn === 'stage'">
+                {{ sortDirection === "asc" ? "▲" : "▼" }}
+              </span>
+            </th>
+
+            <th (click)="sortData('status')">
+              Status
+              <span *ngIf="sortColumn === 'status'">
+                {{ sortDirection === "asc" ? "▲" : "▼" }}
+              </span>
+            </th>
+
+            <th (click)="sortData('date')">
+              Target Date
+              <span *ngIf="sortColumn === 'date'">
+                {{ sortDirection === "asc" ? "▲" : "▼" }}
+              </span>
+            </th>
+
             <th>Feedback</th>
             <th class="action-col">Action</th>
           </tr>
         </thead>
 
         <tbody>
-          <tr *ngFor="let t of targets; let i = index; trackBy: trackById">
+          <tr *ngFor="let t of targets; let i = index">
             <td>{{ i + 1 }}</td>
             <td class="id-badge">#{{ t.projectCode || "-" }}</td>
-            <td>{{ getProjectName(t.projectId) }}</td>
+
+            <td>{{ t.projectName }}</td>
 
             <!-- STAGE -->
             <td>
@@ -186,6 +258,24 @@
                   >
                     {{ expandedFeedback[t.id] ? "Show less" : "Show more" }}
                   </span>
+                </div>
+
+                <!-- HISTORY -->
+                <div
+                  class="history-inline"
+                  *ngIf="expandedFieldRows[t.id + '_Feedback']"
+                >
+                  <div class="history-scroll">
+                    <div
+                      class="history-item"
+                      *ngFor="let h of getFieldHistory(t.history, 'Feedback')"
+                    >
+                      <span class="old-val">{{ h.oldValue || "N/A" }}</span>
+                      <span class="history-date">
+                        ({{ h.changedOn | date: "dd MMM yyyy" }})
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </ng-container>
 
