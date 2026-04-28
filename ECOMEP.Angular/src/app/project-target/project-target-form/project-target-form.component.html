@@ -4,25 +4,30 @@
   <div class="form-panel scrollable">
     <div class="form-header">
       <h2>{{ isEdit ? "Update Target" : "Create Target" }}</h2>
-      <!-- <button class="close-btn" (click)="cancel()">✖</button> -->
     </div>
 
     <div class="form-body">
-      <!-- Project -->
       <h3>Project</h3>
       <mat-form-field appearance="outline" class="full-width">
-        <mat-select
-          [(ngModel)]="form.projectId"
-          (selectionChange)="onProjectChange()"
+        <input
+          type="text"
+          matInput
+          placeholder="Search by code or name..."
+          [(ngModel)]="projectSearch"
+          (ngModelChange)="filterProjects()"
+          [matAutocomplete]="auto"
+        />
+
+        <mat-autocomplete
+          #auto="matAutocomplete"
+          (optionSelected)="onProjectSelected($event.option.value)"
         >
-          <mat-option [value]="null">Select Project</mat-option>
-          <mat-option *ngFor="let p of projects" [value]="p.id">
-            {{ p.title || "Project #" + p.id }}
+          <mat-option *ngFor="let p of filteredProjects" [value]="p">
+            {{ p.code ? (p.code + ' - ') : '' }}{{ p.title }}
           </mat-option>
-        </mat-select>
+        </mat-autocomplete>
       </mat-form-field>
 
-      <!-- Stage -->
       <h3>Stage</h3>
       <mat-form-field appearance="outline" class="full-width">
         <mat-select
@@ -41,7 +46,6 @@
         </mat-select>
       </mat-form-field>
 
-      <!-- Status -->
       <h3>Status</h3>
       <mat-form-field appearance="outline" class="full-width">
         <mat-select [(ngModel)]="form.stageStatus">
@@ -52,11 +56,9 @@
         </mat-select>
       </mat-form-field>
 
-      <!-- Target Date -->
       <h3>Target Date</h3>
       <input type="date" [(ngModel)]="form.targetDate" />
 
-      <!-- Feedback -->
       <h3>Feedback</h3>
       <textarea [(ngModel)]="form.feedback"></textarea>
     </div>

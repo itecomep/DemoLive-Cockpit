@@ -17,12 +17,10 @@ import { AuthService } from "src/app/auth/services/auth.service";
   imports: [
     CommonModule,
     FormsModule,
-
     MatFormFieldModule,
     MatSelectModule,
     MatInputModule,
-
-    HeaderComponent, // ✅ ADD HEADER HERE
+    HeaderComponent,
   ],
   templateUrl: "./project-target.component.html",
   styleUrls: ["./project-target.component.scss"],
@@ -50,11 +48,10 @@ export class ProjectTargetComponent implements OnInit {
     feedback: "",
   };
 
-  
   constructor(
     private service: ProjectTargetService,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -62,57 +59,40 @@ export class ProjectTargetComponent implements OnInit {
     this.loadTargets();
   }
 
-  // ================= LOAD DATA =================
   loadFormData() {
     this.service.getFormData().subscribe((res) => {
+      const allProjects = res.projects || [];
 
+      if (!this.authService.currentUserStore?.roles.includes("MASTER")) {
+        const userTeamIds =
+          this.authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
 
-
-
-
-
-const allProjects = res.projects || [];
-
-if (!this.authService.currentUserStore?.roles.includes('MASTER')) {
-
-  const userTeamIds =
-    this.authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
-
-  this.projects = allProjects.filter((p: any) =>
-    p.teamIds?.some((id: number) => userTeamIds.includes(id))
-  );
-
-} else {
-  this.projects = allProjects;
-}
-
-
+        this.projects = allProjects.filter((p: any) =>
+          p.teamIds?.some((id: number) => userTeamIds.includes(id)),
+        );
+      } else {
+        this.projects = allProjects;
+      }
 
       this.stages = res.stages || [];
       this.statuses = res.statuses || [];
     });
   }
 
-loadTargets() {
-  this.service.getAll().subscribe((res: any[]) => {
+  loadTargets() {
+    this.service.getAll().subscribe((res: any[]) => {
+      if (!this.authService.currentUserStore?.roles.includes("MASTER")) {
+        const userTeamIds =
+          this.authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
 
-    if (!this.authService.currentUserStore?.roles.includes('MASTER')) {
-
-      const userTeamIds =
-        this.authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
-
-      this.targets = (res || []).filter((t: any) =>
-        t.teamIds?.some((id: number) => userTeamIds.includes(id))
-      );
-
-    } else {
-      this.targets = res || [];
-    }
-
-  });
-}
-
-  // ================= NAVIGATION =================
+        this.targets = (res || []).filter((t: any) =>
+          t.teamIds?.some((id: number) => userTeamIds.includes(id)),
+        );
+      } else {
+        this.targets = res || [];
+      }
+    });
+  }
 
   openForm() {
     this.router.navigate(["/project-target/create"]);
@@ -121,18 +101,6 @@ loadTargets() {
   edit(item: any) {
     this.router.navigate(["/project-target/edit", item.id]);
   }
-
-  // ================= ACTIONS =================
-
-  // delete(id: number) {
-  //   if (!confirm("Are you sure you want to delete this record?")) return;
-
-  //   this.service.delete(id).subscribe(() => {
-  //     this.loadTargets();
-  //   });
-  // }
-
-  // ================= HELPERS =================
 
   getProjectName(id: number): string {
     const p = this.projects.find((x) => x.id === id);
@@ -171,7 +139,6 @@ loadTargets() {
     if (row.targetDate) {
       const d = new Date(row.targetDate);
 
-      // ✅ FIX: LOCAL DATE ONLY (NO SHIFT)
       formattedDate =
         d.getFullYear() +
         "-" +
@@ -190,13 +157,10 @@ loadTargets() {
     this.loadStages(row.projectId);
   }
 
-  // CANCEL EDIT
   cancelEdit() {
     this.editId = null;
     this.editRow = {};
   }
-
-  // SAVE EDIT
 
   saveEdit() {
     const original = this.targets.find((t) => t.id === this.editId);
@@ -205,8 +169,6 @@ loadTargets() {
 
     if (this.editRow.targetDate) {
       const d = new Date(this.editRow.targetDate);
-
-      // ✅ ADD 1 DAY to counter backend timezone shift
       d.setDate(d.getDate() + 1);
 
       fixedDate =
@@ -237,14 +199,23 @@ loadTargets() {
       this.stages = res || [];
     });
   }
-  
-getLatestHistory(row: any, field: string) {
-  if (!row.history) return null;
 
-  return row.history
-    .filter((h: any) => h.fieldName === field)
-    .sort((a: any, b: any) =>
-      new Date(b.changedOn).getTime() - new Date(a.changedOn).getTime()
-    )[0];
-}
+  getLatestHistory(row: any, field: string) {
+    if (!row.history) return null;
+
+    return row.history
+      .filter((h: any) => h.fieldName === field)
+      .sort(
+        (a: any, b: any) =>
+          new Date(b.changedOn).getTime() - new Date(a.changedOn).getTime(),
+      )[0];
+  }
+
+  // delete(id: number) {
+  //   if (!confirm("Are you sure you want to delete this record?")) return;
+
+  //   this.service.delete(id).subscribe(() => {
+  //     this.loadTargets();
+  //   });
+  // }
 }

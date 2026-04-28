@@ -2,16 +2,13 @@
 
 <div class="page-wrapper">
 
-  <!-- TOP ACTION BAR -->
   <div class="page-actions">
     <button class="primary-btn" (click)="openForm()">
       + Create Target
     </button>
   </div>
 
-  <!-- CARD -->
   <div class="card">
-
     <div class="table-wrapper">
       <table>
         <thead>
@@ -30,13 +27,10 @@
         <tbody>
           <tr *ngFor="let t of targets; let i = index; trackBy: trackById">
             <td>{{ i + 1 }}</td>
-            
             <td class="id-badge">#{{ t.projectCode || "-" }}</td>
 
-            <!-- PROJECT -->
             <td>{{ getProjectName(t.projectId) }}</td>
 
-            <!-- STAGE -->
             <td>
               <ng-container *ngIf="editId !== t.id; else editStage">
                 {{ t.stage }}
@@ -53,10 +47,8 @@
               </ng-template>
             </td>
 
-            <!-- STATUS -->
             <td>
               <ng-container *ngIf="editId !== t.id; else editStatus">
-                <!-- NEW VALUE -->
                 <div class="main-value">
                   <span
                     class="status-badge"
@@ -66,7 +58,6 @@
                   </span>
                 </div>
 
-                <!-- OLD VALUE -->
                 <div
                   class="history-value"
                   *ngIf="getLatestHistory(t, 'StageStatus') as h"
@@ -89,15 +80,12 @@
               </ng-template>
             </td>
 
-            <!-- TARGET DATE -->
             <td>
               <ng-container *ngIf="editId !== t.id; else editDate">
-                <!-- NEW VALUE -->
                 <div class="main-value">
                   {{ t.targetDate | date: "dd MMM yyyy" }}
                 </div>
 
-                <!-- OLD VALUE -->
                 <div
                   class="history-value"
                   *ngIf="getLatestHistory(t, 'TargetDate') as h"
@@ -114,15 +102,12 @@
               </ng-template>
             </td>
 
-            <!-- FEEDBACK -->
             <td>
               <ng-container *ngIf="editId !== t.id; else editFeedback">
-                <!-- NEW VALUE -->
                 <div class="main-value">
                   {{ t.feedback || "-" }}
                 </div>
 
-                <!-- OLD VALUE -->
                 <div
                   class="history-value"
                   *ngIf="getLatestHistory(t, 'Feedback') as h"
@@ -139,7 +124,6 @@
               </ng-template>
             </td>
 
-            <!-- ACTION -->
             <td class="actions">
               <ng-container *ngIf="editId !== t.id; else editActions">
                 <button class="edit-btn" (click)="startEdit(t)">Edit</button>
@@ -150,7 +134,6 @@
                 <button class="secondary-btn" (click)="cancelEdit()">Cancel</button>
               </ng-template>
             </td>
-
           </tr>
 
           <tr *ngIf="targets.length === 0">
@@ -162,6 +145,5 @@
 
       </table>
     </div>
-
   </div>
 </div>
