@@ -3,15 +3,14 @@ import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ProjectTargetService } from "../project-target.service";
-// import { CommonModule } from '@angular/common';
-// import { FormsModule } from '@angular/forms';
-
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { HeaderComponent } from "../../mcv-header/components/header/header.component";
+import { AuthService } from "src/app/auth/services/auth.service";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
 
 @Component({
   selector: "app-project-target-form",
@@ -24,13 +23,15 @@ import { HeaderComponent } from "../../mcv-header/components/header/header.compo
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
-
-    HeaderComponent, // ✅ ADD THIS LINE
+    MatAutocompleteModule,
+    HeaderComponent,
   ],
   templateUrl: "./project-target-form.component.html",
   styleUrls: ["./project-target-form.component.scss"],
 })
 export class ProjectTargetFormComponent implements OnInit {
+  projectSearch: string = "";
+  filteredProjects: any[] = [];
   targets: any[] = [];
   isEdit = false;
   id: number | null = null;
@@ -51,9 +52,9 @@ export class ProjectTargetFormComponent implements OnInit {
     private service: ProjectTargetService,
     private router: Router,
     private route: ActivatedRoute,
+    private authService: AuthService,
   ) {}
 
-  // ================= INIT =================
   ngOnInit() {
     this.loadFormData();
 
@@ -70,16 +71,27 @@ export class ProjectTargetFormComponent implements OnInit {
     });
   }
 
-  // ================= LOAD DROPDOWNS =================
   loadFormData() {
     this.service.getFormData().subscribe((res: any) => {
-      this.projects = res.projects || [];
+      const allProjects = res.projects || [];
+
+      if (!this.authService.currentUserStore?.roles.includes("MASTER")) {
+        const userTeamIds =
+          this.authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
+
+        this.projects = allProjects.filter((p: any) =>
+          p.teamIds?.some((id: number) => userTeamIds.includes(id)),
+        );
+      } else {
+        this.projects = allProjects;
+      }
+
+      this.filteredProjects = [...this.projects];
       this.stages = res.stages || [];
       this.statuses = res.statuses || [];
     });
   }
 
-  // ================= LOAD BY ID =================
   loadById(id: number) {
     this.service.getById(id).subscribe((res: any) => {
       this.form = res;
@@ -90,7 +102,6 @@ export class ProjectTargetFormComponent implements OnInit {
     });
   }
 
-  // ================= PROJECT CHANGE =================
   onProjectChange() {
     if (!this.form.projectId) {
       this.stages = [];
@@ -106,7 +117,6 @@ export class ProjectTargetFormComponent implements OnInit {
     });
   }
 
-  // ================= SAVE =================
   save() {
     if (
       !this.form.projectId ||
@@ -129,12 +139,10 @@ export class ProjectTargetFormComponent implements OnInit {
     }
   }
 
-  // ================= CANCEL =================
   cancel() {
     this.router.navigate(["/project-target"]);
   }
 
-  // ================= TRACK =================
   trackById(index: number, item: any) {
     return item.id;
   }
@@ -149,5 +157,24 @@ export class ProjectTargetFormComponent implements OnInit {
     if (this.form.stage) {
       this.form.stageStatus = "Yet to Start";
     }
+  }
+
+  filterProjects() {
+    const search = (this.projectSearch || "").toLowerCase();
+
+    this.filteredProjects = this.projects.filter(
+      (p: any) =>
+        p.title?.toLowerCase().includes(search) ||
+        p.code?.toLowerCase().includes(search),
+    );
+  }
+
+  onProjectSelected(project: any) {
+    this.form.projectId = project.id;
+    this.projectSearch = project.code
+      ? project.code + " - " + project.title
+      : project.title;
+
+    this.onProjectChange();
   }
 }

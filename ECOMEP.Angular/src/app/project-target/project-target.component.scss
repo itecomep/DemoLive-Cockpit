@@ -1,63 +1,63 @@
 .page-wrapper {
-  padding: 16px 20px;
-  background: #f5f7fb;
+  padding: 14px 18px;
+  background: #f3f4f6;
   min-height: 100vh;
-}
-
-/* ================= HEADER ================= */
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.page-header h2 {
-  margin: 0;
-  font-size: 22px;
-  color: #333;
-}
-
-.page-header .subtitle {
-  margin: 4px 0 0;
-  font-size: 13px;
-  color: #4caf50;
 }
 
 /* ================= CARD ================= */
 .card {
   background: #fff;
-  border-radius: 12px;
-  padding: 18px;
+  border-radius: 8px;
+  padding: 14px;
   border: 1px solid #e5e7eb;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-/* HEADER */
+/* ================= TABLE ================= */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 13px;
+}
+
 thead {
-  background: #4caf50;
+  background: #3fa34d;
 }
 
 th {
   text-align: left;
-  padding: 12px;
+  padding: 10px;
   font-size: 13px;
   color: #fff;
   font-weight: 600;
 }
 
-/* ✅ FIX ALIGNMENT */
-td, th {
+td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  font-size: 13px;
+  color: #222;
   vertical-align: middle;
 }
 
-/* TABLE CELLS */
-td {
-  padding: 12px;
-  border-bottom: 1px solid #eee;
-  font-size: 14px;
-  color: #111;
+/* ================= ROW HOVER ================= */
+tbody tr:hover {
+  background: #f7faf7;
 }
+
+/* ================= COLUMN WIDTHS ================= */
+th:nth-child(1), td:nth-child(1) { width: 50px; text-align: center; }
+th:nth-child(2), td:nth-child(2) { width: 90px; }
+th:nth-child(3), td:nth-child(3) { width: 260px; }
+th:nth-child(4), td:nth-child(4) { width: 180px; }
+th:nth-child(5), td:nth-child(5) { width: 140px; }
+th:nth-child(6), td:nth-child(6) { width: 130px; }
+th:nth-child(7), td:nth-child(7) { width: 260px; }
+th:nth-child(8), td:nth-child(8) { width: 90px; }
 
 /* ================= ID ================= */
 .id-badge {
@@ -65,645 +65,168 @@ td {
   color: #111827;
 }
 
-/* ================= STATUS (TEXT ONLY) ================= */
+/* ================= STATUS ================= */
 .status-badge {
-  display: inline-flex;
-  align-items: center;
   font-size: 12px;
   font-weight: 600;
-  white-space: nowrap;
-  padding: 0;              /* removed background spacing */
-  border-radius: 0;       /* no pill effect */
-  background: transparent; /* ✅ REMOVE BACKGROUND */
 }
 
-/* ONLY TEXT COLORS */
-.status-complete {
-  color: #2e7d32;
+.status-complete { color: #2e7d32; }
+.status-progress { color: #f57c00; }
+.status-hold { color: #d32f2f; }
+.status-default { color: #374151; }
+
+/* ================= MAIN VALUE ================= */
+.main-value {
+  display: inline-flex;  /* ✅ FIX */
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  flex-wrap: wrap; /* keeps arrow beside */
 }
 
-.status-progress {
-  color: #f57c00;
+.clickable-status {
+  cursor: pointer;
 }
 
-.status-hold {
-  color: #c62828;
+/* ================= ARROW ================= */
+.dropdown-arrow {
+  font-size: 10px;
+  color: #3b82f6;
+  cursor: pointer;
+  transition: 0.2s ease;
+  flex-shrink: 0;
 }
 
-.status-default {
-  color: #374151;
+.dropdown-arrow.rotated {
+  transform: rotate(90deg);
 }
 
-/* ================= EXPIRED ================= */
-.expired {
-  color: #c62828;
-  font-weight: 600;
+/* ================= HISTORY ================= */
+.history-inline {
+  margin-top: 6px;
+  background: #f9fafb;
+  border-left: 3px solid #22c55e;
+  border-radius: 6px;
+  padding: 6px 8px;
+  width: fit-content;
+  min-width: 220px;
 }
 
-/* ================= ACTIONS ================= */
+.history-scroll {
+  max-height: 70px;
+  overflow-y: auto;
+}
+
+.history-item {
+  font-size: 12px;
+  margin-bottom: 3px;
+}
+
+.old-val {
+  color: #444;
+}
+
+.history-date {
+  color: #9ca3af;
+  font-size: 11px;
+  margin-left: 4px;
+}
+
+/* ================= FEEDBACK ================= */
+.feedback-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.feedback-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
+  word-break: break-word;
+  flex: 1;
+}
+
+.feedback-expanded {
+  -webkit-line-clamp: unset;
+}
+
+/* SHOW MORE */
+.show-toggle {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #22c55e;
+  cursor: pointer;
+}
+
+.show-toggle:hover {
+  text-decoration: underline;
+}
+
+/* ================= ACTION ================= */
 .actions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 /* ================= BUTTONS ================= */
 .edit-btn {
-  background: #fff8e1;
-  color: #f57c00;
+  background: #fff3cd;
+  color: #f59e0b;
   border: none;
-  padding: 5px 10px;
+  padding: 4px 10px;
   border-radius: 6px;
-  cursor: pointer;
-}
-
-.delete-btn {
-  background: #ffebee;
-  color: #c62828;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 6px;
-  cursor: pointer;
+  font-size: 12px;
 }
 
 .primary-btn {
-  background: #4caf50;
+  background: #22c55e;
   color: white;
   border: none;
-  padding: 10px 14px;
-  border-radius: 8px;
-  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 6px;
   font-weight: 500;
 }
 
 .primary-btn:hover {
-  background: #43a047;
-}
-
-/* ================= ROW HOVER ================= */
-tbody tr:hover {
-  background: #f9fff9;
+  background: #16a34a;
 }
 
 /* ================= EMPTY ================= */
 .no-data {
   text-align: center;
   padding: 20px;
-  color: #4caf50;
+  color: #22c55e;
   font-weight: 500;
 }
 
-/* ================= FORM CONTROL FIX ================= */
+/* ================= FORM ================= */
 mat-form-field {
-  width: 160px;
+  width: 150px;
   margin: 0;
 }
 
-/* remove extra material spacing */
 mat-form-field .mat-mdc-form-field-subscript-wrapper {
   display: none;
 }
 
-/* compact dropdown */
 mat-select {
   font-size: 13px;
 }
 
-/* input fix */
 input {
   width: 140px;
-  padding: 6px;
+  padding: 5px;
   border: 1px solid #ddd;
   border-radius: 6px;
 }
 
-/* ================= TOP BUTTON ALIGNMENT ================= */
+/* ================= TOP BUTTON ================= */
 .page-actions {
-  display: flex;
-  justify-content: flex-start;
-  margin: 6px 0 10px;
+  margin-bottom: 10px;
 }
-
-
-
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 900px;
-  table-layout: auto; /* ✅ FIX: remove forced equal shifting */
-}
-
-/* control column alignment better */
-th, td {
-  vertical-align: middle;
-  text-align: left;
-}
-
-/* prevent weird stretching in status + actions */
-td:nth-child(4),
-td:nth-child(7) {
-  white-space: nowrap;
-}
-
-/* Project column stability */
-td:nth-child(2) {
-  min-width: 180px;
-  font-weight: 500;
-  color: #111;
-}
-
-.status-block {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.history-dd {
-  width: 140px;
-  font-size: 11px;
-}
-
-/* make dropdown look like label only */
-.history-dd .mat-mdc-form-field-subscript-wrapper {
-  display: none;
-}
-
-/* Parent Cell Alignment */
-td {
-  vertical-align: top !important; /* Keeps row data at the top when history expands */
-  position: relative;
-}
-
-.main-value {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  user-select: none; /* Stops the blue highlight on text */
-  -webkit-tap-highlight-color: transparent; /* Stops blue flash on click */
-  outline: none;
-}
-
-.clickable-status {
-  cursor: pointer;
-  &:hover { opacity: 0.8; }
-}
-
-.dropdown-arrow {
-  display: inline-block;
-  font-size: 10px;
-  color: #888;
-  transition: transform 0.2s ease-in-out;
-  
-  /* Pointing RIGHT by default */
-  transform: rotate(0deg); 
-
-  /* --- ANTI-BLUE BOX STYLES --- */
-  background-color: transparent !important;
-  user-select: none !important;
-  -webkit-user-select: none;
-  -webkit-tap-highlight-color: transparent !important;
-  outline: none !important;
-
-  &.rotated {
-    /* Pointing DOWN when open */
-    transform: rotate(90deg); 
-    color: #222; 
-  }
-}
-
-.history-inline {
-  display: block;
-  width: 100%;
-  background: #f9f9f9;
-  border-left: 2px solid #ddd;
-  margin-top: 8px;
-  border-radius: 4px;
-  padding: 5px;
-}
-
-.history-item {
-  display: flex;
-  flex-direction: column;
-  padding: 4px 8px;
-  border-bottom: 1px solid #eee;
-  font-size: 11px;
-  &:last-child { border-bottom: none; }
-  
-  .old-val { color: #333; font-weight: 500; }
-  .history-date { color: #888; }
-}
-
-.main-value {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  cursor: pointer;
-
-  outline: none !important;
-  box-shadow: none !important;
-  background: transparent !important;
-
-  user-select: none;
-  -webkit-user-select: none;
-
-  -webkit-tap-highlight-color: transparent !important;
-}
-
-.main-value:focus,
-.main-value:active,
-.main-value:focus-visible {
-  outline: none !important;
-  box-shadow: none !important;
-  background: transparent !important;
-}
-
-.dropdown-arrow {
-  -webkit-tap-highlight-color: transparent !important;
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-/* ================= TABLE STRUCTURE ================= */
-.table-wrapper {
-  overflow-x: auto;
-  background: #fff;
-  border-radius: 8px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  /* Fixed layout ensures cells stay under headers */
-  table-layout: fixed; 
-  min-width: 1000px; /* Adjust based on total columns */
-}
-
-th, td {
-  padding: 12px 15px;
-  text-align: left;
-  vertical-align: top; /* Keeps row content aligned to top during history expansion */
-  word-wrap: break-word; /* Prevents long text from pushing column widths */
-}
-
-/* ================= COLUMN WIDTH DEFINITIONS ================= */
-/* Define specific widths for each column to ensure alignment */
-
-// th:nth-child(1), td:nth-child(1) { width: 60px; }   /* ID */
-// th:nth-child(2), td:nth-child(2) { width: 180px; }  /* Project */
-// th:nth-child(3), td:nth-child(3) { width: 130px; }  /* Stage */
-// th:nth-child(4), td:nth-child(4) { width: 150px; }  /* Status */
-// th:nth-child(5), td:nth-child(5) { width: 150px; }  /* Target Date */
-// th:nth-child(6), td:nth-child(6) { width: 200px; }  /* Feedback */
-// th:nth-child(7), td:nth-child(7) { width: 130px; }  /* Action */
-
-
-
-/* 1. Sr No - Minimal width */
-.col-sr {
-  width: 45px !important;
-  text-align: center;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-/* 2. Code - Tight width */
-.col-code {
-  width: 60px !important;
-  white-space: nowrap;
-}
-
-/* 3. Project - Flexible and Large */
-.col-project {
-  width: 250px !important; /* Give it the bulk of the space */
-  font-weight: 500;
-}
-/* Adjust remaining columns to be proportional */
-th:nth-child(4), td:nth-child(4) { width: 130px; } /* Stage */
-th:nth-child(5), td:nth-child(5) { width: 120px; } /* Status */
-th:nth-child(6), td:nth-child(6) { width: 120px; } /* Target Date */
-th:nth-child(7), td:nth-child(7) { width: auto; }  /* Feedback takes rest */
-th:nth-child(8), td:nth-child(8) { width: 100px; } /* Action */
-/* ================= CONTENT STYLING ================= */
-
-/* Truncate long text in Feedback to keep row height sane */
-.text-truncate-custom {
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-}
-
-/* Ensure form fields don't break column width */
-mat-form-field, .form-control {
-  width: 100% !important;
-  max-width: 100%;
-}
-
-input[type="date"], input[type="text"] {
-  box-sizing: border-box; /* Crucial for width: 100% */
-  width: 100%;
-}
-
-.main-value {
-  display: flex;
-  align-items: flex-start; /* Align arrow to the top of the text */
-  gap: 8px;
-  cursor: pointer;
-  
-  /* Add these lines */
-  white-space: normal;       /* Allows text to go to line 2, 3, etc. */
-  word-break: break-all;     /* Forces "hhhhh" to break if it hits the wall */
-  overflow: visible;         /* Ensures text isn't hidden */
-  text-overflow: clip;       /* Removes the three dots */
-}
-
-/* Fix the specific feedback div you added inline styles to earlier */
-.main-value div {
-  max-width: 100%; 
-  overflow: visible !important; 
-  text-overflow: clip !important; 
-  white-space: normal !important;
-}
-
-
-
-.feedback-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.feedback-text {
-  max-height: 42px; /* ~2 lines */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: max-height 0.2s ease;
-  white-space: normal;
-}
-
-.feedback-text.expanded {
-  max-height: 200px;
-}
-
-.feedback-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.show-more {
-  font-size: 12px;
-  color: #4caf50;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.show-more:hover {
-  text-decoration: underline;
-}
-
-
-
-
-
-.history-scroll {
-  max-height: 120px;      /* adjust as needed */
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-right: 6px;
-}
-
-/* optional: nicer scrollbar */
-.history-scroll::-webkit-scrollbar {
-  width: 5px;
-}
-
-.history-scroll::-webkit-scrollbar-thumb {
-  background: #c5c5c5;
-  border-radius: 10px;
-}
-
-.history-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-
-.feedback-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.feedback-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 10px;
-}
-
-.feedback-text {
-  flex: 1;
-  max-height: 42px;
-  overflow: hidden;
-}
-
-.feedback-text.expanded {
-  max-height: 200px;
-}
-
-.dropdown-arrow {
-  cursor: pointer;
-  font-size: 12px;
-  user-select: none;
-}
-
-td {
-  padding: 12px;
-  word-wrap: break-word;
-  vertical-align: top;
-  overflow: hidden;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed; /* Keep fixed to prevent jumping */
-  min-width: 1000px;
-}
-
-.id-badge {
-  font-size: 13px;
-  letter-spacing: -0.5px;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ================= TABLE STRUCTURE ================= */
-.table-wrapper {
-  overflow-x: auto;
-  background: #fff;
-  border-radius: 8px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  /* 👈 CRITICAL: table-layout: fixed forces the browser to obey the widths below */
-  table-layout: fixed; 
-  min-width: 1100px; 
-}
-
-th, td {
-  padding: 12px 15px;
-  text-align: left;
-  vertical-align: top; 
-  word-wrap: break-word; /* Prevents long text from breaking column width */
-  overflow: hidden;
-}
-
-thead {
-  background: #4caf50;
-}
-
-th {
-  font-size: 13px;
-  color: #fff;
-  font-weight: 600;
-}
-
-/* ================= COLUMN WIDTH DEFINITIONS ================= */
-
-/* 1. Sr No - Smallest */
-th:nth-child(1), td:nth-child(1) { 
-  width: 50px !important; 
-  text-align: center;
-}
-
-/* 2. Code - Tight width */
-th:nth-child(2), td:nth-child(2) { 
-  width: 65px !important; 
-}
-
-/* 3. Project - Large & Flexible */
-th:nth-child(3), td:nth-child(3) { 
-  width: 240px !important; 
-  font-weight: 500;
-}
-
-/* 4, 5, 6. Stage, Status, Target Date - Balanced */
-th:nth-child(4), td:nth-child(4) { width: 280px; } 
-th:nth-child(5), td:nth-child(5) { width: 180px; } 
-th:nth-child(6), td:nth-child(6) { width: 130px; } 
-
-/* 7. Feedback - Takes the remaining space */
-th:nth-child(7), td:nth-child(7) { 
-  width: 200px; 
-}
-
-/* 8. Action - Compact */
-th:nth-child(8), td:nth-child(8) { 
-  width:80px; 
-  text-align: center;
-}
-
-/* ================= CONTENT FIXES ================= */
-
-.id-badge {
-  font-weight: 600;
-  color: #111827;
-  font-size: 13px;
-  letter-spacing: -0.5px;
-}
-
-/* Fix for the overlapping/stretching text issue */
-.feedback-text {
-  display: block;
-  width: 100%;
-  max-height: 42px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: normal;
-  /* 👈 Forces "hhhhhh" to wrap instead of pushing column width */
-  word-break: break-all; 
-  transition: max-height 0.2s ease;
-}
-
-.feedback-text.expanded {
-  max-height: 500px;
-}
-
-/* Status Badges (Text Only) */
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  font-size: 12px;
-  font-weight: 600;
-  white-space: nowrap;
-  background: transparent;
-}
-
-.status-complete { color: #2e7d32; }
-.status-progress { color: #f57c00; }
-.status-hold     { color: #c62828; }
-
-/* ================= BUTTONS & ACTIONS ================= */
-.actions {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-}
-
-.edit-btn {
-  background: #fff8e1;
-  color: #f57c00;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.primary-btn {
-  background: #4caf50;
-  color: white;
-  border: none;
-  padding: 10px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-/* History Scroll */
-.history-scroll {
-  max-height: 120px;
-  overflow-y: auto;
-  padding-right: 6px;
-}
-
-.history-inline {
-  display: block;
-  width: 100%;
-  background: #f9f9f9;
-  border-left: 2px solid #ddd;
-  margin-top: 8px;
-  border-radius: 4px;
-  padding: 5px;
-}
-
-
-
-
-

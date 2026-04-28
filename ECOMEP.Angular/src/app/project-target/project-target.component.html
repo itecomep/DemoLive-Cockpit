@@ -1,12 +1,13 @@
 <app-header title="Project Target"></app-header>
 
 <div class="page-wrapper">
-  <!-- TOP ACTION BAR -->
+
   <div class="page-actions">
-    <button class="primary-btn" (click)="openForm()">+ Create Target</button>
+    <button class="primary-btn" (click)="openForm()">
+      + Create Target
+    </button>
   </div>
 
-  <!-- CARD -->
   <div class="card">
     <div class="table-wrapper">
       <table>
@@ -19,18 +20,16 @@
             <th>Status</th>
             <th>Target Date</th>
             <th>Feedback</th>
-            <th>Action</th>
+            <th class="action-col">Action</th>
           </tr>
         </thead>
 
         <tbody>
           <tr *ngFor="let t of targets; let i = index; trackBy: trackById">
+
             <td>{{ i + 1 }}</td>
-
-            <td class="id-badge">#{{ t.projectCode || t.id }}</td>
-
+            <td class="id-badge">#{{ t.projectCode || "-" }}</td>
             <td>{{ getProjectName(t.projectId) }}</td>
-
 
             <!-- STAGE -->
             <td>
@@ -53,27 +52,25 @@
             <td>
               <ng-container *ngIf="editId !== t.id; else editStatus">
 
-                <div class="main-value" [class.clickable-status]="t.history?.length"
-                  (click)="t.history?.length ? toggleHistory(t.id) : null" tabindex="0">
+                <div class="main-value" [class.clickable-status]="getFieldHistory(t.history, 'StageStatus').length"
+                  (click)="getFieldHistory(t.history, 'StageStatus').length && toggleHistory(t.id)">
 
                   <span class="status-badge" [ngClass]="getStatusClass(t.stageStatus)">
                     {{ t.stageStatus }}
                   </span>
 
-                  <span class="dropdown-arrow side-arrow" *ngIf="t.history?.length"
+                  <span class="dropdown-arrow" *ngIf="getFieldHistory(t.history, 'StageStatus').length"
                     [class.rotated]="expandedRows[t.id]">
                     ▶
                   </span>
                 </div>
 
-                <div class="history-inline" *ngIf="expandedRows[t.id] && t.history?.length">
+                <div class="history-inline" *ngIf="expandedRows[t.id]">
                   <div class="history-scroll">
-                    <div class="history-item" *ngFor="let h of t.history?.slice().reverse()">
-                      <span class="old-val">
-                        {{ h.oldValue || h.status || 'N/A' }}
-                      </span>
+                    <div class="history-item" *ngFor="let h of getFieldHistory(t.history, 'StageStatus')">
+                      <span class="old-val">{{ h.oldValue || 'N/A' }}</span>
                       <span class="history-date">
-                        ({{ h.changedOn || h.date | date:'dd MMM yyyy' }})
+                        ({{ h.changedOn | date:'dd MMM yyyy' }})
                       </span>
                     </div>
                   </div>
@@ -82,33 +79,40 @@
               </ng-container>
 
               <ng-template #editStatus>
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline">
                   <mat-select [(ngModel)]="editRow.stageStatus">
-                    <mat-option *ngFor="let s of statuses" [value]="s">{{ s }}</mat-option>
+                    <mat-option *ngFor="let s of statuses" [value]="s">
+                      {{ s }}
+                    </mat-option>
                   </mat-select>
                 </mat-form-field>
               </ng-template>
             </td>
+
             <!-- TARGET DATE -->
             <td>
               <ng-container *ngIf="editId !== t.id; else editDate">
 
-                <div class="main-value" [class.clickable-status]="t.history?.length"
-                  (click)="t.history?.length ? toggleFieldHistory(t.id, 'TargetDate') : null" tabindex="0">
+                <div class="main-value" [class.clickable-status]="getFieldHistory(t.history, 'TargetDate').length"
+                  (click)="getFieldHistory(t.history, 'TargetDate').length && toggleFieldHistory(t.id, 'TargetDate')">
 
-                  <span>{{ t.targetDate | date: 'dd MMM yyyy' }}</span>
+                  <span>{{ t.targetDate | date:'dd MMM yyyy' }}</span>
 
-                  <span class="dropdown-arrow side-arrow" *ngIf="t.history?.length"
+                  <span class="dropdown-arrow" *ngIf="getFieldHistory(t.history, 'TargetDate').length"
                     [class.rotated]="expandedFieldRows[t.id + '_TargetDate']">
                     ▶
                   </span>
                 </div>
 
-                <div class="history-inline" *ngIf="expandedFieldRows[t.id + '_TargetDate'] && t.history?.length">
+                <div class="history-inline" *ngIf="expandedFieldRows[t.id + '_TargetDate']">
                   <div class="history-scroll">
                     <div class="history-item" *ngFor="let h of getFieldHistory(t.history, 'TargetDate')">
-                      <span class="old-val">{{ h.oldValue | date: 'dd MMM yyyy' }}</span>
-                      <span class="history-date">({{ h.changedOn | date:'dd MMM yyyy' }})</span>
+                      <span class="old-val">
+                        {{ h.oldValue | date:'dd MMM yyyy' }}
+                      </span>
+                      <span class="history-date">
+                        ({{ h.changedOn | date:'dd MMM yyyy' }})
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -116,25 +120,24 @@
               </ng-container>
 
               <ng-template #editDate>
-                <input type="date" [(ngModel)]="editRow.targetDate" class="form-control" />
+                <input type="date" [(ngModel)]="editRow.targetDate" />
               </ng-template>
             </td>
 
             <!-- FEEDBACK -->
-
             <td>
               <ng-container *ngIf="editId !== t.id; else editFeedback">
 
-                <div class="feedback-wrapper">
+                <div class="main-value">
 
-                  <!-- TEXT + ARROW -->
-                  <div class="feedback-top">
+                  <!-- TEXT + ARROW IN SAME LINE -->
+                  <div class="feedback-line">
 
-                    <div class="feedback-text" [class.expanded]="expandedFeedback[t.id]">
+                    <span class="feedback-text" [class.feedback-expanded]="expandedFeedback[t.id]">
                       {{ t.feedback || '-' }}
-                    </div>
+                    </span>
 
-                    <span class="dropdown-arrow" *ngIf="t.history?.length"
+                    <span class="dropdown-arrow" *ngIf="getFieldHistory(t.history, 'Feedback').length"
                       (click)="toggleFieldHistory(t.id, 'Feedback'); $event.stopPropagation()"
                       [class.rotated]="expandedFieldRows[t.id + '_Feedback']">
                       ▶
@@ -143,17 +146,15 @@
                   </div>
 
                   <!-- SHOW MORE -->
-                  <div class="feedback-actions">
-                    <a class="show-more" *ngIf="t.feedback && t.feedback.length > 80"
-                      (click)="toggleFeedback($event, t.id)">
-                      {{ expandedFeedback[t.id] ? 'Show less' : 'Show more' }}
-                    </a>
-                  </div>
+                  <span class="show-toggle" *ngIf="isLongText(t.feedback)"
+                    (click)="toggleFeedbackExpand(t.id); $event.stopPropagation()">
+                    {{ expandedFeedback[t.id] ? 'Show less' : 'Show more' }}
+                  </span>
 
                 </div>
 
-                <!-- HISTORY (ONLY ONCE) -->
-                <div class="history-inline" *ngIf="expandedFieldRows[t.id + '_Feedback'] && t.history?.length">
+                <!-- HISTORY -->
+                <div class="history-inline" *ngIf="expandedFieldRows[t.id + '_Feedback']">
                   <div class="history-scroll">
                     <div class="history-item" *ngFor="let h of getFieldHistory(t.history, 'Feedback')">
                       <span class="old-val">{{ h.oldValue || 'N/A' }}</span>
@@ -167,9 +168,10 @@
               </ng-container>
 
               <ng-template #editFeedback>
-                <input type="text" [(ngModel)]="editRow.feedback" class="form-control" />
+                <input type="text" [(ngModel)]="editRow.feedback" />
               </ng-template>
             </td>
+
             <!-- ACTION -->
             <td class="actions">
               <ng-container *ngIf="editId !== t.id; else editActions">
@@ -178,16 +180,18 @@
 
               <ng-template #editActions>
                 <button class="primary-btn" (click)="saveEdit()">Save</button>
-                <button class="secondary-btn" (click)="cancelEdit()">
-                  Cancel
-                </button>
+                <button class="secondary-btn" (click)="cancelEdit()">Cancel</button>
               </ng-template>
             </td>
+
           </tr>
 
           <tr *ngIf="targets.length === 0">
-            <td colspan="8" class="no-data">No history records found</td>
+            <td colspan="7" class="no-data">
+              No history records found
+            </td>
           </tr>
+
         </tbody>
       </table>
     </div>
