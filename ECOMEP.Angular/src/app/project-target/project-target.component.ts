@@ -27,15 +27,28 @@ import { AuthService } from "src/app/auth/services/auth.service";
 })
 export class ProjectTargetComponent implements OnInit {
   expandedRows: { [key: number]: boolean } = {};
-expandedFieldRows: { [key: string]: boolean } = {};
-expandedFeedback: { [key: number]: boolean } = {};
+  expandedFieldRows: { [key: string]: boolean } = {};
+  expandedFeedback: { [key: number]: boolean } = {};
+
   isEdit = false;
   editId: number | null = null;
+
+  sortColumn: string = '';
+  sortDirection: 'asc' | 'desc' = 'asc';
+  searchText: string = '';
+
+  activeTab: string = 'all';
+originalTargets: any[] = []; // store full data
+fromDate: string = '';
+toDate: string = '';
+  
+  
 
   projects: any[] = [];
   stages: any[] = [];
   statuses: string[] = [];
   targets: any[] = [];
+
   editRow: any = {
     stage: "",
     stageStatus: "",
@@ -43,60 +56,113 @@ expandedFeedback: { [key: number]: boolean } = {};
     feedback: "",
   };
 
-  
   constructor(
     private service: ProjectTargetService,
     private router: Router,
     private authService: AuthService,
   ) {}
 
-  
-  toggleFeedbackExpand(id: number) {
-  this.expandedFeedback[id] = !this.expandedFeedback[id];
-}
-
-
-isLongText(text: string | null | undefined): boolean {
-  return !!text && text.length > 120;
-}
-
   ngOnInit(): void {
     this.loadFormData();
-    this.loadTargets();
+    // this.loadTargets();
   }
+
+  toggleFeedbackExpand(id: number) {
+    this.expandedFeedback[id] = !this.expandedFeedback[id];
+  }
+
+  isLongText(text: string | null | undefined): boolean {
+    return !!text && text.length > 120;
+  }
+
 
   loadFormData() {
-    this.service.getFormData().subscribe((res) => {
-      const allProjects = res.projects || [];
+  this.service.getFormData().subscribe((res) => {
+    const allProjects = res.projects || [];
 
-      if (!this.authService.currentUserStore?.roles.includes("MASTER")) {
-        const userTeamIds =
-          this.authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
+    if (!this.authService.currentUserStore?.roles.includes("MASTER")) {
+      const userTeamIds =
+        this.authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
 
-        this.projects = allProjects.filter((p: any) =>
-          p.teamIds?.some((id: number) => userTeamIds.includes(id)),
-        );
-      } else {
-        this.projects = allProjects;
-      }
+      this.projects = allProjects.filter((p: any) =>
+        p.teamIds?.some((id: number) => userTeamIds.includes(id)),
+      );
+    } else {
+      this.projects = allProjects;
+    }
 
-      this.stages = res.stages || [];
-      this.statuses = res.statuses || [];
-    });
-  }
+    this.stages = res.stages || [];
+    this.statuses = res.statuses || [];
 
-  loadTargets() {
+    // ✅ IMPORTANT: NOW load targets AFTER projects
+    this.loadTargets();
+  });
+}
+
+// loadTargets() {
+//   this.service.getAll().subscribe((res: any[]) => {
+//     if (!this.authService.currentUserStore?.roles.includes("MASTER")) {
+//       const userTeamIds =
+//         this.authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
+
+//       this.targets = (res || []).filter((t: any) =>
+//         t.teamIds?.some((id: number) => userTeamIds.includes(id)),
+//       );
+//     } else {
+//       this.targets = res || [];
+//     }
+
+//     // ✅ NOW project names WILL BE CORRECT
+//     this.applyProjectNames();
+//   });
+// }
+
+// loadTargets() {
+//   this.service.getAll().subscribe((res: any[]) => {
+
+//     let data = res || [];
+
+//     if (!this.authService.currentUserStore?.roles.includes("MASTER")) {
+//       const userTeamIds =
+//         this.authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
+
+//       data = data.filter((t: any) =>
+//         t.teamIds?.some((id: number) => userTeamIds.includes(id)),
+//       );
+//     }
+
+//     this.originalTargets = data;   // ✅ store original
+//     this.targets = [...data];
+
+//     this.applyProjectNames();
+//   });
+// }
+
+
+
+loadTargets() {
     this.service.getAll().subscribe((res: any[]) => {
+
+      let data = res || [];
+
       if (!this.authService.currentUserStore?.roles.includes("MASTER")) {
         const userTeamIds =
           this.authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
 
-        this.targets = (res || []).filter((t: any) =>
+        data = data.filter((t: any) =>
           t.teamIds?.some((id: number) => userTeamIds.includes(id)),
         );
-      } else {
-        this.targets = res || [];
       }
+
+      // ✅ FIX: add projectName in originalTargets
+      this.originalTargets = data.map(t => ({
+        ...t,
+        projectName: this.getProjectName(t.projectId) || ''
+      }));
+
+      this.targets = [...this.originalTargets];
+
+      this.applyProjectNames();
     });
   }
 
@@ -110,14 +176,7 @@ isLongText(text: string | null | undefined): boolean {
 
   getProjectName(id: number): string {
     const p = this.projects.find((x) => x.id === id);
-    return p ? p.title : "id";
-  }
-
-  isExpired(date: any): boolean {
-    if (!date) return false;
-    const d = new Date(date + "T00:00:00");
-    const today = new Date();
-    return d < today;
+    return p ? p.title : "";
   }
 
   getStatusClass(status: string): string {
@@ -133,10 +192,6 @@ isLongText(text: string | null | undefined): boolean {
     }
   }
 
-  trackById(index: number, item: any) {
-    return item.id;
-  }
-
   startEdit(row: any) {
     this.editId = row.id;
 
@@ -144,7 +199,6 @@ isLongText(text: string | null | undefined): boolean {
 
     if (row.targetDate) {
       const d = new Date(row.targetDate);
-
       formattedDate =
         d.getFullYear() +
         "-" +
@@ -206,63 +260,214 @@ isLongText(text: string | null | undefined): boolean {
     });
   }
 
-  getLatestHistory(row: any, field: string) {
-    if (!row.history) return null;
-
-    return row.history
-      .filter((h: any) => h.fieldName === field)
-      .sort(
-        (a: any, b: any) =>
-          new Date(b.changedOn).getTime() - new Date(a.changedOn).getTime(),
-      )[0];
+  toggleHistory(id: number) {
+    this.expandedRows[id] = !this.expandedRows[id];
   }
 
-  historyState: { [key: string]: boolean } = {};
+  toggleFieldHistory(id: number, field: string) {
+    const key = id + '_' + field;
+    this.expandedFieldRows[key] = !this.expandedFieldRows[key];
+  }
 
-toggleHistory(id: number) {
-  this.expandedRows[id] = !this.expandedRows[id];
+  getFieldHistory(history: any[], field: string) {
+    if (!history) return [];
+
+    return history
+      .filter(h => h.fieldName === field)
+      .sort((a, b) =>
+        new Date(b.changedOn).getTime() - new Date(a.changedOn).getTime()
+      );
+  }
+
+
+applyProjectNames() {
+  if (!this.projects.length || !this.targets.length) return;
+
+  this.targets = this.targets.map(t => ({
+    ...t,
+    projectName: this.getProjectName(t.projectId) || ''
+  }));
+
+  // ✅ always apply default sort
+  this.sortData(this.sortColumn || 'date');
 }
 
-toggleFieldHistory(id: number, field: string) {
-  const key = id + '_' + field;
-  this.expandedFieldRows[key] = !this.expandedFieldRows[key];
+//   // ✅ FINAL SORT FUNCTION
+sortData(column: string) {
+  if (this.sortColumn === column) {
+    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+  } else {
+    this.sortColumn = column;
+
+    // ✅ if user clicks date first time → start with ASC
+    this.sortDirection = column === 'date' ? 'asc' : 'asc';
+  }
+
+  const cleanName = (name: string) => {
+    return (name || '')
+      .toLowerCase()
+      .replace(/^m\/s\s*/i, '')
+      .replace(/^m\s*s\s*/i, '')
+      .replace(/^v\.\s*d\.?\s*/i, '')
+      .replace(/pvt\.?\s*ltd\.?/i, '')
+      .replace(/[^a-z0-9 ]/g, '')
+      .trim();
+  };
+
+  const parseDate = (d: any) => {
+    if (!d) return 0;
+
+    const parts = d.toString().split('T')[0].split('-');
+    if (parts.length !== 3) return 0;
+
+    const year = Number(parts[0]);
+    const month = Number(parts[1]) - 1;
+    const day = Number(parts[2]);
+
+    return new Date(year, month, day).getTime();
+  };
+
+  this.targets = [...this.targets].sort((a: any, b: any) => {
+    let valueA: any = '';
+    let valueB: any = '';
+
+    switch (column) {
+      case 'project':
+        valueA = cleanName(a.projectName);
+        valueB = cleanName(b.projectName);
+        break;
+
+      case 'code':
+        valueA = (a.projectCode || '').toLowerCase();
+        valueB = (b.projectCode || '').toLowerCase();
+        break;
+
+      case 'stage':
+        valueA = (a.stage || '').toLowerCase();
+        valueB = (b.stage || '').toLowerCase();
+        break;
+
+      case 'status':
+        valueA = (a.stageStatus || '').toLowerCase();
+        valueB = (b.stageStatus || '').toLowerCase();
+        break;
+
+      case 'date':
+        const timeA = parseDate(a.targetDate);
+        const timeB = parseDate(b.targetDate);
+
+        return this.sortDirection === 'asc'
+          ? timeA - timeB
+          : timeB - timeA;
+    }
+
+    return this.sortDirection === 'asc'
+      ? valueA.localeCompare(valueB)
+      : valueB.localeCompare(valueA);
+  });
 }
 
-toggleFeedback(event: Event, id: number) {
-  event.stopPropagation();
-  this.expandedFeedback[id] = !this.expandedFeedback[id];
+
+
+
+applyCustomDate() {
+  if (!this.fromDate || !this.toDate) {
+    // if one date missing → reset
+    this.targets = [...this.originalTargets];
+    this.applyProjectNames();
+    return;
+  }
+
+  const parseDate = (d: any) => {
+    if (!d) return 0;
+
+    const parts = d.toString().split('T')[0].split('-');
+    if (parts.length !== 3) return 0;
+
+    const year = Number(parts[0]);
+    const month = Number(parts[1]) - 1;
+    const day = Number(parts[2]);
+
+    return new Date(year, month, day).getTime();
+  };
+
+  const from = parseDate(this.fromDate);
+  const to = parseDate(this.toDate);
+
+  this.targets = this.originalTargets.filter((t: any) => {
+    const time = parseDate(t.targetDate);
+    return time >= from && time <= to;
+  });
+
+  this.applyProjectNames(); // keep sorting
 }
 
-isHistoryOpen(row: any, type: string): boolean {
-  return this.historyState[row.id + '_' + type];
+
+// applySearch() {
+//   const text = this.searchText.toLowerCase();
+
+//   this.targets = this.originalTargets.filter((t: any) => {
+//     const project = (t.projectName || '').toLowerCase();
+//     const code = (t.projectCode || '').toLowerCase();
+
+//     return project.includes(text) || code.includes(text);
+//   });
+
+//   this.applyProjectNames(); // keep sorting
+// }
+
+
+applySearch() {
+  const text = this.searchText.toLowerCase();
+
+  this.targets = this.originalTargets.filter((t: any) => {
+    const project = this.getProjectName(t.projectId).toLowerCase();
+    const code = (t.projectCode || '').toLowerCase();
+
+    return project.includes(text) || code.includes(text);
+  });
+
+  this.applyProjectNames(); // keep sorting
 }
 
-getHistory(row: any, field: string) {
-  if (!row.history) return [];
+applyFilter(type: string) {
+  this.activeTab = type;
 
-  return row.history
-    .filter((h: any) => h.fieldName === field)
-    .sort((a: any, b: any) =>
-      new Date(b.changedOn).getTime() - new Date(a.changedOn).getTime()
-    );
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  this.targets = this.originalTargets.filter((t: any) => {
+    if (!t.targetDate) return false;
+
+    const d = new Date(t.targetDate);
+    const month = d.getMonth();
+    const year = d.getFullYear();
+
+    switch (type) {
+      case 'all':
+        return true;
+
+      case 'current':
+        return month === currentMonth && year === currentYear;
+
+      case 'prev':
+        return (
+          (month === currentMonth - 1 && year === currentYear) ||
+          (currentMonth === 0 && month === 11 && year === currentYear - 1)
+        );
+
+      case 'next':
+        return (
+          (month === currentMonth + 1 && year === currentYear) ||
+          (currentMonth === 11 && month === 0 && year === currentYear + 1)
+        );
+
+      default:
+        return true;
+    }
+  });
+
+  this.applyProjectNames(); // re-apply names + sorting
 }
-
-
-getFieldHistory(history: any[], field: string) {
-  if (!history) return [];
-
-  return history
-    .filter(h => h.fieldName === field)
-    .sort((a, b) =>
-      new Date(b.changedOn).getTime() - new Date(a.changedOn).getTime()
-    );
-}
-
-  // delete(id: number) {
-  //   if (!confirm("Are you sure you want to delete this record?")) return;
-
-  //   this.service.delete(id).subscribe(() => {
-  //     this.loadTargets();
-  //   });
-  // }
 }

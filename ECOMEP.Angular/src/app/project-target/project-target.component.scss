@@ -57,7 +57,8 @@ th:nth-child(4), td:nth-child(4) { width: 180px; }
 th:nth-child(5), td:nth-child(5) { width: 140px; }
 th:nth-child(6), td:nth-child(6) { width: 130px; }
 th:nth-child(7), td:nth-child(7) { width: 260px; }
-th:nth-child(8), td:nth-child(8) { width: 90px; }
+// th:nth-child(8), td:nth-child(8) { width: 90px; }
+th:nth-child(8), td:nth-child(8) { width: 160px; }
 
 /* ================= ID ================= */
 .id-badge {
@@ -229,4 +230,117 @@ input {
 /* ================= TOP BUTTON ================= */
 .page-actions {
   margin-bottom: 10px;
+}
+
+
+/* ================= ACTION ================= */
+
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;   /* ✅ IMPORTANT */
+}
+
+
+/* ================= BUTTONS ================= */
+.primary-btn {
+  background: #22c55e;
+  color: white;
+  border: none;
+  padding: 6px 14px;     /* ✅ same height as cancel */
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.primary-btn:hover {
+  background: #16a34a;
+}
+
+/* ✅ FIXED CANCEL BUTTON */
+.secondary-btn {
+  background: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  padding: 6px 14px;     /* ✅ match Save button */
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+   min-width: 70px;
+}
+
+.secondary-btn:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+.primary-btn,
+.secondary-btn {
+  height: 32px;         /* ✅ fixed height */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+th {
+  text-align: left;
+  padding: 10px;
+  font-size: 13px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;        /* ✅ ADD THIS */
+  user-select: none;      /* ✅ ADD THIS */
+}
+
+.page-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* LEFT SIDE */
+.left-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* RIGHT SIDE TABS */
+.filter-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+/* TAB BUTTON */
+.filter-tabs button {
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+/* HOVER */
+.filter-tabs button:hover {
+  background: #e5e7eb;
+}
+
+/* ACTIVE TAB */
+.filter-tabs button.active {
+  background: #22c55e;
+  color: #fff;
+  border-color: #22c55e;
+}
+
+.search-box {
+  padding: 6px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 12px;
+  width: 180px;
 }
