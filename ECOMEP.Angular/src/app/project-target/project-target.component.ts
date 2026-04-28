@@ -43,19 +43,22 @@ expandedFeedback: { [key: number]: boolean } = {};
     feedback: "",
   };
 
-  form: any = {
-    projectId: null,
-    stage: "",
-    stageStatus: "",
-    targetDate: null,
-    feedback: "",
-  };
-
+  
   constructor(
     private service: ProjectTargetService,
     private router: Router,
     private authService: AuthService,
   ) {}
+
+  
+  toggleFeedbackExpand(id: number) {
+  this.expandedFeedback[id] = !this.expandedFeedback[id];
+}
+
+
+isLongText(text: string | null | undefined): boolean {
+  return !!text && text.length > 120;
+}
 
   ngOnInit(): void {
     this.loadFormData();

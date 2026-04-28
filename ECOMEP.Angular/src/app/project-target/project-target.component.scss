@@ -1,36 +1,15 @@
 .page-wrapper {
-  padding: 16px 20px;
-  background: #f5f7fb;
+  padding: 14px 18px;
+  background: #f3f4f6;
   min-height: 100vh;
-}
-
-/* ================= HEADER ================= */
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.page-header h2 {
-  margin: 0;
-  font-size: 22px;
-  color: #333;
-}
-
-.page-header .subtitle {
-  margin: 4px 0 0;
-  font-size: 13px;
-  color: #4caf50;
 }
 
 /* ================= CARD ================= */
 .card {
   background: #fff;
-  border-radius: 12px;
-  padding: 18px;
+  border-radius: 8px;
+  padding: 14px;
   border: 1px solid #e5e7eb;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 /* ================= TABLE ================= */
@@ -41,35 +20,44 @@
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 900px;
-  table-layout: fixed; /* ✅ FIX ALIGNMENT */
+  table-layout: fixed;
+  font-size: 13px;
 }
 
-/* HEADER */
 thead {
-  background: #4caf50;
+  background: #3fa34d;
 }
 
 th {
   text-align: left;
-  padding: 12px;
+  padding: 10px;
   font-size: 13px;
   color: #fff;
   font-weight: 600;
 }
 
-/* ✅ FIX ALIGNMENT */
-td, th {
+td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  font-size: 13px;
+  color: #222;
   vertical-align: middle;
 }
 
-/* TABLE CELLS */
-td {
-  padding: 12px;
-  border-bottom: 1px solid #eee;
-  font-size: 14px;
-  color: #111;
+/* ================= ROW HOVER ================= */
+tbody tr:hover {
+  background: #f7faf7;
 }
+
+/* ================= COLUMN WIDTHS ================= */
+th:nth-child(1), td:nth-child(1) { width: 50px; text-align: center; }
+th:nth-child(2), td:nth-child(2) { width: 90px; }
+th:nth-child(3), td:nth-child(3) { width: 260px; }
+th:nth-child(4), td:nth-child(4) { width: 180px; }
+th:nth-child(5), td:nth-child(5) { width: 140px; }
+th:nth-child(6), td:nth-child(6) { width: 130px; }
+th:nth-child(7), td:nth-child(7) { width: 260px; }
+th:nth-child(8), td:nth-child(8) { width: 90px; }
 
 /* ================= ID ================= */
 .id-badge {
@@ -78,266 +66,167 @@ td {
 }
 
 /* ================= STATUS ================= */
-// .status-badge {
-//   display: inline-flex;
-//   align-items: center;
-//   padding: 4px 10px;
-//   border-radius: 20px;
-//   font-size: 12px;
-//   font-weight: 600;
-//   white-space: nowrap;
-// }
-
-// .status-complete {
-//   background: #e8f5e9;
-//   color: #2e7d32;
-// }
-
-// .status-progress {
-//   background: #fff8e1;
-//   color: #f57c00;
-// }
-
-// .status-hold {
-//   background: #ffebee;
-//   color: #c62828;
-// }
-
-// .status-default {
-//   background: #f1f5f9;
-//   color: #374151;
-// }
-
-
-
-
-/* ================= STATUS (TEXT ONLY) ================= */
 .status-badge {
-  display: inline-flex;
-  align-items: center;
   font-size: 12px;
   font-weight: 600;
-  white-space: nowrap;
-  padding: 0;              /* removed background spacing */
-  border-radius: 0;       /* no pill effect */
-  background: transparent; /* ✅ REMOVE BACKGROUND */
 }
 
-/* ONLY TEXT COLORS */
-.status-complete {
-  color: #2e7d32;
+.status-complete { color: #2e7d32; }
+.status-progress { color: #f57c00; }
+.status-hold { color: #d32f2f; }
+.status-default { color: #374151; }
+
+/* ================= MAIN VALUE ================= */
+.main-value {
+  display: inline-flex;  /* ✅ FIX */
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  flex-wrap: wrap; /* keeps arrow beside */
 }
 
-.status-progress {
-  color: #f57c00;
+.clickable-status {
+  cursor: pointer;
 }
 
-.status-hold {
-  color: #c62828;
+/* ================= ARROW ================= */
+.dropdown-arrow {
+  font-size: 10px;
+  color: #3b82f6;
+  cursor: pointer;
+  transition: 0.2s ease;
+  flex-shrink: 0;
 }
 
-.status-default {
-  color: #374151;
+.dropdown-arrow.rotated {
+  transform: rotate(90deg);
 }
 
-/* ================= EXPIRED ================= */
-.expired {
-  color: #c62828;
-  font-weight: 600;
+/* ================= HISTORY ================= */
+.history-inline {
+  margin-top: 6px;
+  background: #f9fafb;
+  border-left: 3px solid #22c55e;
+  border-radius: 6px;
+  padding: 6px 8px;
+  width: fit-content;
+  min-width: 220px;
 }
 
-/* ================= ACTIONS ================= */
+.history-scroll {
+  max-height: 70px;
+  overflow-y: auto;
+}
+
+.history-item {
+  font-size: 12px;
+  margin-bottom: 3px;
+}
+
+.old-val {
+  color: #444;
+}
+
+.history-date {
+  color: #9ca3af;
+  font-size: 11px;
+  margin-left: 4px;
+}
+
+/* ================= FEEDBACK ================= */
+.feedback-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.feedback-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
+  word-break: break-word;
+  flex: 1;
+}
+
+.feedback-expanded {
+  -webkit-line-clamp: unset;
+}
+
+/* SHOW MORE */
+.show-toggle {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #22c55e;
+  cursor: pointer;
+}
+
+.show-toggle:hover {
+  text-decoration: underline;
+}
+
+/* ================= ACTION ================= */
 .actions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 /* ================= BUTTONS ================= */
 .edit-btn {
-  background: #fff8e1;
-  color: #f57c00;
+  background: #fff3cd;
+  color: #f59e0b;
   border: none;
-  padding: 5px 10px;
+  padding: 4px 10px;
   border-radius: 6px;
-  cursor: pointer;
-}
-
-.delete-btn {
-  background: #ffebee;
-  color: #c62828;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 6px;
-  cursor: pointer;
+  font-size: 12px;
 }
 
 .primary-btn {
-  background: #4caf50;
+  background: #22c55e;
   color: white;
   border: none;
-  padding: 10px 14px;
-  border-radius: 8px;
-  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 6px;
   font-weight: 500;
 }
 
 .primary-btn:hover {
-  background: #43a047;
-}
-
-/* ================= ROW HOVER ================= */
-tbody tr:hover {
-  background: #f9fff9;
+  background: #16a34a;
 }
 
 /* ================= EMPTY ================= */
 .no-data {
   text-align: center;
   padding: 20px;
-  color: #4caf50;
+  color: #22c55e;
   font-weight: 500;
 }
 
-/* ================= FORM CONTROL FIX ================= */
+/* ================= FORM ================= */
 mat-form-field {
-  width: 160px;
+  width: 150px;
   margin: 0;
 }
 
-/* remove extra material spacing */
 mat-form-field .mat-mdc-form-field-subscript-wrapper {
   display: none;
 }
 
-/* compact dropdown */
 mat-select {
   font-size: 13px;
 }
 
-/* input fix */
 input {
   width: 140px;
-  padding: 6px;
+  padding: 5px;
   border: 1px solid #ddd;
   border-radius: 6px;
 }
 
-/* ================= TOP BUTTON ALIGNMENT ================= */
+/* ================= TOP BUTTON ================= */
 .page-actions {
-  display: flex;
-  justify-content: flex-start;
-  margin: 6px 0 10px;
-}
-
-
-
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 900px;
-  table-layout: auto; /* ✅ FIX: remove forced equal shifting */
-}
-
-/* control column alignment better */
-th, td {
-  vertical-align: middle;
-  text-align: left;
-}
-
-/* prevent weird stretching in status + actions */
-td:nth-child(4),
-td:nth-child(7) {
-  white-space: nowrap;
-}
-
-/* Project column stability */
-td:nth-child(2) {
-  min-width: 180px;
-  font-weight: 500;
-  color: #111;
-}
-
-.status-block {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.history-dd {
-  width: 140px;
-  font-size: 11px;
-}
-
-/* make dropdown look like label only */
-.history-dd .mat-mdc-form-field-subscript-wrapper {
-  display: none;
-}
-
-
-
-
-
-
-.main-value {
-  font-weight: 600;
-  color: #222;
-}
-
-.history-value {
-  font-size: 12px;
-  color: #888;
-  margin-top: 3px;
-}
-
-.history-date {
-  font-size: 11px;
-  color: #bbb;
-  margin-left: 4px;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-.toggle-btn {
-  cursor: pointer;
-  margin-left: 8px;
-  font-size: 12px;
-}
-
-.history-dropdown {
-  background: #f5f5f5;
-  padding: 6px;
-  margin-top: 5px;
-  border-radius: 4px;
-  font-size: 12px;
-}
-
-.history-date {
-  color: gray;
-  margin-left: 5px;
+  margin-bottom: 10px;
 }

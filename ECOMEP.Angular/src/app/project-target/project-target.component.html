@@ -52,29 +52,22 @@
             <td>
               <ng-container *ngIf="editId !== t.id; else editStatus">
 
-                <div
-                  class="main-value"
-                  [class.clickable-status]="getFieldHistory(t.history, 'StageStatus').length"
-                  (click)="getFieldHistory(t.history, 'StageStatus').length && toggleHistory(t.id)"
-                >
+                <div class="main-value" [class.clickable-status]="getFieldHistory(t.history, 'StageStatus').length"
+                  (click)="getFieldHistory(t.history, 'StageStatus').length && toggleHistory(t.id)">
 
                   <span class="status-badge" [ngClass]="getStatusClass(t.stageStatus)">
                     {{ t.stageStatus }}
                   </span>
 
-                  <span
-                    class="dropdown-arrow"
-                    *ngIf="getFieldHistory(t.history, 'StageStatus').length"
-                    [class.rotated]="expandedRows[t.id]"
-                  >
+                  <span class="dropdown-arrow" *ngIf="getFieldHistory(t.history, 'StageStatus').length"
+                    [class.rotated]="expandedRows[t.id]">
                     ▶
                   </span>
                 </div>
 
                 <div class="history-inline" *ngIf="expandedRows[t.id]">
                   <div class="history-scroll">
-                    <div class="history-item"
-                         *ngFor="let h of getFieldHistory(t.history, 'StageStatus')">
+                    <div class="history-item" *ngFor="let h of getFieldHistory(t.history, 'StageStatus')">
                       <span class="old-val">{{ h.oldValue || 'N/A' }}</span>
                       <span class="history-date">
                         ({{ h.changedOn | date:'dd MMM yyyy' }})
@@ -100,27 +93,20 @@
             <td>
               <ng-container *ngIf="editId !== t.id; else editDate">
 
-                <div
-                  class="main-value"
-                  [class.clickable-status]="getFieldHistory(t.history, 'TargetDate').length"
-                  (click)="getFieldHistory(t.history, 'TargetDate').length && toggleFieldHistory(t.id, 'TargetDate')"
-                >
+                <div class="main-value" [class.clickable-status]="getFieldHistory(t.history, 'TargetDate').length"
+                  (click)="getFieldHistory(t.history, 'TargetDate').length && toggleFieldHistory(t.id, 'TargetDate')">
 
                   <span>{{ t.targetDate | date:'dd MMM yyyy' }}</span>
 
-                  <span
-                    class="dropdown-arrow"
-                    *ngIf="getFieldHistory(t.history, 'TargetDate').length"
-                    [class.rotated]="expandedFieldRows[t.id + '_TargetDate']"
-                  >
+                  <span class="dropdown-arrow" *ngIf="getFieldHistory(t.history, 'TargetDate').length"
+                    [class.rotated]="expandedFieldRows[t.id + '_TargetDate']">
                     ▶
                   </span>
                 </div>
 
                 <div class="history-inline" *ngIf="expandedFieldRows[t.id + '_TargetDate']">
                   <div class="history-scroll">
-                    <div class="history-item"
-                         *ngFor="let h of getFieldHistory(t.history, 'TargetDate')">
+                    <div class="history-item" *ngFor="let h of getFieldHistory(t.history, 'TargetDate')">
                       <span class="old-val">
                         {{ h.oldValue | date:'dd MMM yyyy' }}
                       </span>
@@ -142,21 +128,32 @@
             <td>
               <ng-container *ngIf="editId !== t.id; else editFeedback">
 
-                <div class="main-value"
-                     [class.clickable-status]="getFieldHistory(t.history, 'Feedback').length"
-                     (click)="getFieldHistory(t.history, 'Feedback').length && toggleFieldHistory(t.id, 'Feedback')">
+                <div class="main-value">
 
-                  <span>{{ t.feedback || '-' }}</span>
+                  <!-- TEXT + ARROW IN SAME LINE -->
+                  <div class="feedback-line">
 
-                  <span
-                    class="dropdown-arrow"
-                    *ngIf="getFieldHistory(t.history, 'Feedback').length"
-                    [class.rotated]="expandedFieldRows[t.id + '_Feedback']"
-                  >
-                    ▶
+                    <span class="feedback-text" [class.feedback-expanded]="expandedFeedback[t.id]">
+                      {{ t.feedback || '-' }}
+                    </span>
+
+                    <span class="dropdown-arrow" *ngIf="getFieldHistory(t.history, 'Feedback').length"
+                      (click)="toggleFieldHistory(t.id, 'Feedback'); $event.stopPropagation()"
+                      [class.rotated]="expandedFieldRows[t.id + '_Feedback']">
+                      ▶
+                    </span>
+
+                  </div>
+
+                  <!-- SHOW MORE -->
+                  <span class="show-toggle" *ngIf="isLongText(t.feedback)"
+                    (click)="toggleFeedbackExpand(t.id); $event.stopPropagation()">
+                    {{ expandedFeedback[t.id] ? 'Show less' : 'Show more' }}
                   </span>
+
                 </div>
 
+                <!-- HISTORY -->
                 <div class="history-inline" *ngIf="expandedFieldRows[t.id + '_Feedback']">
                   <div class="history-scroll">
                     <div class="history-item"
