@@ -7,6 +7,7 @@ import { ProjectTargetService } from "./project-target.service";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatSelectModule } from "@angular/material/select";
 import { MatInputModule } from "@angular/material/input";
+import { MatDialog, MatDialogModule } from "@angular/material/dialog"; // ✅ ADDED
 
 import { HeaderComponent } from "../mcv-header/components/header/header.component";
 import { AuthService } from "src/app/auth/services/auth.service";
@@ -20,15 +21,18 @@ import { AuthService } from "src/app/auth/services/auth.service";
     MatFormFieldModule,
     MatSelectModule,
     MatInputModule,
+    MatDialogModule, // ✅ ADDED
     HeaderComponent,
   ],
   templateUrl: "./project-target.component.html",
   styleUrls: ["./project-target.component.scss"],
 })
 export class ProjectTargetComponent implements OnInit {
+  expandedDialog: { [key: number]: boolean } = {};
   expandedRows: { [key: number]: boolean } = {};
-expandedFieldRows: { [key: string]: boolean } = {};
-expandedFeedback: { [key: number]: boolean } = {};
+  expandedFieldRows: { [key: string]: boolean } = {};
+  expandedFeedback: { [key: number]: boolean } = {};
+
   isEdit = false;
   editId: number | null = null;
 
@@ -36,6 +40,7 @@ expandedFeedback: { [key: number]: boolean } = {};
   stages: any[] = [];
   statuses: string[] = [];
   targets: any[] = [];
+
   editRow: any = {
     stage: "",
     stageStatus: "",
@@ -43,22 +48,37 @@ expandedFeedback: { [key: number]: boolean } = {};
     feedback: "",
   };
 
-  
   constructor(
     private service: ProjectTargetService,
     private router: Router,
     private authService: AuthService,
+    private dialog: MatDialog, // ✅ ADDED
   ) {}
 
-  
+  // ================= FEEDBACK =================
+
   toggleFeedbackExpand(id: number) {
-  this.expandedFeedback[id] = !this.expandedFeedback[id];
-}
+    this.expandedFeedback[id] = !this.expandedFeedback[id];
+  }
 
+  isLongText(text: string | null | undefined): boolean {
+    return !!text && text.length > 120;
+  }
 
-isLongText(text: string | null | undefined): boolean {
-  return !!text && text.length > 120;
-}
+  // 🔥 NEW: OPEN DIALOG
+  dialogData: any[] = []; // ✅ ADD THIS VARIABLE
+
+  openFeedbackDialog(template: any, row: any) {
+    this.dialogData = this.getFieldHistory(row.history, "Feedback"); // ✅ store manually
+
+    this.dialog.open(template, {
+      width: "650px",
+      maxWidth: "90vw",
+      panelClass: "custom-dialog",
+    });
+  }
+
+  // ================= INIT =================
 
   ngOnInit(): void {
     this.loadFormData();
@@ -137,6 +157,8 @@ isLongText(text: string | null | undefined): boolean {
     return item.id;
   }
 
+  // ================= EDIT =================
+
   startEdit(row: any) {
     this.editId = row.id;
 
@@ -206,63 +228,25 @@ isLongText(text: string | null | undefined): boolean {
     });
   }
 
-  getLatestHistory(row: any, field: string) {
-    if (!row.history) return null;
+  // ================= HISTORY =================
 
-    return row.history
-      .filter((h: any) => h.fieldName === field)
-      .sort(
-        (a: any, b: any) =>
-          new Date(b.changedOn).getTime() - new Date(a.changedOn).getTime(),
-      )[0];
+  toggleHistory(id: number) {
+    this.expandedRows[id] = !this.expandedRows[id];
   }
 
-  historyState: { [key: string]: boolean } = {};
+  toggleFieldHistory(id: number, field: string) {
+    const key = id + "_" + field;
+    this.expandedFieldRows[key] = !this.expandedFieldRows[key];
+  }
 
-toggleHistory(id: number) {
-  this.expandedRows[id] = !this.expandedRows[id];
-}
+  getFieldHistory(history: any[], field: string) {
+    if (!history) return [];
 
-toggleFieldHistory(id: number, field: string) {
-  const key = id + '_' + field;
-  this.expandedFieldRows[key] = !this.expandedFieldRows[key];
-}
-
-toggleFeedback(event: Event, id: number) {
-  event.stopPropagation();
-  this.expandedFeedback[id] = !this.expandedFeedback[id];
-}
-
-isHistoryOpen(row: any, type: string): boolean {
-  return this.historyState[row.id + '_' + type];
-}
-
-getHistory(row: any, field: string) {
-  if (!row.history) return [];
-
-  return row.history
-    .filter((h: any) => h.fieldName === field)
-    .sort((a: any, b: any) =>
-      new Date(b.changedOn).getTime() - new Date(a.changedOn).getTime()
-    );
-}
-
-
-getFieldHistory(history: any[], field: string) {
-  if (!history) return [];
-
-  return history
-    .filter(h => h.fieldName === field)
-    .sort((a, b) =>
-      new Date(b.changedOn).getTime() - new Date(a.changedOn).getTime()
-    );
-}
-
-  // delete(id: number) {
-  //   if (!confirm("Are you sure you want to delete this record?")) return;
-
-  //   this.service.delete(id).subscribe(() => {
-  //     this.loadTargets();
-  //   });
-  // }
+    return history
+      .filter((h) => h.fieldName === field)
+      .sort(
+        (a, b) =>
+          new Date(b.changedOn).getTime() - new Date(a.changedOn).getTime(),
+      );
+  }
 }
