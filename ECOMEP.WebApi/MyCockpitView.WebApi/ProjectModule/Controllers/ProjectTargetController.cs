@@ -17,43 +17,12 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
             _db = db;
         }
 
-        //// ✅ GET ALL
-        //[HttpGet]
-        //public async Task<IActionResult> Get()
-        //{
-        //    var today = DateTime.Today;
-
-        //    var data = await _db.ProjectTargets
-        //        .Where(x => !x.IsDeleted)
-        //        .ToListAsync();
-
-        //    foreach (var item in data)
-        //    {
-        //        if (item.TargetDate.HasValue &&
-        //            item.TargetDate.Value.Date < today &&
-        //            item.StageStatus != "Complete & Generate Invoice")
-        //        {
-        //            // 🔥 FIXED: prevent timezone shift
-        //            item.TargetDate = DateTime.SpecifyKind(
-        //                today.AddDays(15).Date,
-        //                DateTimeKind.Unspecified
-        //            );
-
-        //            item.ModifiedDate = DateTime.Now;
-        //        }
-        //    }
-
-        //    await _db.SaveChangesAsync();
-
-        //    return Ok(data.OrderByDescending(x => x.CreatedDate));
-        //}
-
-
-
-        // ✅ CREATE
         [HttpPost]
         public async Task<IActionResult> Create(ProjectTargetDto dto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var project = await _db.Projects.FindAsync(dto.ProjectId);
             if (project == null)
                 return BadRequest("Project not found");
@@ -108,6 +77,10 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, ProjectTargetDto dto)
         {
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var entity = await _db.ProjectTargets.FindAsync(id);
             if (entity == null) return NotFound();
 
@@ -175,28 +148,38 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
             return Ok(entity);
         }
 
-        // ✅ DELETE (Soft Delete)
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var item = await _db.ProjectTargets.FindAsync(id);
-            if (item == null) return NotFound();
+        //// ✅ DELETE (Soft Delete)
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> Delete(int id)
+        //{
+        //    var item = await _db.ProjectTargets.FindAsync(id);
+        //    if (item == null) return NotFound();
 
-            item.IsDeleted = true;
-            item.ModifiedDate = DateTime.Now;
+        //    item.IsDeleted = true;
+        //    item.ModifiedDate = DateTime.Now;
 
-            await _db.SaveChangesAsync();
+        //    await _db.SaveChangesAsync();
 
-            return Ok();
-        }
+        //    return Ok();
+        //}
 
         // ✅ FORM DATA
         [HttpGet("form-data")]
         public async Task<IActionResult> GetFormData(int? projectId = null)
         {
             var projects = await _db.Projects
-                .Select(x => new { x.ID, x.Title })
-                .ToListAsync();
+    .Select(p => new
+    {
+        id = p.ID,
+        title = p.Title,
+
+        // 🔥 ADD TEAM IDS FROM ProjectTeam TABLE
+        teamIds = _db.ProjectTeams
+            .Where(pt => pt.ProjectID == p.ID)
+            .Select(pt => pt.ContactTeamID)
+            .ToList()
+    })
+    .ToListAsync();
 
             var stages = await _db.ProjectStages
                 .Where(x => projectId == null || x.ProjectID == projectId)
@@ -243,6 +226,7 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
             var today = DateTime.Today;
 
             var data = await _db.ProjectTargets
+                .Include(x => x.Project)
                 .Where(x => !x.IsDeleted)
                 .ToListAsync();
 
@@ -271,15 +255,22 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
                 {
                     x.Id,
                     x.ProjectId,
+                    ProjectCode = x.Project.Code,
                     x.Stage,
                     x.TargetDate,
                     x.StageStatus,
                     x.Feedback,
 
+                    // 🔥 ADD THIS (IMPORTANT)
+                    teamIds = _db.ProjectTeams
+        .Where(pt => pt.ProjectID == x.ProjectId)
+        .Select(pt => pt.ContactTeamID)
+        .ToList(),
+
                     history = _db.ProjectTargetHistories
-                        .Where(h => h.ProjectTargetId == x.Id)
-                        .OrderByDescending(h => h.ChangedOn)
-                        .ToList()
+        .Where(h => h.ProjectTargetId == x.Id)
+        .OrderByDescending(h => h.ChangedOn)
+        .ToList()
                 });
 
             return Ok(result);

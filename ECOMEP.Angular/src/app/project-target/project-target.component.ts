@@ -9,6 +9,7 @@ import { MatSelectModule } from "@angular/material/select";
 import { MatInputModule } from "@angular/material/input";
 
 import { HeaderComponent } from "../mcv-header/components/header/header.component";
+import { AuthService } from "src/app/auth/services/auth.service";
 
 @Component({
   selector: "app-project-target",
@@ -53,6 +54,7 @@ export class ProjectTargetComponent implements OnInit {
   constructor(
     private service: ProjectTargetService,
     private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -63,17 +65,52 @@ export class ProjectTargetComponent implements OnInit {
   // ================= LOAD DATA =================
   loadFormData() {
     this.service.getFormData().subscribe((res) => {
-      this.projects = res.projects || [];
+
+
+
+
+
+
+const allProjects = res.projects || [];
+
+if (!this.authService.currentUserStore?.roles.includes('MASTER')) {
+
+  const userTeamIds =
+    this.authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
+
+  this.projects = allProjects.filter((p: any) =>
+    p.teamIds?.some((id: number) => userTeamIds.includes(id))
+  );
+
+} else {
+  this.projects = allProjects;
+}
+
+
+
       this.stages = res.stages || [];
       this.statuses = res.statuses || [];
     });
   }
 
-  loadTargets() {
-    this.service.getAll().subscribe((res) => {
+loadTargets() {
+  this.service.getAll().subscribe((res: any[]) => {
+
+    if (!this.authService.currentUserStore?.roles.includes('MASTER')) {
+
+      const userTeamIds =
+        this.authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
+
+      this.targets = (res || []).filter((t: any) =>
+        t.teamIds?.some((id: number) => userTeamIds.includes(id))
+      );
+
+    } else {
       this.targets = res || [];
-    });
-  }
+    }
+
+  });
+}
 
   // ================= NAVIGATION =================
 

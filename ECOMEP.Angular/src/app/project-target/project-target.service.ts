@@ -59,4 +59,19 @@ export class ProjectTargetService {
   getById(id: number) {
     return this.http.get<any>(`${this.baseUrl}/${id}`);
   }
+
+  getFilteredProjects(allProjects: any[], authService: any) {
+
+  if (!authService.currentUserStore?.roles.includes('MASTER')) {
+
+    const userTeamIds =
+      authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
+
+    return allProjects.filter((p: any) =>
+      userTeamIds.includes(p.teamId)
+    );
+  }
+
+  return allProjects;
+}
 }

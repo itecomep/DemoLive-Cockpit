@@ -12,6 +12,7 @@ import { MatSelectModule } from "@angular/material/select";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { HeaderComponent } from "../../mcv-header/components/header/header.component";
+import { AuthService } from "src/app/auth/services/auth.service";
 
 @Component({
   selector: "app-project-target-form",
@@ -51,6 +52,7 @@ export class ProjectTargetFormComponent implements OnInit {
     private service: ProjectTargetService,
     private router: Router,
     private route: ActivatedRoute,
+     private authService: AuthService
   ) {}
 
   // ================= INIT =================
@@ -71,13 +73,37 @@ export class ProjectTargetFormComponent implements OnInit {
   }
 
   // ================= LOAD DROPDOWNS =================
-  loadFormData() {
-    this.service.getFormData().subscribe((res: any) => {
-      this.projects = res.projects || [];
-      this.stages = res.stages || [];
-      this.statuses = res.statuses || [];
-    });
-  }
+  // loadFormData() {
+  //   this.service.getFormData().subscribe((res: any) => {
+  //     this.projects = res.projects || [];
+  //     this.stages = res.stages || [];
+  //     this.statuses = res.statuses || [];
+  //   });
+  // }
+
+loadFormData() {
+  this.service.getFormData().subscribe((res: any) => {
+
+    const allProjects = res.projects || [];
+
+    if (!this.authService.currentUserStore?.roles.includes('MASTER')) {
+
+      const userTeamIds =
+        this.authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
+
+      // 🔥 MATCH USING teamIds ARRAY
+      this.projects = allProjects.filter((p: any) =>
+        p.teamIds?.some((id: number) => userTeamIds.includes(id))
+      );
+
+    } else {
+      this.projects = allProjects;
+    }
+
+    this.stages = res.stages || [];
+    this.statuses = res.statuses || [];
+  });
+}
 
   // ================= LOAD BY ID =================
   loadById(id: number) {
