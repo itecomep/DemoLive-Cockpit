@@ -26,6 +26,9 @@ import { AuthService } from "src/app/auth/services/auth.service";
   styleUrls: ["./project-target.component.scss"],
 })
 export class ProjectTargetComponent implements OnInit {
+  expandedRows: { [key: number]: boolean } = {};
+expandedFieldRows: { [key: string]: boolean } = {};
+expandedFeedback: { [key: number]: boolean } = {};
   isEdit = false;
   editId: number | null = null;
 
@@ -210,6 +213,47 @@ export class ProjectTargetComponent implements OnInit {
           new Date(b.changedOn).getTime() - new Date(a.changedOn).getTime(),
       )[0];
   }
+
+  historyState: { [key: string]: boolean } = {};
+
+toggleHistory(id: number) {
+  this.expandedRows[id] = !this.expandedRows[id];
+}
+
+toggleFieldHistory(id: number, field: string) {
+  const key = id + '_' + field;
+  this.expandedFieldRows[key] = !this.expandedFieldRows[key];
+}
+
+toggleFeedback(event: Event, id: number) {
+  event.stopPropagation();
+  this.expandedFeedback[id] = !this.expandedFeedback[id];
+}
+
+isHistoryOpen(row: any, type: string): boolean {
+  return this.historyState[row.id + '_' + type];
+}
+
+getHistory(row: any, field: string) {
+  if (!row.history) return [];
+
+  return row.history
+    .filter((h: any) => h.fieldName === field)
+    .sort((a: any, b: any) =>
+      new Date(b.changedOn).getTime() - new Date(a.changedOn).getTime()
+    );
+}
+
+
+getFieldHistory(history: any[], field: string) {
+  if (!history) return [];
+
+  return history
+    .filter(h => h.fieldName === field)
+    .sort((a, b) =>
+      new Date(b.changedOn).getTime() - new Date(a.changedOn).getTime()
+    );
+}
 
   // delete(id: number) {
   //   if (!confirm("Are you sure you want to delete this record?")) return;

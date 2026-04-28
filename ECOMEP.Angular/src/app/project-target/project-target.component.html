@@ -26,11 +26,12 @@
 
         <tbody>
           <tr *ngFor="let t of targets; let i = index; trackBy: trackById">
+
             <td>{{ i + 1 }}</td>
             <td class="id-badge">#{{ t.projectCode || "-" }}</td>
-
             <td>{{ getProjectName(t.projectId) }}</td>
 
+            <!-- STAGE -->
             <td>
               <ng-container *ngIf="editId !== t.id; else editStage">
                 {{ t.stage }}
@@ -47,26 +48,41 @@
               </ng-template>
             </td>
 
+            <!-- STATUS -->
             <td>
               <ng-container *ngIf="editId !== t.id; else editStatus">
-                <div class="main-value">
-                  <span
-                    class="status-badge"
-                    [ngClass]="getStatusClass(t.stageStatus)"
-                  >
+
+                <div
+                  class="main-value"
+                  [class.clickable-status]="getFieldHistory(t.history, 'StageStatus').length"
+                  (click)="getFieldHistory(t.history, 'StageStatus').length && toggleHistory(t.id)"
+                >
+
+                  <span class="status-badge" [ngClass]="getStatusClass(t.stageStatus)">
                     {{ t.stageStatus }}
+                  </span>
+
+                  <span
+                    class="dropdown-arrow"
+                    *ngIf="getFieldHistory(t.history, 'StageStatus').length"
+                    [class.rotated]="expandedRows[t.id]"
+                  >
+                    ▶
                   </span>
                 </div>
 
-                <div
-                  class="history-value"
-                  *ngIf="getLatestHistory(t, 'StageStatus') as h"
-                >
-                  {{ h.oldValue }}
-                  <span class="history-date">
-                    ({{ h.changedOn | date: "dd MMM" }})
-                  </span>
+                <div class="history-inline" *ngIf="expandedRows[t.id]">
+                  <div class="history-scroll">
+                    <div class="history-item"
+                         *ngFor="let h of getFieldHistory(t.history, 'StageStatus')">
+                      <span class="old-val">{{ h.oldValue || 'N/A' }}</span>
+                      <span class="history-date">
+                        ({{ h.changedOn | date:'dd MMM yyyy' }})
+                      </span>
+                    </div>
+                  </div>
                 </div>
+
               </ng-container>
 
               <ng-template #editStatus>
@@ -80,21 +96,41 @@
               </ng-template>
             </td>
 
+            <!-- TARGET DATE -->
             <td>
               <ng-container *ngIf="editId !== t.id; else editDate">
-                <div class="main-value">
-                  {{ t.targetDate | date: "dd MMM yyyy" }}
-                </div>
 
                 <div
-                  class="history-value"
-                  *ngIf="getLatestHistory(t, 'TargetDate') as h"
+                  class="main-value"
+                  [class.clickable-status]="getFieldHistory(t.history, 'TargetDate').length"
+                  (click)="getFieldHistory(t.history, 'TargetDate').length && toggleFieldHistory(t.id, 'TargetDate')"
                 >
-                  {{ h.oldValue | date: "dd MMM yyyy" }}
-                  <span class="history-date">
-                    ({{ h.changedOn | date: "dd MMM" }})
+
+                  <span>{{ t.targetDate | date:'dd MMM yyyy' }}</span>
+
+                  <span
+                    class="dropdown-arrow"
+                    *ngIf="getFieldHistory(t.history, 'TargetDate').length"
+                    [class.rotated]="expandedFieldRows[t.id + '_TargetDate']"
+                  >
+                    ▶
                   </span>
                 </div>
+
+                <div class="history-inline" *ngIf="expandedFieldRows[t.id + '_TargetDate']">
+                  <div class="history-scroll">
+                    <div class="history-item"
+                         *ngFor="let h of getFieldHistory(t.history, 'TargetDate')">
+                      <span class="old-val">
+                        {{ h.oldValue | date:'dd MMM yyyy' }}
+                      </span>
+                      <span class="history-date">
+                        ({{ h.changedOn | date:'dd MMM yyyy' }})
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
               </ng-container>
 
               <ng-template #editDate>
@@ -102,21 +138,37 @@
               </ng-template>
             </td>
 
+            <!-- FEEDBACK -->
             <td>
               <ng-container *ngIf="editId !== t.id; else editFeedback">
-                <div class="main-value">
-                  {{ t.feedback || "-" }}
-                </div>
 
-                <div
-                  class="history-value"
-                  *ngIf="getLatestHistory(t, 'Feedback') as h"
-                >
-                  {{ h.oldValue }}
-                  <span class="history-date">
-                    ({{ h.changedOn | date: "dd MMM" }})
+                <div class="main-value"
+                     [class.clickable-status]="getFieldHistory(t.history, 'Feedback').length"
+                     (click)="getFieldHistory(t.history, 'Feedback').length && toggleFieldHistory(t.id, 'Feedback')">
+
+                  <span>{{ t.feedback || '-' }}</span>
+
+                  <span
+                    class="dropdown-arrow"
+                    *ngIf="getFieldHistory(t.history, 'Feedback').length"
+                    [class.rotated]="expandedFieldRows[t.id + '_Feedback']"
+                  >
+                    ▶
                   </span>
                 </div>
+
+                <div class="history-inline" *ngIf="expandedFieldRows[t.id + '_Feedback']">
+                  <div class="history-scroll">
+                    <div class="history-item"
+                         *ngFor="let h of getFieldHistory(t.history, 'Feedback')">
+                      <span class="old-val">{{ h.oldValue || 'N/A' }}</span>
+                      <span class="history-date">
+                        ({{ h.changedOn | date:'dd MMM yyyy' }})
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
               </ng-container>
 
               <ng-template #editFeedback>
@@ -124,6 +176,7 @@
               </ng-template>
             </td>
 
+            <!-- ACTION -->
             <td class="actions">
               <ng-container *ngIf="editId !== t.id; else editActions">
                 <button class="edit-btn" (click)="startEdit(t)">Edit</button>
@@ -134,6 +187,7 @@
                 <button class="secondary-btn" (click)="cancelEdit()">Cancel</button>
               </ng-template>
             </td>
+
           </tr>
 
           <tr *ngIf="targets.length === 0">
@@ -141,8 +195,8 @@
               No history records found
             </td>
           </tr>
-        </tbody>
 
+        </tbody>
       </table>
     </div>
   </div>
