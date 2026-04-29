@@ -248,13 +248,42 @@ td {
 }
 
 /* ================= BUTTONS ================= */
+// .edit-btn {
+//   background: #fff3cd;
+//   color: #f59e0b;
+//   border: none;
+//   padding: 4px 10px;
+//   border-radius: 6px;
+//   font-size: 12px;
+// }
+
+
 .edit-btn {
-  background: #fff3cd;
-  color: #f59e0b;
+  background: #16a34a;   /* same family as your green theme */
+  color: #ffffff;
   border: none;
-  padding: 4px 10px;
+  padding: 6px 12px;
   border-radius: 6px;
   font-size: 12px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+/* hover */
+.edit-btn:hover {
+  background: #15803d;   /* slightly darker green */
+}
+
+.edit-btn:disabled {
+  background: #d1d5db;   /* light grey */
+  color: #6b7280;        /* muted text */
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/* optional hover fix */
+.edit-btn:disabled:hover {
+  background: #d1d5db;   /* prevent hover color change */
 }
 
 .primary-btn {
@@ -422,11 +451,8 @@ input {
   word-break: break-word; /* ✅ break long words */
 }
 
-/* ===== DATE ===== */
-.feedback-date {
-  font-size: 11px;
-  color: #047857;
-}
+
+
 
 /* ===== SCROLL ===== */
 .dialog-body {
@@ -453,7 +479,7 @@ input {
 /* date */
 .feedback-date {
   font-size: 11px;
-  color: #9ca3af;
+  color: #111;
 }
 
 /* empty */
@@ -603,4 +629,47 @@ th {
   border-radius: 6px;
   font-size: 12px;
   width: 180px;
+}
+
+
+
+.feedback-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* pushes arrow to right */
+  gap: 8px;
+}
+
+/* text should take remaining space */
+.feedback-text {
+  flex: 1;
+  min-width: 0; /* VERY IMPORTANT for ellipsis */
+}
+
+/* arrow should never go down */
+.dropdown-arrow {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ❌ Close icon */
+.close-icon {
+  font-size: 16px;
+  cursor: pointer;
+  color: #6b7280;
+  transition: 0.2s;
+}
+
+/* hover effect */
+.close-icon:hover {
+  color: #ef4444; /* red on hover */
+  transform: scale(1.2);
 }
