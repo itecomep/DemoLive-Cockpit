@@ -246,7 +246,6 @@ namespace MyCockpitView.WebApi.MeetingModule.Controllers
                 await _db.SaveChangesAsync();
             }
 
-            // WORKFLOW FOR FIRST INTERNAL ATTENDEE
             if (_attendees != null)
             {
                 var _attendee = _attendees

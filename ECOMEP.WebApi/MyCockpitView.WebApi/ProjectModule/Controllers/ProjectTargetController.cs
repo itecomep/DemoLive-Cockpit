@@ -208,8 +208,20 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
                     item.TargetDate.Value.Date < today &&
                     item.StageStatus != "Complete & Generate Invoice")
                 {
+                    var oldDate = item.TargetDate;
+                    var newDate = today.AddDays(15).Date;
+
+                    _db.ProjectTargetHistories.Add(new ProjectTargetHistory
+                    {
+                        ProjectTargetId = item.Id,
+                        FieldName = "TargetDate",
+                        OldValue = oldDate?.ToString("yyyy-MM-dd"),
+                        NewValue = newDate.ToString("yyyy-MM-dd"),
+                        ChangedOn = DateTime.Now
+                    });
+
                     item.TargetDate = DateTime.SpecifyKind(
-                        today.AddDays(15).Date,
+                        newDate,
                         DateTimeKind.Unspecified
                     );
 
@@ -244,20 +256,5 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
 
             return Ok(result);
         }
-
-        ////DELETE (Soft Delete)
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> Delete(int id)
-        //{
-        //    var item = await _db.ProjectTargets.FindAsync(id);
-        //    if (item == null) return NotFound();
-
-        //    item.IsDeleted = true;
-        //    item.ModifiedDate = DateTime.Now;
-
-        //    await _db.SaveChangesAsync();
-
-        //    return Ok();
-        //}
     }
 }

@@ -8,7 +8,6 @@ namespace MyCockpitView.WebApi.HrModule.Dtos
         public string Url { get; set; }
 
     }
-
     public class StatusUpdateDto
     {
         public string Status { get; set; }

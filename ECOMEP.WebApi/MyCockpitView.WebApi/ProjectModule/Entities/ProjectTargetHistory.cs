@@ -6,7 +6,7 @@
 
         public int ProjectTargetId { get; set; }
 
-        public string? FieldName { get; set; }   // TargetDate / StageStatus / Feedback
+        public string? FieldName { get; set; }
 
         public string? OldValue { get; set; }
         public string? NewValue { get; set; }

@@ -35,8 +35,6 @@ namespace MyCockpitView.WebApi.HrModule.Controller
             _hub = hub;
         }
 
-        // ================= CREATE =================
-
         [HttpPost("create")]
         public async Task<IActionResult> Create()
         {
@@ -130,7 +128,7 @@ namespace MyCockpitView.WebApi.HrModule.Controller
             try
             {
                 var data = await _db.WorkFromHomeRequests
-                .AsNoTracking() 
+                .AsNoTracking()
                 .Where(x => !x.IsDeleted)
                 .OrderByDescending(x => x.Created)
                 .ToListAsync();
@@ -179,13 +177,11 @@ namespace MyCockpitView.WebApi.HrModule.Controller
             if (request == null)
                 return NotFound("Request not found");
 
-            // 🔹 update status
-            request.Status = dto.Status.ToUpper(); // ensure consistent
+            request.Status = dto.Status.ToUpper();
             request.Modified = DateTime.UtcNow.AddHours(5).AddMinutes(30);
 
             await _db.SaveChangesAsync();
 
-            // 🔥 GET CORRECT USERNAME USING USERID (IMPORTANT FIX)
             var contact = await _db.Contacts
                 .FirstOrDefaultAsync(x => x.ID == request.UserID);
 
@@ -193,11 +189,9 @@ namespace MyCockpitView.WebApi.HrModule.Controller
 
             if (!string.IsNullOrEmpty(username))
             {
-                // 🔹 format dates
                 var startDate = request.StartDate.ToString("dd MMM yyyy");
                 var endDate = request.EndDate.ToString("dd MMM yyyy");
 
-                // 🔹 message
                 var message = request.Status == "APPROVED"
                     ? $"🏠✅ Your WFH request from {startDate} to {endDate} has been approved"
                     : $"🏠❌ Your WFH request from {startDate} to {endDate} has been rejected";
@@ -212,7 +206,6 @@ namespace MyCockpitView.WebApi.HrModule.Controller
 
                 _db.Notifications.Add(notification);
 
-                // 🔥 realtime push
                 if (NotificationHub.UserConnections.TryGetValue(username, out var connectionId))
                 {
                     await _hub.Clients.Client(connectionId)
@@ -248,7 +241,7 @@ namespace MyCockpitView.WebApi.HrModule.Controller
                 existingFilesJson != "null" &&
                 existingFilesJson != "[]")
             {
-                try 
+                try
                 {
                     var parsed = JsonSerializer.Deserialize<List<MyCockpitView.WebApi.HrModule.Dtos.AttachmentDto>>(
                          existingFilesJson,
@@ -308,7 +301,7 @@ namespace MyCockpitView.WebApi.HrModule.Controller
                     stream
                 );
 
-                existingFiles.Add(uniqueFileName); 
+                existingFiles.Add(uniqueFileName);
             }
             request.AttachmentName = string.Join(",", existingFiles);
             request.Modified = DateTime.UtcNow.AddHours(5).AddMinutes(30);

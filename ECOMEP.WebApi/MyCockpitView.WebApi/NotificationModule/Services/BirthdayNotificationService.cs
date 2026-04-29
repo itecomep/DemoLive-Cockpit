@@ -22,7 +22,7 @@ namespace MyCockpitView.WebApi.NotificationModule.Services
         {
             var today = DateTime.UtcNow.Date;
 
-            // ❗ prevent duplicate sending for same day
+            //prevent duplicate sending for same day
             var alreadySent = await _db.Notifications.AnyAsync(n =>
                 n.Source == "birthday" &&
                 n.CreatedAt.Date == today);
@@ -30,14 +30,12 @@ namespace MyCockpitView.WebApi.NotificationModule.Services
             if (alreadySent)
                 return;
 
-            // 🎂 get today's birthdays
+            //get today's birthdays
             var birthdays = await _db.Contacts
              .Where(c => c.Birth.HasValue &&
                          c.Birth.Value.Month == today.Month &&
                          c.Birth.Value.Day == today.Day &&
                          !c.IsDeleted)
-
-             // 🔥 NEW CONDITION
              .Where(c => _db.ContactAppointments.Any(a =>
                  a.ContactID == c.ID &&
                  !a.IsDeleted &&
@@ -49,14 +47,12 @@ namespace MyCockpitView.WebApi.NotificationModule.Services
             if (!birthdays.Any())
                 return;
 
-            // 🔁 get all users
             var allUsers = await _db.Contacts
                 .Where(x => !x.IsDeleted && !string.IsNullOrEmpty(x.Username))
                 .ToListAsync();
 
             foreach (var person in birthdays)
             {
-                // 🎉 send to everyone
                 foreach (var user in allUsers)
                 {
                     var message = user.Username == person.Username
@@ -73,7 +69,6 @@ namespace MyCockpitView.WebApi.NotificationModule.Services
 
                     _db.Notifications.Add(notification);
 
-                    // 🔥 realtime
                     if (NotificationHub.UserConnections.TryGetValue(user.Username, out var connectionId))
                     {
                         await _hub.Clients.Client(connectionId)
@@ -81,7 +76,6 @@ namespace MyCockpitView.WebApi.NotificationModule.Services
                     }
                 }
             }
-
             await _db.SaveChangesAsync();
         }
     }
