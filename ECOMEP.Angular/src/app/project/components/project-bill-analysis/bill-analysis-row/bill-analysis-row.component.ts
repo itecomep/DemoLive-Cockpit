@@ -12,9 +12,6 @@ import { BillAnalysisRowService } from './bill-analysis-row.service';
 import { HttpClientModule } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from 'src/app/auth/services/auth.service';
-import { ProjectApiService } from 'src/app/project/services/project-api.service';
-import { firstValueFrom } from 'rxjs';
-import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-bill-analysis-row',
@@ -34,8 +31,7 @@ import { MatSelectModule } from '@angular/material/select';
     MatInputModule,
     MatDialogModule,
     HttpClientModule,
-    MatButtonModule,
-    MatSelectModule
+    MatButtonModule
   ],
   templateUrl: './bill-analysis-row.component.html',
   styleUrls: ['./bill-analysis-row.component.scss']
@@ -56,7 +52,6 @@ export class BillAnalysisRowComponent implements OnInit {
   attachments: File[] = [];
   attachmentPreview: string | null = null;
   previewFile: any = null;
-  projectContacts: any[] = [];
 
   // ================= FORM =================
   formData: {
@@ -71,57 +66,28 @@ export class BillAnalysisRowComponent implements OnInit {
     nextFollowUpDate: null
   };
 
-  formatContact(c: any): string {
-  const name = c.contact?.fullName || '';
-  const email = c.contact?.email || '';
-  const phone = c.contact?.phone || '';
-
-  return `${name} (${email}) ${phone}`;
-}
-
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private followUpService: BillAnalysisRowService,
     private authService: AuthService,
-    private dialogRef: MatDialogRef<BillAnalysisRowComponent>,   // ✅ ADDED
-     private projectService: ProjectApiService
+    private dialogRef: MatDialogRef<BillAnalysisRowComponent>   // ✅ ADDED
   ) {
     this.bill = data?.bill;
   }
 
   // ================= INIT =================
-  // ngOnInit(): void {
+  ngOnInit(): void {
 
-  //   const user = this.authService.currentUserStore;
+    const user = this.authService.currentUserStore;
 
-  //   this.loggedInUser =
-  //     user?.contact?.name ||
-  //     user?.username ||
-  //     'Unknown User';
+    this.loggedInUser =
+      user?.contact?.name ||
+      user?.username ||
+      'Unknown User';
 
-  //   this.loadHistory();
-  // }
-
-async ngOnInit(): Promise<void> {
-
-  const user = this.authService.currentUserStore;
-
-  this.loggedInUser =
-    user?.contact?.name ||
-    user?.username ||
-    'Unknown User';
-
-  this.loadHistory();
-
-  console.log('BILL DATA:', this.bill); // 🔥 DEBUG
-
-  // 🔥 FIX START
-  if (this.bill?.projectId) {
-    await this.loadProjectContacts(this.bill.projectId);
-  } else if (this.bill?.projectCode) {
-    await this.loadProjectByCode(this.bill.projectCode);
+    this.loadHistory();
   }
-}
+
   // ================= CLOSE DIALOG =================
   
   // ================= LOAD HISTORY =================
@@ -172,9 +138,7 @@ async ngOnInit(): Promise<void> {
       communicationDate: this.formData.communicationDate,
       communicatedTo: this.formData.communicatedTo,
       response: this.formData.response,
-      // nextFollowUpDate: this.formData.nextFollowUpDate,
-      nextFollowUpDate: this.formatDate(this.formData.nextFollowUpDate),
-
+      nextFollowUpDate: this.formData.nextFollowUpDate,
       attachmentUrl: this.existingFiles.map(f => {
         const url = f.url || '';
         return url.split('/').pop();
@@ -200,19 +164,6 @@ async ngOnInit(): Promise<void> {
       });
     }
   }
-
-
-
-  formatDate(date: Date | null): string | null {
-  if (!date) return null;
-
-  const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const day = date.getDate().toString().padStart(2, '0');
-
-  return `${year}-${month}-${day}`; // ✅ YYYY-MM-DD (no timezone issue)
-}
-
 
   // ================= RESET =================
   resetForm() {
@@ -319,72 +270,5 @@ async ngOnInit(): Promise<void> {
   this.dialogRef.close();
 }
 
-
-// async loadProjectContacts(projectId: number) {
-//   try {
-//     const project = await firstValueFrom(
-//       this.projectService.getById(projectId)
-//     );
-
-//     this.projectContacts = project.associations || [];
-
-//     // 🔥 AUTO-FILL communicatedTo
-//     // this.formData.communicatedTo = this.projectContacts
-//     //   .map(x => x.contact?.fullName)
-//     //   .filter(Boolean)
-//     //   .join(', ');
-
-//     this.formData.communicatedTo = this.projectContacts
-//   .map(x => {
-//     const name = x.contact?.fullName || '';
-//     const email = x.contact?.email || '';
-//     const phone = x.contact?.phone || '';
-
-//     // 🔥 format how you want
-//     return `${name} (${email}) ${phone}`;
-//   })
-//   .filter(Boolean)
-//   .join('\n'); // 👈 each contact in new line
-
-//   } catch (err) {
-//     console.error('Error loading project contacts', err);
-//   }
-// }
-async loadProjectContacts(projectId: number) {
-  try {
-    const project = await firstValueFrom(
-      this.projectService.getById(projectId)
-    );
-
-    this.projectContacts = project.associations || [];
-
-    // 🔥 RESET selection (important)
-    this.formData.communicatedTo = '';
-
-  } catch (err) {
-    console.error('Error loading project contacts', err);
-  }
-}
-
-async loadProjectByCode(projectCode: string) {
-  try {
-    const projects: any = await firstValueFrom(
-      this.projectService.getProjectsForEmail(0, 1000, true)
-    );
-
-    const matched = projects.list.find((p: any) =>
-      p.code === projectCode
-    );
-
-    if (matched) {
-      await this.loadProjectContacts(matched.id);
-    } else {
-      console.warn('Project not found for code:', projectCode);
-    }
-
-  } catch (err) {
-    console.error('Error finding project by code', err);
-  }
-}
 
 }
