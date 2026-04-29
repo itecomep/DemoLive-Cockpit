@@ -42,8 +42,6 @@ export class HrModuleService {
 
   private baseUrl = `${this.baseApi}/api/WorkFromHome`;
   private baseleaveUrl = `${this.baseApi}/Leave`;
-
-  // ✅ NEW: Meeting API
   private meetingUrl = `${this.baseApi}/Meeting`;
 
   constructor(private http: HttpClient) {}
@@ -81,8 +79,6 @@ export class HrModuleService {
       status: status,
     });
   }
-
-  /* ================= NEW: MEETING API ================= */
 
   getMeetings(): Observable<MeetingSummary[]> {
     return this.http.get<MeetingSummary[]>(`${this.meetingUrl}/summary`);
