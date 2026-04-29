@@ -149,7 +149,8 @@ async ngOnInit(): Promise<void> {
   }
 
   // ================= FILE SELECT =================
-  onFileSelected(event: any) {
+  // onFileSelected(event: any) {
+   onFileSelected(event: any) {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 

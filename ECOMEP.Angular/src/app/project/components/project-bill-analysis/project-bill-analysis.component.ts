@@ -151,6 +151,11 @@ dateFC = new FormGroup({
     .reduce((a, b) => a + b.dueAmount, 0);
   }
 
+  // get totalGstAmount(){
+  //   return this.dataList
+  //   .reduce((a, b) => a + b.cgstAmount + b.igstAmount+ b.sgstAmount, 0);
+  // }
+
   get totalGstAmount(){
     return this.dataList
     .reduce((a, b) => a + b.cgstAmount + b.igstAmount+ b.sgstAmount, 0);
