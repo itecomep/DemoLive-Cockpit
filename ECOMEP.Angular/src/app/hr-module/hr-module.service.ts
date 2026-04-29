@@ -37,11 +37,14 @@ export interface MeetingSummary {
   providedIn: "root",
 })
 export class HrModuleService {
-  private baseUrl = "http://localhost:5054/api/WorkFromHome";
-  private baseleaveUrl = "http://localhost:5054/Leave";
+  // ✅ COMMON BASE URL
+  private baseApi = "http://localhost:5054";
+
+  private baseUrl = `${this.baseApi}/api/WorkFromHome`;
+  private baseleaveUrl = `${this.baseApi}/Leave`;
 
   // ✅ NEW: Meeting API
-  private meetingUrl = "http://localhost:5054/Meeting";
+  private meetingUrl = `${this.baseApi}/Meeting`;
 
   constructor(private http: HttpClient) {}
 
@@ -62,7 +65,7 @@ export class HrModuleService {
   }
 
   getContactTeams() {
-    return this.http.get<any[]>(`http://localhost:5054/ContactTeam`);
+    return this.http.get<any[]>(`${this.baseApi}/ContactTeam`);
   }
 
   updateRequest(id: number, data: any): Observable<any> {
