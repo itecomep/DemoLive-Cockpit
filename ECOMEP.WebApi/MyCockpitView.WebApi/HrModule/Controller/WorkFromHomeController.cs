@@ -106,6 +106,45 @@ namespace MyCockpitView.WebApi.HrModule.Controller
                 _db.WorkFromHomeRequests.Add(entity);
                 await _db.SaveChangesAsync();
 
+                // 🔔 NOTIFICATION TO TEAM LEADER
+
+                var teamMember = await _db.ContactTeamMembers
+                    .FirstOrDefaultAsync(x => x.ContactID == userId && !x.IsDeleted);
+
+                if (teamMember != null)
+                {
+                    var team = await _db.ContactTeams
+                        .FirstOrDefaultAsync(x => x.ID == teamMember.ContactTeamID && !x.IsDeleted);
+
+                    if (team != null && team.LeaderID != null)
+                    {
+                        var leader = await _db.Contacts
+                            .FirstOrDefaultAsync(x => x.ID == team.LeaderID);
+
+                        if (leader != null && !string.IsNullOrEmpty(leader.Username))
+                        {
+                            var message = $"🏠 {userName} has applied for Work From Home ({startDate:dd MMM} - {endDate:dd MMM})";
+
+                            var notification = new Notification
+                            {
+                                Username = leader.Username,
+                                Message = message,
+                                Source = "wfh-create",
+                                CreatedAt = DateTime.UtcNow
+                            };
+
+                            _db.Notifications.Add(notification);
+                            await _db.SaveChangesAsync();
+
+                            if (NotificationHub.UserConnections.TryGetValue(leader.Username, out var connectionId))
+                            {
+                                await _hub.Clients.Client(connectionId)
+                                    .SendAsync("ReceiveNotification", notification);
+                            }
+                        }
+                    }
+                }
+
                 return Ok(new
                 {
                     message = "WFH Request Created ✅",
