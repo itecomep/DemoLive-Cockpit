@@ -92,21 +92,8 @@ namespace MyCockpitView.WebApi.HrModule.Controller
                     uploadedFiles.Add(uniqueFileName);
                 }
 
-                var entity = new WorkFromHomeRequest
-                {
-                    UserID = userId,
-                    UserName = userName,
-                    StartDate = startDate,
-                    EndDate = endDate,
-                    Reason = reason,
-                    AttachmentName = string.Join(",", uploadedFiles),
-                    Created = DateTime.UtcNow.AddHours(5).AddMinutes(30)
-                };
-
-                _db.WorkFromHomeRequests.Add(entity);
-                await _db.SaveChangesAsync();
-
-                // 🔔 NOTIFICATION TO TEAM LEADER
+                // ✅ STEP 1: GET TEAM LEADER ID
+                int? teamLeaderId = null;
 
                 var teamMember = await _db.ContactTeamMembers
                     .FirstOrDefaultAsync(x => x.ContactID == userId && !x.IsDeleted);
@@ -118,29 +105,51 @@ namespace MyCockpitView.WebApi.HrModule.Controller
 
                     if (team != null && team.LeaderID != null)
                     {
-                        var leader = await _db.Contacts
-                            .FirstOrDefaultAsync(x => x.ID == team.LeaderID);
+                        teamLeaderId = team.LeaderID;
+                    }
+                }
 
-                        if (leader != null && !string.IsNullOrEmpty(leader.Username))
+                // ✅ STEP 2: SAVE WITH TEAM LEADER ID
+                var entity = new WorkFromHomeRequest
+                {
+                    UserID = userId,
+                    UserName = userName,
+                    TeamLeaderId = teamLeaderId,   // 🔥 ADDED HERE
+                    StartDate = startDate,
+                    EndDate = endDate,
+                    Reason = reason,
+                    AttachmentName = string.Join(",", uploadedFiles),
+                    Created = DateTime.UtcNow.AddHours(5).AddMinutes(30)
+                };
+
+                _db.WorkFromHomeRequests.Add(entity);
+                await _db.SaveChangesAsync();
+
+                // 🔔 NOTIFICATION TO TEAM LEADER
+                if (teamLeaderId != null)
+                {
+                    var leader = await _db.Contacts
+                        .FirstOrDefaultAsync(x => x.ID == teamLeaderId);
+
+                    if (leader != null && !string.IsNullOrEmpty(leader.Username))
+                    {
+                        var message = $"🏠 {userName} has applied for Work From Home ({startDate:dd MMM} - {endDate:dd MMM})";
+
+                        var notification = new Notification
                         {
-                            var message = $"🏠 {userName} has applied for Work From Home ({startDate:dd MMM} - {endDate:dd MMM})";
+                            Username = leader.Username,
+                            Message = message,
+                            Source = "wfh-create",
+                            CreatedAt = DateTime.UtcNow
+                        };
 
-                            var notification = new Notification
-                            {
-                                Username = leader.Username,
-                                Message = message,
-                                Source = "wfh-create",
-                                CreatedAt = DateTime.UtcNow
-                            };
+                        _db.Notifications.Add(notification);
+                        await _db.SaveChangesAsync();
 
-                            _db.Notifications.Add(notification);
-                            await _db.SaveChangesAsync();
-
-                            if (NotificationHub.UserConnections.TryGetValue(leader.Username, out var connectionId))
-                            {
-                                await _hub.Clients.Client(connectionId)
-                                    .SendAsync("ReceiveNotification", notification);
-                            }
+                        if (NotificationHub.UserConnections.TryGetValue(leader.Username, out var connectionId))
+                        {
+                            await _hub.Clients.Client(connectionId)
+                                .SendAsync("ReceiveNotification", notification);
                         }
                     }
                 }
@@ -363,6 +372,48 @@ namespace MyCockpitView.WebApi.HrModule.Controller
             await _db.SaveChangesAsync();
 
             return Ok(new { message = "Deleted successfully ✅" });
+        }
+
+        [HttpGet("team-members/{leaderId}")]
+        public async Task<IActionResult> GetTeamMembers(int leaderId)
+        {
+            try
+            {
+                // 1. Get team of this leader
+                var team = await _db.ContactTeams
+                    .FirstOrDefaultAsync(x => x.LeaderID == leaderId && !x.IsDeleted);
+
+                if (team == null)
+                    return NotFound("No team found for this leader");
+
+                // 2. Get members of that team
+                var members = await (
+                    from tm in _db.ContactTeamMembers
+                    join c in _db.Contacts on tm.ContactID equals c.ID
+                    where tm.ContactTeamID == team.ID
+                          && !tm.IsDeleted
+                          && !c.IsDeleted
+                    select new
+                    {
+                        id = c.ID,
+                        fullName = c.FullName,
+                        username = c.Username,
+                        email = c.EmailsJson,
+                        phone = c.PhonesJson,
+                        isLeader = tm.IsLeader
+                    }
+                ).ToListAsync();
+
+                return Ok(members);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    message = "Error fetching team members",
+                    error = ex.Message
+                });
+            }
         }
 
     }

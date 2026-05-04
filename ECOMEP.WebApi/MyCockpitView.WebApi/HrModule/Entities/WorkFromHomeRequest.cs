@@ -7,6 +7,8 @@
         public int UserID { get; set; }
         public string? UserName { get; set; }
 
+        public int? TeamLeaderId { get; set; }   // ✅ UPDATED NAME
+
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
 
