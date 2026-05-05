@@ -37,6 +37,12 @@ selectedFileUrl: SafeResourceUrl | null = null;
 rawFileUrl: string = "";
 selectedEmployeeName: string = "";
 
+selectedMonth: 'previous' | 'current' | 'next' = 'current';
+ currentDate: Date = new Date();
+  currentMonthLabel: string = '';
+
+
+
   constructor(
     private hrService: HrModuleService,
     private authService: AuthService,
@@ -53,38 +59,75 @@ selectedEmployeeName: string = "";
     endDate: "",
   };
 
+  // ngOnInit(): void {
+  //   this.loadRequests();
+  // }
+
+
   ngOnInit(): void {
-    this.loadRequests();
-  }
+  // this.updateMonthLabel();
+  this.loadRequests();
+}
 
   // ================= LOAD =================
-  loadRequests(): void {
-    const currentUser = this.authService.currentUserStore;
-    const userId = currentUser?.contact?.id;
+  // loadRequests(): void {
+  //   const currentUser = this.authService.currentUserStore;
+  //   const userId = currentUser?.contact?.id;
 
-    this.hrService.getRequests().subscribe({
-      next: (data: any[]) => {
-        this.requests = data
-          .filter((x) => x.userId === userId)
-          .map((x) => ({
-            ...x,
-            status: (x.status || "PENDING").toLowerCase(),
-            // status: x.status || 'PENDING',
+  //   this.hrService.getRequests().subscribe({
+  //     next: (data: any[]) => {
+  //       this.requests = data
+  //         .filter((x) => x.userId === userId)
+  //         .map((x) => ({
+  //           ...x,
+  //           status: (x.status || "PENDING").toLowerCase(),
+  //           // status: x.status || 'PENDING',
 
-            employeeName:
-              x.userName ||
-              x.name ||
-              x.user?.name ||
-              currentUser?.contact?.name ||
-              "Unknown",
-            attachments: Array.isArray(x.attachments) ? x.attachments : [],
-          }));
+  //           employeeName:
+  //             x.userName ||
+  //             x.name ||
+  //             x.user?.name ||
+  //             currentUser?.contact?.name ||
+  //             "Unknown",
+  //           attachments: Array.isArray(x.attachments) ? x.attachments : [],
+  //         }));
 
-        this.filteredRequests = [...this.requests];
-      },
-      error: (err) => console.error(err),
-    });
-  }
+  //       this.filteredRequests = [...this.requests];
+  //     },
+  //     error: (err) => console.error(err),
+  //   });
+  // }
+
+ loadRequests(): void {
+  const currentUser = this.authService.currentUserStore;
+  const userId = currentUser?.contact?.id;
+
+  this.hrService.getRequests().subscribe({
+    next: (data: any[]) => {
+      this.requests = data
+        .filter((x) => x.userId === userId)
+        .map((x) => ({
+          ...x,
+          status: (x.status || "PENDING").toLowerCase(),
+          employeeName:
+            x.userName ||
+            x.name ||
+            x.user?.name ||
+            currentUser?.contact?.name ||
+            "Unknown",
+          attachments: Array.isArray(x.attachments) ? x.attachments : [],
+        }));
+
+      // ✅ DEFAULT = CURRENT MONTH
+      this.selectedMonth = 'current';
+
+      // ✅ APPLY MONTH FILTER
+      this.applyMonthFilter();
+    },
+    error: (err) => console.error(err),
+  });
+}
+
 
   // ================= EDIT =================
   openEdit(req: any): void {
@@ -427,4 +470,73 @@ downloadFile() {
 getFileName(url: string): string {
   return url.split('/').pop() || 'file';
 }
+
+
+updateMonthLabel() {
+  this.currentMonthLabel = this.currentDate.toLocaleString('default', {
+    month: 'long',
+    year: 'numeric'
+  });
+
+  this.applyMonthFilter();
+}
+// goToPreviousMonth() {
+//   this.currentDate.setMonth(this.currentDate.getMonth() - 1);
+//   this.updateMonthLabel();
+// }
+
+
+goToPreviousMonth() {
+  this.currentDate = new Date(this.currentDate); // 🔥 avoid mutation bug
+  this.currentDate.setMonth(this.currentDate.getMonth() - 1);
+  this.updateMonthLabel();
+}
+
+goToNextMonth() {
+  this.currentDate = new Date(this.currentDate); // 🔥 avoid mutation bug
+  this.currentDate.setMonth(this.currentDate.getMonth() + 1);
+  this.updateMonthLabel();
+}
+
+// goToNextMonth() {
+//   this.currentDate.setMonth(this.currentDate.getMonth() + 1);
+//   this.updateMonthLabel();
+// }
+
+applyMonthFilter() {
+  const now = new Date();
+
+  let targetMonth = now.getMonth();
+  let targetYear = now.getFullYear();
+
+  if (this.selectedMonth === 'previous') {
+    targetMonth -= 1;
+  }
+
+  if (this.selectedMonth === 'next') {
+    targetMonth += 1;
+  }
+
+  const start = new Date(targetYear, targetMonth, 1);
+  const end = new Date(targetYear, targetMonth + 1, 0);
+
+  const startStr = this.formatDate(start);
+  const endStr = this.formatDate(end);
+
+  this.filteredRequests = this.requests.filter((req) => {
+    const reqStart = this.formatDate(req.startDate);
+    const reqEnd = this.formatDate(req.endDate);
+
+    return reqStart <= endStr && reqEnd >= startStr;
+  });
+}
+
+
+setMonth(type: 'previous' | 'current' | 'next') {
+  this.selectedMonth = type;
+  this.applyMonthFilter();
+}
+
+
+
 }
