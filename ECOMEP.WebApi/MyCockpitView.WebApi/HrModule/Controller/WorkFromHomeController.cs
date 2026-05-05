@@ -114,7 +114,7 @@ namespace MyCockpitView.WebApi.HrModule.Controller
                 {
                     UserID = userId,
                     UserName = userName,
-                    TeamLeaderId = teamLeaderId,   // 🔥 ADDED HERE
+                    TeamLeaderId = teamLeaderId,
                     StartDate = startDate,
                     EndDate = endDate,
                     Reason = reason,
@@ -125,8 +125,8 @@ namespace MyCockpitView.WebApi.HrModule.Controller
                 _db.WorkFromHomeRequests.Add(entity);
                 await _db.SaveChangesAsync();
 
-                // 🔔 NOTIFICATION TO TEAM LEADER
-                if (teamLeaderId != null)
+                // 🔔 NOTIFICATION TO TEAM LEADER (EXCLUDE SELF)
+                if (teamLeaderId != null && teamLeaderId != userId) // ✅ FIX ADDED HERE
                 {
                     var leader = await _db.Contacts
                         .FirstOrDefaultAsync(x => x.ID == teamLeaderId);
@@ -421,7 +421,11 @@ namespace MyCockpitView.WebApi.HrModule.Controller
         public async Task<IActionResult> GetByTeamLeader(int teamLeaderId)
         {
             var data = await _db.WorkFromHomeRequests
-                .Where(x => x.TeamLeaderId == teamLeaderId && !x.IsDeleted)
+                .Where(x =>
+                    x.TeamLeaderId == teamLeaderId &&
+                    x.UserID != teamLeaderId &&   
+                    !x.IsDeleted
+                )
                 .OrderByDescending(x => x.Created)
                 .ToListAsync();
 

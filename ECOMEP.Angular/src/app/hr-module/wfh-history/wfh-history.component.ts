@@ -33,6 +33,7 @@ import { AuthService } from "src/app/auth/services/auth.service";
   styleUrls: ["./wfh-history.component.scss"],
 })
 export class WfhHistoryComponent implements OnInit, OnChanges {
+  allRequests: any[] = []; // ✅ master data with photo
   @Input() requests: any[] = [];
   @Output() refresh = new EventEmitter<void>();
   @ViewChild("fileViewerDialog", { static: true })
@@ -130,16 +131,23 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
             this.hrService
               .getRequestsByTeamLeader(this.currentUserId)
               .subscribe((data: any[]) => {
-                this.filteredRequests = normalizeData(data);
+                this.allRequests = normalizeData(data); // store full TL data
 
-                console.log("TL DATA:", this.filteredRequests);
+                this.filteredRequests = this.allRequests.filter(
+                  (req) =>
+                    req.teamLeaderId === this.currentUserId &&
+                    req.userId !== this.currentUserId, // ✅ EXCLUDE OWN
+                );
+
+                // console.log("TL DATA:", this.filteredRequests);
               });
           }
           // =========================
           // ✅ NON TL FLOW
           // =========================
           else {
-            this.filteredRequests = normalizeData(this.requests);
+            this.allRequests = normalizeData(this.requests); // ✅ store clean data
+            this.filteredRequests = [...this.allRequests];
           }
 
           console.log("Logged User:", this.currentUserId);
@@ -177,19 +185,21 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
     this.resetFilters();
 
     if (this.activeTab === "all") {
+      // ✅ ALWAYS USE NORMALIZED DATA
       if (this.isTeamLeader) {
-        this.filteredRequests = this.requests.filter(
-          (req) => req.teamLeaderId === this.currentUserId,
+        this.filteredRequests = this.allRequests.filter(
+          (req) =>
+            req.teamLeaderId === this.currentUserId &&
+            req.userId !== this.currentUserId, // ✅ ADD THIS LINE
         );
       } else {
-        this.filteredRequests = [...this.requests];
+        this.filteredRequests = [...this.allRequests];
       }
-
       return;
     }
 
     if (this.activeTab === "team") {
-      this.showOnlyTeamLeadersData();
+      this.loadTeamLeaderWfh();
       return;
     }
 
@@ -320,11 +330,13 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
     this.activeMonthFilter = "none";
 
     if (this.isTeamLeader) {
-      this.filteredRequests = this.requests.filter(
-        (req) => req.teamLeaderId === this.currentUserId,
+      this.filteredRequests = this.allRequests.filter(
+        (req) =>
+          req.teamLeaderId === this.currentUserId &&
+          req.userId !== this.currentUserId, // ✅ ADD THIS
       );
     } else {
-      this.filteredRequests = [...this.requests];
+      this.filteredRequests = [...this.allRequests];
     }
   }
 
@@ -371,13 +383,105 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
   //   });
   // }
 
+  // loadTeamLeaderWfh() {
+  //   // ✅ STEP 1: get all teams
+  //   this.hrService.getContactTeams().subscribe((teams: any[]) => {
+  //     const leaderNames: string[] = [];
+
+  //     // ✅ STEP 2: extract TL names (same as Leaves module)
+  //     teams.forEach((team) => {
+  //       team.members?.forEach((m: any) => {
+  //         if (m.contactID === team.leaderID) {
+  //           const name = m.contact?.name?.toLowerCase().trim();
+
+  //           if (name && !leaderNames.includes(name)) {
+  //             leaderNames.push(name);
+  //           }
+  //         }
+  //       });
+  //     });
+
+  //     // ✅ STEP 3: fetch ALL WFH data again
+  //     this.hrService.getRequests().subscribe((data: any[]) => {
+  //       // ✅ STEP 4: filter only TL requests
+  //       const filtered = data.filter((req: any) => {
+  //         const empName = (req.userName || "").toLowerCase().trim();
+
+  //         return leaderNames.some(
+  //           (name) => empName === name || empName.includes(name),
+  //         );
+  //       });
+
+  //       // ✅ STEP 5: normalize (IMPORTANT)
+  //       this.filteredRequests = filtered.map((req) => ({
+  //         ...req,
+  //         employeeName: req.userName,
+  //         status: (req.status || "pending").toLowerCase(),
+  //         attachments: Array.isArray(req.attachments) ? req.attachments : [],
+  //       }));
+
+  //       console.log("TEAM LEADERS WFH:", this.filteredRequests);
+  //     });
+  //   });
+  // }
+
   loadTeamLeaderWfh() {
-    this.hrService
-      .getRequestsByTeamLeader(this.currentUserId)
-      .subscribe((data: any[]) => {
-        this.filteredRequests = data;
+    // ✅ STEP 1: get contacts (IMPORTANT for photo)
+    this.contactService.get([]).subscribe((contacts: any[]) => {
+      // ✅ STEP 2: get all teams
+      this.hrService.getContactTeams().subscribe((teams: any[]) => {
+        const leaderNames: string[] = [];
+
+        // ✅ STEP 3: extract TL names
+        teams.forEach((team) => {
+          team.members?.forEach((m: any) => {
+            if (m.contactID === team.leaderID) {
+              const name = m.contact?.name?.toLowerCase().trim();
+
+              if (name && !leaderNames.includes(name)) {
+                leaderNames.push(name);
+              }
+            }
+          });
+        });
+
+        // ✅ STEP 4: fetch all WFH
+        this.hrService.getRequests().subscribe((data: any[]) => {
+          const filtered = data.filter((req: any) => {
+            const empName = (req.userName || "").toLowerCase().trim();
+
+            return (
+              leaderNames.some(
+                (name) => empName === name || empName.includes(name),
+              ) && req.userId !== this.currentUserId // ✅ EXCLUDE TL OWN
+            );
+          });
+
+          // ✅ STEP 5: map INCLUDING photoUrl
+          this.filteredRequests = filtered.map((req) => {
+            const contact = contacts.find(
+              (c) =>
+                c.name?.toLowerCase().trim() ===
+                (req.userName || "").toLowerCase().trim(),
+            );
+
+            return {
+              ...req,
+              employeeName: req.userName,
+              status: (req.status || "pending").toLowerCase(),
+              attachments: Array.isArray(req.attachments)
+                ? req.attachments
+                : [],
+              photoUrl: contact?.photoUrl || "", // ✅ THIS FIXES YOUR ISSUE
+            };
+          });
+
+          console.log("TEAM LEADERS WFH:", this.filteredRequests);
+        });
       });
+    });
   }
+
   // =========================
   // UTILITY (existing kept)
   // =========================
