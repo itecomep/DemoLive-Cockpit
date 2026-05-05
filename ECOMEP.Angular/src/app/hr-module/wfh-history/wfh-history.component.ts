@@ -11,37 +11,47 @@ import { CommonModule } from "@angular/common";
 import { MatTableModule } from "@angular/material/table";
 import { FormsModule } from "@angular/forms";
 import { HrModuleService } from "../hr-module.service";
-import { MatDialog } from '@angular/material/dialog';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { ViewChild, TemplateRef } from '@angular/core';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
+import { MatDialog } from "@angular/material/dialog";
+import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
+import { ViewChild, TemplateRef } from "@angular/core";
+import { MatDialogModule } from "@angular/material/dialog";
+import { MatIconModule } from "@angular/material/icon";
 import { ContactApiService } from "src/app/contact/services/contact-api.service";
-
+import { AuthService } from "src/app/auth/services/auth.service";
 
 @Component({
   selector: "app-wfh-history",
   standalone: true,
-  imports: [CommonModule, MatTableModule, FormsModule,MatDialogModule,  MatIconModule,],
+  imports: [
+    CommonModule,
+    MatTableModule,
+    FormsModule,
+    MatDialogModule,
+    MatIconModule,
+  ],
   templateUrl: "./wfh-history.component.html",
   styleUrls: ["./wfh-history.component.scss"],
 })
 export class WfhHistoryComponent implements OnInit, OnChanges {
   @Input() requests: any[] = [];
   @Output() refresh = new EventEmitter<void>();
-  @ViewChild("fileViewerDialog",{ static: true }) fileViewerDialog!: TemplateRef<any>;
+  @ViewChild("fileViewerDialog", { static: true })
+  fileViewerDialog!: TemplateRef<any>;
   @ViewChild("profileDialog") profileDialog!: TemplateRef<any>;
 
-selectedFileUrl: SafeResourceUrl | null = null;
-rawFileUrl: string = "";
-selectedEmployeeName: string = "";
+  selectedFileUrl: SafeResourceUrl | null = null;
+  rawFileUrl: string = "";
+  selectedEmployeeName: string = "";
 
-  constructor(private hrService: HrModuleService, private dialog: MatDialog,
-  private sanitizer: DomSanitizer, private contactService: ContactApiService) {}
-
-  // =========================
-  // STATE
-  // =========================
+  constructor(
+    private hrService: HrModuleService,
+    private dialog: MatDialog,
+    private sanitizer: DomSanitizer,
+    private contactService: ContactApiService,
+    private authService: AuthService,
+  ) {}
+  currentUserId: number = 0;
+  isTeamLeader: boolean = false;
   editingRowId: any = null;
   editedRow: any = {};
   filteredRequests: any[] = [];
@@ -49,7 +59,6 @@ selectedEmployeeName: string = "";
   activeTab: "all" | "team" | "currentMonth" | "lastMonth" = "all";
   // activeMonthFilter: "none" | "current" | "last" = "none";
   activeMonthFilter: "none" | "current" | "previous" | "next" = "none";
-
 
   filters = {
     employeeName: "",
@@ -60,7 +69,10 @@ selectedEmployeeName: string = "";
   // =========================
   // INIT
   // =========================
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    const user = this.authService.currentUserStore;
+    this.currentUserId = user?.contact?.id ?? 0;
+  }
 
   // ngOnChanges(changes: SimpleChanges): void {
   //   if (changes["requests"] && this.requests) {
@@ -75,31 +87,68 @@ selectedEmployeeName: string = "";
   // }
 
   ngOnChanges(changes: SimpleChanges): void {
-  if (changes["requests"] && this.requests) {
+    if (changes["requests"] && this.requests) {
+      // ✅ Get logged-in user
+      const user = this.authService.currentUserStore;
+      this.currentUserId = user?.contact?.id ?? 0;
 
-    this.contactService.get([]).subscribe((contacts: any[]) => {
+      // ✅ Get contacts first (for name + photo mapping)
+      this.contactService.get([]).subscribe((contacts: any[]) => {
+        // 🔥 STEP 1: Normalize ALL incoming data
+        const normalizeData = (data: any[]) => {
+          return data.map((req) => {
+            const contact = contacts.find(
+              (c) =>
+                c.name?.toLowerCase().trim() ===
+                (req.userName || req.employeeName)?.toLowerCase().trim(),
+            );
 
-      this.requests = this.requests.map((req) => {
-
-        const contact = contacts.find(
-          (c) =>
-            c.name?.toLowerCase().trim() ===
-            req.employeeName?.toLowerCase().trim()
-        );
-
-        return {
-          ...req,
-          status: (req.status || "pending").toLowerCase(),
-          attachments: Array.isArray(req.attachments) ? req.attachments : [],
-          photoUrl: contact?.photoUrl || ""   // ✅ IMPORTANT
+            return {
+              ...req,
+              employeeName: req.userName || req.employeeName, // ✅ FIX NAME
+              status: (req.status || "pending").toLowerCase(),
+              attachments: Array.isArray(req.attachments)
+                ? req.attachments
+                : [],
+              photoUrl: contact?.photoUrl || "",
+            };
+          });
         };
+
+        // 🔥 STEP 2: Check TL
+        this.hrService.getContactTeams().subscribe((teams: any[]) => {
+          this.isTeamLeader = teams.some(
+            (team) => team.leaderID === this.currentUserId,
+          );
+
+          // =========================
+          // ✅ TEAM LEADER FLOW
+          // =========================
+          if (this.isTeamLeader) {
+            this.activeTab = "all";
+
+            this.hrService
+              .getRequestsByTeamLeader(this.currentUserId)
+              .subscribe((data: any[]) => {
+                this.filteredRequests = normalizeData(data);
+
+                console.log("TL DATA:", this.filteredRequests);
+              });
+          }
+          // =========================
+          // ✅ NON TL FLOW
+          // =========================
+          else {
+            this.filteredRequests = normalizeData(this.requests);
+          }
+
+          console.log("Logged User:", this.currentUserId);
+          console.log("Is TL:", this.isTeamLeader);
+          console.log("Final Data:", this.filteredRequests);
+        });
       });
-
-      this.filteredRequests = [...this.requests];
-    });
+    }
   }
-}
-
   // =========================
   // TOGGLE FILTER BUTTONS
   // =========================
@@ -119,23 +168,28 @@ selectedEmployeeName: string = "";
   // }
 
   toggleFilter(type: "current" | "previous" | "next") {
-  this.activeMonthFilter =
-    this.activeMonthFilter === type ? "none" : type;
+    this.activeMonthFilter = this.activeMonthFilter === type ? "none" : type;
 
-  this.applyAllFilters();
-}
-
+    this.applyAllFilters();
+  }
 
   onFilterTypeChange() {
     this.resetFilters();
 
     if (this.activeTab === "all") {
-      this.filteredRequests = [...this.requests];
+      if (this.isTeamLeader) {
+        this.filteredRequests = this.requests.filter(
+          (req) => req.teamLeaderId === this.currentUserId,
+        );
+      } else {
+        this.filteredRequests = [...this.requests];
+      }
+
       return;
     }
 
     if (this.activeTab === "team") {
-      this.loadTeamLeaderWfh();
+      this.showOnlyTeamLeadersData();
       return;
     }
 
@@ -178,22 +232,20 @@ selectedEmployeeName: string = "";
     //   });
     // }
 
+    if (this.activeMonthFilter !== "none") {
+      const range = this.getMonthRange(this.activeMonthFilter);
 
- if (this.activeMonthFilter !== "none") {
-  const range = this.getMonthRange(this.activeMonthFilter);
+      data = data.filter((req) => {
+        const start = this.formatDate(req.startDate);
+        const end = this.formatDate(req.endDate);
 
-  data = data.filter((req) => {
-    const start = this.formatDate(req.startDate);
-    const end = this.formatDate(req.endDate);
+        // ❌ OLD
+        // return start <= range.end && end >= range.start;
 
-    // ❌ OLD
-    // return start <= range.end && end >= range.start;
-
-    // ✅ NEW (STRICT MONTH)
-    return start >= range.start && end <= range.end;
-  });
-}
-
+        // ✅ NEW (STRICT MONTH)
+        return start >= range.start && end <= range.end;
+      });
+    }
 
     this.filteredRequests = data;
   }
@@ -248,6 +300,16 @@ selectedEmployeeName: string = "";
     });
   }
 
+  // resetFilters(): void {
+  //   this.filters = {
+  //     employeeName: "",
+  //     startDate: "",
+  //     endDate: "",
+  //   };
+
+  //   this.activeMonthFilter = "none"; // 🔥 important
+  //   this.filteredRequests = [...this.requests];
+  // }
   resetFilters(): void {
     this.filters = {
       employeeName: "",
@@ -255,8 +317,15 @@ selectedEmployeeName: string = "";
       endDate: "",
     };
 
-    this.activeMonthFilter = "none"; // 🔥 important
-    this.filteredRequests = [...this.requests];
+    this.activeMonthFilter = "none";
+
+    if (this.isTeamLeader) {
+      this.filteredRequests = this.requests.filter(
+        (req) => req.teamLeaderId === this.currentUserId,
+      );
+    } else {
+      this.filteredRequests = [...this.requests];
+    }
   }
 
   // =========================
@@ -276,32 +345,39 @@ selectedEmployeeName: string = "";
   // =========================
   // TEAM LEADER FILTER
   // =========================
+  // loadTeamLeaderWfh() {
+  //   this.hrService.getContactTeams().subscribe((teams: any[]) => {
+  //     const leaderNames: string[] = [];
+
+  //     teams.forEach((team) => {
+  //       team.members?.forEach((m: any) => {
+  //         if (m.contactID === team.leaderID) {
+  //           const name = m.contact?.name?.toLowerCase().trim();
+
+  //           if (name && !leaderNames.includes(name)) {
+  //             leaderNames.push(name);
+  //           }
+  //         }
+  //       });
+  //     });
+
+  //     this.filteredRequests = this.requests.filter((req) => {
+  //       const empName = req.employeeName?.toLowerCase().trim();
+
+  //       return leaderNames.some(
+  //         (name) => empName === name || empName?.includes(name),
+  //       );
+  //     });
+  //   });
+  // }
+
   loadTeamLeaderWfh() {
-    this.hrService.getContactTeams().subscribe((teams: any[]) => {
-      const leaderNames: string[] = [];
-
-      teams.forEach((team) => {
-        team.members?.forEach((m: any) => {
-          if (m.contactID === team.leaderID) {
-            const name = m.contact?.name?.toLowerCase().trim();
-
-            if (name && !leaderNames.includes(name)) {
-              leaderNames.push(name);
-            }
-          }
-        });
+    this.hrService
+      .getRequestsByTeamLeader(this.currentUserId)
+      .subscribe((data: any[]) => {
+        this.filteredRequests = data;
       });
-
-      this.filteredRequests = this.requests.filter((req) => {
-        const empName = req.employeeName?.toLowerCase().trim();
-
-        return leaderNames.some(
-          (name) => empName === name || empName?.includes(name),
-        );
-      });
-    });
   }
-
   // =========================
   // UTILITY (existing kept)
   // =========================
@@ -442,95 +518,105 @@ selectedEmployeeName: string = "";
   }
 
   closeDialog() {
-  this.dialog.closeAll();
-}
-
-openViewer(file: any, req: any) {
-  const fileUrl = file?.url;
-
-  if (!fileUrl) {
-    console.error("File URL missing", file);
-    return;
+    this.dialog.closeAll();
   }
 
-  this.selectedEmployeeName = req?.employeeName || "Employee";
-  this.rawFileUrl = fileUrl;
+  openViewer(file: any, req: any) {
+    const fileUrl = file?.url;
 
-  this.selectedFileUrl =
-    this.sanitizer.bypassSecurityTrustResourceUrl(fileUrl);
+    if (!fileUrl) {
+      console.error("File URL missing", file);
+      return;
+    }
 
-  if (!this.fileViewerDialog) {
-    console.error("Dialog template not found!");
-    return;
+    this.selectedEmployeeName = req?.employeeName || "Employee";
+    this.rawFileUrl = fileUrl;
+
+    this.selectedFileUrl =
+      this.sanitizer.bypassSecurityTrustResourceUrl(fileUrl);
+
+    if (!this.fileViewerDialog) {
+      console.error("Dialog template not found!");
+      return;
+    }
+
+    this.dialog.open(this.fileViewerDialog, {
+      width: "80vw",
+      height: "90vh",
+      panelClass: "custom-cv-dialog",
+    });
   }
 
-  this.dialog.open(this.fileViewerDialog, {
-    width: '80vw',
-  height: '90vh',
-  panelClass: 'custom-cv-dialog'  
-  });
-}
+  downloadFile() {
+    if (!this.rawFileUrl) return;
 
-downloadFile() {
-  if (!this.rawFileUrl) return;
+    fetch(this.rawFileUrl)
+      .then((res) => res.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
 
-  fetch(this.rawFileUrl)
-    .then(res => res.blob())
-    .then(blob => {
-      const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = this.getFileName(this.rawFileUrl);
 
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = this.getFileName(this.rawFileUrl);
+        document.body.appendChild(a);
+        a.click();
 
-      document.body.appendChild(a);
-      a.click();
-
-      a.remove();
-      window.URL.revokeObjectURL(url);
-    })
-    .catch(err => console.error("Download failed", err));
-}
-
-getFileName(url: string): string {
-  return url.split('/').pop() || 'file';
-}
-
-getMonthRange(type: "current" | "previous" | "next") {
-  const now = new Date();
-
-  let start: Date;
-  let end: Date;
-
-  if (type === "current") {
-    // MAY
-    start = new Date(now.getFullYear(), now.getMonth(), 1);
-    end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-  } 
-  else if (type === "previous") {
-    // APRIL
-    start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    end = new Date(now.getFullYear(), now.getMonth(), 0);
-  } 
-  else {
-    // JUNE
-    start = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-    end = new Date(now.getFullYear(), now.getMonth() + 2, 0);
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((err) => console.error("Download failed", err));
   }
 
-  return {
-    start: this.formatDate(start),
-    end: this.formatDate(end),
-  };
-}
+  getFileName(url: string): string {
+    return url.split("/").pop() || "file";
+  }
 
+  getMonthRange(type: "current" | "previous" | "next") {
+    const now = new Date();
 
-openProfileModal(element: any) {
-  this.dialog.open(this.profileDialog, {
-    data: element,
-    panelClass: "profile-dialog",
-    backdropClass: "blur-backdrop"
-  });
-}
+    let start: Date;
+    let end: Date;
 
+    if (type === "current") {
+      // MAY
+      start = new Date(now.getFullYear(), now.getMonth(), 1);
+      end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    } else if (type === "previous") {
+      // APRIL
+      start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      end = new Date(now.getFullYear(), now.getMonth(), 0);
+    } else {
+      // JUNE
+      start = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+      end = new Date(now.getFullYear(), now.getMonth() + 2, 0);
+    }
+
+    return {
+      start: this.formatDate(start),
+      end: this.formatDate(end),
+    };
+  }
+
+  openProfileModal(element: any) {
+    this.dialog.open(this.profileDialog, {
+      data: element,
+      panelClass: "profile-dialog",
+      backdropClass: "blur-backdrop",
+    });
+  }
+
+  showOnlyTeamLeadersData() {
+    this.hrService.getContactTeams().subscribe((teams: any[]) => {
+      // ✅ Get all TL IDs
+      const leaderIds = teams.map((t) => t.leaderID);
+
+      // ✅ Filter requests where USER itself is TL
+      this.filteredRequests = this.requests.filter((req) =>
+        leaderIds.includes(req.userId),
+      );
+
+      console.log("TEAM LEADERS DATA:", this.filteredRequests);
+    });
+  }
 }

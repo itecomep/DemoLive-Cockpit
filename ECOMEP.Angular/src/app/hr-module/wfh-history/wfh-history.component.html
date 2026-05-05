@@ -23,36 +23,71 @@
 
   <div class="filter-bar">
     <label class="radio-option">
-      <input type="radio" name="wfhType" value="all" [(ngModel)]="activeTab" (change)="onFilterTypeChange()" />
+      <input
+        type="radio"
+        name="wfhType"
+        value="all"
+        [(ngModel)]="activeTab"
+        (change)="onFilterTypeChange()"
+      />
       All
     </label>
 
-    <label class="radio-option">
-      <input type="radio" name="wfhType" value="team" [(ngModel)]="activeTab" (change)="onFilterTypeChange()" />
+    <label class="radio-option" *ngIf="!isTeamLeader">
+      <input
+        type="radio"
+        name="wfhType"
+        value="team"
+        [(ngModel)]="activeTab"
+        (change)="onFilterTypeChange()"
+      />
       Team Leaders
     </label>
 
-    <input type="text" placeholder="Search Employee..." [(ngModel)]="filters.employeeName" (input)="applyFilters()" />
+    <input
+      type="text"
+      placeholder="Search Employee..."
+      [(ngModel)]="filters.employeeName"
+      (input)="applyFilters()"
+    />
 
-    <input type="date" [(ngModel)]="filters.startDate" (change)="applyFilters()" />
+    <input
+      type="date"
+      [(ngModel)]="filters.startDate"
+      (change)="applyFilters()"
+    />
 
-    <input type="date" [(ngModel)]="filters.endDate" (change)="applyFilters()" />
+    <input
+      type="date"
+      [(ngModel)]="filters.endDate"
+      (change)="applyFilters()"
+    />
 
     <button (click)="resetFilters()">Reset</button>
 
-
-    <button class="month-btn" [class.active]="activeMonthFilter === 'current'" (click)="toggleFilter('current')">
+    <button
+      class="month-btn"
+      [class.active]="activeMonthFilter === 'current'"
+      (click)="toggleFilter('current')"
+    >
       Current Month
     </button>
 
-    <button class="month-btn" [class.active]="activeMonthFilter === 'previous'" (click)="toggleFilter('previous')">
+    <button
+      class="month-btn"
+      [class.active]="activeMonthFilter === 'previous'"
+      (click)="toggleFilter('previous')"
+    >
       Previous Month
     </button>
 
-    <button class="month-btn" [class.active]="activeMonthFilter === 'next'" (click)="toggleFilter('next')">
+    <button
+      class="month-btn"
+      [class.active]="activeMonthFilter === 'next'"
+      (click)="toggleFilter('next')"
+    >
       Next Month
     </button>
-
   </div>
 
   <table class="meetings-table">
@@ -77,13 +112,11 @@
       <tr *ngFor="let req of filteredRequests">
         <!-- <td>
           <div class="employee-cell"> -->
-            <!-- <div class="avatar">
+        <!-- <div class="avatar">
               {{ req.employeeName?.charAt(0) }}
             </div> -->
 
-
-
-            <!-- <div class="employee-info">
+        <!-- <div class="employee-info">
               <span class="employee-name">
                 {{ req.employeeName }}
               </span>
@@ -92,27 +125,27 @@
         </td> -->
 
         <td>
-  <div class="employee-cell">
+          <div class="employee-cell">
+            <img
+              *ngIf="req.photoUrl; else fallbackAvatar"
+              [src]="req.photoUrl"
+              class="avatar-img"
+              (click)="openProfileModal(req)"
+            />
 
-    <img *ngIf="req.photoUrl; else fallbackAvatar"
-         [src]="req.photoUrl"
-         class="avatar-img"
-         (click)="openProfileModal(req)" />
+            <ng-template #fallbackAvatar>
+              <div class="avatar">
+                {{ req.employeeName?.charAt(0) }}
+              </div>
+            </ng-template>
 
-    <ng-template #fallbackAvatar>
-      <div class="avatar">
-        {{ req.employeeName?.charAt(0) }}
-      </div>
-    </ng-template>
-
-    <div class="employee-info">
-      <span class="employee-name">
-        {{ req.employeeName }}
-      </span>
-    </div>
-
-  </div>
-</td>
+            <div class="employee-info">
+              <span class="employee-name">
+                {{ req.employeeName }}
+              </span>
+            </div>
+          </div>
+        </td>
 
         <td>
           <div *ngIf="editingRowId !== req.id; else editStart">
@@ -146,7 +179,11 @@
               {{ req.reason }}
             </div>
 
-            <span class="toggle" *ngIf="req.reason?.length > 80" (click)="toggleReason(req)">
+            <span
+              class="toggle"
+              *ngIf="req.reason?.length > 80"
+              (click)="toggleReason(req)"
+            >
               {{ req.expanded ? "Show Less" : "Show More" }}
             </span>
           </div>
@@ -158,7 +195,10 @@
 
         <td class="attachment-cell">
           <div *ngIf="editingRowId !== req.id; else editAttachment">
-            <div class="attachment-box" *ngIf="req.attachments?.length > 0; else noFile">
+            <div
+              class="attachment-box"
+              *ngIf="req.attachments?.length > 0; else noFile"
+            >
               <!-- <ng-container *ngFor="let file of req.attachments">
                 <span
                   class="file-name"
@@ -172,12 +212,16 @@
               </ng-container> -->
 
               <ng-container *ngFor="let file of req.attachments">
-                <span class="file-name" [class.long-file]="getCleanFileName(file.fileName).length > 22"
-                  (click)="openViewer(file, req || {})">
+                <span
+                  class="file-name"
+                  [class.long-file]="
+                    getCleanFileName(file.fileName).length > 22
+                  "
+                  (click)="openViewer(file, req || {})"
+                >
                   {{ getCleanFileName(file.fileName) }}
                 </span>
               </ng-container>
-
             </div>
 
             <ng-template #noFile>
@@ -187,17 +231,28 @@
 
           <ng-template #editAttachment>
             <div *ngIf="editedRow.attachments?.length > 0">
-              <div class="file-chip editable" *ngFor="let file of editedRow.attachments; let i = index">
+              <div
+                class="file-chip editable"
+                *ngFor="let file of editedRow.attachments; let i = index"
+              >
                 <span>{{ getCleanFileName(file.fileName) }}</span>
 
                 <button class="remove-btn" (click)="removeFile(i)">✕</button>
               </div>
             </div>
 
-            <input type="file" multiple (change)="onFileSelect($event)" #fileInput />
+            <input
+              type="file"
+              multiple
+              (change)="onFileSelect($event)"
+              #fileInput
+            />
 
             <div *ngIf="editedRow.newFiles?.length > 0">
-              <div class="file-chip editable" *ngFor="let file of editedRow.newFiles; let i = index">
+              <div
+                class="file-chip editable"
+                *ngFor="let file of editedRow.newFiles; let i = index"
+              >
                 <span>{{ file.name }}</span>
 
                 <button class="remove-btn" (click)="removeNewFile(i)">✕</button>
@@ -263,15 +318,12 @@
 <!-- ✅ MUST BE HERE -->
 <ng-template #fileViewerDialog>
   <div class="unique-modal-container">
-
     <!-- <header class="modal-glass-header">
       <h3>Document Viewer — {{ selectedEmployeeName }}</h3>
     </header> -->
 
-
     <header class="modal-glass-header">
       <div class="header-content">
-
         <div class="title-group">
           <h3>Document Viewer — {{ selectedEmployeeName }}</h3>
         </div>
@@ -280,26 +332,21 @@
         <button class="close-circle" (click)="closeDialog()">
           <mat-icon>close</mat-icon>
         </button>
-
       </div>
     </header>
 
     <div class="workspace-body">
-
       <!-- ✅ ADD THIS (left green bar) -->
       <div class="accent-bar"></div>
 
       <div class="document-container">
-
         <!-- PDF -->
         <iframe *ngIf="rawFileUrl?.includes('pdf')" [src]="selectedFileUrl">
         </iframe>
 
         <!-- IMAGE -->
         <img *ngIf="!rawFileUrl?.includes('pdf')" [src]="rawFileUrl" />
-
       </div>
-
     </div>
 
     <!-- <footer class="modal-action-footer">
@@ -312,7 +359,6 @@
 
     <footer class="modal-action-footer">
       <div class="action-group">
-
         <!-- 🔗 PREVIEW -->
         <a [href]="rawFileUrl" target="_blank" class="btn-neo secondary">
           <mat-icon>open_in_new</mat-icon>
@@ -324,17 +370,13 @@
           <mat-icon>cloud_download</mat-icon>
           <span>Get Copy</span>
         </button>
-
       </div>
     </footer>
-
   </div>
 </ng-template>
 
-
 <ng-template #profileDialog let-data>
   <div class="profile-modal">
-
     <button class="close-btn" (click)="closeDialog()">
       <mat-icon>close</mat-icon>
     </button>
@@ -342,6 +384,5 @@
     <img [src]="data.photoUrl" class="profile-img" />
 
     <h3>{{ data.employeeName }}</h3>
-
   </div>
 </ng-template>

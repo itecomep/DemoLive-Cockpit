@@ -188,6 +188,7 @@ namespace MyCockpitView.WebApi.HrModule.Controller
                     id = x.ID,
                     userId = x.UserID,
                     userName = x.UserName,
+                    teamLeaderId = x.TeamLeaderId,
                     startDate = x.StartDate,
                     endDate = x.EndDate,
                     reason = x.Reason,
@@ -414,6 +415,17 @@ namespace MyCockpitView.WebApi.HrModule.Controller
                     error = ex.Message
                 });
             }
+        }
+
+        [HttpGet("by-teamleader/{teamLeaderId}")]
+        public async Task<IActionResult> GetByTeamLeader(int teamLeaderId)
+        {
+            var data = await _db.WorkFromHomeRequests
+                .Where(x => x.TeamLeaderId == teamLeaderId && !x.IsDeleted)
+                .OrderByDescending(x => x.Created)
+                .ToListAsync();
+
+            return Ok(data);
         }
 
     }
