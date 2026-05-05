@@ -51,7 +51,7 @@
 
       <button (click)="resetFilters()">Reset</button>
 
-      <button
+      <!-- <button
         class="month-btn"
         [class.active]="activeMonthFilter === 'current'"
         (click)="toggleFilter('current')"
@@ -65,7 +65,33 @@
         (click)="toggleFilter('last')"
       >
         Last Month
-      </button>
+      </button> -->
+
+      <div class="month-navigation">
+
+  <button
+    [class.active]="selectedMonth === 'previous'"
+    (click)="setMonth('previous')"
+  >
+    Previous Month
+  </button>
+
+  <button
+    [class.active]="selectedMonth === 'current'"
+    (click)="setMonth('current')"
+  >
+    Current Month
+  </button>
+
+  <button
+    [class.active]="selectedMonth === 'next'"
+    (click)="setMonth('next')"
+  >
+    Next Month
+  </button>
+
+</div>
+
     </div>
 
     <table class="meetings-table">
