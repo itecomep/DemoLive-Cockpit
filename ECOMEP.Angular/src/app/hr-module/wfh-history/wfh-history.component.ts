@@ -16,6 +16,8 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ViewChild, TemplateRef } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { ContactApiService } from "src/app/contact/services/contact-api.service";
+
 
 @Component({
   selector: "app-wfh-history",
@@ -28,13 +30,14 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
   @Input() requests: any[] = [];
   @Output() refresh = new EventEmitter<void>();
   @ViewChild("fileViewerDialog",{ static: true }) fileViewerDialog!: TemplateRef<any>;
+  @ViewChild("profileDialog") profileDialog!: TemplateRef<any>;
 
 selectedFileUrl: SafeResourceUrl | null = null;
 rawFileUrl: string = "";
 selectedEmployeeName: string = "";
 
   constructor(private hrService: HrModuleService, private dialog: MatDialog,
-  private sanitizer: DomSanitizer) {}
+  private sanitizer: DomSanitizer, private contactService: ContactApiService) {}
 
   // =========================
   // STATE
@@ -44,7 +47,9 @@ selectedEmployeeName: string = "";
   filteredRequests: any[] = [];
 
   activeTab: "all" | "team" | "currentMonth" | "lastMonth" = "all";
-  activeMonthFilter: "none" | "current" | "last" = "none";
+  // activeMonthFilter: "none" | "current" | "last" = "none";
+  activeMonthFilter: "none" | "current" | "previous" | "next" = "none";
+
 
   filters = {
     employeeName: "",
@@ -57,35 +62,69 @@ selectedEmployeeName: string = "";
   // =========================
   ngOnInit(): void {}
 
+  // ngOnChanges(changes: SimpleChanges): void {
+  //   if (changes["requests"] && this.requests) {
+  //     this.requests = this.requests.map((req) => ({
+  //       ...req,
+  //       status: (req.status || "pending").toLowerCase(),
+  //       attachments: Array.isArray(req.attachments) ? req.attachments : [],
+  //     }));
+
+  //     this.filteredRequests = [...this.requests];
+  //   }
+  // }
+
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes["requests"] && this.requests) {
-      this.requests = this.requests.map((req) => ({
-        ...req,
-        status: (req.status || "pending").toLowerCase(),
-        attachments: Array.isArray(req.attachments) ? req.attachments : [],
-      }));
+  if (changes["requests"] && this.requests) {
+
+    this.contactService.get([]).subscribe((contacts: any[]) => {
+
+      this.requests = this.requests.map((req) => {
+
+        const contact = contacts.find(
+          (c) =>
+            c.name?.toLowerCase().trim() ===
+            req.employeeName?.toLowerCase().trim()
+        );
+
+        return {
+          ...req,
+          status: (req.status || "pending").toLowerCase(),
+          attachments: Array.isArray(req.attachments) ? req.attachments : [],
+          photoUrl: contact?.photoUrl || ""   // ✅ IMPORTANT
+        };
+      });
 
       this.filteredRequests = [...this.requests];
-    }
+    });
   }
+}
 
   // =========================
   // TOGGLE FILTER BUTTONS
   // =========================
 
-  toggleFilter(type: "current" | "last") {
-    // 🔥 TOGGLE ON/OFF LOGIC
-    if (
-      (type === "current" && this.activeMonthFilter === "current") ||
-      (type === "last" && this.activeMonthFilter === "last")
-    ) {
-      this.activeMonthFilter = "none"; // disable
-    } else {
-      this.activeMonthFilter = type; // enable
-    }
+  // toggleFilter(type: "current" | "last") {
+  //   // 🔥 TOGGLE ON/OFF LOGIC
+  //   if (
+  //     (type === "current" && this.activeMonthFilter === "current") ||
+  //     (type === "last" && this.activeMonthFilter === "last")
+  //   ) {
+  //     this.activeMonthFilter = "none"; // disable
+  //   } else {
+  //     this.activeMonthFilter = type; // enable
+  //   }
 
-    this.applyAllFilters();
-  }
+  //   this.applyAllFilters();
+  // }
+
+  toggleFilter(type: "current" | "previous" | "next") {
+  this.activeMonthFilter =
+    this.activeMonthFilter === type ? "none" : type;
+
+  this.applyAllFilters();
+}
+
 
   onFilterTypeChange() {
     this.resetFilters();
@@ -107,7 +146,7 @@ selectedEmployeeName: string = "";
     }
 
     if (this.activeTab === "lastMonth") {
-      const range = this.getMonthRange("last");
+      const range = this.getMonthRange("previous");
       this.applyFilters(range);
       return;
     }
@@ -126,18 +165,35 @@ selectedEmployeeName: string = "";
     }
 
     // DATE FILTER (MONTH TOGGLE)
-    if (this.activeMonthFilter !== "none") {
-      const range = this.getMonthRange(
-        this.activeMonthFilter === "current" ? "current" : "last",
-      );
+    // if (this.activeMonthFilter !== "none") {
+    //   const range = this.getMonthRange(
+    //     this.activeMonthFilter === "current" ? "current" : "last",
+    //   );
 
-      data = data.filter((req) => {
-        const start = this.formatDate(req.startDate);
-        const end = this.formatDate(req.endDate);
+    //   data = data.filter((req) => {
+    //     const start = this.formatDate(req.startDate);
+    //     const end = this.formatDate(req.endDate);
 
-        return start <= range.end && end >= range.start;
-      });
-    }
+    //     return start <= range.end && end >= range.start;
+    //   });
+    // }
+
+
+ if (this.activeMonthFilter !== "none") {
+  const range = this.getMonthRange(this.activeMonthFilter);
+
+  data = data.filter((req) => {
+    const start = this.formatDate(req.startDate);
+    const end = this.formatDate(req.endDate);
+
+    // ❌ OLD
+    // return start <= range.end && end >= range.start;
+
+    // ✅ NEW (STRICT MONTH)
+    return start >= range.start && end <= range.end;
+  });
+}
+
 
     this.filteredRequests = data;
   }
@@ -145,25 +201,25 @@ selectedEmployeeName: string = "";
   // =========================
   // MONTH RANGE
   // =========================
-  getMonthRange(type: "current" | "last") {
-    const now = new Date();
+  // getMonthRange(type: "current" | "last") {
+  //   const now = new Date();
 
-    let start: Date;
-    let end: Date;
+  //   let start: Date;
+  //   let end: Date;
 
-    if (type === "current") {
-      start = new Date(now.getFullYear(), now.getMonth(), 1);
-      end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    } else {
-      start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-      end = new Date(now.getFullYear(), now.getMonth(), 0);
-    }
+  //   if (type === "current") {
+  //     start = new Date(now.getFullYear(), now.getMonth(), 1);
+  //     end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  //   } else {
+  //     start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  //     end = new Date(now.getFullYear(), now.getMonth(), 0);
+  //   }
 
-    return {
-      start: this.formatDate(start),
-      end: this.formatDate(end),
-    };
-  }
+  //   return {
+  //     start: this.formatDate(start),
+  //     end: this.formatDate(end),
+  //   };
+  // }
 
   // =========================
   // FILTER LOGIC
@@ -440,6 +496,41 @@ getFileName(url: string): string {
   return url.split('/').pop() || 'file';
 }
 
+getMonthRange(type: "current" | "previous" | "next") {
+  const now = new Date();
 
+  let start: Date;
+  let end: Date;
+
+  if (type === "current") {
+    // MAY
+    start = new Date(now.getFullYear(), now.getMonth(), 1);
+    end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  } 
+  else if (type === "previous") {
+    // APRIL
+    start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    end = new Date(now.getFullYear(), now.getMonth(), 0);
+  } 
+  else {
+    // JUNE
+    start = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    end = new Date(now.getFullYear(), now.getMonth() + 2, 0);
+  }
+
+  return {
+    start: this.formatDate(start),
+    end: this.formatDate(end),
+  };
+}
+
+
+openProfileModal(element: any) {
+  this.dialog.open(this.profileDialog, {
+    data: element,
+    panelClass: "profile-dialog",
+    backdropClass: "blur-backdrop"
+  });
+}
 
 }

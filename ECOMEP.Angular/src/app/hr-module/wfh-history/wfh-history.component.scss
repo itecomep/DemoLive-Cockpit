@@ -24,7 +24,7 @@ body, .meetings-container {
 
 .meetings-table td {
   // font-size: 12px;   /* content */
-   font-size: 13.5px;        /* increased from 12px */
+    font-size: 15px;        /* increased from 12px */
   color: #111;           /* stronger black tone */
   font-weight: 400;
 }
@@ -828,4 +828,14 @@ body, .meetings-container {
   height: 32px;
   cursor: pointer;
 }
+}
+
+.avatar-img {
+  width: 36px;          /* ✅ control size */
+  height: 36px;         /* ✅ control size */
+  border-radius: 50%;   /* ✅ make circle */
+  object-fit: cover;    /* ✅ crop nicely */
+  cursor: pointer;
+
+  border: 2px solid #e0e0e0;
 }

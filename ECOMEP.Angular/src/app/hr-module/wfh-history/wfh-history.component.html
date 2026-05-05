@@ -40,13 +40,19 @@
 
     <button (click)="resetFilters()">Reset</button>
 
+
     <button class="month-btn" [class.active]="activeMonthFilter === 'current'" (click)="toggleFilter('current')">
       Current Month
     </button>
 
-    <button class="month-btn" [class.active]="activeMonthFilter === 'last'" (click)="toggleFilter('last')">
-      Last Month
+    <button class="month-btn" [class.active]="activeMonthFilter === 'previous'" (click)="toggleFilter('previous')">
+      Previous Month
     </button>
+
+    <button class="month-btn" [class.active]="activeMonthFilter === 'next'" (click)="toggleFilter('next')">
+      Next Month
+    </button>
+
   </div>
 
   <table class="meetings-table">
@@ -69,19 +75,44 @@
       </tr>
 
       <tr *ngFor="let req of filteredRequests">
-        <td>
-          <div class="employee-cell">
-            <div class="avatar">
+        <!-- <td>
+          <div class="employee-cell"> -->
+            <!-- <div class="avatar">
               {{ req.employeeName?.charAt(0) }}
-            </div>
+            </div> -->
 
-            <div class="employee-info">
+
+
+            <!-- <div class="employee-info">
               <span class="employee-name">
                 {{ req.employeeName }}
               </span>
             </div>
           </div>
-        </td>
+        </td> -->
+
+        <td>
+  <div class="employee-cell">
+
+    <img *ngIf="req.photoUrl; else fallbackAvatar"
+         [src]="req.photoUrl"
+         class="avatar-img"
+         (click)="openProfileModal(req)" />
+
+    <ng-template #fallbackAvatar>
+      <div class="avatar">
+        {{ req.employeeName?.charAt(0) }}
+      </div>
+    </ng-template>
+
+    <div class="employee-info">
+      <span class="employee-name">
+        {{ req.employeeName }}
+      </span>
+    </div>
+
+  </div>
+</td>
 
         <td>
           <div *ngIf="editingRowId !== req.id; else editStart">
@@ -239,41 +270,37 @@
 
 
     <header class="modal-glass-header">
-  <div class="header-content">
+      <div class="header-content">
 
-    <div class="title-group">
-      <h3>Document Viewer — {{ selectedEmployeeName }}</h3>
+        <div class="title-group">
+          <h3>Document Viewer — {{ selectedEmployeeName }}</h3>
+        </div>
+
+        <!-- ❌ CLOSE BUTTON -->
+        <button class="close-circle" (click)="closeDialog()">
+          <mat-icon>close</mat-icon>
+        </button>
+
+      </div>
+    </header>
+
+    <div class="workspace-body">
+
+      <!-- ✅ ADD THIS (left green bar) -->
+      <div class="accent-bar"></div>
+
+      <div class="document-container">
+
+        <!-- PDF -->
+        <iframe *ngIf="rawFileUrl?.includes('pdf')" [src]="selectedFileUrl">
+        </iframe>
+
+        <!-- IMAGE -->
+        <img *ngIf="!rawFileUrl?.includes('pdf')" [src]="rawFileUrl" />
+
+      </div>
+
     </div>
-
-    <!-- ❌ CLOSE BUTTON -->
-    <button class="close-circle" (click)="closeDialog()">
-      <mat-icon>close</mat-icon>
-    </button>
-
-  </div>
-</header>
-
-      <div class="workspace-body">
-
-  <!-- ✅ ADD THIS (left green bar) -->
-  <div class="accent-bar"></div>
-
-  <div class="document-container">
-
-    <!-- PDF -->
-    <iframe
-      *ngIf="rawFileUrl?.includes('pdf')"
-      [src]="selectedFileUrl">
-    </iframe>
-
-    <!-- IMAGE -->
-    <img
-      *ngIf="!rawFileUrl?.includes('pdf')"
-      [src]="rawFileUrl" />
-
-  </div>
-
-</div>
 
     <!-- <footer class="modal-action-footer">
       <a [href]="rawFileUrl" target="_blank">Preview</a>
@@ -284,22 +311,37 @@
     </footer> -->
 
     <footer class="modal-action-footer">
-  <div class="action-group">
+      <div class="action-group">
 
-    <!-- 🔗 PREVIEW -->
-    <a [href]="rawFileUrl" target="_blank" class="btn-neo secondary">
-      <mat-icon>open_in_new</mat-icon>
-      <span>Preview Mode</span>
-    </a>
+        <!-- 🔗 PREVIEW -->
+        <a [href]="rawFileUrl" target="_blank" class="btn-neo secondary">
+          <mat-icon>open_in_new</mat-icon>
+          <span>Preview Mode</span>
+        </a>
 
-    <!-- ⬇️ DOWNLOAD -->
-    <button (click)="downloadFile()" class="btn-neo primary">
-      <mat-icon>cloud_download</mat-icon>
-      <span>Get Copy</span>
-    </button>
+        <!-- ⬇️ DOWNLOAD -->
+        <button (click)="downloadFile()" class="btn-neo primary">
+          <mat-icon>cloud_download</mat-icon>
+          <span>Get Copy</span>
+        </button>
+
+      </div>
+    </footer>
 
   </div>
-</footer>
+</ng-template>
+
+
+<ng-template #profileDialog let-data>
+  <div class="profile-modal">
+
+    <button class="close-btn" (click)="closeDialog()">
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <img [src]="data.photoUrl" class="profile-img" />
+
+    <h3>{{ data.employeeName }}</h3>
 
   </div>
 </ng-template>
