@@ -22,85 +22,59 @@
 
   <div class="filter-bar">
     <label class="radio-option">
-      <input
-        type="radio"
-        name="leaveType"
-        value="all"
-        [(ngModel)]="activeTab"
-        (change)="onFilterTypeChange()"
-      />
+      <input type="radio" name="leaveType" value="all" [(ngModel)]="activeTab" (change)="onFilterTypeChange()" />
       All
     </label>
 
     <label class="radio-option">
-      <input
-        type="radio"
-        name="leaveType"
-        value="team"
-        [(ngModel)]="activeTab"
-        (change)="onFilterTypeChange()"
-      />
+      <input type="radio" name="leaveType" value="team" [(ngModel)]="activeTab" (change)="onFilterTypeChange()" />
       Team Leaders
     </label>
 
-    <input
-      type="text"
-      class="search-input"
-      placeholder="Search Employee..."
-      [(ngModel)]="filters.employeeName"
-      (input)="applyFilters()"
-    />
+    <input type="text" class="search-input" placeholder="Search Employee..." [(ngModel)]="filters.employeeName"
+      (input)="applyFilters()" />
 
-    <input
-      type="date"
-      [(ngModel)]="filters.startDate"
-      (change)="applyFilters()"
-    />
+    <input type="date" [(ngModel)]="filters.startDate" (change)="applyFilters()" />
 
-    <input
-      type="date"
-      [(ngModel)]="filters.endDate"
-      (change)="applyFilters()"
-    />
+    <input type="date" [(ngModel)]="filters.endDate" (change)="applyFilters()" />
 
     <button (click)="resetFilters()">Reset</button>
 
     <div class="month-tabs">
-      <button
-        class="month-btn"
-        [class.active]="selectedMonthTab === 'current'"
-        (click)="selectedMonthTab = 'current'; applyFilters()"
-      >
-        Current Month
-      </button>
 
-      <button
-        class="month-btn"
-        [class.active]="selectedMonthTab === 'last'"
-        (click)="selectedMonthTab = 'last'; applyFilters()"
-      >
-        Last Month
-      </button>
-    </div>
+  <button class="month-btn"
+    [class.active]="selectedMonthTab === 'previous'"
+    (click)="selectedMonthTab = 'previous'; applyFilters()">
+    Previous Month
+  </button>
+
+  <button class="month-btn"
+    [class.active]="selectedMonthTab === 'current'"
+    (click)="selectedMonthTab = 'current'; applyFilters()">
+    Current Month
+  </button>
+
+  <button class="month-btn"
+    [class.active]="selectedMonthTab === 'next'"
+    (click)="selectedMonthTab = 'next'; applyFilters()">
+    Next Month
+  </button>
+
+</div>
+
   </div>
 
-  <table
-    mat-table
-    [dataSource]="dataSource"
-    matSort
-    class="mat-elevation-z2 full-table"
-  >
+  <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z2 full-table">
     <ng-container matColumnDef="employee">
       <th mat-header-cell *matHeaderCellDef mat-sort-header="employee">
         Employee
       </th>
       <td mat-cell *matCellDef="let element">
         <div class="employee-cell">
-          <img
-            *ngIf="element.photoUrl; else fallbackAvatar"
-            [src]="element.photoUrl"
-            class="avatar-img"
-          />
+          <!-- <img *ngIf="element.photoUrl; else fallbackAvatar" [src]="element.photoUrl" class="avatar-img" /> -->
+          <img *ngIf="element.photoUrl; else fallbackAvatar" [src]="element.photoUrl" class="avatar-img"
+            (click)="openProfileModal(element)" />
+
 
           <ng-template #fallbackAvatar>
             <div class="avatar">
@@ -109,8 +83,19 @@
           </ng-template>
 
           <div class="employee-info">
+            <!-- <span class="employee-name">
+              {{ element.employeeName }}
+            </span> -->
+
             <span class="employee-name">
               {{ element.employeeName }}
+              <!-- 
+              <mat-icon *ngIf="element.isTeamLeader" class="leader-icon" matTooltip="Team Leader">
+                star
+              </mat-icon> -->
+              <mat-icon *ngIf="element.isTeamLeader === true" class="leader-icon">
+                star
+              </mat-icon>
             </span>
           </div>
         </div>
@@ -125,11 +110,7 @@
             {{ element.reason || "-" }}
           </div>
 
-          <span
-            class="toggle"
-            *ngIf="element.reason?.length > 80"
-            (click)="toggleReason(element)"
-          >
+          <span class="toggle" *ngIf="element.reason?.length > 80" (click)="toggleReason(element)">
             {{ element.expanded ? "Show Less" : "Show More" }}
           </span>
         </div>
@@ -138,8 +119,14 @@
 
     <ng-container matColumnDef="type">
       <th mat-header-cell *matHeaderCellDef>Leave Type</th>
-      <td mat-cell *matCellDef="let element">
+      <!-- <td mat-cell *matCellDef="let element">
         {{ element.type }}
+      </td> -->
+      <td mat-cell *matCellDef="let element">
+        <div class="leave-type">
+          <span>{{ element.type?.split('/')[0] }}</span><br />
+          <span class="leave-sub">{{ element.type?.split('/')[1] }}</span>
+        </div>
       </td>
     </ng-container>
 
@@ -171,17 +158,11 @@
       <td mat-cell *matCellDef="let element">
         <div class="status-cell">
           <ng-container *ngIf="element.statusFlag === 0">
-            <button
-              class="approve-btn"
-              (click)="updateStatus(element, 'Approved')"
-            >
+            <button class="approve-btn" (click)="updateStatus(element, 'Approved')">
               Approve
             </button>
 
-            <button
-              class="reject-btn"
-              (click)="updateStatus(element, 'Rejected')"
-            >
+            <button class="reject-btn" (click)="updateStatus(element, 'Rejected')">
               Reject
             </button>
           </ng-container>
@@ -205,12 +186,8 @@
       </th>
 
       <td mat-cell *matCellDef="let element" class="text-center-cell">
-        <div
-          *ngIf="element.attachmentUrl"
-          class="attachment-trigger"
-          (click)="openCvViewer(element)"
-          matTooltip="View Attachment"
-        >
+        <div *ngIf="element.attachmentUrl" class="attachment-trigger" (click)="openCvViewer(element)"
+          matTooltip="View Attachment">
           <mat-icon>attach_file</mat-icon>
         </div>
 
@@ -227,7 +204,7 @@
   <div class="unique-modal-container">
     <header class="modal-glass-header">
       <div class="header-content">
-        <div class="title-group">          
+        <div class="title-group">
           <h3>CV Viewer — {{ selectedEmployeeName }}</h3>
         </div>
 
@@ -241,17 +218,9 @@
       <div class="accent-bar"></div>
 
       <div class="document-container">
-        <img
-          *ngIf="selectedCvUrl && isImage(rawCvUrl)"
-          [src]="rawCvUrl"
-          class="doc-image"
-        />
+        <img *ngIf="selectedCvUrl && isImage(rawCvUrl)" [src]="rawCvUrl" class="doc-image" />
 
-        <iframe
-          *ngIf="selectedCvUrl && isPdf(rawCvUrl)"
-          [src]="selectedCvUrl"
-          frameborder="0"
-        ></iframe>
+        <iframe *ngIf="selectedCvUrl && isPdf(rawCvUrl)" [src]="selectedCvUrl" frameborder="0"></iframe>
       </div>
     </div>
 
@@ -268,5 +237,19 @@
         </a>
       </div>
     </footer>
+  </div>
+</ng-template>
+
+<ng-template #profileDialog let-data>
+  <div class="profile-modal">
+
+    <button class="close-btn" (click)="closeDialog()">
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <img [src]="data.photoUrl" class="profile-img" />
+
+    <h3>{{ data.employeeName }}</h3>
+
   </div>
 </ng-template>
