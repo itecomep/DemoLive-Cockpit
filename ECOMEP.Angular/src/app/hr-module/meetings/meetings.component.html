@@ -11,20 +11,24 @@
 
   <div class="filter-bar">
 
-    <input
-      type="text"
-      placeholder="Search Attendee..."
-      [(ngModel)]="filters.staffName"
-      (input)="applyFilters()"
-    />
+    <input type="text" placeholder="Search Attendee..." [(ngModel)]="filters.staffName" (input)="applyFilters()" />
 
-    <input
-      type="date"
-      [(ngModel)]="filters.startDate"
-      (change)="applyFilters()"
-    />
+    <input type="date" [(ngModel)]="filters.startDate" (change)="applyFilters()" />
 
     <button (click)="resetFilters()">Reset</button>
+
+    <button class="month-btn" [class.active]="activeMonthFilter === 'current'" (click)="toggleMonth('current')">
+      Current Month
+    </button>
+
+    <button class="month-btn" [class.active]="activeMonthFilter === 'previous'" (click)="toggleMonth('previous')">
+      Previous Month
+    </button>
+
+    <button class="month-btn" [class.active]="activeMonthFilter === 'next'" (click)="toggleMonth('next')">
+      Next Month
+    </button>
+
 
   </div>
 
@@ -58,9 +62,12 @@
           <div class="attendee-cell">
 
             <!-- If image exists -->
-            <img *ngIf="m.photoUrl; else nameAvatar"
+            <!-- <img *ngIf="m.photoUrl; else nameAvatar"
                 [src]="m.photoUrl"
-                class="avatar-img" />
+                class="avatar-img" /> -->
+
+            <img *ngIf="m.photoUrl; else nameAvatar" [src]="m.photoUrl" class="avatar-img"
+              (click)="openProfileModal(m)" />
 
             <!-- Fallback Initial Avatar -->
             <ng-template #nameAvatar>
@@ -70,8 +77,16 @@
             </ng-template>
 
             <!-- Name -->
+            <!-- <span class="attendee-name">
+              {{ m.attendeeName }}
+            </span> -->
+
             <span class="attendee-name">
               {{ m.attendeeName }}
+
+              <mat-icon *ngIf="m.isTeamLeader === true" class="leader-icon">
+                star
+              </mat-icon>
             </span>
 
           </div>
@@ -88,8 +103,7 @@
         </td>
 
         <td>
-          <span class="badge"
-            [ngClass]="{
+          <span class="badge" [ngClass]="{
               'project': m.type === 'Project',
               'event': m.type === 'Event'
             }">
@@ -109,7 +123,7 @@
           {{ m.location }}
         </td>
 
-        <td>         
+        <td>
           <span class="hours-box">
             {{ formatHours(m.totalHours) }}
           </span>
@@ -122,3 +136,16 @@
   </table>
 
 </div>
+
+
+<ng-template #profileDialog let-data>
+  <div class="profile-modal">
+
+    <button class="close-btn" (click)="closeDialog()">✕</button>
+
+    <img [src]="data.photoUrl" class="profile-img" />
+
+    <h3>{{ data.attendeeName }}</h3>
+
+  </div>
+</ng-template>

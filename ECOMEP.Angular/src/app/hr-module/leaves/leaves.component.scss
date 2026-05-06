@@ -653,8 +653,9 @@
 }
 
 ::ng-deep .mat-mdc-cell {
-  font-size: 13.5px !important; 
+  // font-size: 13.5px !important; 
   // color: #1a1a1a !important; 
+   font-size: 15px !important; 
  color: #111 !important; 
   font-weight: 400 !important; 
   padding: 12px 10px !important;
@@ -803,11 +804,20 @@
   overflow: hidden;
   box-sizing: border-box;
 }
+// ::ng-deep .mat-column-employee {
+//   width: 220px;
+//   max-width: 220px;
+//   min-width: 220px;
+// }
+
+/* ✅ Employee column bigger */
 ::ng-deep .mat-column-employee {
-  width: 220px;
-  max-width: 220px;
-  min-width: 220px;
+  width: 300px;
+  min-width: 280px;
+  max-width: 320px;
 }
+
+
 .employee-cell {
   display: flex;
   align-items: flex-start;
@@ -828,10 +838,20 @@
 
   flex: 1; 
 }
+// ::ng-deep .mat-column-reason {
+//   width: 250px;
+//   max-width: 250px;
+// }
+
+
+/* ✅ Reason column much wider */
 ::ng-deep .mat-column-reason {
-  width: 250px;
-  max-width: 250px;
+  width: 280px;
+  min-width: 280px;
+  max-width: 3500px;
 }
+
+
 
 .summary-container {
   display: flex;
@@ -869,3 +889,91 @@
 .rejected-box h3 {
   color: #e60f00;
 }
+
+/* ✅ Space after Leave Type */
+::ng-deep .mat-column-type {
+  padding-right: 30px !important;
+}
+
+/* ✅ Space before Start Date */
+::ng-deep .mat-column-start {
+  padding-left: 30px !important;
+}
+.leave-type {
+  line-height: 1.2;
+}
+
+.leave-sub {
+  margin-top: 2px;   /* 🔥 very small spacing */
+  display: inline-block;
+}
+// .leader-icon {
+//   font-size: 10px;   // 🔽 smaller size (try 10px–14px as per your UI)
+//   width: 12px;
+//   height: 12px;
+//   line-height: 12px;
+//   color: #7c3aed;
+//   margin-left: 4px;
+//   vertical-align: middle;
+// }
+
+.leader-icon {
+  font-size: 10px;
+  width: 12px;
+  height: 12px;
+  line-height: 12px;
+  color: #22c55e;   /* ✅ green */
+  margin-left: 4px;
+  vertical-align: middle;
+}
+.leader-icon {
+  font-size: 12px !important;
+  color: #22c55e !important;   /* ✅ force green */
+}
+
+
+/* 🔥 Background blur */
+.blur-backdrop {
+  backdrop-filter: blur(4px);
+  background: rgba(0,0,0,0.2);
+}
+
+/* Modal container */
+.profile-modal {
+  background: #fff;
+  padding: 25px 20px;
+  border-radius: 12px;
+  text-align: center;
+  position: relative;
+  width: 260px;
+}
+
+/* Profile image */
+.profile-img {
+  width: 120px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+/* Name */
+.profile-modal h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Close button */
+.close-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #eee;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+}
+

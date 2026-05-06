@@ -117,7 +117,7 @@
 /* BODY CELLS */
 .meetings-table td {
   padding: 12px;
-  font-size: 13px;
+    font-size: 15px; 
   border-bottom: 1px solid #edf2f7; /* 🔥 smooth line */
 }
 
@@ -272,4 +272,123 @@
 .meetings-table td:nth-child(8) {
   width: 110px; /* Total Hours */
   text-align: center;
+}
+
+/* 🔥 Modal */
+.profile-modal {
+  background: #fff;
+  padding: 25px 20px;
+  border-radius: 12px;
+  text-align: center;
+  position: relative;
+  width: 260px;
+}
+
+/* Image */
+.profile-img {
+  width: 120px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+/* Name */
+.profile-modal h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Close button */
+.close-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #eee;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+}
+
+/* Blur background */
+::ng-deep .profile-dialog .mat-mdc-dialog-container {
+  border-radius: 12px;
+}
+
+.blur-backdrop {
+  backdrop-filter: blur(4px);
+  background: rgba(0,0,0,0.2);
+}
+
+
+.leader-icon {
+  font-size: 12px !important;
+  width: 12px;
+  height: 12px;
+  line-height: 12px;
+  color: #22c55e !important;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+/* =========================
+   MONTH FILTER BUTTONS (COPY FROM WFH)
+========================= */
+
+/* DEFAULT STATE */
+// .filter-bar button.month-btn {
+//   background: #e8f5e9;
+//   color: #1b5e20;
+//   border: 1px solid #a5d6a7;
+//   font-weight: 600;
+// }
+
+// /* HOVER */
+// .filter-bar button.month-btn:hover {
+//   background: #c8e6c9;
+// }
+
+// /* ACTIVE BUTTON */
+// .filter-bar button.month-btn.active {
+//   background: #2e7d32;
+//   color: #ffffff;
+//   border: 1px solid #1b5e20;
+//   transform: scale(1.03);
+//   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+// }
+
+// /* NON-ACTIVE LOOK */
+// .filter-bar button.month-btn:not(.active) {
+//   opacity: 0.85;
+// }
+
+
+
+
+
+/* =========================
+   EXACT SAME AS WFH
+========================= */
+
+.filter-bar button.month-btn {
+  background: #e8f5e9 !important;
+  // color: #1b5e20 !important;
+    color: #1b5e20 !important; 
+  border: 1px solid #a5d6a7;
+  font-weight: 600;
+}
+
+.filter-bar button.month-btn:hover {
+  background: #c8e6c9 !important;
+}
+
+.filter-bar button.month-btn.active {
+  background: #2e7d32 !important;
+  color: #ffffff !important;
+  border: 1px solid #1b5e20;
+  transform: scale(1.03);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
