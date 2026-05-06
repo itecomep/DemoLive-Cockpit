@@ -199,17 +199,6 @@
               class="attachment-box"
               *ngIf="req.attachments?.length > 0; else noFile"
             >
-              <!-- <ng-container *ngFor="let file of req.attachments">
-                <span
-                  class="file-name"
-                  [class.long-file]="
-                    getCleanFileName(file.fileName).length > 22
-                  "
-                  (click)="openFile(file)"
-                >
-                  {{ getCleanFileName(file.fileName) }}
-                </span>
-              </ng-container> -->
 
               <ng-container *ngFor="let file of req.attachments">
                 <span
@@ -291,25 +280,6 @@
           </span>
         </td>
 
-        <!-- <td class="edit-cell">
-
-          <ng-container *ngIf="editingRowId !== req.id; else editActions">
-            <button class="edit-btn" (click)="startEdit(req)">
-              Edit
-            </button>
-          </ng-container>
-
-          <ng-template #editActions>
-            <button class="save-btn" (click)="saveEdit(req)">
-              Save
-            </button>
-
-            <button class="cancel-btn" (click)="cancelEdit()">
-              Cancel
-            </button>
-          </ng-template>
-
-        </td> -->
       </tr>
     </tbody>
   </table>
@@ -348,14 +318,6 @@
         <img *ngIf="!rawFileUrl?.includes('pdf')" [src]="rawFileUrl" />
       </div>
     </div>
-
-    <!-- <footer class="modal-action-footer">
-      <a [href]="rawFileUrl" target="_blank">Preview</a>
-
-      <button (click)="downloadFile()" class="btn-neo primary">
-  <span>Download</span>
-</button>
-    </footer> -->
 
     <footer class="modal-action-footer">
       <div class="action-group">

@@ -13,7 +13,7 @@ export interface WfhRequest {
   id: number;
   userId: number;
   userName: string;
-  teamLeaderId?: number;   // ✅ ADD THIS
+  teamLeaderId?: number;
   startDate: string;
   endDate: string;
   reason: string;
@@ -46,8 +46,6 @@ export class HrModuleService {
   private meetingUrl = `${this.baseApi}/Meeting`;
 
   constructor(private http: HttpClient) {}
-
-  /* ================= EXISTING ================= */
 
   getRequests(): Observable<WfhRequest[]> {
     return this.http.get<WfhRequest[]>(`${this.baseUrl}/list`);
@@ -86,8 +84,6 @@ export class HrModuleService {
   }
 
   getRequestsByTeamLeader(leaderId: number) {
-  return this.http.get<any[]>(
-    `${this.baseUrl}/by-teamleader/${leaderId}`
-  );
-}
+    return this.http.get<any[]>(`${this.baseUrl}/by-teamleader/${leaderId}`);
+  }
 }

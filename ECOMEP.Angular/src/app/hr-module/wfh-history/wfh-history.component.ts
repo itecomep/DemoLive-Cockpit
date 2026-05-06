@@ -33,7 +33,7 @@ import { AuthService } from "src/app/auth/services/auth.service";
   styleUrls: ["./wfh-history.component.scss"],
 })
 export class WfhHistoryComponent implements OnInit, OnChanges {
-  allRequests: any[] = []; // ✅ master data with photo
+  allRequests: any[] = [];
   @Input() requests: any[] = [];
   @Output() refresh = new EventEmitter<void>();
   @ViewChild("fileViewerDialog", { static: true })
@@ -58,7 +58,6 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
   filteredRequests: any[] = [];
 
   activeTab: "all" | "team" | "currentMonth" | "lastMonth" = "all";
-  // activeMonthFilter: "none" | "current" | "last" = "none";
   activeMonthFilter: "none" | "current" | "previous" | "next" = "none";
 
   filters = {
@@ -67,35 +66,16 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
     endDate: "",
   };
 
-  // =========================
-  // INIT
-  // =========================
   ngOnInit(): void {
     const user = this.authService.currentUserStore;
     this.currentUserId = user?.contact?.id ?? 0;
   }
 
-  // ngOnChanges(changes: SimpleChanges): void {
-  //   if (changes["requests"] && this.requests) {
-  //     this.requests = this.requests.map((req) => ({
-  //       ...req,
-  //       status: (req.status || "pending").toLowerCase(),
-  //       attachments: Array.isArray(req.attachments) ? req.attachments : [],
-  //     }));
-
-  //     this.filteredRequests = [...this.requests];
-  //   }
-  // }
-
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["requests"] && this.requests) {
-      // ✅ Get logged-in user
       const user = this.authService.currentUserStore;
       this.currentUserId = user?.contact?.id ?? 0;
-
-      // ✅ Get contacts first (for name + photo mapping)
       this.contactService.get([]).subscribe((contacts: any[]) => {
-        // 🔥 STEP 1: Normalize ALL incoming data
         const normalizeData = (data: any[]) => {
           return data.map((req) => {
             const contact = contacts.find(
@@ -103,10 +83,9 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
                 c.name?.toLowerCase().trim() ===
                 (req.userName || req.employeeName)?.toLowerCase().trim(),
             );
-
             return {
               ...req,
-              employeeName: req.userName || req.employeeName, // ✅ FIX NAME
+              employeeName: req.userName || req.employeeName,
               status: (req.status || "pending").toLowerCase(),
               attachments: Array.isArray(req.attachments)
                 ? req.attachments
@@ -116,37 +95,27 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
           });
         };
 
-        // 🔥 STEP 2: Check TL
         this.hrService.getContactTeams().subscribe((teams: any[]) => {
           this.isTeamLeader = teams.some(
             (team) => team.leaderID === this.currentUserId,
           );
 
-          // =========================
-          // ✅ TEAM LEADER FLOW
-          // =========================
           if (this.isTeamLeader) {
             this.activeTab = "all";
 
             this.hrService
               .getRequestsByTeamLeader(this.currentUserId)
               .subscribe((data: any[]) => {
-                this.allRequests = normalizeData(data); // store full TL data
+                this.allRequests = normalizeData(data);
 
                 this.filteredRequests = this.allRequests.filter(
                   (req) =>
                     req.teamLeaderId === this.currentUserId &&
-                    req.userId !== this.currentUserId, // ✅ EXCLUDE OWN
+                    req.userId !== this.currentUserId,
                 );
-
-                // console.log("TL DATA:", this.filteredRequests);
               });
-          }
-          // =========================
-          // ✅ NON TL FLOW
-          // =========================
-          else {
-            this.allRequests = normalizeData(this.requests); // ✅ store clean data
+          } else {
+            this.allRequests = normalizeData(this.requests);
             this.filteredRequests = [...this.allRequests];
           }
 
@@ -157,23 +126,6 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
       });
     }
   }
-  // =========================
-  // TOGGLE FILTER BUTTONS
-  // =========================
-
-  // toggleFilter(type: "current" | "last") {
-  //   // 🔥 TOGGLE ON/OFF LOGIC
-  //   if (
-  //     (type === "current" && this.activeMonthFilter === "current") ||
-  //     (type === "last" && this.activeMonthFilter === "last")
-  //   ) {
-  //     this.activeMonthFilter = "none"; // disable
-  //   } else {
-  //     this.activeMonthFilter = type; // enable
-  //   }
-
-  //   this.applyAllFilters();
-  // }
 
   toggleFilter(type: "current" | "previous" | "next") {
     this.activeMonthFilter = this.activeMonthFilter === type ? "none" : type;
@@ -185,12 +137,11 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
     this.resetFilters();
 
     if (this.activeTab === "all") {
-      // ✅ ALWAYS USE NORMALIZED DATA
       if (this.isTeamLeader) {
         this.filteredRequests = this.allRequests.filter(
           (req) =>
             req.teamLeaderId === this.currentUserId &&
-            req.userId !== this.currentUserId, // ✅ ADD THIS LINE
+            req.userId !== this.currentUserId,
         );
       } else {
         this.filteredRequests = [...this.allRequests];
@@ -219,7 +170,6 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
   applyAllFilters(): void {
     let data = [...this.requests];
 
-    // SEARCH FILTER
     if (this.filters.employeeName) {
       data = data.filter((req) =>
         req.employeeName
@@ -228,20 +178,6 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
       );
     }
 
-    // DATE FILTER (MONTH TOGGLE)
-    // if (this.activeMonthFilter !== "none") {
-    //   const range = this.getMonthRange(
-    //     this.activeMonthFilter === "current" ? "current" : "last",
-    //   );
-
-    //   data = data.filter((req) => {
-    //     const start = this.formatDate(req.startDate);
-    //     const end = this.formatDate(req.endDate);
-
-    //     return start <= range.end && end >= range.start;
-    //   });
-    // }
-
     if (this.activeMonthFilter !== "none") {
       const range = this.getMonthRange(this.activeMonthFilter);
 
@@ -249,10 +185,6 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
         const start = this.formatDate(req.startDate);
         const end = this.formatDate(req.endDate);
 
-        // ❌ OLD
-        // return start <= range.end && end >= range.start;
-
-        // ✅ NEW (STRICT MONTH)
         return start >= range.start && end <= range.end;
       });
     }
@@ -260,32 +192,6 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
     this.filteredRequests = data;
   }
 
-  // =========================
-  // MONTH RANGE
-  // =========================
-  // getMonthRange(type: "current" | "last") {
-  //   const now = new Date();
-
-  //   let start: Date;
-  //   let end: Date;
-
-  //   if (type === "current") {
-  //     start = new Date(now.getFullYear(), now.getMonth(), 1);
-  //     end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-  //   } else {
-  //     start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-  //     end = new Date(now.getFullYear(), now.getMonth(), 0);
-  //   }
-
-  //   return {
-  //     start: this.formatDate(start),
-  //     end: this.formatDate(end),
-  //   };
-  // }
-
-  // =========================
-  // FILTER LOGIC
-  // =========================
   applyFilters(monthRange?: { start: string; end: string }): void {
     this.filteredRequests = this.requests.filter((req) => {
       const reqStart = this.formatDate(req.startDate);
@@ -310,16 +216,6 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
     });
   }
 
-  // resetFilters(): void {
-  //   this.filters = {
-  //     employeeName: "",
-  //     startDate: "",
-  //     endDate: "",
-  //   };
-
-  //   this.activeMonthFilter = "none"; // 🔥 important
-  //   this.filteredRequests = [...this.requests];
-  // }
   resetFilters(): void {
     this.filters = {
       employeeName: "",
@@ -333,16 +229,13 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
       this.filteredRequests = this.allRequests.filter(
         (req) =>
           req.teamLeaderId === this.currentUserId &&
-          req.userId !== this.currentUserId, // ✅ ADD THIS
+          req.userId !== this.currentUserId,
       );
     } else {
       this.filteredRequests = [...this.allRequests];
     }
   }
 
-  // =========================
-  // DATE FORMAT
-  // =========================
   formatDate(date: any): string {
     if (!date) return "";
 
@@ -354,85 +247,11 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
     return `${year}-${month}-${day}`;
   }
 
-  // =========================
-  // TEAM LEADER FILTER
-  // =========================
-  // loadTeamLeaderWfh() {
-  //   this.hrService.getContactTeams().subscribe((teams: any[]) => {
-  //     const leaderNames: string[] = [];
-
-  //     teams.forEach((team) => {
-  //       team.members?.forEach((m: any) => {
-  //         if (m.contactID === team.leaderID) {
-  //           const name = m.contact?.name?.toLowerCase().trim();
-
-  //           if (name && !leaderNames.includes(name)) {
-  //             leaderNames.push(name);
-  //           }
-  //         }
-  //       });
-  //     });
-
-  //     this.filteredRequests = this.requests.filter((req) => {
-  //       const empName = req.employeeName?.toLowerCase().trim();
-
-  //       return leaderNames.some(
-  //         (name) => empName === name || empName?.includes(name),
-  //       );
-  //     });
-  //   });
-  // }
-
-  // loadTeamLeaderWfh() {
-  //   // ✅ STEP 1: get all teams
-  //   this.hrService.getContactTeams().subscribe((teams: any[]) => {
-  //     const leaderNames: string[] = [];
-
-  //     // ✅ STEP 2: extract TL names (same as Leaves module)
-  //     teams.forEach((team) => {
-  //       team.members?.forEach((m: any) => {
-  //         if (m.contactID === team.leaderID) {
-  //           const name = m.contact?.name?.toLowerCase().trim();
-
-  //           if (name && !leaderNames.includes(name)) {
-  //             leaderNames.push(name);
-  //           }
-  //         }
-  //       });
-  //     });
-
-  //     // ✅ STEP 3: fetch ALL WFH data again
-  //     this.hrService.getRequests().subscribe((data: any[]) => {
-  //       // ✅ STEP 4: filter only TL requests
-  //       const filtered = data.filter((req: any) => {
-  //         const empName = (req.userName || "").toLowerCase().trim();
-
-  //         return leaderNames.some(
-  //           (name) => empName === name || empName.includes(name),
-  //         );
-  //       });
-
-  //       // ✅ STEP 5: normalize (IMPORTANT)
-  //       this.filteredRequests = filtered.map((req) => ({
-  //         ...req,
-  //         employeeName: req.userName,
-  //         status: (req.status || "pending").toLowerCase(),
-  //         attachments: Array.isArray(req.attachments) ? req.attachments : [],
-  //       }));
-
-  //       console.log("TEAM LEADERS WFH:", this.filteredRequests);
-  //     });
-  //   });
-  // }
-
   loadTeamLeaderWfh() {
-    // ✅ STEP 1: get contacts (IMPORTANT for photo)
     this.contactService.get([]).subscribe((contacts: any[]) => {
-      // ✅ STEP 2: get all teams
       this.hrService.getContactTeams().subscribe((teams: any[]) => {
         const leaderNames: string[] = [];
 
-        // ✅ STEP 3: extract TL names
         teams.forEach((team) => {
           team.members?.forEach((m: any) => {
             if (m.contactID === team.leaderID) {
@@ -445,7 +264,6 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
           });
         });
 
-        // ✅ STEP 4: fetch all WFH
         this.hrService.getRequests().subscribe((data: any[]) => {
           const filtered = data.filter((req: any) => {
             const empName = (req.userName || "").toLowerCase().trim();
@@ -453,11 +271,10 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
             return (
               leaderNames.some(
                 (name) => empName === name || empName.includes(name),
-              ) && req.userId !== this.currentUserId // ✅ EXCLUDE TL OWN
+              ) && req.userId !== this.currentUserId
             );
           });
 
-          // ✅ STEP 5: map INCLUDING photoUrl
           this.filteredRequests = filtered.map((req) => {
             const contact = contacts.find(
               (c) =>
@@ -472,7 +289,7 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
               attachments: Array.isArray(req.attachments)
                 ? req.attachments
                 : [],
-              photoUrl: contact?.photoUrl || "", // ✅ THIS FIXES YOUR ISSUE
+              photoUrl: contact?.photoUrl || "",
             };
           });
 
@@ -482,9 +299,6 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
     });
   }
 
-  // =========================
-  // UTILITY (existing kept)
-  // =========================
   getDays(start: Date, end: Date): number {
     if (!start || !end) return 0;
     const diff = new Date(end).getTime() - new Date(start).getTime();
@@ -683,15 +497,12 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
     let end: Date;
 
     if (type === "current") {
-      // MAY
       start = new Date(now.getFullYear(), now.getMonth(), 1);
       end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
     } else if (type === "previous") {
-      // APRIL
       start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
       end = new Date(now.getFullYear(), now.getMonth(), 0);
     } else {
-      // JUNE
       start = new Date(now.getFullYear(), now.getMonth() + 1, 1);
       end = new Date(now.getFullYear(), now.getMonth() + 2, 0);
     }
@@ -712,15 +523,11 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
 
   showOnlyTeamLeadersData() {
     this.hrService.getContactTeams().subscribe((teams: any[]) => {
-      // ✅ Get all TL IDs
       const leaderIds = teams.map((t) => t.leaderID);
 
-      // ✅ Filter requests where USER itself is TL
       this.filteredRequests = this.requests.filter((req) =>
         leaderIds.includes(req.userId),
       );
-
-      console.log("TEAM LEADERS DATA:", this.filteredRequests);
     });
   }
 }
