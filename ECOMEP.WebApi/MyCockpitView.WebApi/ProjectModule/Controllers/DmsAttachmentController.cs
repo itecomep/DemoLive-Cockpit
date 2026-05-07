@@ -301,7 +301,7 @@ namespace MyCockpitView.WebApi.Controllers
 
                 _db.ProjectFiles.Add(attachment);
                 await _db.SaveChangesAsync();
-            
+
                 if (dto.DeniedUsers != null && dto.DeniedUsers.Any())
                 {
                     var denyList = dto.DeniedUsers.Select(userId => new ProjectFileDeny
@@ -374,207 +374,7 @@ namespace MyCockpitView.WebApi.Controllers
             return string.Join("/", segments);
         }
 
-        // [HttpGet("folderTree/{projectId}")]
-        // public async Task<IActionResult> GetFolderTree(int projectId, [FromQuery] string userId, [FromQuery] bool isMaster)
-        // {
-        //     if (projectId < 0)
-        //         return BadRequest("Invalid project ID");
-
-        //     var allFolders = await _db.ProjectFolders
-        //     .Where(f => f.ProjectId == projectId)
-        //     .ToListAsync();
-
-        //     bool IsFolderVisible(ProjectFolder folder)
-        //     {
-        //         if (!string.IsNullOrEmpty(folder.Visibility) &&
-        //             folder.Visibility == "Private" &&
-        //             !isMaster)
-        //             return false;
-
-        //         var parentId = folder.ParentFolderId;
-
-        //         while (parentId.HasValue)
-        //         {
-        //             var parent = allFolders.FirstOrDefault(f => f.Id == parentId.Value);
-        //             if (parent == null) break;
-
-        //             if (!string.IsNullOrEmpty(parent.Visibility) &&
-        //                 parent.Visibility == "Private" &&
-        //                 !isMaster)
-        //                 return false;
-
-        //             parentId = parent.ParentFolderId;
-        //         }
-
-        //         return true;
-        //     }
-
-        //     var projectFolders = allFolders
-        //         .Where(f => IsFolderVisible(f))
-        //         .ToList();
-
-        //     var projectFiles = await _db.ProjectFiles
-        //         .Where(f =>
-        //             f.ProjectID == projectId &&
-        //             (projectId == 0 ? f.CreatedBy == userId : true) &&
-        //             (
-        //                 string.IsNullOrEmpty(f.Visibility) ||
-        //                 f.Visibility == "Public" ||
-        //                 (f.Visibility == "Private" && isMaster)
-        //             )
-        //         )
-        //         .Include(f => f.Tags)
-        //         .ToListAsync();
-
-        //     bool IsFileVisible(ProjectFiles file)
-        //     {
-        //         if (!string.IsNullOrEmpty(file.Visibility) &&
-        //             file.Visibility == "Private" &&
-        //             !isMaster)
-        //             return false;
-
-        //         if (file.FolderId.HasValue)
-        //         {
-        //             var folder = allFolders.FirstOrDefault(f => f.Id == file.FolderId.Value);
-
-        //             while (folder != null)
-        //             {
-        //                 if (!string.IsNullOrEmpty(folder.Visibility) &&
-        //                     folder.Visibility == "Private" &&
-        //                     !isMaster)
-        //                     return false;
-
-        //                 folder = folder.ParentFolderId.HasValue
-        //                     ? allFolders.FirstOrDefault(f => f.Id == folder.ParentFolderId.Value)
-        //                     : null;
-        //             }
-        //         }
-
-        //         return true;
-        //     }
-
-        //     projectFiles = projectFiles
-        //         .Where(f => IsFileVisible(f))
-        //         .ToList();
-
-        //     var contacts = await _db.Contacts
-        //         .ToDictionaryAsync(c => c.ID, c => c.FirstName + " " + c.LastName);
-
-        //     string Normalize(string c) =>
-        //         string.IsNullOrWhiteSpace(c)
-        //             ? (projectId == 0 ? "Others" : "Unclassified")
-        //             : c.Trim();
-
-        //     var rootDict = projectFolders
-        //         .Select(f => Normalize(f.Classification))
-        //         .Union(projectFiles.Select(f => Normalize(f.Classification)))
-        //         .Distinct(StringComparer.OrdinalIgnoreCase)
-        //         .ToDictionary(
-        //             c => c,
-        //             c => new FolderNodeDto
-        //             {
-        //                 Name = c,
-        //                 Children = new List<FolderNodeDto>(),
-        //                 Files = new List<FileDto>()
-        //             },
-        //             StringComparer.OrdinalIgnoreCase
-        //         );
-
-        //     foreach (var root in rootDict)
-        //     {
-        //         var classification = root.Key;
-
-        //         var realRoot = projectFolders.FirstOrDefault(f =>
-        //             f.Classification == classification &&
-        //             !f.ParentFolderId.HasValue
-        //         );
-
-        //         if (realRoot != null)
-        //         {
-        //             root.Value.Visibility = realRoot.Visibility;
-        //             root.Value.Id = realRoot.Id;
-        //             root.Value.Name = realRoot.FolderName;
-        //         }
-        //     }
-
-        //     var folderDict = projectFolders.ToDictionary(
-        //         f => f.Id,
-        //         f => new FolderNodeDto
-        //         {
-        //             Id = f.Id,
-        //             Name = f.FolderName,
-        //             Visibility = f.Visibility,
-        //             Children = new List<FolderNodeDto>(),
-        //             Files = new List<FileDto>()
-        //         });
-
-        //     foreach (var folder in projectFolders)
-        //     {
-        //         if (folder.ParentFolderId.HasValue &&
-        //             folder.ParentFolderId != folder.Id &&
-        //             folderDict.ContainsKey(folder.ParentFolderId.Value))
-        //         {
-        //             var parent = folderDict[folder.ParentFolderId.Value];
-        //             var node = folderDict[folder.Id];
-        //             if (!parent.Children.Any(c => c.Id == node.Id))
-        //             {
-        //                 parent.Children.Add(node);
-        //             }
-        //         }
-        //     }
-
-        //     var rootFolders = projectFolders
-        //         .Where(f => !f.ParentFolderId.HasValue || !folderDict.ContainsKey(f.ParentFolderId.Value))
-        //         .ToList();
-
-        //     foreach (var folder in rootFolders)
-        //     {
-        //         var classification = Normalize(folder.Classification);
-        //         if (!rootDict.ContainsKey(classification))
-        //             continue;
-
-        //         var node = folderDict[folder.Id];
-        //         if (!rootDict[classification].Children.Any(c => c.Id == node.Id))
-        //         {
-        //             rootDict[classification].Children.Add(node);
-        //         }
-        //     }
-
-        //     foreach (var file in projectFiles)
-        //     {
-        //         var classification = Normalize(file.Classification);
-        //         var fileDto = new FileDto
-        //         {
-        //             Id = file.ID,
-        //             FileName = file.FileName,
-        //             BlobUrl = file.BlobUrl,
-        //             Classification = classification,
-        //             Tags = file.Tags.Select(t => t.TagName).ToList(),
-        //             Created = file.Created,
-        //             CreatedBy = int.TryParse(file.CreatedBy, out int contactId) && contacts.ContainsKey(contactId)
-        //                 ? contacts[contactId] : "Unknown",
-        //             FileSize = file.FileSize,
-        //             Visibility = file.Visibility
-        //         };
-
-        //         if (file.FolderId.HasValue && folderDict.ContainsKey(file.FolderId.Value))
-        //         {
-        //             folderDict[file.FolderId.Value].Files.Add(fileDto);
-        //         }
-        //         else if (rootDict.ContainsKey(classification))
-        //         {
-        //             rootDict[classification].Files.Add(fileDto);
-        //         }
-        //     }
-
-        //     foreach (var root in rootDict.Values)
-        //     {
-        //         RemoveSameNameNesting(root);
-        //     }
-
-        //     return Ok(rootDict.Values.ToList());
-        // }
-
+       
         [HttpGet("folderTree/{projectId}")]
         public async Task<IActionResult> GetFolderTree(int projectId, [FromQuery] string userId, [FromQuery] bool isMaster)
         {
@@ -666,39 +466,40 @@ namespace MyCockpitView.WebApi.Controllers
                     : c.Trim();
 
             var rootDict = projectFolders
-                .Select(f => Normalize(f.Classification))
-                .Union(projectFiles.Select(f => Normalize(f.Classification)))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToDictionary(
-                    c => c,
-                    c => new FolderNodeDto
-                    {
-                        Name = c,
-                        Children = new List<FolderNodeDto>(),
-                        Files = new List<FileDto>(),
-                        DeniedUsers = new List<string>() 
-                    },
-                    StringComparer.OrdinalIgnoreCase
-                );
-
-            foreach (var root in rootDict)
-            {
-                var classification = root.Key;
-
-                var realRoot = projectFolders.FirstOrDefault(f =>
-                    f.Classification == classification &&
-                    !f.ParentFolderId.HasValue
-                );
-
-                if (realRoot != null)
+            .Where(f => !f.ParentFolderId.HasValue)
+            .ToDictionary(
+                f => f.FolderName,
+                f => new FolderNodeDto
                 {
-                    root.Value.Id = realRoot.Id;
-                    root.Value.Name = realRoot.FolderName;
-                     root.Value.DeniedUsers = realRoot.DeniedUsers
-                    .Select(d => d.UserId)
-                    .ToList();
-                }
-            }
+                    Id = f.Id,
+                    Name = f.FolderName,
+                    Children = new List<FolderNodeDto>(),
+                    Files = new List<FileDto>(),
+                    DeniedUsers = f.DeniedUsers
+                        .Select(d => d.UserId)
+                        .ToList()
+                },
+                StringComparer.OrdinalIgnoreCase
+            );
+
+            //foreach (var root in rootDict)
+            //{
+            //    var classification = root.Key;
+
+            //    var realRoot = projectFolders.FirstOrDefault(f =>
+            //        f.Classification == classification &&
+            //        !f.ParentFolderId.HasValue
+            //    );
+
+            //    if (realRoot != null)
+            //    {
+            //        root.Value.Id = realRoot.Id;
+            //        root.Value.Name = realRoot.FolderName;
+            //        root.Value.DeniedUsers = realRoot.DeniedUsers
+            //       .Select(d => d.UserId)
+            //       .ToList();
+            //    }
+            //}
 
             var folderDict = projectFolders.ToDictionary(
                 f => f.Id,
@@ -734,14 +535,16 @@ namespace MyCockpitView.WebApi.Controllers
 
             foreach (var folder in rootFolders)
             {
-                var classification = Normalize(folder.Classification);
-                if (!rootDict.ContainsKey(classification))
+                if (!rootDict.ContainsKey(folder.FolderName))
                     continue;
 
                 var node = folderDict[folder.Id];
-                if (!rootDict[classification].Children.Any(c => c.Id == node.Id))
+
+                if (!rootDict[folder.FolderName]
+                    .Children.Any(c => c.Id == node.Id))
                 {
-                    rootDict[classification].Children.Add(node);
+                    rootDict[folder.FolderName]
+                        .Children.Add(node);
                 }
             }
 
@@ -768,10 +571,10 @@ namespace MyCockpitView.WebApi.Controllers
                 {
                     folderDict[file.FolderId.Value].Files.Add(fileDto);
                 }
-                else if (rootDict.ContainsKey(classification))
-                {
-                    rootDict[classification].Files.Add(fileDto);
-                }
+                //else if (rootDict.ContainsKey(classification))
+                //{
+                //    rootDict[classification].Files.Add(fileDto);
+                //}
             }
 
             foreach (var root in rootDict.Values)
@@ -852,14 +655,14 @@ namespace MyCockpitView.WebApi.Controllers
         }
 
         [HttpGet("search")]
-        public async Task<IActionResult> Search(int projectId,  string? query,  DateTime? fromDate,  DateTime? toDate, [FromQuery] bool isMaster)
+        public async Task<IActionResult> Search(int projectId, string? query, DateTime? fromDate, DateTime? toDate, [FromQuery] bool isMaster)
         {
             if (projectId <= 0)
                 return BadRequest("Invalid project");
 
             var filesQuery = _db.ProjectFiles
                 .Where(x => x.ProjectID == projectId)
-                .Include(x => x.Tags) 
+                .Include(x => x.Tags)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(query))
@@ -1129,7 +932,7 @@ namespace MyCockpitView.WebApi.Controllers
             return Ok(new { message = "File deleted successfully" });
         }
 
-       [HttpDelete("folder/{folderId}")]
+        [HttpDelete("folder/{folderId}")]
         public async Task<IActionResult> DeleteFolder(int folderId)
         {
             var setting = await _db.AppSettingMasters

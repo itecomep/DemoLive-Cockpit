@@ -24,7 +24,6 @@ using MyCockpitView.WebApi.PackageModule.Entities;
 using MyCockpitView.WebApi.ProjectModule.Entities;
 using MyCockpitView.WebApi.RequestTicketModule.Entities;
 using MyCockpitView.WebApi.Services;
-using MyCockpitView.WebApi.Services;
 using MyCockpitView.WebApi.SiteVisitModule.Entities;
 using MyCockpitView.WebApi.StatusMasterModule;
 using MyCockpitView.WebApi.TodoModule.Entities;
@@ -32,8 +31,7 @@ using MyCockpitView.WebApi.TypeMasterModule;
 using MyCockpitView.WebApi.WebPushSubscriptionModule;
 using MyCockpitView.WebApi.WFTaskModule.Entities;
 using MyCockpitView.WebApi.WorkOrderModule.Entities;
-using MyCockpitView.WebApi.NotificationModule.Entities;
-using MyCockpitView.WebApi.ProjectModule.Entities;
+
 
 namespace MyCockpitView.WebApi;
 
@@ -400,8 +398,7 @@ public class EntitiesContext : IdentityDbContext<User, Role, Guid, IdentityUserC
     public DbSet<WorkFromHomeRequest> WorkFromHomeRequests { get; set; }
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<ProjectTarget> ProjectTargets { get; set; }
-    public DbSet<ProjectTargetHistory> ProjectTargetHistories { get; set; }
-    public DbSet<ProjectInwardNew> ProjectInwardNews { get; set; }
+    public DbSet<ProjectTargetHistory> ProjectTargetHistories { get; set; }  
     // END
 
     private IDbContextTransaction _transaction;
