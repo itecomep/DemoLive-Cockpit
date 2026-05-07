@@ -335,7 +335,9 @@ public class LeaveController : ControllerBase
 
             AttachmentUrl = x.Attachments != null && x.Attachments.Any()
                 ? x.Attachments.First().Url
-                : null
+                : null, 
+                 CreatedDate = x.Created,
+            ActionDate = x.StatusFlag != 0 ? x.Modified : null
         });
 
         return Ok(result);

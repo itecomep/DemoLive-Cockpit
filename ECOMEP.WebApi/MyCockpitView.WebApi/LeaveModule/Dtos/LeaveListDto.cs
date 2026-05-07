@@ -12,6 +12,8 @@
         public string Status { get; set; }
         public string AttachmentUrl { get; set; }
         public int StatusFlag { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime? ActionDate { get; set; }
     }
     public class UpdateStatusDto
     {
