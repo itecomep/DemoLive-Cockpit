@@ -4,6 +4,7 @@ import { BaseBlobEntity, BaseEntity } from "src/app/shared/models/base-entity.mo
 export class ProjectInward extends BaseEntity
 {
     title!: string;
+     projectInput!: string; // ✅ ADD HERE
     message!: string;
     projectID!: number;
     contactID!: number;

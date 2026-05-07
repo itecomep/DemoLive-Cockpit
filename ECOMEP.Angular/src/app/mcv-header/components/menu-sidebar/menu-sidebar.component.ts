@@ -50,6 +50,13 @@ export class MenuSidebarComponent {
   get isPermissionContactList() { return this.contactService.isPermissionList; }
   get isPermissionTeamList(): boolean { return this.contactService.isPermissionTeamList; }
   get isPermissionProjectList() { return this.projectService.isPermissionList; }
+
+//   get isPermissionList(): boolean {
+//   return this.authService.isInAnyRole([
+//     this.permissions.PROJECT_TARGET_VIEW,
+//     this.permissions.MASTER
+//   ]);
+// }
   get isPermissionTodoList() { return this.todoService.isPermissionList; }
   get isPermissionTaskList() { return this.wfTaskService.isPermissionList; }
   get isPermissionRequestTicketList() { return this.requestTicketService.isPermissionList; }
@@ -122,4 +129,14 @@ export class MenuSidebarComponent {
   }, 100);
 }
 
+// get isPermissionProjectTarget(): boolean {
+//   return this.authService.isRoleMaster;
+// }
+
+get isPermissionProjectTarget(): boolean {
+  return this.authService.isInAnyRole([
+    this.permissions.PROJECT_TARGET_VIEW,
+    this.permissions.MASTER
+  ]);
+}
 }

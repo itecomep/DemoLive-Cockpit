@@ -1,0 +1,117 @@
+
+  <app-header title="Project Inward"></app-header>
+
+  <div class="container">
+    <div class="left-panel">
+
+      <h2 class="form-title">Project Inward Form</h2>
+
+      <form [formGroup]="form">
+
+        <div class="form-group">
+          <label>Received Date</label>
+          <mat-form-field appearance="outline">
+            <input matInput formControlName="receivedDate"
+                  [matDatepicker]="picker" [max]="now">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+    <div class="form-group">
+    <label>Project Input</label>
+
+    <mat-form-field appearance="outline">
+
+      <input matInput
+            formControlName="projectInput"
+            [matAutocomplete]="autoProject">
+
+      <mat-icon matSuffix>folder</mat-icon>
+
+      <mat-autocomplete #autoProject="matAutocomplete"
+                        [displayWith]="displayFnProject">
+
+      <mat-option *ngFor="let option of filteredProjects$ | async"
+              [value]="option">
+    {{ option.code }} - {{ option.title }} ({{ option.segment }})
+  </mat-option>
+      </mat-autocomplete>
+
+    </mat-form-field>
+  </div>
+
+        <div class="form-group">
+          <label>Received From*</label>
+          <mat-form-field appearance="outline">
+            <input matInput formControlName="contact"
+                  [matAutocomplete]="auto">
+
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFnContact">
+              <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
+                {{ option.name }} ({{ option.email }})
+              </mat-option>
+            </mat-autocomplete>
+
+            <mat-icon matSuffix>person</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <div class="form-group">
+          <label>Title/Subject</label>
+          <mat-form-field appearance="outline">
+            <input matInput formControlName="title">
+          </mat-form-field>
+        </div>
+
+        <div class="form-group">
+          <label>Category*</label>
+          <mat-form-field appearance="outline">
+            <mat-select formControlName="category">
+              <mat-option *ngFor="let c of inwardCategories" [value]="c">
+                {{ c }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="form-group">
+          <label>Message/Comment</label>
+          <mat-form-field appearance="outline">
+            <textarea matInput formControlName="message"></textarea>
+          </mat-form-field>
+        </div>
+
+      </form>
+      <div class="upload-section">
+
+        <app-mcv-file-upload
+          [uploaderConfig]="blobConfig"
+          [showDrop]="true"
+          [showPaste]="true"
+          (upload)="onUpload($event)">
+        </app-mcv-file-upload>
+
+        <small>Files ({{ inward.attachments.length }})</small>
+
+        <ul>
+          <li *ngFor="let file of inward.attachments; let i = index">
+            <mcv-file
+              [filename]="file.filename"
+              [url]="file.url"
+              [showRemove]="true"
+              (delete)="onDeleteAttachment(file, i)">
+            </mcv-file>
+          </li>
+        </ul>
+
+      </div>
+      <div class="action-buttons">
+      
+        <button mat-raised-button aria-label="close" (click)="onSubmit()">
+    ➕ Add
+  </button>
+      </div>
+
+    </div>
+  </div>

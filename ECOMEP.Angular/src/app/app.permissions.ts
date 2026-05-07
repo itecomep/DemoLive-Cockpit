@@ -204,4 +204,21 @@ export class AppPermissions
 
   public readonly HR_SELECT_USER = 'HR_SELECT_USER';
 
+  public readonly PROJECT_TARGET_VIEW = 'PROJECT_TARGET_VIEW';
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

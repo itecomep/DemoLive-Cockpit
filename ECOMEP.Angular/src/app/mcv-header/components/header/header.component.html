@@ -53,15 +53,6 @@
       <mat-icon>refresh</mat-icon>
     </div>
 
-    <!-- <div class="nav-item nav-icon " (click)="openRoute('/library-view')" aria-label="Library"
-        matTooltip="Library" *ngIf="isPermissionLibraryView && !isMobileView">
-        <h5>L</h5>
-      </div> -->
-
-    <!-- <div class="nav-item nav-icon " (click)="openRoute('/time-line')" aria-label="Timeline" matTooltip="Timeline"
-      *ngIf="isPermissionOfficeTimelineView && !isMobileView">
-      <mat-icon>view_timeline</mat-icon>
-    </div> -->
 
     <div class="nav-item  flex-grow-0 flex-shrink-0">
       <div class="nav-item nav-icon " [matMenuTriggerFor]="createMenu" matTooltip="New">
@@ -103,15 +94,7 @@
       <h5 class="font-focused">New Version</h5>
       <small>click to update</small>
     </div>
-    <!-- <div class="nav-item nav-icon nav-item-hover" (click)="openRoute('/contact-list')" matTooltip="Contact"
-      *ngIf="isPermissionContactList">
-      <mat-icon>phone</mat-icon>
-    </div> -->
-    <!-- <div class="nav-item nav-icon " (click)="openRoute('/contact-list')" matTooltip="Contact"
-      *ngIf="isPermissionContactList">
-      <mat-icon>phone</mat-icon>
-    </div> -->
-
+   
     <div class="nav-item " *ngIf="!isNewVersionAvailable">
       <div class="account-dropdown" [matMenuTriggerFor]="userAccount" *ngIf="user">
         <img *ngIf="user.contact" src="{{ user?.contact?.photoUrl || 'assets/images/user.png' }}"

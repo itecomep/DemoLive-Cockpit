@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿
+
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -31,6 +33,7 @@ using MyCockpitView.WebApi.WebPushSubscriptionModule;
 using MyCockpitView.WebApi.WFTaskModule.Entities;
 using MyCockpitView.WebApi.WorkOrderModule.Entities;
 using MyCockpitView.WebApi.NotificationModule.Entities;
+using MyCockpitView.WebApi.ProjectModule.Entities;
 
 namespace MyCockpitView.WebApi;
 
@@ -398,6 +401,7 @@ public class EntitiesContext : IdentityDbContext<User, Role, Guid, IdentityUserC
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<ProjectTarget> ProjectTargets { get; set; }
     public DbSet<ProjectTargetHistory> ProjectTargetHistories { get; set; }
+    public DbSet<ProjectInwardNew> ProjectInwardNews { get; set; }
     // END
 
     private IDbContextTransaction _transaction;
