@@ -76,16 +76,16 @@ namespace MyCockpitView.WebApi.Controllers
 
             var savedFiles = new List<object>();
 
-            ProjectFolder? folder = null;
+            //ProjectFolder? folder = null;
 
-            if (dto.FolderId.HasValue)
-            {
-                folder = await _db.ProjectFolders
-                    .FirstOrDefaultAsync(f => f.Id == dto.FolderId && f.ProjectId == dto.ProjectId);
+            //if (dto.FolderId.HasValue)
+            //{
+            //    folder = await _db.ProjectFolders
+            //        .FirstOrDefaultAsync(f => f.Id == dto.FolderId && f.ProjectId == dto.ProjectId);
 
-                if (folder == null)
-                    return BadRequest("Folder not found");
-            }
+            //    if (folder == null)
+            //        return BadRequest("Folder not found");
+            //}
 
             string classification = dto.Classification?.Trim() ?? "";
 
@@ -110,27 +110,143 @@ namespace MyCockpitView.WebApi.Controllers
                 }
             }
 
+            //string finalFolderPath = "";
+
+            //if (folder != null)
+            //{
+            //    var fullFolderPath = await BuildFolderPath(folder);
+
+            //    if (!string.IsNullOrWhiteSpace(classification))
+            //    {
+            //        if (fullFolderPath.StartsWith(classification + "/", StringComparison.OrdinalIgnoreCase))
+            //            fullFolderPath = fullFolderPath.Substring(classification.Length + 1);
+            //        else if (string.Equals(fullFolderPath, classification, StringComparison.OrdinalIgnoreCase))
+            //            fullFolderPath = "";
+            //    }
+
+            //    finalFolderPath = string.IsNullOrWhiteSpace(fullFolderPath)
+            //        ? classification
+            //        : $"{classification}/{fullFolderPath}";
+            //}
+            //else if (!string.IsNullOrWhiteSpace(classification))
+            //{
+            //    finalFolderPath = classification;
+            //}
+
+            ProjectFolder? categoryFolder = null;
+            ProjectFolder? dateFolder = null;
+
+            string dateFolderName =
+                (dto.ReceivedDate ?? DateTime.Now)
+                .ToString("yyyy-MM-dd");
+
             string finalFolderPath = "";
 
-            if (folder != null)
-            {
-                var fullFolderPath = await BuildFolderPath(folder);
+            // ================= CATEGORY FOLDER =================
 
-                if (!string.IsNullOrWhiteSpace(classification))
+            if (!string.IsNullOrWhiteSpace(classification))
+            {
+                //categoryFolder = await _db.ProjectFolders
+                //    .FirstOrDefaultAsync(x =>
+                //        x.ProjectId == dto.ProjectId &&
+                //        x.ParentFolderId == null &&
+                //        x.FolderName.ToLower() == classification.ToLower());
+
+                //// CREATE CATEGORY IF NOT EXISTS
+                //if (categoryFolder == null)
+                //{
+                //    categoryFolder = new ProjectFolder
+                //    {
+                //        ProjectId = dto.ProjectId,
+                //        FolderName = classification,
+                //        Classification = classification,
+                //        ParentFolderId = null,
+                //        CreatedBy = dto.CreatedBy ?? "System",
+                //        Created = DateTime.UtcNow
+                //    };
+
+                //    _db.ProjectFolders.Add(categoryFolder);
+                //    await _db.SaveChangesAsync();
+                //}
+
+                const string rootFolderName = "SiteVisit";
+
+                // ================= ROOT FOLDER =================
+
+                var rootFolder = await _db.ProjectFolders
+                    .FirstOrDefaultAsync(x =>
+                        x.ProjectId == dto.ProjectId &&
+                        x.ParentFolderId == null &&
+                        x.FolderName == rootFolderName);
+
+                // CREATE ROOT IF NOT EXISTS
+                if (rootFolder == null)
                 {
-                    if (fullFolderPath.StartsWith(classification + "/", StringComparison.OrdinalIgnoreCase))
-                        fullFolderPath = fullFolderPath.Substring(classification.Length + 1);
-                    else if (string.Equals(fullFolderPath, classification, StringComparison.OrdinalIgnoreCase))
-                        fullFolderPath = "";
+                    rootFolder = new ProjectFolder
+                    {
+                        ProjectId = dto.ProjectId,
+                        FolderName = rootFolderName,
+                        Classification = rootFolderName,
+                        ParentFolderId = null,
+                        CreatedBy = dto.CreatedBy ?? "System",
+                        Created = DateTime.UtcNow
+                    };
+
+                    _db.ProjectFolders.Add(rootFolder);
+                    await _db.SaveChangesAsync();
                 }
 
-                finalFolderPath = string.IsNullOrWhiteSpace(fullFolderPath)
-                    ? classification
-                    : $"{classification}/{fullFolderPath}";
-            }
-            else if (!string.IsNullOrWhiteSpace(classification))
-            {
-                finalFolderPath = classification;
+                // ================= CATEGORY FOLDER =================
+
+                categoryFolder = await _db.ProjectFolders
+                    .FirstOrDefaultAsync(x =>
+                        x.ProjectId == dto.ProjectId &&
+                        x.ParentFolderId == rootFolder.Id &&
+                        x.FolderName.ToLower() == classification.ToLower());
+
+                // CREATE CATEGORY IF NOT EXISTS
+                if (categoryFolder == null)
+                {
+                    categoryFolder = new ProjectFolder
+                    {
+                        ProjectId = dto.ProjectId,
+                        FolderName = classification,
+                        Classification = classification,
+                        ParentFolderId = rootFolder.Id,
+                        CreatedBy = dto.CreatedBy ?? "System",
+                        Created = DateTime.UtcNow
+                    };
+
+                    _db.ProjectFolders.Add(categoryFolder);
+                    await _db.SaveChangesAsync();
+                }
+
+                // ================= DATE FOLDER =================
+
+                dateFolder = await _db.ProjectFolders
+                    .FirstOrDefaultAsync(x =>
+                        x.ProjectId == dto.ProjectId &&
+                        x.ParentFolderId == categoryFolder.Id &&
+                        x.FolderName == dateFolderName);
+
+                // CREATE DATE FOLDER IF NOT EXISTS
+                if (dateFolder == null)
+                {
+                    dateFolder = new ProjectFolder
+                    {
+                        ProjectId = dto.ProjectId,
+                        FolderName = dateFolderName,
+                        Classification = classification,
+                        ParentFolderId = categoryFolder.Id,
+                        CreatedBy = dto.CreatedBy ?? "System",
+                        Created = DateTime.UtcNow
+                    };
+
+                    _db.ProjectFolders.Add(dateFolder);
+                    await _db.SaveChangesAsync();
+                }
+
+                finalFolderPath = $"{classification}/{dateFolderName}";
             }
 
             foreach (var file in dto.Files)
@@ -161,7 +277,7 @@ namespace MyCockpitView.WebApi.Controllers
                 var attachment = new ProjectFiles
                 {
                     ProjectID = dto.ProjectId,
-                    FolderId = folder?.Id,
+                    FolderId = dateFolder?.Id,
                     FileName = finalFileName,
                     BlobPath = blobPath,
                     BlobUrl = file.BlobUrl, // 🔥 already uploaded
@@ -203,7 +319,7 @@ namespace MyCockpitView.WebApi.Controllers
                     Id = attachment.ID,
                     attachment.FileName,
                     attachment.BlobUrl,
-                    Folder = folder?.FolderName,
+                    Folder = dateFolder?.FolderName,
                     attachment.Classification,
                     attachment.FileSize,
                     Tags = attachment.Tags?.Select(t => t.TagName).ToList() ?? new List<string>()
@@ -219,6 +335,7 @@ namespace MyCockpitView.WebApi.Controllers
             public int? FolderId { get; set; }
             public string? Classification { get; set; }
             public string? CreatedBy { get; set; }
+            public DateTime? ReceivedDate { get; set; }
             public List<string>? Tags { get; set; }
             public List<FileMetaDto> Files { get; set; } = new();
             public string Visibility { get; set; } = "Public";
