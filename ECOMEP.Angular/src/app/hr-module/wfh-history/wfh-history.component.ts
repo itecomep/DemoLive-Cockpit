@@ -30,6 +30,7 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
   @Input() requests: any[] = [];
   @Output() refresh = new EventEmitter<void>();
   @ViewChild("fileViewerDialog",{ static: true }) fileViewerDialog!: TemplateRef<any>;
+  // @ViewChild("profileDialog") profileDialog!: TemplateRef<any>;
   @ViewChild("profileDialog") profileDialog!: TemplateRef<any>;
 
 selectedFileUrl: SafeResourceUrl | null = null;
@@ -57,66 +58,58 @@ selectedEmployeeName: string = "";
     endDate: "",
   };
 
-  // =========================
-  // INIT
-  // =========================
+  
   ngOnInit(): void {}
 
-  // ngOnChanges(changes: SimpleChanges): void {
-  //   if (changes["requests"] && this.requests) {
-  //     this.requests = this.requests.map((req) => ({
-  //       ...req,
-  //       status: (req.status || "pending").toLowerCase(),
-  //       attachments: Array.isArray(req.attachments) ? req.attachments : [],
-  //     }));
+  
 
-  //     this.filteredRequests = [...this.requests];
-  //   }
-  // }
 
-  ngOnChanges(changes: SimpleChanges): void {
+ngOnChanges(changes: SimpleChanges): void {
   if (changes["requests"] && this.requests) {
 
     this.contactService.get([]).subscribe((contacts: any[]) => {
 
-      this.requests = this.requests.map((req) => {
+      this.hrService.getContactTeams().subscribe((teams: any[]) => {
 
-        const contact = contacts.find(
-          (c) =>
-            c.name?.toLowerCase().trim() ===
-            req.employeeName?.toLowerCase().trim()
-        );
+        const leaderNames: string[] = [];
 
-        return {
-          ...req,
-          status: (req.status || "pending").toLowerCase(),
-          attachments: Array.isArray(req.attachments) ? req.attachments : [],
-          photoUrl: contact?.photoUrl || ""   // ✅ IMPORTANT
-        };
+        teams.forEach((team) => {
+          team.members?.forEach((m: any) => {
+            if (m.contactID === team.leaderID) {
+              const name = m.contact?.name?.toLowerCase().trim();
+              if (name && !leaderNames.includes(name)) {
+                leaderNames.push(name);
+              }
+            }
+          });
+        });
+
+        this.requests = this.requests.map((req) => {
+
+          const contact = contacts.find(
+            (c) =>
+              c.name?.toLowerCase().trim() ===
+              req.employeeName?.toLowerCase().trim()
+          );
+
+          const empName = req.employeeName?.toLowerCase().trim();
+
+          return {
+            ...req,
+            status: (req.status || "pending").toLowerCase(),
+            attachments: Array.isArray(req.attachments) ? req.attachments : [],
+            photoUrl: contact?.photoUrl || "",
+            isTeamLeader: leaderNames.includes(empName) // ⭐ ADD THIS
+          };
+        });
+
+        this.filteredRequests = [...this.requests];
       });
-
-      this.filteredRequests = [...this.requests];
     });
   }
 }
 
-  // =========================
-  // TOGGLE FILTER BUTTONS
-  // =========================
-
-  // toggleFilter(type: "current" | "last") {
-  //   // 🔥 TOGGLE ON/OFF LOGIC
-  //   if (
-  //     (type === "current" && this.activeMonthFilter === "current") ||
-  //     (type === "last" && this.activeMonthFilter === "last")
-  //   ) {
-  //     this.activeMonthFilter = "none"; // disable
-  //   } else {
-  //     this.activeMonthFilter = type; // enable
-  //   }
-
-  //   this.applyAllFilters();
-  // }
+ 
 
   toggleFilter(type: "current" | "previous" | "next") {
   this.activeMonthFilter =
@@ -165,31 +158,14 @@ selectedEmployeeName: string = "";
     }
 
     // DATE FILTER (MONTH TOGGLE)
-    // if (this.activeMonthFilter !== "none") {
-    //   const range = this.getMonthRange(
-    //     this.activeMonthFilter === "current" ? "current" : "last",
-    //   );
-
-    //   data = data.filter((req) => {
-    //     const start = this.formatDate(req.startDate);
-    //     const end = this.formatDate(req.endDate);
-
-    //     return start <= range.end && end >= range.start;
-    //   });
-    // }
-
-
- if (this.activeMonthFilter !== "none") {
+   if (this.activeMonthFilter !== "none") {
   const range = this.getMonthRange(this.activeMonthFilter);
 
   data = data.filter((req) => {
     const start = this.formatDate(req.startDate);
     const end = this.formatDate(req.endDate);
 
-    // ❌ OLD
-    // return start <= range.end && end >= range.start;
 
-    // ✅ NEW (STRICT MONTH)
     return start >= range.start && end <= range.end;
   });
 }
@@ -198,32 +174,6 @@ selectedEmployeeName: string = "";
     this.filteredRequests = data;
   }
 
-  // =========================
-  // MONTH RANGE
-  // =========================
-  // getMonthRange(type: "current" | "last") {
-  //   const now = new Date();
-
-  //   let start: Date;
-  //   let end: Date;
-
-  //   if (type === "current") {
-  //     start = new Date(now.getFullYear(), now.getMonth(), 1);
-  //     end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-  //   } else {
-  //     start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-  //     end = new Date(now.getFullYear(), now.getMonth(), 0);
-  //   }
-
-  //   return {
-  //     start: this.formatDate(start),
-  //     end: this.formatDate(end),
-  //   };
-  // }
-
-  // =========================
-  // FILTER LOGIC
-  // =========================
   applyFilters(monthRange?: { start: string; end: string }): void {
     this.filteredRequests = this.requests.filter((req) => {
       const reqStart = this.formatDate(req.startDate);
@@ -259,9 +209,6 @@ selectedEmployeeName: string = "";
     this.filteredRequests = [...this.requests];
   }
 
-  // =========================
-  // DATE FORMAT
-  // =========================
   formatDate(date: any): string {
     if (!date) return "";
 
@@ -273,9 +220,7 @@ selectedEmployeeName: string = "";
     return `${year}-${month}-${day}`;
   }
 
-  // =========================
-  // TEAM LEADER FILTER
-  // =========================
+
   loadTeamLeaderWfh() {
     this.hrService.getContactTeams().subscribe((teams: any[]) => {
       const leaderNames: string[] = [];
@@ -302,9 +247,6 @@ selectedEmployeeName: string = "";
     });
   }
 
-  // =========================
-  // UTILITY (existing kept)
-  // =========================
   getDays(start: Date, end: Date): number {
     if (!start || !end) return 0;
     const diff = new Date(end).getTime() - new Date(start).getTime();

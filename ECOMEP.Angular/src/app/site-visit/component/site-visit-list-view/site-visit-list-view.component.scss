@@ -48,6 +48,24 @@
 }
 
 
+
+.mcv-footer-actions {
+  display: flex;
+  align-items: center;
+}
+
+.meeting-btn {
+  margin-right: 16px;  // spacing from edge
+}
+
+.mcv-footer-actions button:last-child {
+  margin-left: 69%;
+}
+.green-btn {
+  background-color: #4CAF50 !important;
+  color: white !important;
+}
+
 @media (max-width: 768px) {
     .detail-wrapper {
         width: 100%;

@@ -91,7 +91,7 @@
           </div>
         </td> -->
 
-        <td>
+         <td>
   <div class="employee-cell">
 
     <img *ngIf="req.photoUrl; else fallbackAvatar"
@@ -108,6 +108,9 @@
     <div class="employee-info">
       <span class="employee-name">
         {{ req.employeeName }}
+          <mat-icon *ngIf="req.isTeamLeader === true" class="leader-icon">
+    star
+  </mat-icon>
       </span>
     </div>
 
