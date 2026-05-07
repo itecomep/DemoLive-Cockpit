@@ -98,6 +98,14 @@ export const ROOT_ROUTES: Routes = [
   ]
 },
 
+{
+  path: 'project-inward',
+  loadComponent: () =>
+    import('./project-inward-page/project-inward-page.component')
+      .then(m => m.ProjectInwardPageComponent),
+  canActivate: [AuthGuard]
+},
+
   { path: '', redirectTo: 'cockpit', pathMatch: 'full' },
 
   { path: '**', redirectTo: '/cockpit', pathMatch: 'full' },

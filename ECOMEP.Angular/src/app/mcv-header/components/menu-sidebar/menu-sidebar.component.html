@@ -1,18 +1,10 @@
 <!-- <div class="sidebar-wrapper" [ngClass]="{'active':showMenu}"></div> -->
 
-<div
-  class="sidebar-wrapper"
-  [ngClass]="{ active: showMenu }"
-  (click)="onCloseMenu()"
-></div>
+<div class="sidebar-wrapper" [ngClass]="{ active: showMenu }" (click)="onCloseMenu()"></div>
 
 <!-- <nav class="menu-sidebar" [ngClass]="{'active':showMenu}" (click)="onCloseMenu()"> -->
 
-  <nav
-  class="menu-sidebar"
-  [ngClass]="{ active: showMenu }"
-  (click)="$event.stopPropagation()"
->
+<nav class="menu-sidebar" [ngClass]="{ active: showMenu }" (click)="$event.stopPropagation()">
   <ul class="menu-list">
     <!-- <li *ngIf="isPermissionProjectList">
       <a [routerLinkActive]="['active']" [routerLink]="['/wftask-list']">
@@ -62,11 +54,11 @@
       </a>
     </li>
 
-    <li *ngIf="isPermissionMeetingList">
+    <!-- <li *ngIf="isPermissionMeetingList">
       <a [routerLinkActive]="['active']" [routerLink]="['/sitevisit-list']">
         <h5>Sitevisit List</h5>
       </a>
-    </li>
+    </li> -->
 
     <li *ngIf="isPermissionAllowedIpView">
       <a [routerLinkActive]="['active']" [routerLink]="['/allowed-ip']">
@@ -80,7 +72,7 @@
       </a>
     </li>
 
-     <li *ngIf="isPermissionAssetList">
+    <li *ngIf="isPermissionAssetList">
       <a [routerLinkActive]="['active']" [routerLink]="['/asset-view']">
         <h5>Assets</h5>
       </a>
@@ -94,7 +86,7 @@
 
     <li *ngIf="isPermissionTaskView">
       <a (click)="openTask()">
-        <h5>Task</h5>
+        <h5>Task/Chat</h5>
       </a>
     </li>
 
@@ -104,7 +96,7 @@
       </a>
     </li>
 
-    <li *ngIf="isPermissionWorkFromHome">     
+    <li *ngIf="isPermissionWorkFromHome">
       <a [routerLink]="['/hr-module']" routerLinkActive="active" (click)="closeMenuDelayed()">
         <h5>HR Module</h5>
       </a>
@@ -116,11 +108,17 @@
       </a>
     </li>
 
-    <li *ngIf="isPermissionProjectList">
+    <!-- <li *ngIf="isPermissionProjectList"> -->
+    <li *ngIf="isPermissionProjectTarget">
       <a [routerLink]="['/project-target']" routerLinkActive="active" (click)="closeMenuDelayed()">
         <h5>Project Target</h5>
       </a>
     </li>
 
+    <li>
+      <a [routerLink]="['/project-inward']" routerLinkActive="active" (click)="closeMenuDelayed()">
+        <h5>Project Inward Form</h5>
+      </a>
+    </li>
   </ul>
 </nav>
