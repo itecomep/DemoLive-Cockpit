@@ -6,13 +6,14 @@
         public string EmployeeName { get; set; }
         public string ApplicationType { get; set; }
         public string Reason { get; set; }
-        public DateTime CreatedDate { get; set; } // ✅ ADD THIS
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public decimal Days { get; set; }
         public string Status { get; set; }
         public string AttachmentUrl { get; set; }
         public int StatusFlag { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime? ActionDate { get; set; }
     }
     public class UpdateStatusDto
     {

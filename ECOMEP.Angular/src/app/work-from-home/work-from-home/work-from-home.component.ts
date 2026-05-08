@@ -98,28 +98,7 @@ private permissions = inject(AppPermissions);
   //   });
   // }
 
-//   buildForm() {
-//   const currentUser = this.wfhService["getCurrentUser"]();
-
-//   this.form = this.fb.group({
-//     applicationUser: [
-//       this.canSelectUser
-//         ? null
-//         : {
-//             id: currentUser.userId,
-//             name: currentUser.userName
-//           }
-//     ],
-//     startDate: ["", Validators.required],
-//     endDate: ["", Validators.required],
-//     reason: ["", Validators.required],
-//   });
-// }
-
-
-
-buildForm() {
-
+  buildForm() {
   const currentUser = this.wfhService["getCurrentUser"]();
 
   this.form = this.fb.group({
@@ -134,15 +113,6 @@ buildForm() {
     startDate: ["", Validators.required],
     endDate: ["", Validators.required],
     reason: ["", Validators.required],
-  });
-
-  this.form.get("startDate")?.valueChanges.subscribe((value) => {
-
-    const endDate = this.form.get("endDate")?.value;
-
-    if (endDate && endDate < value) {
-      this.form.get("endDate")?.setValue(value);
-    }
   });
 }
 

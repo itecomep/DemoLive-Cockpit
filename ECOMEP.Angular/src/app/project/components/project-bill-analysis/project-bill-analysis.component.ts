@@ -60,26 +60,21 @@ export class ProjectBillAnalysisComponent implements OnInit
   private readonly statusMasterService = inject(StatusMasterService);
   private readonly projectService = inject(ProjectApiService);
   private readonly contactTeamService = inject(ContactTeamApiService);
-   private followUpService = inject(BillAnalysisRowService); 
+   private followUpService = inject(BillAnalysisRowService); // ✅ ADD THIS
    private isPeriodUpdating = false;
   private router = inject(Router);
   private dialog = inject(MatDialog);
   private authService = inject(AuthService);
 
-                  
+                     //for billing analysis for hiding the another check box from other users
 pageIndex = 0;
 pageSize = 100;
 totalRecords = 0;
-totalProjects = 0;
 usePagesApi: boolean = true;
 showZeroAmount = true; // ON by default
-followUpUserMap: { [billId: number]: string } = {}; // ✅ NEW
+
+                        // for displaying next followup column 
 followUpMap: { [billId: number]: Date | null } = {};
-
-
-
-
-
 
 
 periodOptions = [
@@ -89,7 +84,7 @@ periodOptions = [
    { label: 'Last 2 Years', value: '2y' }
 ];
 
-
+// periodFC = new FormControl('current');
 periodFC = new FormControl<string | null>(null);
 sortDirection: { [key: string]: 'asc' | 'desc' } = {};
 
@@ -115,10 +110,20 @@ fullDataList: ProjectBillAnalysis[] = [];
   projectStatusFC = new FormControl();
   teamOptions: ContactTeam[] = [];
 
-    dateFC = new FormGroup({
+  // dateFC = new FormGroup({
+  //   start: new FormControl(this.utilityService.getFYearStart()),
+  //   end: new FormControl(this.utilityService.getFYearEnd()),
+  // });
+
+
+//   dateFC = new FormGroup({
+//   start: new FormControl(null),
+//   end: new FormControl(null),
+// });
+
+dateFC = new FormGroup({
   start: new FormControl<Date | null>(null),
   end: new FormControl<Date | null>(null),
-  
 });
 
   filters: ApiFilter[] = [
@@ -126,7 +131,7 @@ fullDataList: ProjectBillAnalysis[] = [];
    
   ];
   searchKey?: string;
-  
+  // sort: string = 'billdate';
   sort: string = '';
 
   sortOptions: any[] = [ 
@@ -145,6 +150,12 @@ fullDataList: ProjectBillAnalysis[] = [];
     return this.dataList
     .reduce((a, b) => a + b.dueAmount, 0);
   }
+
+  // get totalGstAmount(){
+  //   return this.dataList
+  //   .reduce((a, b) => a + b.cgstAmount + b.igstAmount+ b.sgstAmount, 0);
+  // }
+
   get totalGstAmount(){
     return this.dataList
     .reduce((a, b) => a + b.cgstAmount + b.igstAmount+ b.sgstAmount, 0);
@@ -155,9 +166,8 @@ fullDataList: ProjectBillAnalysis[] = [];
     .reduce((a, b) => a + b.payableAmount, 0);
   }
 
-   get totalReceivedAmount(){
+  get totalReceivedAmount(){
     return this.dataList
-    
     .reduce((a, b) => a + this.getReceivedPayment(b), 0);
   }
   async ngOnInit()
@@ -219,7 +229,7 @@ this.periodFC.valueChanges.subscribe(value => {
 
   start.setHours(0, 0, 0, 0);
 
- 
+  // 🚨 IMPORTANT: stop other triggers
   this.isPeriodUpdating = true;
 
   this.dateFC.setValue({ start, end }, { emitEvent: false });
@@ -261,7 +271,7 @@ this.periodFC.valueChanges.subscribe(value => {
 
       this.addFilter('TypeFlag', element.value.toString());
 
-      this.pageIndex = 0;  
+      this.pageIndex = 0;   // ✅ ADD THIS
       this.getData();
     }
   });
@@ -280,7 +290,7 @@ this.periodFC.valueChanges.subscribe(value => {
         this.addFilter('ProjectStatusFlag', element.value.toString());
       });
 
-      this.pageIndex = 0;   
+      this.pageIndex = 0;   // ✅ ADD THIS
       this.getData();
     }
   });
@@ -313,7 +323,7 @@ this.periodFC.valueChanges.subscribe(value => {
         this.addFilter('CompanyID', element.id.toString())
       });
 
-      this.pageIndex = 0;   
+      this.pageIndex = 0;   // ✅ ADD THIS
       this.getData();
     }
   });
@@ -356,13 +366,40 @@ this.periodFC.valueChanges.subscribe(value => {
         }
       );
 
+
+  //   this.dateFC.valueChanges
+  // .pipe(debounceTime(400), distinctUntilChanged())
+  // .subscribe((value) =>
+  // {
+  //   if (value && value.start && value.end)
+  //   {
+  //     this.filters = this.filters.filter(
+  //       (x) => x.key !== "RangeStart" && x.key != "RangeEnd"
+  //     );
+
+  //     this.filters.push({
+  //       key: "RangeStart",
+  //       value: value.start.toISOString(),
+  //     });
+
+  //     this.filters.push({
+  //       key: "RangeEnd",
+  //       value: value.end.toISOString(),
+  //     });
+
+  //     this.pageIndex = 0;   // ✅ ADD THIS
+  //     this.getData();
+  //   }
+  // });
+
+
   this.dateFC.valueChanges
   .pipe(debounceTime(400), distinctUntilChanged())
   .subscribe((value) =>
   {
     if (value && value.start && value.end)
     {
-     
+      // ✅ ADD THIS (VERY IMPORTANT)
       const start = value.start as Date;
       const end = value.end as Date;
 
@@ -372,12 +409,12 @@ this.periodFC.valueChanges.subscribe(value => {
 
       this.filters.push({
         key: "RangeStart",
-        value: start.toISOString(),   
+        value: start.toISOString(),   // ✅ FIXED
       });
 
       this.filters.push({
         key: "RangeEnd",
-        value: end.toISOString(),     
+        value: end.toISOString(),     // ✅ FIXED
       });
 
       this.pageIndex = 0;
@@ -395,30 +432,16 @@ this.periodFC.valueChanges.subscribe(value => {
         this.addFilter('teamID', element.id.toString());
       });
 
-      this.pageIndex = 0; 
+      this.pageIndex = 0;   // ✅ ADD THIS
       this.getData();
     }
-  });
-
-
-  this.searchFC.valueChanges
-  .pipe(
-    debounceTime(400),
-    distinctUntilChanged()
-  )
-  .subscribe((value) => {
-
-    this.searchKey = value || undefined;  
-    this.pageIndex = 0;                    
-
-    this.getData();                       
   });
   }
 
 
 private async getData()
 {
- 
+  // 🔒 Always apply user restriction
   if (!this.isAdmin) {
     const userTeams = this.authService.currentUserStore?.teams || [];
 
@@ -453,50 +476,44 @@ private async getData()
   )
 ]);
 
+// this.dataList = pageResponse.list;
+// this.dataList = pageResponse.list;
+// this.fullDataList = [...this.dataList]; // ✅ ADD THIS
+// if (!this.showZeroAmount) {
+//   this.dataList = this.dataList.filter(
+//     // bill => this.getReceivedPayment(bill) !== 0
+//     (bill: ProjectBillAnalysis) => this.getReceivedPayment(bill) !== 0
+//   );
+// }
+// this.totalRecords = pageResponse.totalCount;
+
+// await this.loadFollowUps();
+
+
 this.dataList = pageResponse.list;
 
-
-this.totalProjects = new Set(
-    fullData.map((x: ProjectBillAnalysis) => x.projectCode)
-  ).size;
-
-
+// 🔥 IMPORTANT FIX: handle empty next page
 if (this.dataList.length === 0 && this.pageIndex > 0) {
-  this.pageIndex--;  
-  return;            
+  this.pageIndex--;   // go back to previous page
+  return;             // stop execution
 }
 
-this.fullDataList = [...this.dataList]; 
+this.fullDataList = [...this.dataList]; // keep original copy
 
 if (!this.showZeroAmount) {
-  this.dataList = this.dataList.filter((bill: ProjectBillAnalysis) => {
-
-    const pending = this.getPendingPayment(bill);
-    const received = this.getReceivedPayment(bill);
-    const tds = bill.tdsAmount || 0;
-
-    const isProforma =
-      bill.typeFlag === this.PROJECT_BILL_TYPEFLAG_PROFORMA_INVOICE;
-
-    const isFullyAdjustedProforma =
-      isProforma && received === tds;
-
-    return pending > 0 && !isFullyAdjustedProforma;
-  });
+  this.dataList = this.dataList.filter(
+    (bill: ProjectBillAnalysis) => this.getReceivedPayment(bill) !== 0
+  );
 }
+
 this.totalRecords = pageResponse.totalCount;
+
 await this.loadFollowUps();
 
-
-if (this.sortDirection['followUpUser']) {
-  this.applyFollowUpUserSort();
-}
-
-
- 
+  // ✅ Use full data for totals
   this.total = new ProjectBillAnalysis();
 
- 
+  // fullData.forEach(x =>
   fullData.forEach((x: ProjectBillAnalysis) =>
   {
     this.total.dueAmount += x.dueAmount;
@@ -553,7 +570,7 @@ if (this.sortDirection['followUpUser']) {
   }
   
 
-                                
+                                 //filtering 
 toggleSort(column: string) {
 
 
@@ -563,26 +580,24 @@ toggleSort(column: string) {
 
   this.sort = isDesc ? 'billdate' : 'billdate desc';
 
-  this.getData();
+  this.getData(); // only now API is called
 
   return;
 }
 
 
-if (column === 'received') {
+  if (column === 'received') {
+  const isDesc = this.sort === 'received desc';
 
-  const isAsc = this.sort === 'received';
+  this.sort = isDesc ? 'received' : 'received desc';
 
-  this.sort = isAsc ? 'received desc' : 'received';
-
-  this.dataList = [...this.dataList].sort((a, b) => {
-
+  this.dataList.sort((a: ProjectBillAnalysis, b: ProjectBillAnalysis) => {
     const receivedA = this.getReceivedPayment(a) || 0;
     const receivedB = this.getReceivedPayment(b) || 0;
 
-    return isAsc
-      ? receivedA - receivedB   
-      : receivedB - receivedA; 
+    return isDesc
+      ? receivedA - receivedB   // ASC
+      : receivedB - receivedA;  // DESC
   });
 
   return;
@@ -622,7 +637,7 @@ if (column === 'days') {
   return;
 }
 
-
+// // ===== NEXT FOLLOW-UP SORT =====
 if (column === 'followUp') {
 
   this.sortDirection['followUp'] =
@@ -639,13 +654,13 @@ if (column === 'followUp') {
     let dateB: number;
 
     if (isAsc) {
-     
+      // 🔥 ASC → push null to bottom
       dateA = valA ? new Date(valA).getTime() : Number.MAX_SAFE_INTEGER;
       dateB = valB ? new Date(valB).getTime() : Number.MAX_SAFE_INTEGER;
 
       return dateA - dateB;
     } else {
-     
+      // 🔥 DESC → push null to bottom
       dateA = valA ? new Date(valA).getTime() : Number.MIN_SAFE_INTEGER;
       dateB = valB ? new Date(valB).getTime() : Number.MIN_SAFE_INTEGER;
 
@@ -656,23 +671,7 @@ if (column === 'followUp') {
 
   return;
 }
-
-
-if (column === 'followUpUser') {
-
-  if (!this.sortDirection['followUpUser']) {
-    this.sortDirection['followUpUser'] = 'asc'; // ✅ FIRST CLICK ASC
-  } else {
-    this.sortDirection['followUpUser'] =
-      this.sortDirection['followUpUser'] === 'asc' ? 'desc' : 'asc';
-  }
-
-  this.applyFollowUpUserSort();
-  return;
-}
-
-
-  
+  // ===== OTHER FRONTEND SORTS =====
   if (column === 'projectCode') {
     const isDesc = this.sort === 'projectCode';
     this.sort = isDesc ? 'projectCode desc' : 'projectCode';
@@ -699,26 +698,21 @@ if (column === 'followUpUser') {
     return;
   }
 
-  
+  // ===== API SORT (ONLY FOR BACKEND FIELDS) =====
   if (this.sort === column) {
     this.sort = column + ' desc';
   } else {
     this.sort = column;
   }
 
-  this.getData();
-}
-
-
-applyCurrentSort() {
-  if (this.sortDirection['followUpUser']) {
-    this.applyFollowUpUserSort();
-  }
+  this.getData(); // only for API fields like billdate
 }
 
 
 
 
+
+// till here //
 
 
   onDownloadPdf(url?: string) {
@@ -730,9 +724,15 @@ applyCurrentSort() {
 
 
 getReceivedPayment(bill: ProjectBillAnalysis) {
-    return bill.payments.reduce((a, b) => a + b.amount, 0)
+  const payment = (bill.payments || []).reduce((a, b) => a + b.amount, 0);
+
+  // 👇 fallback for proforma
+  if (payment === 0 && bill.typeFlag === this.PROJECT_BILL_TYPEFLAG_PROFORMA_INVOICE) {
+    return bill.dueAmount || 0; // OR payableAmount depending on your logic
   }
 
+  return payment;
+}
 
 
   getPendingPayment(bill: ProjectBillAnalysis) {
@@ -773,18 +773,13 @@ getReceivedPayment(bill: ProjectBillAnalysis) {
 }
 
 
- 
+                                         //billing analysis for admin
   get isAdmin(): boolean {
   return this.authService.isInRole('ADMIN');
 }
- 
-
-
-
-
+                                         // next follow update 
 async loadFollowUps() {
-
-  const requests = this.dataList.map(async (bill) => {
+  for (let bill of this.dataList) {
 
     try {
       const res: any[] = await firstValueFrom(
@@ -792,41 +787,33 @@ async loadFollowUps() {
       );
 
       if (res && res.length > 0) {
-
-        const latest = res.sort((a, b) =>
-          new Date(b.communicationDate).getTime() -
-          new Date(a.communicationDate).getTime()
-        )[0];
+        // get latest nextFollowUpDate
+        const latest = res
+          .filter(x => x.nextFollowUpDate)
+          .sort((a, b) =>
+            new Date(b.nextFollowUpDate).getTime() -
+            new Date(a.nextFollowUpDate).getTime()
+          )[0];
 
         this.followUpMap[bill.id] = latest?.nextFollowUpDate || null;
 
-        this.followUpUserMap[bill.id] =
-          (latest?.communicatedByClient || '').trim() || '-';
-
       } else {
         this.followUpMap[bill.id] = null;
-        this.followUpUserMap[bill.id] = '-';
       }
 
-    } catch {
+    } catch (err) {
       this.followUpMap[bill.id] = null;
-      this.followUpUserMap[bill.id] = '-';
     }
-  });
-
- 
-  await Promise.all(requests);
-
- 
-  this.dataList = [...this.dataList];
-
-  this.applyFollowUpUserSort();   
+  }
 }
+
 
 
 
 getDaysSinceBill(bill: ProjectBillAnalysis): string {
   const pending = this.getPendingPayment(bill);
+
+  // ✅ If no pending → show "-"
   if (!pending || pending <= 0) {
     return '-';
   }
@@ -847,12 +834,15 @@ getDaysSinceBill(bill: ProjectBillAnalysis): string {
 }
 
 
-
+// nextPage() {
+//   this.pageIndex++;
+//   this.getData();
+// }
 
 nextPage() {
   const nextPageStart = (this.pageIndex + 1) * this.pageSize;
 
-
+  // ❌ stop if no more data
   if (nextPageStart >= this.totalRecords) {
     return;
   }
@@ -868,82 +858,28 @@ prevPage() {
   }
 }
 
-
+// getTotalPages(): number {
+//   return Math.ceil(this.totalRecords / this.pageSize);
+// }
 
 getTotalPages(): number {
   if (!this.totalRecords || !this.pageSize) return 0;
   return Math.ceil(this.totalRecords / this.pageSize);
 }
 
-
-
-
 toggleZeroAmount() {
 
   if (this.showZeroAmount) {
+    // ✅ show all
     this.dataList = [...this.fullDataList];
   } else {
-   
-    this.dataList = this.fullDataList.filter(bill => {
-
-      const pending = this.getPendingPayment(bill);
-      const received = this.getReceivedPayment(bill);
-      const tds = bill.tdsAmount || 0;
-
-      const isProforma =
-        bill.typeFlag === this.PROJECT_BILL_TYPEFLAG_PROFORMA_INVOICE;
-
-      const isFullyAdjustedProforma =
-        isProforma && received === tds;
-      return pending > 0 && !isFullyAdjustedProforma;
-    });
+    // ❌ remove rows where received = 0
+    this.dataList = this.fullDataList.filter(
+      bill => this.getReceivedPayment(bill) !== 0
+    );
   }
 }
- applyFollowUpUserSort() {
-
-  const direction = this.sortDirection['followUpUser'];
-  if (!direction) return;
-
-  const isAsc = direction === 'asc';
-
-  this.dataList = [...this.dataList].sort((a, b) => {
-
-    const rawA = this.followUpUserMap[a.id];
-    const rawB = this.followUpUserMap[b.id];
-
-    const nameA = (rawA || '').trim().toUpperCase();
-    const nameB = (rawB || '').trim().toUpperCase();
-
-    // ✅ FIX: treat '-' as empty
-    const isEmptyA = !nameA || nameA === '-';
-    const isEmptyB = !nameB || nameB === '-';
-
-    // push empty values to bottom
-    if (isEmptyA && !isEmptyB) return 1;
-    if (!isEmptyA && isEmptyB) return -1;
-    if (isEmptyA && isEmptyB) return 0;
-
-    // ✅ use localeCompare (better than < >)
-    return isAsc
-      ? nameA.localeCompare(nameB)
-      : nameB.localeCompare(nameA);
-  });
 }
 
 
-isFollowUpPassed(date: any): boolean {
-
-  if (!date) return false;
-
-  const followUpDate = new Date(date);
-  const today = new Date();
-
-  followUpDate.setHours(0, 0, 0, 0);
-  today.setHours(0, 0, 0, 0);
-
-  return followUpDate <= today;
-}
-
-}
-
-
+//hellooo

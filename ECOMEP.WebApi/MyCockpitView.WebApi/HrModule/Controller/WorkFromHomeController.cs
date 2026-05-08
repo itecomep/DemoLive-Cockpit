@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using MyCockpitView.WebApi.AppSettingMasterModule;
 using MyCockpitView.WebApi.AzureBlobsModule;
+using MyCockpitView.WebApi.ContactModule.Entities;
 using MyCockpitView.WebApi.HrModule.Dtos;
 using MyCockpitView.WebApi.HrModule.Entities;
 using MyCockpitView.WebApi.NotificationModule;
@@ -65,7 +66,7 @@ namespace MyCockpitView.WebApi.HrModule.Controller
 
                     var originalFileName = Path.GetFileName(file.FileName);
 
-                    var safeFileName = System.Text.RegularExpressions.Regex.Replace(
+                    var safeFileName = Regex.Replace(
                         originalFileName,
                         @"[^a-zA-Z0-9\._-]",
                         "_"
@@ -76,7 +77,8 @@ namespace MyCockpitView.WebApi.HrModule.Controller
                         safeFileName = "file";
                     }
 
-                    var uniqueFileName = $"{DateTime.Now:yyyyMMddHHmmssfff}_{safeFileName}";
+                    var uniqueFileName =
+                        $"{DateTime.Now:yyyyMMddHHmmssfff}_{safeFileName}";
 
                     var blobPath = $"wfh/{userId}/{uniqueFileName}";
 
@@ -92,10 +94,31 @@ namespace MyCockpitView.WebApi.HrModule.Controller
                     uploadedFiles.Add(uniqueFileName);
                 }
 
+                int? teamLeaderId = null;
+
+                var teamMember = await _db.ContactTeamMembers
+                    .FirstOrDefaultAsync(x =>
+                        x.ContactID == userId &&
+                        !x.IsDeleted);
+
+                if (teamMember != null)
+                {
+                    var team = await _db.ContactTeams
+                        .FirstOrDefaultAsync(x =>
+                            x.ID == teamMember.ContactTeamID &&
+                            !x.IsDeleted);
+
+                    if (team != null)
+                    {
+                        teamLeaderId = team.LeaderID;
+                    }
+                }
+
                 var entity = new WorkFromHomeRequest
                 {
                     UserID = userId,
                     UserName = userName,
+                    TeamLeaderId = teamLeaderId,
                     StartDate = startDate,
                     EndDate = endDate,
                     Reason = reason,
@@ -104,7 +127,77 @@ namespace MyCockpitView.WebApi.HrModule.Controller
                 };
 
                 _db.WorkFromHomeRequests.Add(entity);
+
                 await _db.SaveChangesAsync();
+
+                var message =
+                    $"🏠 {userName} has applied for Work From Home ({startDate:dd MMM} - {endDate:dd MMM})";
+
+                var usersToNotify = new List<Contact>();
+
+
+                if (teamLeaderId != null && teamLeaderId != userId)
+                {
+                    var leader = await _db.Contacts
+                        .FirstOrDefaultAsync(x =>
+                            x.ID == teamLeaderId &&
+                            !x.IsDeleted);
+
+                    if (leader != null)
+                    {
+                        usersToNotify.Add(leader);
+                    }
+                }
+
+                var fixedIds = new List<int> { 20, 1843, 2616 };
+
+                var fixedUsers = await _db.Contacts
+                    .Where(x =>
+                        fixedIds.Contains(x.ID) &&
+                        !x.IsDeleted)
+                    .ToListAsync();
+
+                foreach (var user in fixedUsers)
+                {
+                    if (user.ID == userId)
+                        continue;
+
+                    if (usersToNotify.Any(x => x.ID == user.ID))
+                        continue;
+
+                    usersToNotify.Add(user);
+                }
+
+                var notifications = new List<Notification>();
+
+                foreach (var user in usersToNotify)
+                {
+                    if (string.IsNullOrWhiteSpace(user.Username))
+                        continue;
+
+                    notifications.Add(new Notification
+                    {
+                        Username = user.Username,
+                        Message = message,
+                        Source = "wfh-create",
+                        CreatedAt = DateTime.UtcNow
+                    });
+                }
+
+                _db.Notifications.AddRange(notifications);
+
+                await _db.SaveChangesAsync();
+
+                foreach (var notification in notifications)
+                {
+                    if (NotificationHub.UserConnections.TryGetValue(
+                        notification.Username,
+                        out var connectionId))
+                    {
+                        await _hub.Clients.Client(connectionId)
+                            .SendAsync("ReceiveNotification", notification);
+                    }
+                }
 
                 return Ok(new
                 {
@@ -140,6 +233,7 @@ namespace MyCockpitView.WebApi.HrModule.Controller
                     id = x.ID,
                     userId = x.UserID,
                     userName = x.UserName,
+                    teamLeaderId = x.TeamLeaderId,
                     startDate = x.StartDate,
                     endDate = x.EndDate,
                     reason = x.Reason,
@@ -324,6 +418,61 @@ namespace MyCockpitView.WebApi.HrModule.Controller
             await _db.SaveChangesAsync();
 
             return Ok(new { message = "Deleted successfully ✅" });
+        }
+
+        [HttpGet("team-members/{leaderId}")]
+        public async Task<IActionResult> GetTeamMembers(int leaderId)
+        {
+            try
+            {
+                var team = await _db.ContactTeams
+                    .FirstOrDefaultAsync(x => x.LeaderID == leaderId && !x.IsDeleted);
+
+                if (team == null)
+                    return NotFound("No team found for this leader");
+
+                var members = await (
+                    from tm in _db.ContactTeamMembers
+                    join c in _db.Contacts on tm.ContactID equals c.ID
+                    where tm.ContactTeamID == team.ID
+                          && !tm.IsDeleted
+                          && !c.IsDeleted
+                    select new
+                    {
+                        id = c.ID,
+                        fullName = c.FullName,
+                        username = c.Username,
+                        email = c.EmailsJson,
+                        phone = c.PhonesJson,
+                        isLeader = tm.IsLeader
+                    }
+                ).ToListAsync();
+
+                return Ok(members);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    message = "Error fetching team members",
+                    error = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("by-teamleader/{teamLeaderId}")]
+        public async Task<IActionResult> GetByTeamLeader(int teamLeaderId)
+        {
+            var data = await _db.WorkFromHomeRequests
+                .Where(x =>
+                    x.TeamLeaderId == teamLeaderId &&
+                    x.UserID != teamLeaderId &&   
+                    !x.IsDeleted
+                )
+                .OrderByDescending(x => x.Created)
+                .ToListAsync();
+
+            return Ok(data);
         }
 
     }

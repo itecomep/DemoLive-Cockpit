@@ -316,55 +316,29 @@ public class LeaveController : ControllerBase
             .Where(x => x.Entity == nameof(Leave))
             .ToListAsync();
 
-        // var result = leaves.Select(x => new LeaveListDto
-        // {
-        //     Id = x.ID,
-        //     EmployeeName = x.Contact != null ? x.Contact.Name : "",
-        //     ApplicationType = typeMasters
-        //         .FirstOrDefault(t => t.Value == x.TypeFlag)?.Title,
-
-        //     Reason = x.Reason,
-        //     StartDate = x.Start,
-        //     EndDate = x.End,
-        //     Days = x.Total,
-
-        //     Status = statusMasters
-        //         .FirstOrDefault(s => s.Value == x.StatusFlag)?.Title,
-
-        //     StatusFlag = x.StatusFlag,
-
-        //     AttachmentUrl = x.Attachments != null && x.Attachments.Any()
-        //         ? x.Attachments.First().Url
-        //         : null
-        // });
-
-
-
         var result = leaves.Select(x => new LeaveListDto
-{
-    Id = x.ID,
-    EmployeeName = x.Contact != null ? x.Contact.Name : "",
+        {
+            Id = x.ID,
+            EmployeeName = x.Contact != null ? x.Contact.Name : "",
+            ApplicationType = typeMasters
+                .FirstOrDefault(t => t.Value == x.TypeFlag)?.Title,
 
-    ApplicationType = typeMasters
-        .FirstOrDefault(t => t.Value == x.TypeFlag)?.Title,
+            Reason = x.Reason,
+            StartDate = x.Start,
+            EndDate = x.End,
+            Days = x.Total,
 
-    Reason = x.Reason,
+            Status = statusMasters
+                .FirstOrDefault(s => s.Value == x.StatusFlag)?.Title,
 
-    CreatedDate = x.Created, // ✅ ADD THIS
+            StatusFlag = x.StatusFlag,
 
-    StartDate = x.Start,
-    EndDate = x.End,
-    Days = x.Total,
-
-    Status = statusMasters
-        .FirstOrDefault(s => s.Value == x.StatusFlag)?.Title,
-
-    StatusFlag = x.StatusFlag,
-
-    AttachmentUrl = x.Attachments != null && x.Attachments.Any()
-        ? x.Attachments.First().Url
-        : null
-});
+            AttachmentUrl = x.Attachments != null && x.Attachments.Any()
+                ? x.Attachments.First().Url
+                : null, 
+                 CreatedDate = x.Created,
+            ActionDate = x.StatusFlag != 0 ? x.Modified : null
+        });
 
         return Ok(result);
     }

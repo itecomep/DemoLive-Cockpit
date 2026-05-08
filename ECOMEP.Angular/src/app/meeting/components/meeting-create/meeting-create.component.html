@@ -79,19 +79,13 @@
                                     <ngx-material-timepicker #pickerstartTime
                                         [minutesGap]="minutesGap"></ngx-material-timepicker>
                                     <mat-error>{{getErrorMessage(f.startTime)}}</mat-error>
-
-                                    
                                     <mat-hint align="end">24 hour</mat-hint>
                                 </mat-form-field>
 
                                 <mat-form-field appearance="outline" class="col-md-6 col-6">
                                     <mat-label>End Date</mat-label>
-                                    <!-- <input id="endDate" placeholder=" To" aria-label=" To" matInput
-                                        formControlName="endDate" [matDatepicker]="pickerTo"> -->
-
                                     <input id="endDate" placeholder=" To" aria-label=" To" matInput
-                                        formControlName="endDate" [matDatepicker]="pickerTo"
-                                        [min]="f['startDate'].value">
+                                        formControlName="endDate" [matDatepicker]="pickerTo">
                                     <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
                                     <mat-datepicker [touchUi]="isMobileView" #pickerTo></mat-datepicker>
                                     <mat-error>{{getErrorMessage(f.endDate)}}</mat-error>
@@ -164,6 +158,94 @@
                             </div>
                         </form>
 
+                        <!-- <form [formGroup]="form" autocomplete="off">
+                            <div class="row m-0">
+                                <mat-form-field appearance="outline" class="col-md-8">
+                                    <mat-label>Start Date</mat-label>
+                                    <input id="startDate" placeholder=" From" aria-label=" From" matInput
+                                        formControlName="startDate" [matDatepicker]="pickerFrom">
+                                    <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+                                    <mat-datepicker [touchUi]="isMobileView" #pickerFrom></mat-datepicker>
+                                    <mat-error>{{getErrorMessage(f.startDate)}}</mat-error>
+                                    <mat-hint align="end">Meeting start</mat-hint>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" class="col-md-4">
+                                    <mat-label>Start Time</mat-label>
+                                    <input id="startTime" aria-label="startTime" [ngxTimepicker]="pickerstartTime"
+                                        formControlName="startTime" matInput [format]="24">
+                                    <ngx-material-timepicker #pickerstartTime
+                                        [minutesGap]="minutesGap"></ngx-material-timepicker>
+
+                                    <mat-error>{{getErrorMessage(f.startTime)}}</mat-error>
+                                    <mat-hint align="end">24 hour</mat-hint>
+                                </mat-form-field>
+                            </div>
+
+                            <div class="row m-0">
+                                <mat-form-field appearance="outline" class="col-md-8">
+                                    <mat-label>End Date</mat-label>
+                                    <input id="endDate" placeholder=" To" aria-label=" To" matInput
+                                        formControlName="endDate" [matDatepicker]="pickerTo">
+                                    <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
+                                    <mat-datepicker [touchUi]="isMobileView" #pickerTo></mat-datepicker>
+                                    <mat-error>{{getErrorMessage(f.endDate)}}</mat-error>
+                                    <mat-hint align="end">Meeting end</mat-hint>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" class="col-md-4">
+                                    <mat-label>End Time</mat-label>
+                                    <input id="endTime" aria-label="endTime" [ngxTimepicker]="pickerendTime" matInput
+                                        formControlName="endTime" [format]="24">
+                                    <ngx-material-timepicker #pickerendTime
+                                        [minutesGap]="minutesGap"></ngx-material-timepicker>
+
+                                    <mat-error>{{getErrorMessage(f.endTime)}}</mat-error>
+                                    <mat-hint align="end">24 hour</mat-hint>
+                                </mat-form-field>
+                            </div>
+
+                            <div class="row m-0">
+                                <mat-form-field appearance="outline" class="col-sm-12"
+                                    *ngIf="f.subjectType.value!='Event'">
+                                    <mat-label>Project</mat-label>
+                                    <input placeholder="Enter project name and select"
+                                        aria-label="Enter project name and select" matInput formControlName="project"
+                                        [matAutocomplete]="auto" />
+                                    <mat-autocomplete #auto="matAutocomplete"
+                                        (optionSelected)="onProjectSelected($event.option.value)"
+                                        [displayWith]="displayFnProject">
+                                        <mat-option *ngFor="let option of (filteredProjects$ | async)" [value]="option">
+                                            {{ option.code }}-{{ option.title }}
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                    <mat-error>{{ getErrorMessage(f.project) }}</mat-error>
+                                    <mat-hint align="end">Enter project name and select</mat-hint>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" class="col-sm-12"
+                                    *ngIf="f.subjectType.value=='Event'">
+                                    <mat-label>Title</mat-label>
+                                    <input placeholder="Title" aria-label="Title" matInput formControlName="title"
+                                        [matAutocomplete]="subject">
+                                    <mat-autocomplete #subject="matAutocomplete" [displayWith]="displayFnSubject">
+                                        <mat-option *ngFor="let option of filteredSubjectOptions$ | async"
+                                            [value]="option">
+                                            {{option}}
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                    <mat-error>{{getErrorMessage(f.title)}}</mat-error>
+                                </mat-form-field>
+                            </div>
+
+                            <div class="row m-0">
+                                <mat-form-field appearance="outline" class="col-sm-12">
+                                    <mat-label>Location</mat-label>
+                                    <input id="location" aria-label="location" matInput formControlName="location">
+                                    <mat-error>{{getErrorMessage(f.location)}}</mat-error>
+                                </mat-form-field>
+                            </div>
+                        </form> -->
                     </mat-expansion-panel>
 
                     <mat-expansion-panel [expanded]="true">
@@ -216,7 +298,43 @@
                         </div>
                     </mat-expansion-panel>
 
+                    <!-- <mat-expansion-panel [expanded]="true">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                Documents Carried
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div class="row">
+                            <div class="col-md-12" [formGroup]="form">
+                                <div class="form-collection" formArrayName="documentsCarried">
+                                    <ng-container *ngFor="let item of documentsCarried().controls;let i = index">
+                                        <div class="document-carried-form-wrapper" [formGroupName]="i">
+                                            <mat-form-field appearance="outline">
+                                                <mat-label>Title</mat-label>
+                                                <input placeholder="Title" aria-label="Title" matInput
+                                                    formControlName="title" />
+                                                <mat-error
+                                                    *ngIf="item.get('documentsCarried')?.hasError('required')">Title is
+                                                    required</mat-error>
+                                            </mat-form-field>
 
+                                            <div>
+                                                <button mat-icon-button (click)="onRemoveDocumentCarried(i)"
+                                                    *ngIf="(documentsCarried().length === 2 && i === 0) || (documentsCarried().length > 2 && i !== documentsCarried().length - 1)">
+                                                    <mat-icon>clear</mat-icon>
+                                                </button>
+
+                                                <button mat-icon-button (click)="onAddDocumentsCarried()"
+                                                    *ngIf="i === documentsCarried().length - 1"
+                                                    [disabled]="!item.value.title"><mat-icon>add</mat-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </div>
+                    </mat-expansion-panel> -->
 
                     <mat-expansion-panel [expanded]="true">
                         <mat-expansion-panel-header>
@@ -237,7 +355,7 @@
                                         <h6>
                                             {{option.name}}
                                         </h6>
-
+                                    
                                     </mat-option>
                                 </mat-autocomplete>
                                 <span matSuffix>
@@ -412,8 +530,7 @@
                                         </button>
                                     </div>
 
-                                    <ng-container
-                                        *ngFor="let item of getFilteredAgendas(currentEntity?.agendas || [], 0); let i = index;">
+                                    <ng-container *ngFor="let item of getFilteredAgendas(currentEntity?.agendas || [], 0); let i = index;">
                                         <app-meeting-agenda
                                             [config]="{ agenda:item, blobConfig:blobConfig, meeting:currentEntity,autoUpdate: false, isCreateMode:true}"
                                             [allowDelete]="true" [allowEdit]="true" [allowAttachmentDelete]="true"
@@ -423,8 +540,26 @@
                                     </ng-container>
                                 </ng-template>
                             </mat-tab>
+                            
+                            <!-- <mat-tab label="Discussions">
+                                <ng-template matTabContent>
+                                    <div class="d-flex align-items-center justify-content-end pb-2">
+                                        <button mat-raised-button color="primary" (click)="onNewAgenda(1)"
+                                            aria-label="New Agenda"><mat-icon>add</mat-icon>
+                                            Agenda
+                                        </button>
+                                    </div>
 
-
+                                    <ng-container *ngFor="let item of getFilteredAgendas(currentEntity?.agendas || [], 1); let i = index;">
+                                        <app-meeting-agenda
+                                            [config]="{ agenda:item, blobConfig:blobConfig, meeting:currentEntity,autoUpdate: false, isCreateMode:true}"
+                                            [allowDelete]="true" [allowEdit]="true" [allowAttachmentDelete]="true"
+                                            (update)="onAgendaChange($event)" (delete)="onDeleteAgenda(item)"
+                                            [index]="i">
+                                        </app-meeting-agenda>
+                                    </ng-container>
+                                </ng-template>
+                            </mat-tab> -->
                         </mat-tab-group>
                     </mat-expansion-panel>
                 </div>

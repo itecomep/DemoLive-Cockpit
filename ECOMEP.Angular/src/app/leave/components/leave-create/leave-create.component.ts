@@ -201,15 +201,14 @@ export class LeaveCreateComponent implements OnInit {
     //     }
     //   });
 
-    // this.f['start'].valueChanges
-    //   .pipe(debounceTime(400), distinctUntilChanged())
-    //   .subscribe((value: any) => {
-    //     if (value) {
-    //       this.f['end'].setValue(value);
-    //       this.checkLeaveViolation();
-    //     }
-    //   });
-    
+    this.f['start'].valueChanges
+      .pipe(debounceTime(400), distinctUntilChanged())
+      .subscribe((value: any) => {
+        if (value) {
+          this.f['end'].setValue(value);
+          this.checkLeaveViolation();
+        }
+      });
 
     this.f['end'].valueChanges
       .pipe(debounceTime(400), distinctUntilChanged())
@@ -309,8 +308,7 @@ export class LeaveCreateComponent implements OnInit {
     );
     // console.log(this.currentEntity);
     this.currentEntity.title = undefined;
-    // this.currentEntity.createdByContactID = this.currentUser?.contact.id;
-    this.currentEntity.createdByContactID = this.currentUser?.contact?.id || 0;
+    this.currentEntity.createdByContactID = this.currentUser?.contact.id;
     this.utilityService.showConfirmationDialog('Do you want to create leave?', async () => {
       this.currentEntity = await firstValueFrom(this.leaveService.create(this.currentEntity));
       if (this.uploadQueue.length > 0) {
@@ -341,8 +339,7 @@ export class LeaveCreateComponent implements OnInit {
       const _currentUser = this.authService.currentUserStore;
       if (_currentUser) {
         this.currentEntity.contactID = _currentUser.contact.id;
-        // this.currentEntity.contact = _currentUser.contact;
-        this.currentEntity.contact = _currentUser?.contact;
+        this.currentEntity.contact = _currentUser.contact;
       }
     }
     this.leaveService.validate(this.currentEntity).subscribe((data) => {

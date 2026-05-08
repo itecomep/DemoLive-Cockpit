@@ -25,7 +25,7 @@
 table {
   width: 100%;
   border-collapse: collapse;
-  // table-layout: fixed;
+  table-layout: fixed;
   font-size: 13px;
 }
 
@@ -149,31 +149,12 @@ td:nth-child(8) {
 }
 
 /* ================= MAIN VALUE ================= */
-// .main-value {
-//   display: inline-flex; /* ✅ FIX */
-//   align-items: center;
-//   gap: 6px;
-//   font-weight: 500;
-//   flex-wrap: wrap; /* keeps arrow beside */
-// }
-
-
 .main-value {
-  display: flex;
+  display: inline-flex; /* ✅ FIX */
   align-items: center;
   gap: 6px;
   font-weight: 500;
-  flex-wrap: nowrap;
-}
-
-.main-value span:first-child {
-  white-space: normal;
-}
-
-.dropdown-arrow {
-  flex-shrink: 0;
-  white-space: nowrap;
-  margin-top: 2px;
+  flex-wrap: wrap; /* keeps arrow beside */
 }
 
 .clickable-status {
@@ -267,7 +248,7 @@ td {
 
 /* ================= ACTION ================= */
 .actions {
-  // display: flex;
+  display: flex;
   gap: 6px;
 }
 
@@ -548,7 +529,7 @@ input {
 /* ================= ACTION ================= */
 
 .actions {
-  // display: flex;
+  display: flex;
   align-items: center;
   gap: 8px;
   white-space: nowrap; /* ✅ IMPORTANT */
@@ -705,127 +686,3 @@ th {
   color: #ef4444; /* red on hover */
   transform: scale(1.2);
 }
-
-
-
-
-
-
-
-
-
-
-
-/* ================= TABLE ================= */
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-
-/* ================= HEADERS ================= */
-
-th {
-  background: #34a853;
-  color: #fff;
-  font-weight: 600;
-  text-align: left;
-  padding: 14px 12px;
-  font-size: 13px;
-}
-
-td {
-  padding: 14px 12px;
-  border-bottom: 1px solid #ececec;
-  vertical-align: middle;
-  font-size: 13px;
-}
-
-/* ================= COLUMN WIDTHS ================= */
-
-th:nth-child(1),
-td:nth-child(1) {
-  width: 55px;
-  text-align: center;
-}
-
-th:nth-child(2),
-td:nth-child(2) {
-  width: 90px;
-}
-
-th:nth-child(3),
-td:nth-child(3) {
-  width: 260px;
-}
-
-th:nth-child(4),
-td:nth-child(4) {
-  width: 170px;
-}
-
-th:nth-child(5),
-td:nth-child(5) {
-  width: 150px;
-}
-
-th:nth-child(6),
-td:nth-child(6) {
-  width: 140px;
-}
-
-th:nth-child(7),
-td:nth-child(7) {
-  width: 220px;
-}
-
-th:nth-child(8),
-td:nth-child(8) {
-  width: 120px;
-  text-align: center;
-}
-
-th:nth-child(9),
-td:nth-child(9) {
-  width: 120px;
-  text-align: center;
-}
-
-/* ================= ACTION ================= */
-
-.actions {
-  text-align: center;
-  vertical-align: middle;
-}
-
-.edit-btn {
-  display: inline-block;
-  margin: 0 auto;
-}
-
-/* ================= ATTACHMENT ================= */
-
-td:nth-child(8) {
-  color: #6b7280;
-  font-size: 12px;
-}
-
-.selected-files {
-  margin-top: 6px;
-  font-size: 12px;
-  color: #374151;
-}
-
-.selected-files div {
-  margin-bottom: 4px;
-  word-break: break-word;
-}
-
-
-
-
-
-
-
-
