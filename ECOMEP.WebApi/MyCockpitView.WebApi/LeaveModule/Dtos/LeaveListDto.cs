@@ -6,7 +6,6 @@
         public string EmployeeName { get; set; }
         public string ApplicationType { get; set; }
         public string Reason { get; set; }
-        public DateTime CreatedDate { get; set; } // ✅ ADD THIS
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public decimal Days { get; set; }

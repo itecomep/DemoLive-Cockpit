@@ -26,14 +26,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { NgIf, NgFor } from '@angular/common';
 import { HeaderComponent } from '../../../mcv-header/components/header/header.component';
-import { SiteVisitApiService } from 'src/app/site-visit/services/site-visit-api.service';
 
 @Component({
     selector: 'app-meeting-list-view',
     templateUrl: './meeting-list-view.component.html',
     styleUrls: ['./meeting-list-view.component.scss'],
     standalone: true,
-    imports: [HeaderComponent, NgIf, MatIconModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, MeetingPagedListComponent, MeetingComponent, MatButtonModule, MatTooltipModule, FooterComponent, MatSelectModule, NgFor, MatOptionModule, FilterToggleDirective,]
+    imports: [HeaderComponent, NgIf, MatIconModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, MeetingPagedListComponent, MeetingComponent, MatButtonModule, MatTooltipModule, FooterComponent, MatSelectModule, NgFor, MatOptionModule, FilterToggleDirective]
 })
 export class MeetingListViewComponent implements OnInit, OnDestroy
 {
@@ -99,9 +98,6 @@ export class MeetingListViewComponent implements OnInit, OnDestroy
 
   get isPermissionEdit() { return this.entityService.isPermissionEdit; }
   get isPermissionSpecialShowAll() { return this.entityService.isPermissionSpecialShowAll; }
-  get isPermissionSiteVisitList() {
-  return this.siteVisitService.isPermissionList;
-}
 
   $deleteTrigger!: Subscription;
 
@@ -118,8 +114,7 @@ export class MeetingListViewComponent implements OnInit, OnDestroy
     private statusMasterService: StatusMasterService,
     private utilityService: UtilityService,
     private authService: AuthService,
-    private router: Router,
-    private siteVisitService: SiteVisitApiService   
+    private router: Router
   )
   { }
 
@@ -366,8 +361,4 @@ export class MeetingListViewComponent implements OnInit, OnDestroy
     }
   }
 
-
-  goToSiteVisit() {
-  this.router.navigate(['/sitevisit-list']);
-}
 }

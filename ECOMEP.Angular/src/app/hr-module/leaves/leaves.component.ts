@@ -58,7 +58,6 @@ export class LeavesComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = [
     "employee",
     "reason",
-      "createdDate",
     "type",
     "start",
     "end",
@@ -83,7 +82,34 @@ export class LeavesComponent implements OnInit, AfterViewInit {
   }
 
   loadLeaves() {
-    
+    // this.service.getLeaves().subscribe((leaves: any[]) => {
+    //   this.contactService.get([]).subscribe((contacts: any[]) => {
+    //     this.originalData = leaves.map((leave) => {
+    //       const contact = contacts.find(
+    //         (c) =>
+    //           c.name?.toLowerCase().trim() ===
+    //           leave.employeeName?.toLowerCase().trim()
+    //       );
+
+    //       return {
+    //         id: leave.id,
+    //         employeeName: leave.employeeName,
+    //         reason: leave.reason,
+    //         type: leave.applicationType,
+    //         start: new Date(leave.startDate),
+    //         end: new Date(leave.endDate),
+    //         total: leave.days,
+    //         statusFlag: leave.statusFlag,
+    //         attachmentUrl: leave.attachmentUrl || "",
+    //         photoUrl: contact?.photoUrl || "",
+    //       };
+    //     });
+
+    //     this.originalData.sort((a, b) => b.id - a.id);
+    //     this.applyFilters();
+    //   });
+    // });
+
     this.service.getContactTeams().subscribe((teams: any[]) => {
 
   const leaderNames: string[] = [];
@@ -115,9 +141,6 @@ export class LeavesComponent implements OnInit, AfterViewInit {
           id: leave.id,
           employeeName: leave.employeeName,
           reason: leave.reason,
-          // createdDate: leave.created, 
-          // createdDate: leave.created || leave.Created,
-          createdDate: leave.createdDate,
           type: leave.applicationType,
           start: new Date(leave.startDate),
           end: new Date(leave.endDate),
@@ -135,6 +158,36 @@ export class LeavesComponent implements OnInit, AfterViewInit {
 });
   }
 
+  // loadTeamLeaderLeaves() {
+  //   this.service.getContactTeams().subscribe((teams: any[]) => {
+  //     const leaderNames: string[] = [];
+
+  //     teams.forEach((team) => {
+  //       team.members?.forEach((m: any) => {
+  //         if (m.contactID === team.leaderID) {
+  //           const name = m.contact?.name?.toLowerCase().trim();
+  //           if (name && !leaderNames.includes(name)) {
+  //             leaderNames.push(name);
+  //           }
+  //         }
+  //       });
+  //     });
+
+  //     this.service.getLeaves().subscribe((leaves: any[]) => {
+  //       this.originalData = leaves
+  //         .filter((l: any) => {
+  //           const empName = l.employeeName?.toLowerCase().trim();
+
+  //           return leaderNames.some(
+  //             (name) => empName === name || empName?.includes(name),
+  //           );
+  //         })
+  //         .map((x) => this.mapLeave(x));
+
+  //       this.applyFilters();
+  //     });
+  //   });
+  // }
 
 
   loadTeamLeaderLeaves() {
@@ -170,14 +223,23 @@ export class LeavesComponent implements OnInit, AfterViewInit {
                 leave.employeeName?.toLowerCase().trim()
             );
 
-           
+            // return {
+            //   id: leave.id,
+            //   employeeName: leave.employeeName,
+            //   reason: leave.reason,
+            //   type: leave.applicationType,
+            //   start: new Date(leave.startDate),
+            //   end: new Date(leave.endDate),
+            //   total: leave.days,
+            //   statusFlag: leave.statusFlag,
+            //   attachmentUrl: leave.attachmentUrl || "",
+            //   photoUrl: contact?.photoUrl || "", // ✅ FIXED HERE
+            // };
 
             return {
   id: leave.id,
   employeeName: leave.employeeName,
   reason: leave.reason,
-  
-  createdDate: leave.createdDate,
   type: leave.applicationType,
   start: new Date(leave.startDate),
   end: new Date(leave.endDate),
@@ -200,7 +262,6 @@ export class LeavesComponent implements OnInit, AfterViewInit {
       id: x.id,
       employeeName: x.employeeName,
       reason: x.reason,
-      createdDate: x.created || x.Created,
       type: x.applicationType,
       start: new Date(x.startDate),
       end: new Date(x.endDate),
@@ -226,6 +287,95 @@ export class LeavesComponent implements OnInit, AfterViewInit {
       this.loadTeamLeaderLeaves();
     }
   }
+
+//   applyFilters() {
+//     let data = [...this.originalData];
+
+//     if (this.filters.employeeName) {
+//       data = data.filter((x) =>
+//         x.employeeName
+//           ?.toLowerCase()
+//           .includes(this.filters.employeeName.toLowerCase()),
+//       );
+//     }
+
+//     if (this.filters.startDate && this.filters.endDate) {
+//       const from = new Date(this.filters.startDate);
+//       const to = new Date(this.filters.endDate);
+
+//       data = data.filter((x) => x.start >= from && x.end <= to);
+//     }
+
+//     const now = new Date();
+
+//     // if (this.selectedMonthTab === "current") {
+//     //   data = data.filter(
+//     //     (x) =>
+//     //       x.start.getMonth() === now.getMonth() &&
+//     //       x.start.getFullYear() === now.getFullYear(),
+//     //   );
+//     // } 
+
+//     if (this.selectedMonthTab !== "none") {
+//   const range = this.getMonthRange(this.selectedMonthTab);
+
+//   data = data.filter((x) => {
+//     return x.start <= range.end && x.end >= range.start;
+//   });
+// }
+
+//     else if (this.selectedMonthTab === "last") {
+//       const last = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+//       data = data.filter(
+//         (x) =>
+//           x.start.getMonth() === last.getMonth() &&
+//           x.start.getFullYear() === last.getFullYear(),
+//       );
+//     }
+
+//     this.dataSource.data = data;
+//   }
+
+
+// applyFilters() {
+//   let data = [...this.originalData];
+
+//   // 👤 Name filter
+//   if (this.filters.employeeName) {
+//     data = data.filter((x) =>
+//       x.employeeName
+//         ?.toLowerCase()
+//         .includes(this.filters.employeeName.toLowerCase())
+//     );
+//   }
+
+//   // 📅 Custom date filter
+//   if (this.filters.startDate && this.filters.endDate) {
+//     const from = new Date(this.filters.startDate);
+//     const to = new Date(this.filters.endDate);
+
+//     data = data.filter((x) => x.start <= to && x.end >= from);
+//   }
+
+//   // 📆 Month filter (🔥 SINGLE SOURCE OF TRUTH)
+//   if (this.selectedMonthTab !== "none") {
+//     const range = this.getMonthRange(this.selectedMonthTab);
+
+//     data = data.filter((x) => {
+//       // return x.start <= range.end && x.end >= range.start;
+//       const start = new Date(x.start);
+
+// return (
+//   start >= range.start &&
+//   start <= range.end
+// );
+
+//     });
+//   }
+
+//   this.dataSource.data = data;
+// }
 
 
 applyFilters() {
@@ -351,6 +501,27 @@ applyFilters() {
   });
 }
 
+// getMonthRange(type: "previous" | "current" | "next") {
+//   const now = new Date();
+
+//   let start: Date;
+//   let end: Date;
+
+//   if (type === "current") {
+//     start = new Date(now.getFullYear(), now.getMonth(), 1);
+//     end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+//   } 
+//   else if (type === "previous") {
+//     start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+//     end = new Date(now.getFullYear(), now.getMonth(), 0);
+//   } 
+//   else {
+//     start = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+//     end = new Date(now.getFullYear(), now.getMonth() + 2, 0);
+//   }
+
+//   return { start, end };
+// }
 
 getMonthRange(type: "previous" | "current" | "next") {
   const now = new Date();

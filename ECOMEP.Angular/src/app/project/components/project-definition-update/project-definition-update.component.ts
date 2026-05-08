@@ -55,14 +55,10 @@ export class ProjectDefinitionUpdateComponent implements OnInit {
   clientContactFC: FormControl = new FormControl<any>('');
   groupContactFC: FormControl = new FormControl<any>('');
   groupCompanyContactFC: FormControl = new FormControl<any>('');
-  
 
   get f(): any { return this.form.controls; }
   get isMobileView(): boolean { return this.utilityService.isMobileView; }
   get isPermissionBillingEdit() { return this.projectService.isPermissionBillingEdit; }
-
-
-
 
   private readonly ngZone = inject(NgZone);
   @ViewChild('autosize') protected autosize!: CdkTextareaAutosize;
@@ -123,7 +119,6 @@ export class ProjectDefinitionUpdateComponent implements OnInit {
   filteredReferrerOptions!: Observable<any[]>;
   segmentOptions: string[] = [];
   typologyOptions: string[] = [];
-  
 
   IsProjectExists: boolean = false;
   now = new Date();
@@ -151,14 +146,6 @@ export class ProjectDefinitionUpdateComponent implements OnInit {
     private router: Router,
   ) {
   }
-  get officeLocations() {
-  return this.form.get('officeLocations') as any;
-}
-
-get siteLocations() {
-  return this.form.get('siteLocations') as any;
-}
-
 
   async ngOnInit() {
     if (!this.form) {
@@ -229,12 +216,6 @@ get siteLocations() {
       title: new FormControl<any>(null, { nonNullable: true, validators: [Validators.required, Validators.minLength(3)] }),
       location: new FormControl<any>(null),
       city: new FormControl<any>(null),
-  //       officeLocation: new FormControl<any>(null),
-  // siteLocation: new FormControl<any>(null),
-
-   officeLocations: this.formBuilder.array([new FormControl('')]),
-siteLocations: this.formBuilder.array([new FormControl('')]),
-
       state: new FormControl<any>(null),
       country: new FormControl<any>(null),
       pinCode: new FormControl<any>(null),
@@ -258,7 +239,6 @@ siteLocations: this.formBuilder.array([new FormControl('')]),
       expectedMHr: new FormControl<any>('0'),
       fee: new FormControl<any>(0, { nonNullable: true, validators: [Validators.required, Validators.min(0)] }),
     });
-    
 
     if (!this.isPermissionEdit) {
       this.form.disable();
@@ -392,31 +372,6 @@ siteLocations: this.formBuilder.array([new FormControl('')]),
       this.f['expectedCompletionDate'].setValue(this.currentEntity.expectedCompletionDate);
     }
     this.formChange.emit(this.form);
-//     this.f['officeLocation'].setValue(this.currentEntity.location);
-// this.f['siteLocation'].setValue(this.currentEntity.city);
-
-// OFFICE LOCATIONS
-this.officeLocations.clear();
-
-if (this.currentEntity.officeLocations?.length) {
-  this.currentEntity.officeLocations.forEach((loc: string) => {
-    this.officeLocations.push(new FormControl(loc));
-  });
-} else {
-  this.officeLocations.push(new FormControl(''));
-}
-
-// SITE LOCATIONS
-this.siteLocations.clear();
-
-if (this.currentEntity.siteLocations?.length) {
-  this.currentEntity.siteLocations.forEach((loc: string) => {
-    this.siteLocations.push(new FormControl(loc));
-  });
-} else {
-  this.siteLocations.push(new FormControl(''));
-}
-
   }
 
   onCancelEdit() {
@@ -653,22 +608,4 @@ if (this.currentEntity.siteLocations?.length) {
   onOpenContactDialog(contact: Contact) {
     this.entityApiService.openDialog(ContactDialogComponent, contact);
   }
-
-  addOfficeLocation() {
-  this.officeLocations.push(new FormControl(''));
-}
-
-removeOfficeLocation(index: number) {
-  this.officeLocations.removeAt(index);
-}
-
-addSiteLocation() {
-  this.siteLocations.push(new FormControl(''));
-}
-
-removeSiteLocation(index: number) {
-  this.siteLocations.removeAt(index);
-}
-
-
 }

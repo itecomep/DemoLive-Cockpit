@@ -260,67 +260,7 @@
                   <mat-icon (click)="onDeleteGroupCompanyContact()">clear</mat-icon>
                 </div>
               </div>
-
             </div>
-
-            <!-- 🔥 NEW ROW FOR LOCATIONS -->
-<div class="row">
-
-  <!-- OFFICE LOCATION -->
-  <!-- <mat-form-field appearance="outline" class="col-6 col-md-6">
-    <mat-label>Office Location(Google Map)</mat-label>
-    <input matInput formControlName="officeLocation" placeholder="Enter Office Location">
-  </mat-form-field> -->
-
-  <div class="col-6">
-  <label>Office Locations (Google Map)</label>
-
-  <div *ngFor="let loc of officeLocations.controls; let i = index">
-    <mat-form-field appearance="outline" style="width: 100%;">
-      <input matInput [formControl]="loc" placeholder="Enter Office Location">
-
-      <button mat-icon-button matSuffix color="warn"
-              *ngIf="officeLocations.length > 1"
-              (click)="removeOfficeLocation(i)">
-        <mat-icon>close</mat-icon>
-      </button>
-    </mat-form-field>
-  </div>
-
-  <button mat-button color="primary" (click)="addOfficeLocation()">
-    + Add Location
-  </button>
-</div>
-
-
-  <!-- SITE LOCATION -->
-  <!-- <mat-form-field appearance="outline" class="col-6 col-md-6">
-    <mat-label>Site Location (Google Map)</mat-label>
-    <input matInput formControlName="siteLocation" placeholder="Enter Site Location">
-  </mat-form-field> -->
-
-  <div class="col-6">
-  <label>Site Locations (Google Map)</label>
-
-  <div *ngFor="let loc of siteLocations.controls; let i = index">
-    <mat-form-field appearance="outline" style="width: 100%;">
-      <input matInput [formControl]="loc" placeholder="Enter Site Location">
-
-      <button mat-icon-button matSuffix color="warn"
-              *ngIf="siteLocations.length > 1"
-              (click)="removeSiteLocation(i)">
-        <mat-icon>close</mat-icon>
-      </button>
-    </mat-form-field>
-  </div>
-
-  <button mat-button color="primary" (click)="addSiteLocation()">
-    + Add Location
-  </button>
-</div>
-
-
-</div>
 
 
           </form>

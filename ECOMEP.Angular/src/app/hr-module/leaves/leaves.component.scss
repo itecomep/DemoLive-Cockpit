@@ -779,14 +779,6 @@
   align-items: center;
   justify-content: center;
 }
-
-.approved .status-icon {
-  color: #2e7d32 !important;
-}
-
-.rejected .status-icon {
-  color: #c62828 !important;
-}
 .approve-btn,
 .reject-btn {
   display: inline-flex;
@@ -915,6 +907,15 @@
   margin-top: 2px;   /* 🔥 very small spacing */
   display: inline-block;
 }
+// .leader-icon {
+//   font-size: 10px;   // 🔽 smaller size (try 10px–14px as per your UI)
+//   width: 12px;
+//   height: 12px;
+//   line-height: 12px;
+//   color: #7c3aed;
+//   margin-left: 4px;
+//   vertical-align: middle;
+// }
 
 .leader-icon {
   font-size: 10px;

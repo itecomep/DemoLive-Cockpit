@@ -29,7 +29,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { NgIf, NgFor } from '@angular/common';
 import { HeaderComponent } from '../../../mcv-header/components/header/header.component';
-import { MeetingApiService } from 'src/app/meeting/services/meeting-api.service';
 
 @Component({
     selector: 'app-site-visit-list-view',
@@ -103,9 +102,6 @@ export class SitevisitListViewComponent implements OnInit, OnDestroy
 
   get isPermissionEdit() { return this.entityService.isPermissionEdit; }
   get isPermissionSpecialShowAll() { return this.entityService.isPermissionSpecialShowAll; }
-  get isPermissionMeetingList() {
-  return this.meetingService.isPermissionList;
-}
 
   $deleteTrigger!: Subscription;
 
@@ -122,8 +118,7 @@ export class SitevisitListViewComponent implements OnInit, OnDestroy
     private statusMasterService: StatusMasterService,
     private utilityService: UtilityService,
     private authService: AuthService,
-    private router: Router,
-     private meetingService: MeetingApiService
+    private router: Router
   )
   { }
 
@@ -369,9 +364,5 @@ export class SitevisitListViewComponent implements OnInit, OnDestroy
       this.pagedList.refresh();
     }
   }
-
-  goToMeetingList() {
-  this.router.navigate(['/meeting-list']);
-}
 
 }

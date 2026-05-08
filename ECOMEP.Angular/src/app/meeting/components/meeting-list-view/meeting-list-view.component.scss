@@ -47,20 +47,6 @@
     z-index: 3;
 }
 
-.mcv-footer-actions {
-  display: flex;
-  align-items: center;
-}
-
-.mcv-footer-actions button:last-child {
-  margin-left: 45%;  
-}
-
-.green-btn {
-  background-color: #4CAF50 !important;  // ✅ green
-  color: white !important;
-}
-
 
 @media (max-width: 768px) {
     .detail-wrapper {

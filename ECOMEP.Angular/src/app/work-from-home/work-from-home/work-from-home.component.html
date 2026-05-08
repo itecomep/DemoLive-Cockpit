@@ -45,22 +45,27 @@
         </mat-form-field> -->
 
         <!-- ✅ HR USER -->
-        <mat-form-field appearance="outline" class="full-width" *ngIf="canSelectUser">
-          <mat-label>Application User</mat-label>
+<mat-form-field appearance="outline" class="full-width" *ngIf="canSelectUser">
+  <mat-label>Application User</mat-label>
 
-          <input matInput formControlName="applicationUser" [matAutocomplete]="autoUser" placeholder="Select user" />
+  <input
+    matInput
+    formControlName="applicationUser"
+    [matAutocomplete]="autoUser"
+    placeholder="Select user"
+  />
 
-          <mat-autocomplete #autoUser="matAutocomplete" [displayWith]="displayFnContact">
-            <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
-              {{ option.name }}
-            </mat-option>
-          </mat-autocomplete>
+  <mat-autocomplete #autoUser="matAutocomplete" [displayWith]="displayFnContact">
+    <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
+      {{ option.name }}
+    </mat-option>
+  </mat-autocomplete>
 
-          <mat-icon matSuffix>person</mat-icon>
-        </mat-form-field>
+  <mat-icon matSuffix>person</mat-icon>
+</mat-form-field>
 
-        <!-- 🔒 NORMAL USER -->
-        <!-- <mat-form-field appearance="outline" class="full-width" *ngIf="!canSelectUser">
+<!-- 🔒 NORMAL USER -->
+<!-- <mat-form-field appearance="outline" class="full-width" *ngIf="!canSelectUser">
   <mat-label>Application User</mat-label>
 
   <input matInput [value]="form.value.applicationUser?.name" disabled />
@@ -72,23 +77,31 @@
           <div class="date-range-group">
             <mat-form-field appearance="outline">
               <mat-label>From Date</mat-label>
-              <input matInput formControlName="startDate" [matDatepicker]="startPicker" readonly />
-              <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+              <input
+                matInput
+                formControlName="startDate"
+                [matDatepicker]="startPicker"
+                readonly
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="startPicker"
+              ></mat-datepicker-toggle>
               <mat-datepicker #startPicker></mat-datepicker>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
               <mat-label>To Date</mat-label>
-              <!-- <input
+              <input
                 matInput
                 formControlName="endDate"
                 [matDatepicker]="endPicker"
                 readonly
-              /> -->
-
-              <input matInput formControlName="endDate" [matDatepicker]="endPicker" [min]="form.get('startDate')?.value"
-                readonly />
-              <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="endPicker"
+              ></mat-datepicker-toggle>
               <mat-datepicker #endPicker></mat-datepicker>
             </mat-form-field>
           </div>
@@ -101,7 +114,12 @@
         <mat-form-field appearance="outline" class="full">
           <mat-label>Reason for request</mat-label>
 
-          <textarea matInput formControlName="reason" cdkTextareaAutosize cdkAutosizeMinRows="3"></textarea>
+          <textarea
+            matInput
+            formControlName="reason"
+            cdkTextareaAutosize
+            cdkAutosizeMinRows="3"
+          ></textarea>
         </mat-form-field>
       </div>
 
@@ -114,12 +132,21 @@
         </div>
 
         <div class="upload-zone">
-          <input type="file" multiple (change)="onFileSelected($event)" class="file-input" />
+          <input
+            type="file"
+            multiple
+            (change)="onFileSelected($event)"
+            class="file-input"
+          />
         </div>
 
         <div class="file-grid" *ngIf="selectedFiles.length">
           <div class="file-item" *ngFor="let file of selectedFiles">
-            <mcv-file [filename]="file.name" [showRemove]="allowEdit" (delete)="onDeleteAttachment(file)">
+            <mcv-file
+              [filename]="file.name"
+              [showRemove]="allowEdit"
+              (delete)="onDeleteAttachment(file)"
+            >
             </mcv-file>
           </div>
         </div>
@@ -130,7 +157,12 @@
   <div class="mat-dialog-actions modern-actions">
     <button mat-button color="warn" (click)="onClose()">Cancel</button>
 
-    <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="onSubmit()">
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="form.invalid"
+      (click)="onSubmit()"
+    >
       <mat-icon>check</mat-icon>
       Submit Request
     </button>

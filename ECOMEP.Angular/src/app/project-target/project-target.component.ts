@@ -32,8 +32,6 @@ export class ProjectTargetComponent implements OnInit {
   expandedRows: { [key: number]: boolean } = {};
   expandedFieldRows: { [key: string]: boolean } = {};
   expandedFeedback: { [key: number]: boolean } = {};
-  // editSelectedFile: File | null = null;
-  editSelectedFiles: File[] = [];
 
   isEdit = false;
   editId: number | null = null;
@@ -52,20 +50,12 @@ export class ProjectTargetComponent implements OnInit {
   statuses: string[] = [];
   targets: any[] = [];
 
-  // editRow: any = {
-  //   stage: "",
-  //   stageStatus: "",
-  //   targetDate: null,
-  //   feedback: "",
-  // };
-
   editRow: any = {
-  stage: "",
-  stageStatus: "",
-  targetDate: null,
-  feedback: "",
-  attachment: null,
-};
+    stage: "",
+    stageStatus: "",
+    targetDate: null,
+    feedback: "",
+  };
 
   constructor(
     private service: ProjectTargetService,
@@ -222,37 +212,18 @@ export class ProjectTargetComponent implements OnInit {
         "T00:00:00";
     }
 
-    // const payload = {
-    //   projectId: original.projectId,
-    //   stage: this.editRow.stage,
-    //   stageStatus: this.editRow.stageStatus,
-    //   targetDate: fixedDate,
-    //   feedback: this.editRow.feedback,
-    // };
+    const payload = {
+      projectId: original.projectId,
+      stage: this.editRow.stage,
+      stageStatus: this.editRow.stageStatus,
+      targetDate: fixedDate,
+      feedback: this.editRow.feedback,
+    };
 
-    // this.service.update(this.editId!, payload).subscribe(() => {
-    //   this.editId = null;
-    //   this.loadTargets();
-    // });
-
-    const formData = new FormData();
-
-formData.append("projectId", original.projectId);
-formData.append("stage", this.editRow.stage);
-formData.append("stageStatus", this.editRow.stageStatus);
-formData.append("targetDate", fixedDate || "");
-formData.append("feedback", this.editRow.feedback || "");
-
-if (this.editSelectedFiles.length > 0) {
-  this.editSelectedFiles.forEach((file) => {
-    formData.append("attachments", file);
-  });
-}
-
-this.service.update(this.editId!, formData).subscribe(() => {
-  this.editId = null;
-  this.loadTargets();
-});
+    this.service.update(this.editId!, payload).subscribe(() => {
+      this.editId = null;
+      this.loadTargets();
+    });
   }
 
   loadStages(projectId: number) {
@@ -591,14 +562,5 @@ applyAllFilters() {
   });
 
   this.applyProjectNames();
-}
-onEditFileSelected(event: any) {
-  this.editSelectedFiles = [];
-
-  if (event.target.files.length > 0) {
-    for (let i = 0; i < event.target.files.length; i++) {
-      this.editSelectedFiles.push(event.target.files[i]);
-    }
-  }
 }
 }

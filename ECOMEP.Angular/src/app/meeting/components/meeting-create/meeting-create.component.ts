@@ -298,34 +298,15 @@ export class MeetingCreateComponent implements OnInit {
       }
     });
 
-    // this.f['startDate'].valueChanges.pipe(
-    //   debounceTime(400),
-    //   distinctUntilChanged(),
-    // ).subscribe((value: any) => {
-    //   if (value) {
-    //     this.f['endDate'].setValue(this.f['startDate'].value);
-    //     // this.validateDates();
-    //   }
-    // });
-
     this.f['startDate'].valueChanges.pipe(
-  debounceTime(400),
-  distinctUntilChanged(),
-).subscribe((value: any) => {
-
-  if (value) {
-
-    // ❌ prevent reverse date selection
-    if (
-      this.f['endDate'].value &&
-      this.f['endDate'].value < value
-    ) {
-      this.f['endDate'].setValue(value);
-    }
-
-    this.validateDates();
-  }
-});
+      debounceTime(400),
+      distinctUntilChanged(),
+    ).subscribe((value: any) => {
+      if (value) {
+        this.f['endDate'].setValue(this.f['startDate'].value);
+        // this.validateDates();
+      }
+    });
 
     this.f['endDate'].valueChanges.pipe(
       debounceTime(400),
