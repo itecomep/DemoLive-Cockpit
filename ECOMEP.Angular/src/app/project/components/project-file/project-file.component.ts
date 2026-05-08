@@ -505,17 +505,49 @@ export class ProjectFileComponent implements OnInit, OnChanges {
     this.onViewChange();
   }
 
+  // openFolder(folder: FolderNode) {
+  //   this.breadcrumb.push(folder);
+  //   this.currentFolders = folder.children || [];
+  //   this.currentFiles = (folder.files || []).map(f => ({
+  //     ...f,
+  //     path: this.getFolderPath(folder),
+  //     safePdfUrl: this.isPdf(f.fileName)
+  //       ? this.sanitizer.bypassSecurityTrustResourceUrl(f.blobUrl)
+  //       : null
+  //   }));
+  // }
+
+
+
   openFolder(folder: FolderNode) {
-    this.breadcrumb.push(folder);
-    this.currentFolders = folder.children || [];
-    this.currentFiles = (folder.files || []).map(f => ({
-      ...f,
-      path: this.getFolderPath(folder),
-      safePdfUrl: this.isPdf(f.fileName)
-        ? this.sanitizer.bypassSecurityTrustResourceUrl(f.blobUrl)
-        : null
-    }));
+
+  this.breadcrumb.push(folder);
+
+  this.currentFolders = folder.children || [];
+
+  // ✅ SHOW DIRECT FILES
+  let files = folder.files || [];
+
+  // ✅ ALSO SHOW CHILD FOLDER FILES
+  if (folder.children?.length) {
+
+    folder.children.forEach(child => {
+
+      if (child.files?.length) {
+
+        files.push(...child.files);
+      }
+    });
   }
+
+  this.currentFiles = files.map(f => ({
+    ...f,
+    path: this.getFolderPath(folder),
+    safePdfUrl: this.isPdf(f.fileName)
+      ? this.sanitizer.bypassSecurityTrustResourceUrl(f.blobUrl)
+      : null
+  }));
+}
 
   goBack() {
     this.breadcrumb.pop();

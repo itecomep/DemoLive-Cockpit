@@ -9,19 +9,10 @@
     <div class="form-body">
       <h3>Project</h3>
       <mat-form-field appearance="outline" class="full-width">
-        <input
-          type="text"
-          matInput
-          placeholder="Search by code or name..."
-          [(ngModel)]="projectSearch"
-          (ngModelChange)="filterProjects()"
-          [matAutocomplete]="auto"
-        />
+        <input type="text" matInput placeholder="Search by code or name..." [(ngModel)]="projectSearch"
+          (ngModelChange)="filterProjects()" [matAutocomplete]="auto" />
 
-        <mat-autocomplete
-          #auto="matAutocomplete"
-          (optionSelected)="onProjectSelected($event.option.value)"
-        >
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onProjectSelected($event.option.value)">
           <mat-option *ngFor="let p of filteredProjects" [value]="p">
             {{ p.code ? (p.code + ' - ') : '' }}{{ p.title }}
           </mat-option>
@@ -30,17 +21,9 @@
 
       <h3>Stage</h3>
       <mat-form-field appearance="outline" class="full-width">
-        <mat-select
-          [(ngModel)]="form.stage"
-          [disabled]="!form.projectId"
-          (selectionChange)="onStageChange()"
-        >
+        <mat-select [(ngModel)]="form.stage" [disabled]="!form.projectId" (selectionChange)="onStageChange()">
           <mat-option value="">Select Stage</mat-option>
-          <mat-option
-            *ngFor="let s of stages"
-            [value]="s.title"
-            [disabled]="isStageAlreadyUsed(s.title)"
-          >
+          <mat-option *ngFor="let s of stages" [value]="s.title" [disabled]="isStageAlreadyUsed(s.title)">
             {{ s.title }}
           </mat-option>
         </mat-select>
@@ -56,11 +39,18 @@
         </mat-select>
       </mat-form-field>
 
+
       <h3>Target Date</h3>
       <input type="date" [(ngModel)]="form.targetDate" />
 
       <h3>Feedback</h3>
       <textarea [(ngModel)]="form.feedback"></textarea>
+
+
+
+      <h3>Attachment</h3>
+      <input type="file" (change)="onFileSelected($event)" />
+
     </div>
 
     <div class="form-actions">

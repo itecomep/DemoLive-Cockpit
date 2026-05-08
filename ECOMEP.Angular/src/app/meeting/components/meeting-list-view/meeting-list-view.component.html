@@ -87,24 +87,11 @@
         </mat-select>
       </mat-form-field>
     </div>
-    <!-- <div *ngIf="companyAccountOptions && companyAccountOptions.length > 0">
-       <mat-form-field appearance="outline">
-        <mat-select [formControl]="companyAccountFC" multiple placeholder="Company">
-          <mat-option *ngFor=" let item of companyAccountOptions" [value]="item">{{
-            item.title
-            }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div> -->
-    <!-- <div *ngIf="segmentOptions && segmentOptions.length > 0">
-       <mat-form-field appearance="outline">
-        <mat-select [formControl]="segmentFC" multiple placeholder="Segment">
-          <mat-option *ngFor=" let item of segmentOptions" [value]="item">{{
-            item
-            }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div> -->
+
+
+    <button mat-raised-button   class="green-btn" (click)="goToSiteVisit()" *ngIf="isPermissionSiteVisitList">
+      Site Visit
+    </button>
   </div>
 
   <div class="mcv-footer-mobile-actions" *ngIf="isShowList">
@@ -170,4 +157,5 @@
       </div> -->
     </div>
   </div>
+
 </app-footer>

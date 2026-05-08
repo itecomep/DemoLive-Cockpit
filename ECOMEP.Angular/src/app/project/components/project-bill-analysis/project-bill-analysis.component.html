@@ -3,12 +3,9 @@
         <table>
             <thead>
                 <tr>
-                    <!-- <th>Project</th>
-                    <th>Client</th>
-                    <th>Bill Date</th> -->
 
                     <th (click)="toggleSort('projectCode')" style="cursor:pointer">
-                        Project
+                        Project ({{ totalProjects }})
                         <mat-icon *ngIf="sort.startsWith('projectCode')">
                             {{ sort.includes('desc') ? 'arrow_downward' : 'arrow_upward' }}
                         </mat-icon>
@@ -50,7 +47,6 @@
                         </mat-icon>
                     </th>
 
-                    <!-- <th>Next Follow-Up</th> -->
 
                     <th (click)="toggleSort('followUp')" style="cursor:pointer">
                         Next Follow-Up
@@ -58,15 +54,26 @@
                             {{ sortDirection['followUp'] === 'desc' ? 'arrow_downward' : 'arrow_upward' }}
                         </mat-icon>
                     </th>
+
+
+                    <th (click)="toggleSort('followUpUser')" style="cursor:pointer">
+                        Follow-Up By
+                        <mat-icon *ngIf="sortDirection['followUpUser']">
+                            {{ sortDirection['followUpUser'] === 'desc' ? 'arrow_downward' : 'arrow_upward' }}
+                        </mat-icon>
+                    </th>
                     <th></th>
                 </tr>
                 <tr class="total">
-                    <th colspan="5">Total</th>
-                    <!-- <td>{{totalBillPercentage | number:'1.0-1'}}%</td> -->
+
+                    <th colspan="5" style="text-align:left;">
+
+                    </th>
                     <td>{{totalBillAmount | currency:'INR'}}</td>
                     <td>{{totalGstAmount | currency:'INR'}}</td>
                     <td>{{totalPayable | currency:'INR'}}</td>
                     <td>{{totalReceivedAmount | currency:'INR'}}</td>
+                    <td></td>
                     <td></td>
                     <td></td>
                 </tr>
@@ -86,14 +93,9 @@
                         </td>
                         <td class="align-center">{{bill.billPercentage |number:'1.0-1'}}%</td>
                         <td class="align-right">{{bill.dueAmount | currency:'INR'}}</td>
-                        <!-- <td class="align-right">
-                            <h6>{{(bill.sgstAmount+bill.cgstAmount+bill.igstAmount) | currency:'INR'}}</h6>
-                            <small>({{bill.sgstShare + bill.cgstShare + bill.igstShare}}%)</small>
-                        </td> -->
                         <td class="align-right">
                             <h6>{{bill.payableAmount | currency:'INR'}}</h6>
-                            <!-- <small>{{getPaymentMode(bill)}} Amount: {{getPaymentWithoutTDS(bill) |
-                                currency:'INR'}}</small> -->
+
                         </td>
 
                         <td class="align-right">
@@ -105,21 +107,17 @@
                         </td>
                         <td class="align-right">{{bill.tdsAmount | currency:'INR'}}</td>
 
-                        <!-- <td class="align-center">
-                            {{
-                            bill.nextFollowUpDate
-                            ? (bill.nextFollowUpDate | date:'dd MMM y')
-                            : '-'
-                            }}
-                        </td> -->
-
 
                         <td class="align-center">
                             {{ getDaysSinceBill(bill) }}
                         </td>
 
-
-                        <td class="align-center">
+                        <td class="align-center" [ngClass]="{
+                          'followup-green':
+                            followUpMap[bill.id] &&
+                              isFollowUpPassed(followUpMap[bill.id]) &&
+                        getPendingPayment(bill) > 0
+                                        }">
                             {{
                             followUpMap[bill.id]
                             ? (followUpMap[bill.id] | date:'dd MMM y')
@@ -127,24 +125,16 @@
                             }}
                         </td>
 
+                        <td class="align-center">
+                            {{ followUpUserMap[bill.id] || '-' }}
+                        </td>
+
 
                         <td class="align-center">
                             <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="context-menu">
                                 <mat-icon>more_vert</mat-icon>
                             </button>
-                            <!-- <mat-menu #menu="matMenu">
-                                <button mat-menu-item (click)="onDownloadPdf(bill.proformaInvoiceUrl)"
-                                    *ngIf="bill.proformaInvoiceUrl">
-                                    <mat-icon>download</mat-icon> -->
-                            <!-- <img src="assets/icons/file-pdf.png" /> -->
-                            <!-- <span>Proforma Invoice</span>
-                                </button>
-                                <button mat-menu-item (click)="onDownloadPdf(bill.taxInvoiceUrl)"
-                                    *ngIf="bill.taxInvoiceUrl">
-                                    <mat-icon>download</mat-icon>
-                                    <span>Tax Invoice</span>
-                                </button>
-                            </mat-menu> -->
+
                             <mat-menu #menu="matMenu">
                                 <button mat-menu-item (click)="onDownloadPdf(bill.proformaInvoiceUrl)"
                                     *ngIf="bill.proformaInvoiceUrl">
@@ -163,6 +153,8 @@
                                     <mat-icon>notifications</mat-icon>
                                     <span>Follow Up</span>
                                 </button>
+
+
                             </mat-menu>
                         </td>
                     </tr>
@@ -173,26 +165,23 @@
 
         <div class="pagination">
 
-  <button mat-button 
-    (click)="prevPage()" 
-    [disabled]="pageIndex === 0">
-    Previous
-  </button>
+            <button mat-button (click)="prevPage()" [disabled]="pageIndex === 0">
+                Previous
+            </button>
 
-  <span>
-   <!-- Page {{ pageIndex + 1 }} of {{ getTotalPages() }} -->
-   Page {{ pageIndex + 1 }} of {{ getTotalPages() || 0 }}
-</span>
+            <span>
 
- 
+                Page {{ pageIndex + 1 }}
+            </span>
 
-  <button mat-button 
-  (click)="nextPage()" 
-  [disabled]="dataList.length < pageSize || (pageIndex + 1) * pageSize >= totalRecords">
-  Next
-</button>
 
-</div>
+
+            <button mat-button (click)="nextPage()"
+                [disabled]="dataList.length < pageSize || (pageIndex + 1) * pageSize >= totalRecords">
+                Next
+            </button>
+
+        </div>
 
 
 
@@ -248,10 +237,7 @@
         <div *ngIf="teamOptions && teamOptions.length > 0">
             <mat-form-field appearance="outline">
                 <mat-label>Team</mat-label>
-                <!-- <mat-select [formControl]="teamFC" multiple placeholder="Team">
-                    <mat-option *ngFor=" let item of teamOptions" [value]="item">{{ item.title
-                        }}</mat-option>
-                </mat-select> -->
+
 
                 <mat-select [formControl]="teamFC" multiple placeholder="Team" [disabled]="!isAdmin">
 
@@ -276,16 +262,14 @@
                     </mat-option>
                 </mat-select>
             </mat-form-field>
-            
+
         </div>
 
         <div style="display:flex; align-items:center; gap:10px; margin-left:10px;">
-  <mat-slide-toggle 
-    [(ngModel)]="showZeroAmount" 
-    (change)="toggleZeroAmount()">
-    ₹0
-  </mat-slide-toggle>
-</div>
+            <mat-slide-toggle [(ngModel)]="showZeroAmount" (change)="toggleZeroAmount()">
+                ₹0
+            </mat-slide-toggle>
+        </div>
 
 
     </div>
@@ -366,5 +350,3 @@
         </mat-form-field>
     </div>
 </app-mcv-filter-sidenav>
-
-//helooo

@@ -76,6 +76,8 @@
             </th>
 
             <th>Feedback</th>
+            <th>Attachment</th>
+
             <th class="action-col">Action</th>
           </tr>
         </thead>
@@ -223,13 +225,60 @@
               </ng-container>
 
               <ng-template #editFeedback>
-                <textarea
-                  [(ngModel)]="editRow.feedback"
-                  rows="3"
-                  class="feedback-textarea"
-                ></textarea>
+                <textarea [(ngModel)]="editRow.feedback" rows="3" class="feedback-textarea"></textarea>
               </ng-template>
             </td>
+
+
+
+            <!-- <td>
+              <ng-container *ngIf="editId !== t.id; else editAttachment">
+
+                <span *ngIf="t.attachmentName">
+                  {{ t.attachmentName }}
+                </span>
+
+                <span *ngIf="!t.attachmentName">-</span>
+
+              </ng-container>
+
+              <input type="file" multiple (change)="onEditFileSelected($event)" />
+            </td> -->
+
+
+            <!-- ATTACHMENT -->
+            <!-- <td>
+
+              <ng-container *ngIf="editId !== t.id; else editAttachment">
+
+                <span *ngIf="t.attachmentName">
+                  {{ t.attachmentName }}
+                </span>
+
+                <span *ngIf="!t.attachmentName">
+                  -
+                </span>
+
+              </ng-container>
+
+              <ng-template #editAttachment>
+                <input type="file" multiple (change)="onEditFileSelected($event)" />
+              </ng-template>
+
+            </td> -->
+
+            <ng-template #editAttachment>
+
+              <input type="file" multiple (change)="onEditFileSelected($event)" />
+
+              <div class="selected-files" *ngIf="editSelectedFiles.length > 0">
+                <div *ngFor="let file of editSelectedFiles">
+                  📎 {{ file.name }}
+                </div>
+              </div>
+
+            </ng-template>
+
 
             <!-- ACTION -->
             <td class="actions">
@@ -251,7 +300,7 @@
           </tr>
 
           <tr *ngIf="targets.length === 0">
-            <td colspan="7" class="no-data">No history records found</td>
+            <td colspan="8" class="no-data">No history records found</td>
           </tr>
         </tbody>
       </table>
@@ -264,7 +313,7 @@
   <div class="dialog-box">
     <div class="dialog-header">
       <h2>Feedback History</h2>
-        <span class="close-icon" (click)="closeDialog()">✖</span>
+      <span class="close-icon" (click)="closeDialog()">✖</span>
     </div>
 
     <div class="dialog-body">
@@ -275,7 +324,7 @@
 
           <!-- CONTENT -->
           <div class="timeline-content">
-             <div class="feedback-date">
+            <div class="feedback-date">
               {{ h.changedOn | date: "dd MMM yyyy" }}
             </div>
             <div class="dialog-feedback-text">

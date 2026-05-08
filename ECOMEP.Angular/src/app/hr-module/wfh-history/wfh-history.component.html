@@ -126,12 +126,11 @@
 
         <td>
           <div class="employee-cell">
-            <img
-              *ngIf="req.photoUrl; else fallbackAvatar"
-              [src]="req.photoUrl"
-              class="avatar-img"
-              (click)="openProfileModal(req)"
-            />
+            <ng-template #fallbackAvatar>
+              <div class="avatar">
+                {{ req.employeeName?.charAt(0) }}
+              </div>
+            </ng-template>
 
             <ng-template #fallbackAvatar>
               <div class="avatar">
@@ -142,6 +141,9 @@
             <div class="employee-info">
               <span class="employee-name">
                 {{ req.employeeName }}
+                <mat-icon *ngIf="req.isTeamLeader === true" class="leader-icon">
+                  star
+                </mat-icon>
               </span>
             </div>
           </div>
@@ -199,7 +201,6 @@
               class="attachment-box"
               *ngIf="req.attachments?.length > 0; else noFile"
             >
-
               <ng-container *ngFor="let file of req.attachments">
                 <span
                   class="file-name"
@@ -279,7 +280,6 @@
             Rejected
           </span>
         </td>
-
       </tr>
     </tbody>
   </table>

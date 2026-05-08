@@ -47,6 +47,8 @@ export class ProjectTargetFormComponent implements OnInit {
   projects: any[] = [];
   stages: any[] = [];
   statuses: string[] = [];
+  selectedFile: File | null = null;
+
 
   constructor(
     private service: ProjectTargetService,
@@ -209,4 +211,10 @@ export class ProjectTargetFormComponent implements OnInit {
 
     this.onProjectChange();
   }
+
+  onFileSelected(event: any) {
+  if (event.target.files.length > 0) {
+    this.selectedFile = event.target.files[0];
+  }
+}
 }
