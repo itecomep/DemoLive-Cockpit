@@ -110,20 +110,6 @@
       </tr>
 
       <tr *ngFor="let req of filteredRequests">
-        <!-- <td>
-          <div class="employee-cell"> -->
-        <!-- <div class="avatar">
-              {{ req.employeeName?.charAt(0) }}
-            </div> -->
-
-        <!-- <div class="employee-info">
-              <span class="employee-name">
-                {{ req.employeeName }}
-              </span>
-            </div>
-          </div>
-        </td> -->
-
         <td>
           <div class="employee-cell">
             <img
@@ -142,6 +128,9 @@
             <div class="employee-info">
               <span class="employee-name">
                 {{ req.employeeName }}
+                <mat-icon *ngIf="req.isTeamLeader === true" class="leader-icon">
+                  star
+                </mat-icon>
               </span>
             </div>
           </div>
@@ -199,7 +188,6 @@
               class="attachment-box"
               *ngIf="req.attachments?.length > 0; else noFile"
             >
-
               <ng-container *ngFor="let file of req.attachments">
                 <span
                   class="file-name"
@@ -279,7 +267,6 @@
             Rejected
           </span>
         </td>
-
       </tr>
     </tbody>
   </table>
