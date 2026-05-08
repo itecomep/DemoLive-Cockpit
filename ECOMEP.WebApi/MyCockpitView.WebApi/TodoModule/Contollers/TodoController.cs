@@ -148,98 +148,242 @@ namespace MyCockpitView.WebApi.TodoModule.Contollers
         }
 
 
-        [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> Create([FromBody] TodoDto Dto)
+        // [HttpPost]
+        // [Authorize]
+        // public async Task<IActionResult> Create([FromBody] TodoDto Dto)
+        // {
+
+        //     var results = mapper.Map<TodoDto>(await service.GetById(await service.Create(mapper.Map<Todo>(Dto))));
+        //     if (results == null) throw new BadRequestException($"{nameof(Todo)} could not be created!");
+        //     var _statusMasters = await db.StatusMasters.AsNoTracking()
+        //         .Where(x => x.Entity == nameof(Todo))
+        //         .ToListAsync();
+
+        //     results.StatusValue = _statusMasters.Any(x => x.Value == results.StatusFlag)
+        //         ? _statusMasters.FirstOrDefault(x => x.Value == results.StatusFlag).Title
+        //         : "";
+
+        //     var username = _currentUserService.GetCurrentUsername();
+        //     var currentContact = await contactService.Get()
+        //         .FirstOrDefaultAsync(x => x.Username == username);
+        //     if (currentContact != null)
+        //     {
+        //         await activityService.LogUserActivity(currentContact, nameof(Todo), results.ID,
+        //             $"{results.Title}-{results.SubTitle}",
+        //             $"{nameof(Todo)} | {results.Title}-{results.SubTitle} | {results.MHrAssigned}mHr",
+        //             "Created",
+        //             $"Due: {ClockTools.GetIST(results.DueDate).ToString("dd MMM yyyy HH:mm")} | {results.MHrAssigned}mHr"
+        //         );
+        //     }
+        //     await wFTaskService.StartFlow(nameof(Todo), results.TypeFlag, results.ID, ProjectID: results.ProjectID);
+
+
+        //     // ================= SIGNALR NOTIFICATION =================
+        //     var assignee = await contactService.Get()
+        //         .FirstOrDefaultAsync(x => x.ID == results.AssigneeContactID);
+
+        //     if (assignee != null)
+        //     {
+        //         var notification = new Notification
+        //         {
+        //             Username = assignee.Username,
+        //             Message = $"New Todo Assigned: {results.Title}",
+        //             Source = "todo",
+        //             CreatedAt = DateTime.UtcNow
+        //         };
+
+        //         db.Notifications.Add(notification);
+        //         await db.SaveChangesAsync();
+
+        //         if (NotificationHub.UserConnections.TryGetValue(assignee.Username, out var connectionId))
+        //         {
+        //             await _hub.Clients.Client(connectionId)
+        //                 .SendAsync("ReceiveNotification", notification);
+        //         }
+        //     }
+        //     return Ok(results);
+        // }
+
+
+             [HttpPost]
+[Authorize]
+public async Task<IActionResult> Create([FromBody] TodoDto Dto)
+{
+    // ✅ MAP DTO TO ENTITY
+    var todo = mapper.Map<Todo>(Dto);
+
+    // ✅ PASS STAGE
+    todo.Stage = Dto.Stage;
+
+    // ✅ SAVE
+    var todoId = await service.Create(todo);
+
+    // ✅ FETCH SAVED RECORD
+    var results = mapper.Map<TodoDto>(
+        await service.GetById(todoId)
+    );
+
+    if (results == null)
+        throw new BadRequestException($"{nameof(Todo)} could not be created!");
+
+    var _statusMasters = await db.StatusMasters.AsNoTracking()
+        .Where(x => x.Entity == nameof(Todo))
+        .ToListAsync();
+
+    results.StatusValue = _statusMasters.Any(x => x.Value == results.StatusFlag)
+        ? _statusMasters.FirstOrDefault(x => x.Value == results.StatusFlag).Title
+        : "";
+
+    var username = _currentUserService.GetCurrentUsername();
+
+    var currentContact = await contactService.Get()
+        .FirstOrDefaultAsync(x => x.Username == username);
+
+    if (currentContact != null)
+    {
+        await activityService.LogUserActivity(
+            currentContact,
+            nameof(Todo),
+            results.ID,
+            $"{results.Title}-{results.SubTitle}",
+            $"{nameof(Todo)} | {results.Title}-{results.SubTitle} | {results.MHrAssigned}mHr",
+            "Created",
+            $"Due: {ClockTools.GetIST(results.DueDate).ToString("dd MMM yyyy HH:mm")} | {results.MHrAssigned}mHr"
+        );
+    }
+
+    await wFTaskService.StartFlow(
+        nameof(Todo),
+        results.TypeFlag,
+        results.ID,
+        ProjectID: results.ProjectID
+    );
+
+    // ================= SIGNALR NOTIFICATION =================
+
+    var assignee = await contactService.Get()
+        .FirstOrDefaultAsync(x => x.ID == results.AssigneeContactID);
+
+    if (assignee != null)
+    {
+        var notification = new Notification
         {
+            Username = assignee.Username,
+            Message = $"New Todo Assigned: {results.Title}",
+            Source = "todo",
+            CreatedAt = DateTime.UtcNow
+        };
 
-            var results = mapper.Map<TodoDto>(await service.GetById(await service.Create(mapper.Map<Todo>(Dto))));
-            if (results == null) throw new BadRequestException($"{nameof(Todo)} could not be created!");
-            var _statusMasters = await db.StatusMasters.AsNoTracking()
-                .Where(x => x.Entity == nameof(Todo))
-                .ToListAsync();
+        db.Notifications.Add(notification);
 
-            results.StatusValue = _statusMasters.Any(x => x.Value == results.StatusFlag)
-                ? _statusMasters.FirstOrDefault(x => x.Value == results.StatusFlag).Title
-                : "";
+        await db.SaveChangesAsync();
 
-            var username = _currentUserService.GetCurrentUsername();
-            var currentContact = await contactService.Get()
-                .FirstOrDefaultAsync(x => x.Username == username);
-            if (currentContact != null)
-            {
-                await activityService.LogUserActivity(currentContact, nameof(Todo), results.ID,
-                    $"{results.Title}-{results.SubTitle}",
-                    $"{nameof(Todo)} | {results.Title}-{results.SubTitle} | {results.MHrAssigned}mHr",
-                    "Created",
-                    $"Due: {ClockTools.GetIST(results.DueDate).ToString("dd MMM yyyy HH:mm")} | {results.MHrAssigned}mHr"
-                );
-            }
-            await wFTaskService.StartFlow(nameof(Todo), results.TypeFlag, results.ID, ProjectID: results.ProjectID);
-
-
-            // ================= SIGNALR NOTIFICATION =================
-            var assignee = await contactService.Get()
-                .FirstOrDefaultAsync(x => x.ID == results.AssigneeContactID);
-
-            if (assignee != null)
-            {
-                var notification = new Notification
-                {
-                    Username = assignee.Username,
-                    Message = $"New Todo Assigned: {results.Title}",
-                    Source = "todo",
-                    CreatedAt = DateTime.UtcNow
-                };
-
-                db.Notifications.Add(notification);
-                await db.SaveChangesAsync();
-
-                if (NotificationHub.UserConnections.TryGetValue(assignee.Username, out var connectionId))
-                {
-                    await _hub.Clients.Client(connectionId)
-                        .SendAsync("ReceiveNotification", notification);
-                }
-            }
-            return Ok(results);
-        }
-
-        [Authorize]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] TodoDto Dto)
+        if (NotificationHub.UserConnections.TryGetValue(assignee.Username, out var connectionId))
         {
-
-            await service.Update(mapper.Map<Todo>(Dto));
-
-            var results = mapper.Map<TodoDto>(await service.GetById(id));
-            if (results == null) throw new NotFoundException($"{nameof(Todo)} not found!");
-
-            var _statusMasters = await db.StatusMasters.AsNoTracking()
-.Where(x => x.Entity == nameof(Todo))
-.ToListAsync();
-            results.StatusValue = _statusMasters.Any(x => x.Value == results.StatusFlag) ? _statusMasters.FirstOrDefault(x => x.Value == results.StatusFlag).Title : "";
-
-            var username = _currentUserService.GetCurrentUsername();
-            var currentContact = await contactService.Get()
-                .FirstOrDefaultAsync(x => x.Username == username);
-            if (currentContact != null)
-            {
-                await activityService.LogUserActivity(currentContact, nameof(Todo), results.ID,
-                $"{results.Title}-{results.SubTitle}",
-                $"{nameof(Todo)} | {results.Title}-{results.SubTitle} | {results.MHrAssigned}mHr",
-                "Updated",
-                $"Due: {ClockTools.GetIST((results.DueDate)).ToString("dd MMM yyyy HH:mm")} | {results.MHrAssigned}mHr"
-                );
-            }
-
-            if (results.StatusFlag == McvConstant.TODO_STATUSFLAG_PENDING)
-            {
-                await wFTaskService.UpdateTaskDue(nameof(Todo), results.ID);
-            }
-
-            return Ok(results);
-
+            await _hub.Clients.Client(connectionId)
+                .SendAsync("ReceiveNotification", notification);
         }
+    }
+
+    return Ok(results);
+}
+
+
+
+//         [Authorize]
+//         [HttpPut("{id}")]
+//         public async Task<IActionResult> Update(int id, [FromBody] TodoDto Dto)
+//         {
+
+//             await service.Update(mapper.Map<Todo>(Dto));
+
+//             var results = mapper.Map<TodoDto>(await service.GetById(id));
+//             if (results == null) throw new NotFoundException($"{nameof(Todo)} not found!");
+
+//             var _statusMasters = await db.StatusMasters.AsNoTracking()
+// .Where(x => x.Entity == nameof(Todo))
+// .ToListAsync();
+//             results.StatusValue = _statusMasters.Any(x => x.Value == results.StatusFlag) ? _statusMasters.FirstOrDefault(x => x.Value == results.StatusFlag).Title : "";
+
+//             var username = _currentUserService.GetCurrentUsername();
+//             var currentContact = await contactService.Get()
+//                 .FirstOrDefaultAsync(x => x.Username == username);
+//             if (currentContact != null)
+//             {
+//                 await activityService.LogUserActivity(currentContact, nameof(Todo), results.ID,
+//                 $"{results.Title}-{results.SubTitle}",
+//                 $"{nameof(Todo)} | {results.Title}-{results.SubTitle} | {results.MHrAssigned}mHr",
+//                 "Updated",
+//                 $"Due: {ClockTools.GetIST((results.DueDate)).ToString("dd MMM yyyy HH:mm")} | {results.MHrAssigned}mHr"
+//                 );
+//             }
+
+//             if (results.StatusFlag == McvConstant.TODO_STATUSFLAG_PENDING)
+//             {
+//                 await wFTaskService.UpdateTaskDue(nameof(Todo), results.ID);
+//             }
+
+//             return Ok(results);
+
+//         }
+
+
+
+         [Authorize]
+[HttpPut("{id}")]
+public async Task<IActionResult> Update(int id, [FromBody] TodoDto Dto)
+{
+    // ✅ MAP DTO TO ENTITY
+    var todo = mapper.Map<Todo>(Dto);
+
+    // ✅ PASS STAGE
+    todo.Stage = Dto.Stage;
+
+    // ✅ UPDATE
+    await service.Update(todo);
+
+    var results = mapper.Map<TodoDto>(await service.GetById(id));
+
+    if (results == null)
+        throw new NotFoundException($"{nameof(Todo)} not found!");
+
+    var _statusMasters = await db.StatusMasters.AsNoTracking()
+        .Where(x => x.Entity == nameof(Todo))
+        .ToListAsync();
+
+    results.StatusValue = _statusMasters.Any(x => x.Value == results.StatusFlag)
+        ? _statusMasters.FirstOrDefault(x => x.Value == results.StatusFlag).Title
+        : "";
+
+    var username = _currentUserService.GetCurrentUsername();
+
+    var currentContact = await contactService.Get()
+        .FirstOrDefaultAsync(x => x.Username == username);
+
+    if (currentContact != null)
+    {
+        await activityService.LogUserActivity(
+            currentContact,
+            nameof(Todo),
+            results.ID,
+            $"{results.Title}-{results.SubTitle}",
+            $"{nameof(Todo)} | {results.Title}-{results.SubTitle} | {results.MHrAssigned}mHr",
+            "Updated",
+            $"Due: {ClockTools.GetIST((results.DueDate)).ToString("dd MMM yyyy HH:mm")} | {results.MHrAssigned}mHr"
+        );
+    }
+
+    if (results.StatusFlag == McvConstant.TODO_STATUSFLAG_PENDING)
+    {
+        await wFTaskService.UpdateTaskDue(nameof(Todo), results.ID);
+    }
+
+    return Ok(results);
+}
+
+
+
+
 
 
         [HttpDelete("{id}")]

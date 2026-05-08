@@ -22,6 +22,7 @@ export class Todo extends BaseEntity
   priority!:string;
   parentID?: number;
   startDate!: Date;
+  stage?: string;
   constructor(init?: Partial<Todo>)
   {
     super(init);
