@@ -274,24 +274,25 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
               ) && req.userId !== this.currentUserId
             );
           });
+this.filteredRequests = filtered.map((req) => {
+  const contact = contacts.find(
+    (c) =>
+      c.name?.toLowerCase().trim() ===
+      (req.userName || "").toLowerCase().trim(),
+  );
 
-          this.filteredRequests = filtered.map((req) => {
-            const contact = contacts.find(
-              (c) =>
-                c.name?.toLowerCase().trim() ===
-                (req.userName || "").toLowerCase().trim(),
-            );
-
-            return {
-              ...req,
-              employeeName: req.userName,
-              status: (req.status || "pending").toLowerCase(),
-              attachments: Array.isArray(req.attachments)
-                ? req.attachments
-                : [],
-              photoUrl: contact?.photoUrl || "",
-            };
-          });
+  return {
+    ...req,
+    employeeName: req.userName,
+    startDate: req.startDate || req.start || req.fromDate,
+    endDate: req.endDate || req.end || req.toDate,
+    status: (req.status || "pending").toLowerCase(),
+    attachments: Array.isArray(req.attachments)
+      ? req.attachments
+      : [],
+    photoUrl: contact?.photoUrl || "",
+  };
+});
 
           console.log("TEAM LEADERS WFH:", this.filteredRequests);
         });
