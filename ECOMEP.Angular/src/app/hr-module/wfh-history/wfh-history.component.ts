@@ -192,6 +192,10 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
     this.filteredRequests = data;
   }
 
+
+  // =========================
+  // FILTER LOGIC
+  // =========================
   applyFilters(monthRange?: { start: string; end: string }): void {
     this.filteredRequests = this.requests.filter((req) => {
       const reqStart = this.formatDate(req.startDate);
@@ -236,6 +240,9 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
     }
   }
 
+  // =========================
+  // DATE FORMAT
+  // =========================
   formatDate(date: any): string {
     if (!date) return "";
 
@@ -300,6 +307,9 @@ this.filteredRequests = filtered.map((req) => {
     });
   }
 
+  // =========================
+  // UTILITY (existing kept)
+  // =========================
   getDays(start: Date, end: Date): number {
     if (!start || !end) return 0;
     const diff = new Date(end).getTime() - new Date(start).getTime();

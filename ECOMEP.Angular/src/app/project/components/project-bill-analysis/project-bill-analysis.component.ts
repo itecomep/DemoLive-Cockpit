@@ -685,18 +685,42 @@ if (column === 'followUp') {
     return;
   }
 
+  // if (column === 'clientName') {
+  //   const isDesc = this.sort === 'clientName';
+  //   this.sort = isDesc ? 'clientName desc' : 'clientName';
+
+  //   this.dataList = [...this.dataList].sort((a, b) => {
+  //     return isDesc
+  //       ? (b.clientName || '').localeCompare(a.clientName || '')
+  //       : (a.clientName || '').localeCompare(b.clientName || '');
+  //   });
+
+  //   return;
+  // }
+
+
   if (column === 'clientName') {
-    const isDesc = this.sort === 'clientName';
-    this.sort = isDesc ? 'clientName desc' : 'clientName';
 
-    this.dataList = [...this.dataList].sort((a, b) => {
-      return isDesc
-        ? (b.clientName || '').localeCompare(a.clientName || '')
-        : (a.clientName || '').localeCompare(b.clientName || '');
-    });
+  const isDesc = this.sort === 'clientName';
+  this.sort = isDesc ? 'clientName desc' : 'clientName';
 
-    return;
-  }
+  this.dataList = [...this.dataList].sort((a, b) => {
+
+    const nameA = (a.clientName || '')
+      .replace(/^M\/s\.\s*/i, '')
+      .trim();
+
+    const nameB = (b.clientName || '')
+      .replace(/^M\/s\.\s*/i, '')
+      .trim();
+
+    return isDesc
+      ? nameB.localeCompare(nameA)
+      : nameA.localeCompare(nameB);
+  });
+
+  return;
+}
 
   // ===== API SORT (ONLY FOR BACKEND FIELDS) =====
   if (this.sort === column) {

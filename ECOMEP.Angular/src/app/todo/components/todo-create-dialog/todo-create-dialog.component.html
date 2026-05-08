@@ -31,24 +31,6 @@
               </mat-select>
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="col-sm-12">
-              <mat-label>Assign To</mat-label>
-              <input placeholder="Enter name of person to select from the list" aria-label="Assign To" matInput
-                formControlName="assignee" [matAutocomplete]="autoContact" />
-
-              <mat-autocomplete #autoContact="matAutocomplete" [displayWith]="displayFnContact">
-                <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
-                  {{ option.name }}
-                </mat-option>
-              </mat-autocomplete>
-              <span matSuffix>
-                <mat-icon>person</mat-icon>
-              </span>
-              <mat-error>{{ getErrorMessage(f.assignee) }}</mat-error>
-              <mat-hint>Enter name of person to select from the
-                list</mat-hint>
-            </mat-form-field>
-
 
             <mat-form-field appearance="outline" class="col-sm-12" *ngIf="f.titleType.value == 'Project'">
               <mat-label>Project</mat-label>
@@ -75,6 +57,99 @@
               <mat-error>{{getErrorMessage(f.title)}}</mat-error>
               <mat-hint>{{f.title.value?.length}} / 256</mat-hint>
             </mat-form-field>
+
+
+            <!-- <mat-form-field appearance="outline" class="col-sm-12" *ngIf="selectedProject">
+
+              <mat-label>Project Target Stage</mat-label>
+
+              <mat-select [(ngModel)]="selectedStage" [ngModelOptions]="{ standalone: true }">
+
+                <mat-option value="">
+                  Select Stage
+                </mat-option>
+
+                <mat-option *ngFor="let stage of projectStages" [value]="stage.title">
+
+                  {{ stage.title }}
+
+                </mat-option>
+
+              </mat-select>
+            </mat-form-field> -->
+
+
+            <mat-form-field appearance="outline" class="col-sm-12">
+
+              <mat-label>Project Target Stage</mat-label>
+
+              <mat-select [(ngModel)]="selectedStage" [ngModelOptions]="{ standalone: true }"
+                [disabled]="!selectedProject">
+
+                <mat-option value="">
+                  Select Stage
+                </mat-option>
+
+                <mat-option *ngFor="let stage of projectStages" [value]="stage.title || stage.name">
+
+                  {{ stage.title || stage.name }}
+
+                </mat-option>
+
+              </mat-select>
+
+              <!-- <mat-hint *ngIf="!selectedProject">
+                Select a project first
+              </mat-hint> -->
+
+            </mat-form-field>
+
+
+
+            <mat-form-field appearance="outline" class="col-sm-12">
+              <mat-label>Assign To</mat-label>
+              <input placeholder="Enter name of person to select from the list" aria-label="Assign To" matInput
+                formControlName="assignee" [matAutocomplete]="autoContact" />
+
+              <mat-autocomplete #autoContact="matAutocomplete" [displayWith]="displayFnContact">
+                <mat-option *ngFor="let option of filteredContacts$ | async" [value]="option">
+                  {{ option.name }}
+                </mat-option>
+              </mat-autocomplete>
+              <span matSuffix>
+                <mat-icon>person</mat-icon>
+              </span>
+              <mat-error>{{ getErrorMessage(f.assignee) }}</mat-error>
+              <mat-hint>Enter name of person to select from the
+                list</mat-hint>
+            </mat-form-field>
+
+
+            <!-- <mat-form-field appearance="outline" class="col-sm-12" *ngIf="f.titleType.value == 'Project'">
+              <mat-label>Project</mat-label>
+              <input placeholder="Select Project" aria-label="Project" matInput formControlName="title"
+                [matAutocomplete]="autoProject">
+              <mat-autocomplete #autoProject="matAutocomplete" [displayWith]="displayFnProject"
+                (optionSelected)="onProjectSelected($event.option.value)">
+                <mat-option *ngFor="let option of filteredProjects$ | async" [value]="option">
+                  {{option.code}}-{{option.title}}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error>{{getErrorMessage(f.title)}}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-sm-12" *ngIf="f.titleType.value == 'Custom'">
+              <mat-label>Title</mat-label>
+              <input placeholder="Title" aria-label="Title" matInput formControlName="title"
+                [matAutocomplete]="autoTitle">
+              <mat-autocomplete #autoTitle="matAutocomplete" [displayWith]="displayFnTitle">
+                <mat-option *ngFor="let option of filteredSubjects$ | async" [value]="option">
+                  {{option}}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error>{{getErrorMessage(f.title)}}</mat-error>
+              <mat-hint>{{f.title.value?.length}} / 256</mat-hint>
+            </mat-form-field> -->
 
             <mat-form-field appearance="outline" class="col-sm-8">
               <mat-label>Task Title</mat-label>
