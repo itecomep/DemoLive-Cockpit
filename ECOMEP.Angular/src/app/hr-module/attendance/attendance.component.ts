@@ -59,7 +59,7 @@ export class AttendanceComponent implements OnInit {
   }
 
   loadAttendance() {
-    this.http.get<any[]>("https://localhost:7024/api/Attendance").subscribe({
+    this.http.get<any[]>("http://localhost:5054/api/Attendance").subscribe({
       next: (res) => {
         this.originalData = res;
 
