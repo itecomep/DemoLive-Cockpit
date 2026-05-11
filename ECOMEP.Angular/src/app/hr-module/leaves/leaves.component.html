@@ -42,25 +42,22 @@
 
     <div class="month-tabs">
 
-  <button class="month-btn"
-    [class.active]="selectedMonthTab === 'previous'"
-    (click)="selectedMonthTab = 'previous'; applyFilters()">
-    Previous Month
-  </button>
+      <button class="month-btn" [class.active]="selectedMonthTab === 'previous'"
+        (click)="selectedMonthTab = 'previous'; applyFilters()">
+        Previous Month
+      </button>
 
-  <button class="month-btn"
-    [class.active]="selectedMonthTab === 'current'"
-    (click)="selectedMonthTab = 'current'; applyFilters()">
-    Current Month
-  </button>
+      <button class="month-btn" [class.active]="selectedMonthTab === 'current'"
+        (click)="selectedMonthTab = 'current'; applyFilters()">
+        Current Month
+      </button>
 
-  <button class="month-btn"
-    [class.active]="selectedMonthTab === 'next'"
-    (click)="selectedMonthTab = 'next'; applyFilters()">
-    Next Month
-  </button>
+      <button class="month-btn" [class.active]="selectedMonthTab === 'next'"
+        (click)="selectedMonthTab = 'next'; applyFilters()">
+        Next Month
+      </button>
 
-</div>
+    </div>
 
   </div>
 
@@ -82,22 +79,15 @@
             </div>
           </ng-template>
 
-          <div class="employee-info">
-            <!-- <span class="employee-name">
-              {{ element.employeeName }}
-            </span> -->
+         <div class="employee-name">
+  {{ element.employeeName }}
 
-            <span class="employee-name">
-              {{ element.employeeName }}
-              <!-- 
-              <mat-icon *ngIf="element.isTeamLeader" class="leader-icon" matTooltip="Team Leader">
-                star
-              </mat-icon> -->
-              <mat-icon *ngIf="element.isTeamLeader === true" class="leader-icon">
-                star
-              </mat-icon>
-            </span>
-          </div>
+  <mat-icon
+    *ngIf="element.isTeamLeader === true"
+    class="leader-icon">
+    star
+  </mat-icon>
+</div>
         </div>
       </td>
     </ng-container>
@@ -118,15 +108,21 @@
     </ng-container>
 
     <ng-container matColumnDef="createdDate">
-  <th mat-header-cell *matHeaderCellDef>
-    Created Date
-  </th>
+      <th mat-header-cell *matHeaderCellDef>
+        Created Date
+      </th>
 
-  <td mat-cell *matCellDef="let element">
-    <!-- {{ element.createdDate | date:'dd MMM yyyy, hh:mm a' }} -->
-      {{ element.createdDate | date:'dd MMM yyyy' }}
-  </td>
-</ng-container>
+      <!-- <td mat-cell *matCellDef="let element">
+        {{ element.createdDate | date:'dd MMM yyyy' }}
+      </td> -->
+
+
+      <td mat-cell *matCellDef="let element">
+  <div class="date-wrap">
+    {{ element.createdDate | date:'dd MMM yyyy' }}
+  </div>
+</td>
+    </ng-container>
 
     <ng-container matColumnDef="type">
       <th mat-header-cell *matHeaderCellDef>Leave Type</th>
@@ -145,16 +141,28 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header="start">
         Start Date
       </th>
-      <td mat-cell *matCellDef="let element">
+      <!-- <td mat-cell *matCellDef="let element">
         {{ element.start | date: "dd MMM yyyy" }}
-      </td>
+      </td> -->
+
+      <td mat-cell *matCellDef="let element">
+  <div class="date-wrap">
+    {{ element.start | date: "dd MMM yyyy" }}
+  </div>
+</td>
     </ng-container>
 
     <ng-container matColumnDef="end">
       <th mat-header-cell *matHeaderCellDef mat-sort-header="end">End Date</th>
-      <td mat-cell *matCellDef="let element">
+      <!-- <td mat-cell *matCellDef="let element">
         {{ element.end | date: "dd MMM yyyy" }}
-      </td>
+      </td> -->
+
+      <td mat-cell *matCellDef="let element">
+  <div class="date-wrap">
+    {{ element.end | date: "dd MMM yyyy" }}
+  </div>
+</td>
     </ng-container>
 
     <ng-container matColumnDef="total">
@@ -162,6 +170,47 @@
       <td mat-cell *matCellDef="let element" class="text-center-cell">
         <span class="days-badge">{{ element.total }}</span>
       </td>
+    </ng-container>
+
+
+    <ng-container matColumnDef="approvedDate">
+      <th mat-header-cell *matHeaderCellDef>
+        Approved Date
+      </th>
+
+      <!-- <td mat-cell *matCellDef="let element">
+        <span *ngIf="element.approvedDate">
+            {{ element.approvedDate | date:'dd MMM yyyy' }}
+        </span>
+
+        <span *ngIf="!element.approvedDate">
+          -
+        </span>
+      </td> -->
+
+      <td mat-cell *matCellDef="let element">
+  <div class="date-wrap" *ngIf="element.approvedDate">
+    {{ element.approvedDate | date:'dd MMM yyyy' }}
+  </div>
+
+  <span *ngIf="!element.approvedDate">-</span>
+</td>
+    </ng-container>
+
+    <ng-container matColumnDef="approvedBy">
+      <th mat-header-cell *matHeaderCellDef>
+        Approved By
+      </th>
+
+      <!-- <td mat-cell *matCellDef="let element">
+        {{ element.approvedBy || '-' }}
+      </td> -->
+
+      <td mat-cell *matCellDef="let element">
+  <div class="approved-by-name">
+    {{ element.approvedBy || '-' }}
+  </div>
+</td>
     </ng-container>
 
     <ng-container matColumnDef="status">

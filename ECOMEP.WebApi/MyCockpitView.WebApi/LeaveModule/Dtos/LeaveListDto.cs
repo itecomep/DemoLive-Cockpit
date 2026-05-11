@@ -14,6 +14,7 @@
         public int StatusFlag { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? ActionDate { get; set; }
+         public string ApprovedBy { get; set; }
     }
     public class UpdateStatusDto
     {

@@ -66,19 +66,22 @@ export const ROOT_ROUTES: Routes = [
       import('./hr-module/hr-module.component').then(m => m.HrModuleComponent)
   },
 
-  {
-    path: 'wfh-request-status',
-    loadComponent: () =>
-      import('./hr-module/wfh-requests/wfh-requests.component')
-        .then(m => m.WfhRequestsComponent)
-  },
-
   // {
-  //   path: 'project-target',
+  //   path: 'wfh-request-status',
   //   loadComponent: () =>
-  //     import('./project-target/project-target.component')
-  //       .then(m => m.ProjectTargetComponent)
+  //     import('./hr-module/wfh-requests/wfh-requests.component')
+  //       .then(m => m.WfhRequestsComponent)
   // },
+
+
+
+  {
+  path: 'wfh-request-status',
+  loadComponent: () =>
+    import('./hr-module/employee/employee.component')
+      .then(m => m.EmployeeComponent)
+},
+
 
   {
   path: 'project-target',

@@ -122,11 +122,28 @@ export class ProjectTargetFormComponent implements OnInit {
     this.loadStages(this.form.projectId);
   }
 
+  // loadStages(projectId: number) {
+  //   this.service.getStagesByProject(projectId).subscribe((res: any) => {
+  //     this.stages = res || [];
+  //   });
+  // }
+
+
   loadStages(projectId: number) {
-    this.service.getStagesByProject(projectId).subscribe((res: any) => {
-      this.stages = res || [];
-    });
-  }
+  this.service.getStagesByProject(projectId).subscribe((res: any) => {
+
+    const uniqueStages = (res || []).filter(
+      (stage: any, index: number, self: any[]) =>
+        index === self.findIndex(
+          (s) =>
+            s.title?.trim().toLowerCase() ===
+            stage.title?.trim().toLowerCase()
+        )
+    );
+
+    this.stages = uniqueStages;
+  });
+}
 
   save() {
     if (
