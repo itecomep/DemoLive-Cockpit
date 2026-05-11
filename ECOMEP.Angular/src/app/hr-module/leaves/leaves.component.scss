@@ -1,6 +1,12 @@
+// .full-table {
+//   width: 100%;
+//   table-layout: fixed; 
+
+// }
+
 .full-table {
   width: 100%;
-  table-layout: fixed; 
+  table-layout: auto;
 }
 
 .table-container {
@@ -820,35 +826,50 @@
 
 /* ✅ Employee column bigger */
 ::ng-deep .mat-column-employee {
-  width: 300px;
-  min-width: 280px;
+  width: 220px;
+  min-width: 220px;
   max-width: 320px;
 }
 
 
 .employee-cell {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
   max-width: 100%;
   overflow: hidden;
 }
 
-.employee-name {
-  font-size: 13.5px;
-  // font-weight: 600;
-   font-weight: 400;
-  color: #111;
+// .employee-name {
+//   font-size: 13.5px;
+//   // font-weight: 600;
+//    font-weight: 400;
+//   color: #111;
 
-  white-space: normal; 
-  word-break: break-word; 
-  overflow-wrap: anywhere;
+//   white-space: normal; 
+//   word-break: break-word; 
+//   overflow-wrap: anywhere;
 
-  flex: 1; 
-}
-// ::ng-deep .mat-column-reason {
-//   width: 250px;
-//   max-width: 250px;
+//   flex: 1; 
+// }
+
+
+
+
+
+// .employee-name {
+//   display: inline-flex;
+//   align-items: center;
+//   gap: 4px;
+
+//   font-size: 13.5px;
+//   font-weight: 400;
+//   color: #111;
+
+//   white-space: normal;
+//   line-height: 1.3;
+
+//   flex-wrap: wrap;
 // }
 
 
@@ -916,14 +937,26 @@
   display: inline-block;
 }
 
+// .leader-icon {
+//   font-size: 10px;
+//   width: 12px;
+//   height: 12px;
+//   line-height: 12px;
+//   color: #22c55e;   /* ✅ green */
+//   margin-left: 4px;
+//   vertical-align: middle;
+// }
 .leader-icon {
-  font-size: 10px;
+  font-size: 12px !important;
   width: 12px;
   height: 12px;
-  line-height: 12px;
-  color: #22c55e;   /* ✅ green */
-  margin-left: 4px;
+
+  color: #22c55e !important;
+
+  flex-shrink: 0;
   vertical-align: middle;
+
+  margin-top: -1px;
 }
 .leader-icon {
   font-size: 12px !important;
@@ -976,3 +1009,114 @@
   cursor: pointer;
 }
 
+// ::ng-deep .mat-column-approvedBy {
+//   min-width: 180px;
+//   white-space: nowrap;
+// }
+
+
+
+// ::ng-deep .mat-column-start,
+// ::ng-deep .mat-column-end,
+// ::ng-deep .mat-column-approvedDate {
+//   white-space: nowrap;
+//   min-width: 120px;
+// }
+
+::ng-deep .mat-column-approvedBy {
+  width: 160px !important;
+  min-width: 160px !important;
+  max-width: 160px !important;
+}
+
+::ng-deep .mat-mdc-cell.mat-column-approvedBy {
+  white-space: normal !important;
+  word-break: normal !important;
+  overflow-wrap: anywhere !important;
+
+  line-height: 1.5 !important;
+  font-size: 14px !important;
+
+  display: table-cell !important;
+  vertical-align: middle !important;
+}
+
+.approved-by-name {
+  white-space: normal;
+  line-height: 1.4;
+  word-break: keep-all;
+}
+
+
+
+
+
+
+
+
+// ::ng-deep .mat-column-createdDate,
+// ::ng-deep .mat-column-start,
+// ::ng-deep .mat-column-end,
+// ::ng-deep .mat-column-approvedDate {
+//   width: 110px !important;
+//   min-width: 110px !important;
+//   max-width: 110px !important;
+// }
+
+::ng-deep .mat-mdc-cell.mat-column-createdDate,
+::ng-deep .mat-mdc-cell.mat-column-start,
+::ng-deep .mat-mdc-cell.mat-column-end,
+::ng-deep .mat-mdc-cell.mat-column-approvedDate {
+  white-space: normal !important;
+  line-height: 1.4 !important;
+  word-break: keep-all !important;
+}
+
+::ng-deep .mat-column-createdDate,
+::ng-deep .mat-column-start,
+::ng-deep .mat-column-end,
+::ng-deep .mat-column-approvedDate {
+  width: 95px !important;
+  min-width: 95px !important;
+  max-width: 95px !important;
+
+  text-align: center !important;
+}
+
+.date-wrap {
+  width: 100%;
+
+  text-align: center;
+  line-height: 1.35;
+
+  white-space: normal;
+  word-break: keep-all;
+
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.employee-name {
+  display: inline;
+
+  font-size: 13.5px;
+  font-weight: 400;
+  color: #111;
+
+  line-height: 1.3;
+
+  white-space: normal;
+  word-break: break-word;
+}
+
+.leader-icon {
+  font-size: 12px !important;
+  width: 12px !important;
+  height: 12px !important;
+
+  color: #22c55e !important;
+
+  vertical-align: middle;
+  margin-left: 2px;
+  margin-top: -2px;
+}

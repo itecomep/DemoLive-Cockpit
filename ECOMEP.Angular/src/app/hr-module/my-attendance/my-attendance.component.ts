@@ -1,17 +1,3 @@
-// import { Component } from '@angular/core';
-// import { CommonModule } from '@angular/common';
-
-// @Component({
-//   selector: 'app-my-attendance',
-//   standalone: true,
-//   imports: [CommonModule],
-//   templateUrl: './my-attendance.component.html',
-//   styleUrls: ['./my-attendance.component.scss']
-// })
-// export class MyAttendanceComponent {
-
-// }
-
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';

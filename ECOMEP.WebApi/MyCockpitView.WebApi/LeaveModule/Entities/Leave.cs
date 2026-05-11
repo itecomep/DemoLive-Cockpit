@@ -25,6 +25,9 @@ public class Leave : BaseEntity
 
     public string? Title { get; set; }
 
+     public string? ApprovedBy { get; set; }
+
+
     public virtual ICollection<LeaveAttachment> Attachments { get; set; } = new List<LeaveAttachment>();
 }
 

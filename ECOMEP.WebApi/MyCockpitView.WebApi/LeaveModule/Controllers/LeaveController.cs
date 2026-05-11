@@ -337,57 +337,135 @@ public class LeaveController : ControllerBase
                 ? x.Attachments.First().Url
                 : null, 
                  CreatedDate = x.Created,
-            ActionDate = x.StatusFlag != 0 ? x.Modified : null
+            // ActionDate = x.StatusFlag != 0 ? x.Modified : null
+            ActionDate = x.StatusFlag != 0 ? x.Modified : null,
+           ApprovedBy = x.ApprovedBy
         });
 
         return Ok(result);
     }
 
+    // [HttpPut("update-status/{id}")]
+    // public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateStatusDto body)
+    // {
+    //     var leave = await service.Get()
+    //         .Include(x => x.Contact)
+    //         .FirstOrDefaultAsync(x => x.ID == id);
+
+    //     if (leave == null) return NotFound();
+
+    //     leave.StatusFlag = body.Status == "Approved" ? 1 : -1;
+
+
+    //      var currentUsername = _currentUserService.GetCurrentUsername();
+
+    // leave.ApprovedBy = currentUsername;
+
+    // // ✅ save approval/rejection date
+    // leave.Modified = DateTime.UtcNow;
+    //     await service.Update(leave);
+    //     var username = leave.Contact?.Username;
+
+    //     if (!string.IsNullOrEmpty(username))
+    //     {
+    //         var typeMasters = await db.TypeMasters
+    //             .Where(x => x.Entity == nameof(Leave))
+    //             .ToListAsync();
+
+    //         var leaveType = typeMasters
+    //             .FirstOrDefault(x => x.Value == leave.TypeFlag)?.Title ?? "Leave";
+    //         var startDate = leave.Start.ToString("dd MMM yyyy");
+    //         var endDate = leave.End.ToString("dd MMM yyyy");
+    //         var message = leave.StatusFlag == 1
+    //             ? $"✅ Your {leaveType} from {startDate} to {endDate} has been approved"
+    //             : $"❌ Your {leaveType} from {startDate} to {endDate} has been rejected";
+    //         var notification = new Notification
+    //         {
+    //             Username = username,
+    //             Message = message,
+    //             Source = "leave-status",
+    //             CreatedAt = DateTime.UtcNow
+    //         };
+
+    //         db.Notifications.Add(notification);
+
+    //         if (NotificationHub.UserConnections.TryGetValue(username, out var connectionId))
+    //         {
+    //             await _hub.Clients.Client(connectionId)
+    //                 .SendAsync("ReceiveNotification", notification);
+    //         }
+
+    //         await db.SaveChangesAsync();
+    //     }
+
+    //     return Ok();
+    // }
+
+
+
     [HttpPut("update-status/{id}")]
-    public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateStatusDto body)
+public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateStatusDto body)
+{
+    var leave = await service.Get()
+        .Include(x => x.Contact)
+        .FirstOrDefaultAsync(x => x.ID == id);
+
+    if (leave == null) return NotFound();
+
+    leave.StatusFlag = body.Status == "Approved" ? 1 : -1;
+
+    // ✅ Get current logged-in user
+    var currentUsername = _currentUserService.GetCurrentUsername();
+
+    // ✅ Get full contact details
+    var currentContact = await contactService.Get()
+        .FirstOrDefaultAsync(x => x.Username == currentUsername);
+
+    // ✅ Save approver full name
+    leave.ApprovedBy = currentContact?.FullName;
+
+    // ✅ Save approval/rejection date
+    leave.Modified = DateTime.UtcNow;
+
+    await service.Update(leave);
+
+    var username = leave.Contact?.Username;
+
+    if (!string.IsNullOrEmpty(username))
     {
-        var leave = await service.Get()
-            .Include(x => x.Contact)
-            .FirstOrDefaultAsync(x => x.ID == id);
+        var typeMasters = await db.TypeMasters
+            .Where(x => x.Entity == nameof(Leave))
+            .ToListAsync();
 
-        if (leave == null) return NotFound();
+        var leaveType = typeMasters
+            .FirstOrDefault(x => x.Value == leave.TypeFlag)?.Title ?? "Leave";
 
-        leave.StatusFlag = body.Status == "Approved" ? 1 : -1;
-        await service.Update(leave);
-        var username = leave.Contact?.Username;
+        var startDate = leave.Start.ToString("dd MMM yyyy");
+        var endDate = leave.End.ToString("dd MMM yyyy");
 
-        if (!string.IsNullOrEmpty(username))
+        var message = leave.StatusFlag == 1
+            ? $"✅ Your {leaveType} from {startDate} to {endDate} has been approved"
+            : $"❌ Your {leaveType} from {startDate} to {endDate} has been rejected";
+
+        var notification = new Notification
         {
-            var typeMasters = await db.TypeMasters
-                .Where(x => x.Entity == nameof(Leave))
-                .ToListAsync();
+            Username = username,
+            Message = message,
+            Source = "leave-status",
+            CreatedAt = DateTime.UtcNow
+        };
 
-            var leaveType = typeMasters
-                .FirstOrDefault(x => x.Value == leave.TypeFlag)?.Title ?? "Leave";
-            var startDate = leave.Start.ToString("dd MMM yyyy");
-            var endDate = leave.End.ToString("dd MMM yyyy");
-            var message = leave.StatusFlag == 1
-                ? $"✅ Your {leaveType} from {startDate} to {endDate} has been approved"
-                : $"❌ Your {leaveType} from {startDate} to {endDate} has been rejected";
-            var notification = new Notification
-            {
-                Username = username,
-                Message = message,
-                Source = "leave-status",
-                CreatedAt = DateTime.UtcNow
-            };
+        db.Notifications.Add(notification);
 
-            db.Notifications.Add(notification);
-
-            if (NotificationHub.UserConnections.TryGetValue(username, out var connectionId))
-            {
-                await _hub.Clients.Client(connectionId)
-                    .SendAsync("ReceiveNotification", notification);
-            }
-
-            await db.SaveChangesAsync();
+        if (NotificationHub.UserConnections.TryGetValue(username, out var connectionId))
+        {
+            await _hub.Clients.Client(connectionId)
+                .SendAsync("ReceiveNotification", notification);
         }
 
-        return Ok();
+        await db.SaveChangesAsync();
     }
+
+    return Ok();
+}
 }

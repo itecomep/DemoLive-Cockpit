@@ -45,6 +45,7 @@ export class LeavesComponent implements OnInit, AfterViewInit {
 
   activeTab: "all" | "team" = "all";
 
+
   filters = {
     employeeName: "",
     startDate: "",
@@ -55,24 +56,27 @@ export class LeavesComponent implements OnInit, AfterViewInit {
   selectedMonthTab: "none" | "current" | "previous" | "next" = "none";
 
 
-  displayedColumns: string[] = [
-    "employee",
-    "reason",
-      "createdDate",
-    "type",
-    "start",
-    "end",
-    "total",
-    "status",
-    "attachment",
-  ];
 
+
+  displayedColumns: string[] = [
+  "employee",
+  "reason",
+  "createdDate",
+  "type",
+  "start",
+  "end",
+  "total",
+  "approvedDate",
+  "approvedBy",
+  "status",
+  "attachment",
+];
   constructor(
     private contactService: ContactApiService,
     private service: HrModuleService,
     private dialog: MatDialog,
     private sanitizer: DomSanitizer,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadLeaves();
@@ -83,117 +87,117 @@ export class LeavesComponent implements OnInit, AfterViewInit {
   }
 
   loadLeaves() {
-    
+
     this.service.getContactTeams().subscribe((teams: any[]) => {
 
-  const leaderNames: string[] = [];
+      const leaderNames: string[] = [];
 
-  teams.forEach((team) => {
-    team.members?.forEach((m: any) => {
-      if (m.contactID === team.leaderID) {
-        const name = m.contact?.name?.toLowerCase().trim();
-        if (name && !leaderNames.includes(name)) {
-          leaderNames.push(name);
-        }
-      }
-    });
-  });
-
-  this.service.getLeaves().subscribe((leaves: any[]) => {
-    this.contactService.get([]).subscribe((contacts: any[]) => {
-
-      this.originalData = leaves.map((leave) => {
-        const contact = contacts.find(
-          (c) =>
-            c.name?.toLowerCase().trim() ===
-            leave.employeeName?.toLowerCase().trim()
-        );
-
-        const empName = leave.employeeName?.toLowerCase().trim();
-
-        return {
-          id: leave.id,
-          employeeName: leave.employeeName,
-          reason: leave.reason,
-          // createdDate: leave.created, 
-          // createdDate: leave.created || leave.Created,
-          createdDate: leave.createdDate,
-          type: leave.applicationType,
-          start: new Date(leave.startDate),
-          end: new Date(leave.endDate),
-          total: leave.days,
-          statusFlag: leave.statusFlag,
-          attachmentUrl: leave.attachmentUrl || "",
-          photoUrl: contact?.photoUrl || "",
-          isTeamLeader: leaderNames.includes(empName), // ✅ ADD THIS
-        };
-      });
-
-      this.applyFilters();
-    });
-  });
-});
-  }
-
-
-
-  loadTeamLeaderLeaves() {
-  this.service.getContactTeams().subscribe((teams: any[]) => {
-    const leaderNames: string[] = [];
-
-    teams.forEach((team) => {
-      team.members?.forEach((m: any) => {
-        if (m.contactID === team.leaderID) {
-          const name = m.contact?.name?.toLowerCase().trim();
-          if (name && !leaderNames.includes(name)) {
-            leaderNames.push(name);
+      teams.forEach((team) => {
+        team.members?.forEach((m: any) => {
+          if (m.contactID === team.leaderID) {
+            const name = m.contact?.name?.toLowerCase().trim();
+            if (name && !leaderNames.includes(name)) {
+              leaderNames.push(name);
+            }
           }
-        }
+        });
       });
-    });
 
-    // ✅ FETCH CONTACTS ALSO (IMPORTANT)
-    this.contactService.get([]).subscribe((contacts: any[]) => {
       this.service.getLeaves().subscribe((leaves: any[]) => {
+        this.contactService.get([]).subscribe((contacts: any[]) => {
 
-        this.originalData = leaves
-          .filter((l: any) => {
-            const empName = l.employeeName?.toLowerCase().trim();
-            return leaderNames.some(
-              (name) => empName === name || empName?.includes(name)
-            );
-          })
-          .map((leave) => {
+          this.originalData = leaves.map((leave) => {
             const contact = contacts.find(
               (c) =>
                 c.name?.toLowerCase().trim() ===
                 leave.employeeName?.toLowerCase().trim()
             );
 
-           
+            const empName = leave.employeeName?.toLowerCase().trim();
 
             return {
-  id: leave.id,
-  employeeName: leave.employeeName,
-  reason: leave.reason,
-  
-  createdDate: leave.createdDate,
-  type: leave.applicationType,
-  start: new Date(leave.startDate),
-  end: new Date(leave.endDate),
-  total: leave.days,
-  statusFlag: leave.statusFlag,
-  attachmentUrl: leave.attachmentUrl || "",
-  photoUrl: contact?.photoUrl || "",
-  isTeamLeader: true,   // ✅ ADD THIS
-};
+              id: leave.id,
+              employeeName: leave.employeeName,
+              reason: leave.reason,
+              createdDate: leave.createdDate,
+              approvedDate: leave.actionDate,
+              approvedBy: leave.approvedBy,
+              type: leave.applicationType,
+              start: new Date(leave.startDate),
+              end: new Date(leave.endDate),
+              total: leave.days,
+              statusFlag: leave.statusFlag,
+              attachmentUrl: leave.attachmentUrl || "",
+              photoUrl: contact?.photoUrl || "",
+              isTeamLeader: leaderNames.includes(empName), // ✅ ADD THIS
+            };
           });
 
-        this.applyFilters();
+          this.applyFilters();
+        });
       });
     });
-  });
-}
+  }
+
+
+
+  loadTeamLeaderLeaves() {
+    this.service.getContactTeams().subscribe((teams: any[]) => {
+      const leaderNames: string[] = [];
+
+      teams.forEach((team) => {
+        team.members?.forEach((m: any) => {
+          if (m.contactID === team.leaderID) {
+            const name = m.contact?.name?.toLowerCase().trim();
+            if (name && !leaderNames.includes(name)) {
+              leaderNames.push(name);
+            }
+          }
+        });
+      });
+
+      // ✅ FETCH CONTACTS ALSO (IMPORTANT)
+      this.contactService.get([]).subscribe((contacts: any[]) => {
+        this.service.getLeaves().subscribe((leaves: any[]) => {
+
+          this.originalData = leaves
+            .filter((l: any) => {
+              const empName = l.employeeName?.toLowerCase().trim();
+              return leaderNames.some(
+                (name) => empName === name || empName?.includes(name)
+              );
+            })
+            .map((leave) => {
+              const contact = contacts.find(
+                (c) =>
+                  c.name?.toLowerCase().trim() ===
+                  leave.employeeName?.toLowerCase().trim()
+              );
+
+
+
+              return {
+                id: leave.id,
+                employeeName: leave.employeeName,
+                reason: leave.reason,
+
+                createdDate: leave.createdDate,
+                type: leave.applicationType,
+                start: new Date(leave.startDate),
+                end: new Date(leave.endDate),
+                total: leave.days,
+                statusFlag: leave.statusFlag,
+                attachmentUrl: leave.attachmentUrl || "",
+                photoUrl: contact?.photoUrl || "",
+                isTeamLeader: true,   // ✅ ADD THIS
+              };
+            });
+
+          this.applyFilters();
+        });
+      });
+    });
+  }
 
   mapLeave(x: any) {
     return {
@@ -228,41 +232,41 @@ export class LeavesComponent implements OnInit, AfterViewInit {
   }
 
 
-applyFilters() {
-  let data = [...this.originalData];
+  applyFilters() {
+    let data = [...this.originalData];
 
-  // 👤 Name filter
-  if (this.filters.employeeName) {
-    data = data.filter((x) =>
-      x.employeeName
-        ?.toLowerCase()
-        .includes(this.filters.employeeName.toLowerCase())
-    );
+    // 👤 Name filter
+    if (this.filters.employeeName) {
+      data = data.filter((x) =>
+        x.employeeName
+          ?.toLowerCase()
+          .includes(this.filters.employeeName.toLowerCase())
+      );
+    }
+
+    // 📅 Custom date filter
+    if (this.filters.startDate && this.filters.endDate) {
+      const from = new Date(this.filters.startDate);
+      const to = new Date(this.filters.endDate);
+
+      data = data.filter((x) => x.start >= from && x.start <= to);
+    }
+
+    // 📆 Month filter (🔥 START DATE BASED)
+    if (this.selectedMonthTab !== "none") {
+      const range = this.getMonthRange(this.selectedMonthTab);
+
+      data = data.filter((x) => {
+        const start = new Date(x.start);
+
+        start.setHours(0, 0, 0, 0);
+
+        return start >= range.start && start <= range.end;
+      });
+    }
+
+    this.dataSource.data = data;
   }
-
-  // 📅 Custom date filter
-  if (this.filters.startDate && this.filters.endDate) {
-    const from = new Date(this.filters.startDate);
-    const to = new Date(this.filters.endDate);
-
-    data = data.filter((x) => x.start >= from && x.start <= to);
-  }
-
-  // 📆 Month filter (🔥 START DATE BASED)
-  if (this.selectedMonthTab !== "none") {
-    const range = this.getMonthRange(this.selectedMonthTab);
-
-    data = data.filter((x) => {
-      const start = new Date(x.start);
-
-      start.setHours(0, 0, 0, 0);
-
-      return start >= range.start && start <= range.end;
-    });
-  }
-
-  this.dataSource.data = data;
-}
 
 
   updateStatus(row: any, status: "Approved" | "Rejected") {
@@ -344,39 +348,39 @@ applyFilters() {
   }
 
   openProfileModal(element: any) {
-  this.dialog.open(this.profileDialog, {
-    data: element,
-    panelClass: "profile-dialog",
-    backdropClass: "blur-backdrop"
-  });
-}
-
-
-getMonthRange(type: "previous" | "current" | "next") {
-  const now = new Date();
-
-  let start: Date;
-  let end: Date;
-
-  if (type === "current") {
-    start = new Date(now.getFullYear(), now.getMonth(), 1);
-    end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-  } 
-  else if (type === "previous") {
-    start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    end = new Date(now.getFullYear(), now.getMonth(), 0);
-  } 
-  else {
-    start = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-    end = new Date(now.getFullYear(), now.getMonth() + 2, 0);
+    this.dialog.open(this.profileDialog, {
+      data: element,
+      panelClass: "profile-dialog",
+      backdropClass: "blur-backdrop"
+    });
   }
 
-  // 🔥 NORMALIZE TIME (IMPORTANT)
-  start.setHours(0, 0, 0, 0);
-  end.setHours(23, 59, 59, 999);
 
-  return { start, end };
-}
+  getMonthRange(type: "previous" | "current" | "next") {
+    const now = new Date();
+
+    let start: Date;
+    let end: Date;
+
+    if (type === "current") {
+      start = new Date(now.getFullYear(), now.getMonth(), 1);
+      end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    }
+    else if (type === "previous") {
+      start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      end = new Date(now.getFullYear(), now.getMonth(), 0);
+    }
+    else {
+      start = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+      end = new Date(now.getFullYear(), now.getMonth() + 2, 0);
+    }
+
+    // 🔥 NORMALIZE TIME (IMPORTANT)
+    start.setHours(0, 0, 0, 0);
+    end.setHours(23, 59, 59, 999);
+
+    return { start, end };
+  }
 
 
 }
