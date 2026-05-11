@@ -89,6 +89,9 @@ public class Contact : BaseEntity
     public string? ARN { get; set; }
 
     [StringLength(255)]
+    public string? Card_No { get; set; }
+
+    [StringLength(255)]
     public string? PhotoFilename { get; set; }
 
     public string? PhotoUrl { get; set; }

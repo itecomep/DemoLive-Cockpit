@@ -171,7 +171,12 @@ public class AuthController : ControllerBase
             IsChangePassword = user.IsChangePassword,
             UserId = _contact.ID,
             AllowedModules = allowedModules,
-            IsOutsideIP = isOutsideIP ?? false
+            IsOutsideIP = isOutsideIP ?? false,
+
+            Contact = new
+            {
+                Card_No = _contact.Card_No
+            }
         };
 
 
