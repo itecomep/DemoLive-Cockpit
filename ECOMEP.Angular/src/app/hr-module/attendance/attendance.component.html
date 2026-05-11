@@ -1,25 +1,148 @@
 <div class="attendance-dashboard">
   <div class="top-header">
     <h2>Employee Attendance</h2>
-
-    <div class="month-selector">
-      <select [(ngModel)]="selectedMonth" (change)="onMonthChange()">
-        <option *ngFor="let month of months" [value]="month.id">
-          {{ month.name }}
-        </option>
-      </select>
-
-      <select [(ngModel)]="selectedYear" (change)="onYearChange()">
-        <option *ngFor="let year of years" [value]="year">
-          {{ year }}
-        </option>
-      </select>
-    </div>
   </div>
+
+
+  <div class="filter-bar">
+
+  <!-- All / Team Leaders -->
+  <label class="radio-option">
+    <input
+      type="radio"
+      name="attendanceType"
+      value="all"
+      [(ngModel)]="activeTab"
+      (change)="applyFilters()"
+    />
+    All
+  </label>
+
+  <label class="radio-option">
+    <input
+      type="radio"
+      name="attendanceType"
+      value="team"
+      [(ngModel)]="activeTab"
+      (change)="applyFilters()"
+    />
+    Team Leaders
+  </label>
+
+  <!-- Employee Search -->
+  <input
+    type="text"
+    class="search-box"
+    placeholder="Search Employee..."
+    [(ngModel)]="filters.employeeName"
+    (input)="applyFilters()"
+  />
+
+  <!-- Date Filters -->
+  <input
+    type="date"
+    [(ngModel)]="filters.startDate"
+    (change)="applyFilters()"
+  />
+
+  <input
+    type="date"
+    [(ngModel)]="filters.endDate"
+    (change)="applyFilters()"
+  />
+
+  <!-- Reset -->
+  <button class="reset-btn" (click)="resetFilters()">
+    Reset
+  </button>
+
+  <!-- Month Tabs -->
+  <div class="month-tabs">
+
+    <button
+      class="month-btn"
+      [class.active]="selectedMonthTab === 'previous'"
+      (click)="changeMonth('previous')"
+    >
+      Previous Month
+    </button>
+
+    <button
+      class="month-btn"
+      [class.active]="selectedMonthTab === 'current'"
+      (click)="changeMonth('current')"
+    >
+      Current Month
+    </button>
+
+    <button
+      class="month-btn"
+      [class.active]="selectedMonthTab === 'next'"
+      (click)="changeMonth('next')"
+    >
+      Next Month
+    </button>
+
+    <!-- Color Legend -->
+<div class="attendance-legend">
+
+  <div class="legend-item">
+    <span class="legend-color saturday-legend"></span>
+    <span>Saturday</span>
+  </div>
+
+  <div class="legend-item">
+    <span class="legend-color sunday-legend"></span>
+    <span>Sunday</span>
+  </div>
+
+  <div class="legend-item">
+    <span class="legend-color holiday-legend"></span>
+    <span>Holiday</span>
+  </div>
+
+</div>
+
+  </div>
+
+</div>
 
   <div class="employee-card" *ngFor="let user of attendanceData">
     <div class="card-header">
-      <h3>Employee: {{ user.name }} ({{ user.cardNo }})</h3>
+      <!-- <h3>Employee: {{ user.name }} ({{ user.cardNo }})</h3> -->
+       <!-- <h3>
+  Employee: {{ user.name }} ({{ user.cardNo }})
+
+  <span
+    *ngIf="user.isTeamLeader"
+    class="leader-star"
+  >
+    ★
+  </span>
+</h3> -->
+
+<h3 class="employee-title">
+
+  <span class="employee-label">
+    Employee:
+  </span>
+
+  <span class="employee-name">
+    {{ user.name }}
+  </span>
+
+  <span class="employee-cardno">
+    ({{ user.cardNo }})
+  </span>
+
+  <span
+    *ngIf="user.isTeamLeader"
+    class="leader-star"
+  >
+    ★
+  </span>
+
+</h3>
     </div>
 
     <div class="table-wrapper">
@@ -31,7 +154,7 @@
               {{ selectedYear }}
             </th>
 
-            <th
+            <!-- <th
               *ngFor="let d of days"
               [ngClass]="{
                 'sunday-column': isSunday(d),
@@ -39,11 +162,35 @@
               }"
             >
               {{ d }}
-            </th>
+            </th> -->
+
+
+            <th
+  *ngFor="let d of days"
+  [ngClass]="{
+    'holiday-column': isHoliday(d),
+    'sunday-column': !isHoliday(d) && isSunday(d),
+    'saturday-column': !isHoliday(d) && isSecondOrFourthSaturday(d)
+  }"
+>
+
+  <div class="date-header">
+
+    <span class="day-name">
+      {{ getDayName(d) }}
+    </span>
+
+    <span class="date-number">
+      {{ d }}
+    </span>
+
+  </div>
+
+</th>
           </tr>
         </thead>
 
-        <tbody>
+        <!-- <tbody>
           <tr>
             <td class="label-col">In</td>
 
@@ -85,7 +232,56 @@
               {{ day.total }}
             </td>
           </tr>
-        </tbody>
+        </tbody> -->
+
+        <tbody>
+
+  <tr>
+    <td class="label-col">In</td>
+
+    <td
+      *ngFor="let day of user.dailyDetails; let i = index"
+      [ngClass]="{
+        'holiday-column': isHoliday(i + 1),
+        'sunday-column': !isHoliday(i + 1) && isSunday(i + 1),
+        'saturday-column': !isHoliday(i + 1) && isSecondOrFourthSaturday(i + 1)
+      }"
+    >
+      {{ day.in }}
+    </td>
+  </tr>
+
+  <tr>
+    <td class="label-col">Out</td>
+
+    <td
+      *ngFor="let day of user.dailyDetails; let i = index"
+      [ngClass]="{
+        'holiday-column': isHoliday(i + 1),
+        'sunday-column': !isHoliday(i + 1) && isSunday(i + 1),
+        'saturday-column': !isHoliday(i + 1) && isSecondOrFourthSaturday(i + 1)
+      }"
+    >
+      {{ day.out }}
+    </td>
+  </tr>
+
+  <tr class="total-row">
+    <td class="label-col">Total Hours</td>
+
+    <td
+      *ngFor="let day of user.dailyDetails; let i = index"
+      [ngClass]="{
+        'holiday-column': isHoliday(i + 1),
+        'sunday-column': !isHoliday(i + 1) && isSunday(i + 1),
+        'saturday-column': !isHoliday(i + 1) && isSecondOrFourthSaturday(i + 1)
+      }"
+    >
+      {{ day.total }}
+    </td>
+  </tr>
+
+</tbody>
       </table>
     </div>
 
