@@ -13,12 +13,14 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ViewChild, TemplateRef } from '@angular/core';
-
+import { MatTabsModule } from '@angular/material/tabs';
+import { MyAttendanceComponent } from '../my-attendance/my-attendance.component';
 @Component({
   selector: "app-wfh-requests",
   standalone: true,
   imports: [CommonModule, MatTableModule, FormsModule, HeaderComponent,MatDialogModule,
-  MatIconModule],
+  MatIconModule,  MatTabsModule,
+  MyAttendanceComponent],
   templateUrl: "./wfh-requests.component.html",
   styleUrls: ["./wfh-requests.component.scss"],
 })
