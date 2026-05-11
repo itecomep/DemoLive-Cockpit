@@ -192,10 +192,6 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
     this.filteredRequests = data;
   }
 
-
-  // =========================
-  // FILTER LOGIC
-  // =========================
   applyFilters(monthRange?: { start: string; end: string }): void {
     this.filteredRequests = this.requests.filter((req) => {
       const reqStart = this.formatDate(req.startDate);
@@ -240,9 +236,6 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
     }
   }
 
-  // =========================
-  // DATE FORMAT
-  // =========================
   formatDate(date: any): string {
     if (!date) return "";
 
@@ -281,25 +274,26 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
               ) && req.userId !== this.currentUserId
             );
           });
-this.filteredRequests = filtered.map((req) => {
-  const contact = contacts.find(
-    (c) =>
-      c.name?.toLowerCase().trim() ===
-      (req.userName || "").toLowerCase().trim(),
-  );
 
-  return {
-    ...req,
-    employeeName: req.userName,
-    startDate: req.startDate || req.start || req.fromDate,
-    endDate: req.endDate || req.end || req.toDate,
-    status: (req.status || "pending").toLowerCase(),
-    attachments: Array.isArray(req.attachments)
-      ? req.attachments
-      : [],
-    photoUrl: contact?.photoUrl || "",
-  };
-});
+          this.filteredRequests = filtered.map((req) => {
+            const contact = contacts.find(
+              (c) =>
+                c.name?.toLowerCase().trim() ===
+                (req.userName || "").toLowerCase().trim(),
+            );
+
+            return {
+              ...req,
+              employeeName: req.userName,
+              startDate: req.startDate || req.start || req.fromDate,
+              endDate: req.endDate || req.end || req.toDate,
+              status: (req.status || "pending").toLowerCase(),
+              attachments: Array.isArray(req.attachments)
+                ? req.attachments
+                : [],
+              photoUrl: contact?.photoUrl || "",
+            };
+          });
 
           console.log("TEAM LEADERS WFH:", this.filteredRequests);
         });
@@ -307,9 +301,6 @@ this.filteredRequests = filtered.map((req) => {
     });
   }
 
-  // =========================
-  // UTILITY (existing kept)
-  // =========================
   getDays(start: Date, end: Date): number {
     if (!start || !end) return 0;
     const diff = new Date(end).getTime() - new Date(start).getTime();
@@ -542,4 +533,3 @@ this.filteredRequests = filtered.map((req) => {
     });
   }
 }
-//hiiiiiiiiii
