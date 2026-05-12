@@ -187,11 +187,46 @@
   background-color: #fff3b0;
 }
 
-// .holiday-legend {
-//   background-color: #e6e6fa;
-// }
+
 
 
 .holiday-legend {
   background-color: #e6e6fa;
+}
+
+.attendance-filters {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filter-dropdown {
+  min-width: 150px;
+  height: 38px;
+  padding: 0 12px;
+  border: 2px solid #c8e6c9;
+  border-radius: 8px;
+  background: #fff;
+  color: #1b5e20;
+  font-size: 14px;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+}
+
+.filter-dropdown:focus {
+  border-color: #2e7d32;
+}
+
+.employee-main-header {
+  margin: 20px 0;
+}
+
+.employee-main-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 24px;
+  font-weight: 700;
 }
