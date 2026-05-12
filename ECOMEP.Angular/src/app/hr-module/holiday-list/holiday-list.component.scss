@@ -1,0 +1,40 @@
+@import 'variables';
+@import 'theme';
+
+.holiday-list-wrapper {
+  padding: 20px;
+}
+
+.page-title {
+  color: #2e7d32;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 1px solid #dcdcdc;
+}
+
+thead {
+  background: #4caf50;
+  color: white;
+}
+
+th,
+td {
+  border: 1px solid #dcdcdc;
+  padding: 12px;
+  text-align: center;
+}
+
+tbody tr:nth-child(even) {
+  background: #f7f7f7;
+}
+
+tbody tr:hover {
+  background: #edf7ed;
+  transition: 0.2s;
+}
