@@ -8,11 +8,12 @@ import { AuthService } from "src/app/auth/services/auth.service";
 import { HttpClient, HttpClientModule } from "@angular/common/http";
 import { HolidayMasterService } from '../../leave/services/holiday-master-api.service';
 import { Holiday } from '../../leave/models/holiday.model';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: "app-my-attendance",
   standalone: true,
-  imports: [CommonModule, MatTabsModule, HeaderComponent, HttpClientModule],
+  imports: [CommonModule, MatTabsModule, HeaderComponent, HttpClientModule, FormsModule],
   templateUrl: "./my-attendance.component.html",
   styleUrls: ["./my-attendance.component.scss"],
 })
@@ -30,9 +31,28 @@ export class MyAttendanceComponent implements OnInit {
 
   selectedMonthTab: "none" | "current" | "previous" | "next" = "current";
 
-selectedMonth: number = new Date().getMonth() + 1;
 
-selectedYear: number = new Date().getFullYear();
+selectedMonth: number | null = null;
+
+
+selectedYear: number | null = null;
+
+months = [
+  { id: 1, name: 'January' },
+  { id: 2, name: 'February' },
+  { id: 3, name: 'March' },
+  { id: 4, name: 'April' },
+  { id: 5, name: 'May' },
+  { id: 6, name: 'June' },
+  { id: 7, name: 'July' },
+  { id: 8, name: 'August' },
+  { id: 9, name: 'September' },
+  { id: 10, name: 'October' },
+  { id: 11, name: 'November' },
+  { id: 12, name: 'December' }
+];
+
+years: number[] = [];
 
 holidays: string[] = [];
 changeMonth(type: "previous" | "current" | "next") {
@@ -65,43 +85,44 @@ changeMonth(type: "previous" | "current" | "next") {
 
 isSunday(day: number): boolean {
 
-  const date = new Date(
-    this.selectedYear,
-    this.selectedMonth - 1,
-    day
-  );
+ const date = new Date(
+  this.selectedYear || new Date().getFullYear(),
+  (this.selectedMonth || 1) - 1,
+  day
+);
 
   return date.getDay() === 0;
 }
+isSecondOrFourthSaturday(
+  day: number,
+  monthName?: string
+): boolean {
 
-isSecondOrFourthSaturday(day: number): boolean {
+  let date: Date;
 
-  const date = new Date(
-    this.selectedYear,
-    this.selectedMonth - 1,
-    day
-  );
+  if (monthName) {
+
+    date = new Date(`${monthName} ${day}`);
+
+  } else {
+
+    date = new Date(
+      this.selectedYear || new Date().getFullYear(),
+      (this.selectedMonth || 1) - 1,
+      day
+    );
+  }
 
   const isSaturday = date.getDay() === 6;
 
   const weekNumber = Math.ceil(day / 7);
 
-  return isSaturday && (weekNumber === 2 || weekNumber === 4);
+  return (
+    isSaturday &&
+    (weekNumber === 2 || weekNumber === 4)
+  );
 }
 
-// isHoliday(day: number): boolean {
-
-//   const month =
-//     String(this.selectedMonth).padStart(2, '0');
-
-//   const date =
-//     String(day).padStart(2, '0');
-
-//   const fullDate =
-//     `${this.selectedYear}-${month}-${date}`;
-
-//   return this.holidays.includes(fullDate);
-// }
 
 isHoliday(day: number, monthName: string): boolean {
 
@@ -121,24 +142,20 @@ isHoliday(day: number, monthName: string): boolean {
   return this.holidays.includes(fullDate);
 }
 
-getDayName(day: number): string {
 
-  const date = new Date(
-    this.selectedYear,
-    this.selectedMonth - 1,
-    day
-  );
+
+getDayName(day: number, monthName: string): string {
+
+  const date = new Date(`${monthName} ${day}`);
 
   return date.toLocaleDateString('en-US', {
     weekday: 'short'
   });
 }
 
-  // ngOnInit(): void {
-  //   this.loadAttendance();
-  // }
+ngOnInit(): void {
 
-  ngOnInit(): void {
+  this.generateYears();
 
   this.loadHolidays();
 
@@ -156,7 +173,7 @@ getDayName(day: number): string {
     if (!cardNo) {
       console.error("Card No not found");
       return;
-    }
+    } 
 
     this.http.get<any[]>("http://localhost:5054/api/Attendance").subscribe({
       next: (res: any[]) => {
@@ -169,22 +186,17 @@ getDayName(day: number): string {
 filteredData.forEach((x) => {
 
   const date = new Date(x.punchDate);
-  const currentMonth =
-  new Date().getMonth() + 1;
+  const matchesMonth =
+  this.selectedMonth
+    ? date.getMonth() + 1 === this.selectedMonth
+    : true;
 
-const currentYear =
-  new Date().getFullYear();
+const matchesYear =
+  this.selectedYear
+    ? date.getFullYear() === this.selectedYear
+    : true;
 
-// ✅ SHOW CURRENT + PREVIOUS MONTH
-const isCurrentMonth =
-  date.getMonth() + 1 === currentMonth &&
-  date.getFullYear() === currentYear;
-
-const isPreviousMonth =
-  date.getMonth() + 1 === currentMonth - 1 &&
-  date.getFullYear() === currentYear;
-
-if (!isCurrentMonth && !isPreviousMonth) {
+if (!matchesMonth || !matchesYear) {
   return;
 }
 
@@ -256,17 +268,66 @@ if (!isCurrentMonth && !isPreviousMonth) {
               },
             ),
 
-            summary: {
-              totalDays: records.length,
+         summary: (() => {
 
-              workingDays: records.length,
+  const year =
+    new Date(records[0].punchDate).getFullYear();
 
-              presentDays: records.length,
+  const month =
+    new Date(records[0].punchDate).getMonth();
 
-              cl: 0,
+  const totalMonthDays =
+    new Date(year, month + 1, 0).getDate();
 
-              absentDays: 0,
-            },
+  let holidayCount = 0;
+
+  for (let d = 1; d <= totalMonthDays; d++) {
+
+    const date = new Date(year, month, d);
+
+    const isSunday =
+      date.getDay() === 0;
+
+    const isSaturday =
+      date.getDay() === 6;
+
+    const weekNumber =
+      Math.ceil(d / 7);
+
+    const isSecondOrFourthSaturday =
+      isSaturday &&
+      (weekNumber === 2 || weekNumber === 4);
+
+    if (
+      isSunday ||
+      isSecondOrFourthSaturday
+    ) {
+      holidayCount++;
+    }
+  }
+
+  const presentDays = records.length;
+
+  const workingDays =
+    totalMonthDays - holidayCount;
+
+  const absentDays =
+    workingDays - presentDays;
+
+  return {
+    totalDays: totalMonthDays,
+
+    workingDays: workingDays,
+
+    presentDays: presentDays,
+
+    cl: 0,
+
+    absentDays:
+      absentDays > 0 ? absentDays : 0,
+  };
+
+})(),
           };
         });
 
@@ -307,5 +368,18 @@ if (!isCurrentMonth && !isPreviousMonth) {
 
   });
 
+}
+
+generateYears() {
+
+  const currentYear = new Date().getFullYear();
+
+  for (let i = currentYear - 5; i <= currentYear + 5; i++) {
+    this.years.push(i);
+  }
+
+}
+onFilterChange() {
+  this.loadAttendance();
 }
 }
