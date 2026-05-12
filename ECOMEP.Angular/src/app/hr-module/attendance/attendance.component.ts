@@ -22,31 +22,37 @@ export class AttendanceComponent implements OnInit {
 
   activeTab: "all" | "team" = "all";
 
-selectedMonthTab: "none" | "current" | "previous" | "next" = "none";
+  selectedMonthTab:
+    | "none"
+    | "current"
+    | "previous"
+    | "all" = "current";
 
-filters = {
+  
+
+
+
+  filters = {
   employeeName: "",
-  startDate: "",
-  endDate: "",
 };
 
-holidays: string[] = [
-  '2026-01-26',
-  '2026-05-01',
-  '2026-10-02'
-];
+  holidays: string[] = [
+    '2026-01-26',
+    '2026-05-01',
+    '2026-10-02'
+  ];
 
-isHoliday(day: number): boolean {
+  isHoliday(day: number): boolean {
 
-  const month = String(this.selectedMonth).padStart(2, '0');
+    const month = String(this.selectedMonth).padStart(2, '0');
 
-  const date = String(day).padStart(2, '0');
+    const date = String(day).padStart(2, '0');
 
-  const fullDate =
-    `${this.selectedYear}-${month}-${date}`;
+    const fullDate =
+      `${this.selectedYear}-${month}-${date}`;
 
-  return this.holidays.includes(fullDate);
-}
+    return this.holidays.includes(fullDate);
+  }
 
   months = [
     { id: 1, name: "January" },
@@ -65,11 +71,11 @@ isHoliday(day: number): boolean {
 
   years: number[] = [2024, 2025, 2026, 2027];
 
-  // constructor(private http: HttpClient) {}
+  
   constructor(
-  private http: HttpClient,
-  private service: HrModuleService
-) {}
+    private http: HttpClient,
+    private service: HrModuleService
+  ) { }
 
   ngOnInit(): void {
     this.updateDays();
@@ -86,197 +92,130 @@ isHoliday(day: number): boolean {
     this.days = Array.from({ length: totalDays }, (_, i) => i + 1);
   }
 
-onMonthChange() {
-  this.updateDays();
-  this.applyFilters();
-}
+  onMonthChange() {
+    this.updateDays();
+    this.applyFilters();
+  }
 
 
-
-  // loadAttendance() {
-  //   this.http.get<any[]>("http://localhost:5054/api/Attendance").subscribe({
-  //     next: (res) => {
-  //       this.originalData = res;
-
-  //       // this.processAttendanceData();
-  //       this.applyFilters();
-  //     },
-
-  //     error: (err) => {
-  //       console.error(err);
-  //     },
-  //   });
-  // }
 
   loadAttendance() {
 
-  this.service.getContactTeams().subscribe((teams: any[]) => {
+    this.service.getContactTeams().subscribe((teams: any[]) => {
 
-    const leaderNames: string[] = [];
+      const leaderNames: string[] = [];
 
-    teams.forEach((team) => {
+      teams.forEach((team) => {
 
-      team.members?.forEach((m: any) => {
+        team.members?.forEach((m: any) => {
 
-        if (m.contactID === team.leaderID) {
+          if (m.contactID === team.leaderID) {
 
-          const name =
-            m.contact?.name?.toLowerCase().trim();
+            const name =
+              m.contact?.name?.toLowerCase().trim();
 
-          if (name && !leaderNames.includes(name)) {
+            if (name && !leaderNames.includes(name)) {
 
-            leaderNames.push(name);
+              leaderNames.push(name);
+            }
           }
-        }
+        });
       });
+
+      this.http
+        .get<any[]>("http://localhost:5054/api/Attendance")
+        .subscribe({
+
+          next: (res) => {
+
+            this.originalData = res.map((x: any) => {
+
+              const empName =
+                x.employeeName?.toLowerCase().trim();
+
+              return {
+
+                ...x,
+
+                isTeamLeader:
+                  leaderNames.includes(empName),
+              };
+            });
+
+            console.log("Leader Names:", leaderNames);
+
+            console.log(
+              "Attendance Data:",
+              this.originalData
+            );
+
+            this.applyFilters();
+          },
+
+          error: (err) => {
+            console.error(err);
+          },
+        });
     });
-
-    this.http
-      .get<any[]>("http://localhost:5054/api/Attendance")
-      .subscribe({
-
-        next: (res) => {
-
-          this.originalData = res.map((x: any) => {
-
-            const empName =
-              x.employeeName?.toLowerCase().trim();
-
-            return {
-
-              ...x,
-
-              isTeamLeader:
-                leaderNames.includes(empName),
-            };
-          });
-
-          console.log("Leader Names:", leaderNames);
-
-          console.log(
-            "Attendance Data:",
-            this.originalData
-          );
-
-          this.applyFilters();
-        },
-
-        error: (err) => {
-          console.error(err);
-        },
-      });
-  });
-}
+  }
 
 
-//   applyFilters() {
-
-//   let filteredData = this.originalData.filter((item: any) => {
-
-//     if (!item.punchDate) {
-//       return false;
-//     }
-
-//     const date = new Date(item.punchDate);
-
-//     // Existing Month + Year Filter
-//     return (
-//       date.getMonth() + 1 == this.selectedMonth &&
-//       date.getFullYear() == this.selectedYear
-//     );
-//   });
-
-//   // 🔍 Employee Search
-//   if (this.filters.employeeName) {
-
-//     filteredData = filteredData.filter((x: any) =>
-//       x.employeeName
-//         ?.toLowerCase()
-//         .includes(this.filters.employeeName.toLowerCase())
-//     );
-//   }
-
-//   // 📅 Start + End Date Filter
-//   if (this.filters.startDate && this.filters.endDate) {
-
-//     const from = new Date(this.filters.startDate);
-//     const to = new Date(this.filters.endDate);
-
-//     filteredData = filteredData.filter((x: any) => {
-
-//       const punchDate = new Date(x.punchDate);
-
-//       return punchDate >= from && punchDate <= to;
-//     });
-//   }
-
-//   this.processAttendanceData(filteredData);
-// }
 
 applyFilters() {
 
-  let filteredData = this.originalData.filter((item: any) => {
+  let filteredData = [...this.originalData];
 
-    if (!item.punchDate) {
-      return false;
-    }
+  // ✅ MONTH FILTER
+  if (this.selectedMonthTab !== "all") {
 
-    const date = new Date(item.punchDate);
+    filteredData = filteredData.filter((item: any) => {
 
-    // ✅ Existing Month + Year Filter
-    return (
-      date.getMonth() + 1 == this.selectedMonth &&
-      date.getFullYear() == this.selectedYear
-    );
-  });
+      if (!item.punchDate) {
+        return false;
+      }
 
-  // 🔍 Employee Search
-  // if (this.filters.employeeName) {
+      const date = new Date(item.punchDate);
 
-  //   filteredData = filteredData.filter((x: any) =>
+      return (
+        date.getMonth() + 1 == this.selectedMonth &&
+        date.getFullYear() == this.selectedYear
+      );
+    });
+  }
 
-  //     x.employeeName
-  //       ?.toLowerCase()
-  //       .includes(
-  //         this.filters.employeeName.toLowerCase()
-  //       )
-  //   );
-  // }
-
+  // ✅ SEARCH FILTER
   if (this.filters.employeeName?.trim()) {
 
-  const searchText =
-    this.filters.employeeName
-      .toLowerCase()
-      .trim();
+    const searchText =
+      this.filters.employeeName
+        .toLowerCase()
+        .trim();
 
-  const isNumber =
-    !isNaN(Number(searchText));
+    const isNumber =
+      !isNaN(Number(searchText));
 
-  filteredData = filteredData.filter((x: any) => {
+    filteredData = filteredData.filter((x: any) => {
 
-    const employeeName =
-      x.employeeName
-        ?.toString()
-        .toLowerCase() || "";
+      const employeeName =
+        x.employeeName
+          ?.toString()
+          .toLowerCase() || "";
 
-    const cardNo =
-      x.cardNo
-        ?.toString()
-        .toLowerCase() || "";
+      const cardNo =
+        x.cardNo
+          ?.toString()
+          .toLowerCase() || "";
 
-    /* 🔢 Exact match for numbers */
-    if (isNumber) {
+      if (isNumber) {
 
-      return cardNo === searchText;
-    }
+        return cardNo === searchText;
+      }
 
-    /* 🔤 Partial match for names */
-    return employeeName.includes(searchText);
-  });
-}
+      return employeeName.includes(searchText);
+    });
+  }
 
-  // 👑 Team Leader Filter
+  // ✅ TEAM LEADER FILTER
   if (this.activeTab === "team") {
 
     filteredData = filteredData.filter(
@@ -284,54 +223,55 @@ applyFilters() {
     );
   }
 
-  // 📅 Start + End Date Filter
-  if (
-    this.filters.startDate &&
-    this.filters.endDate
-  ) {
-
-    const from = new Date(this.filters.startDate);
-
-    const to = new Date(this.filters.endDate);
-
-    // 🔥 Normalize Time
-    from.setHours(0, 0, 0, 0);
-
-    to.setHours(23, 59, 59, 999);
-
-    filteredData = filteredData.filter((x: any) => {
-
-      const punchDate = new Date(x.punchDate);
-
-      return (
-        punchDate >= from &&
-        punchDate <= to
-      );
-    });
-  }
-
   this.processAttendanceData(filteredData);
 }
 
-  processAttendanceData(filteredData: any[]) {
+processAttendanceData(filteredData: any[]) {
 
   const groupedEmployees: any = {};
 
   filteredData.forEach((item: any) => {
 
+    const punchDate = new Date(item.punchDate);
+
+    const month =
+      punchDate.toLocaleString('default', {
+        month: 'long'
+      });
+
+    const year = punchDate.getFullYear();
+
+    // ✅ UNIQUE KEY
     const employeeKey =
-      item.employeeId || item.cardNo || item.employeeName;
+      `${item.cardNo}-${month}-${year}`;
 
     if (!groupedEmployees[employeeKey]) {
+
+      const totalDays = new Date(
+        year,
+        punchDate.getMonth() + 1,
+        0
+      ).getDate();
 
       groupedEmployees[employeeKey] = {
 
         name: item.employeeName,
+
         cardNo: item.cardNo,
-          isTeamLeader: item.isTeamLeader,
+
+        monthName: `${month} ${year}`,
+
+        monthNumber: punchDate.getMonth() + 1,
+
+        year: year,
+
+        days: Array.from(
+          { length: totalDays },
+          (_, i) => i + 1
+        ),
 
         dailyDetails: Array.from(
-          { length: this.days.length },
+          { length: totalDays },
           () => ({
             in: "-",
             out: "-",
@@ -340,7 +280,7 @@ applyFilters() {
         ),
 
         summary: {
-          totalDays: this.days.length,
+          totalDays: totalDays,
           workingDays: 0,
           presentDays: 0,
           cl: 0,
@@ -349,71 +289,78 @@ applyFilters() {
       };
     }
 
-    const date = new Date(item.punchDate);
+    const day = punchDate.getDate();
 
-    const day = date.getDate();
+    groupedEmployees[employeeKey]
+      .dailyDetails[day - 1] = {
 
-    if (day <= this.days.length) {
-
-      groupedEmployees[employeeKey].dailyDetails[day - 1] = {
-
-        in: item.firstPunch
-          ? new Date(item.firstPunch).toLocaleTimeString([], {
+      in: item.firstPunch
+        ? new Date(item.firstPunch)
+            .toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit",
             })
-          : "-",
+        : "-",
 
-        out: item.lastPunch
-          ? new Date(item.lastPunch).toLocaleTimeString([], {
+      out: item.lastPunch
+        ? new Date(item.lastPunch)
+            .toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit",
             })
-          : "-",
+        : "-",
 
-        total: item.workingHours || "-",
-      };
+      total: item.workingHours || "-",
+    };
 
-      groupedEmployees[employeeKey].summary.presentDays++;
-    }
+    groupedEmployees[employeeKey]
+      .summary.presentDays++;
   });
 
-  this.attendanceData = Object.values(groupedEmployees);
+  this.attendanceData =
+    Object.values(groupedEmployees);
 
   this.attendanceData.forEach((emp: any) => {
 
-    emp.summary.workingDays = emp.summary.presentDays;
+    emp.summary.workingDays =
+      emp.summary.presentDays;
 
     emp.summary.absentDays =
-      emp.summary.totalDays - emp.summary.presentDays;
+      emp.summary.totalDays -
+      emp.summary.presentDays;
   });
 
-  console.log("Filtered Attendance:", this.attendanceData);
+  console.log(
+    "Processed Attendance:",
+    this.attendanceData
+  );
 }
 
 
-  resetFilters() {
+
+resetFilters() {
 
   this.filters = {
     employeeName: "",
-    startDate: "",
-    endDate: "",
   };
 
-  this.activeTab = "all";
+  this.selectedMonthTab = "current";
 
-  this.selectedMonthTab = "none";
+  this.selectedMonth =
+    new Date().getMonth() + 1;
 
-  this.selectedMonth = new Date().getMonth() + 1;
-
-  this.selectedYear = new Date().getFullYear();
+  this.selectedYear =
+    new Date().getFullYear();
 
   this.updateDays();
 
   this.applyFilters();
 }
 
-changeMonth(type: "previous" | "current" | "next") {
+
+
+
+  changeMonth(type: "previous" | "current" | "all") {
 
   this.selectedMonthTab = type;
 
@@ -433,22 +380,15 @@ changeMonth(type: "previous" | "current" | "next") {
     this.selectedYear = now.getFullYear();
   }
 
-  else {
-
-    this.selectedMonth = now.getMonth() + 2;
-
-    this.selectedYear = now.getFullYear();
-  }
-
   this.updateDays();
 
   this.applyFilters();
 }
 
   onYearChange() {
-  this.updateDays();
-  this.applyFilters();
-}
+    this.updateDays();
+    this.applyFilters();
+  }
 
   isSunday(day: number): boolean {
     const date = new Date(this.selectedYear, this.selectedMonth - 1, day);
@@ -468,16 +408,24 @@ changeMonth(type: "previous" | "current" | "next") {
 
   getDayName(day: number): string {
 
-  const date = new Date(
-    this.selectedYear,
-    this.selectedMonth - 1,
-    day
-  );
+    const date = new Date(
+      this.selectedYear,
+      this.selectedMonth - 1,
+      day
+    );
 
-  return date.toLocaleDateString('en-US', {
-    weekday: 'short'
-  });
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short'
+    });
+  }
+
+
+onMonthYearChange() {
+
+  this.selectedMonthTab = "none";
+
+  this.updateDays();
+
+  this.applyFilters();
 }
-
-  
 }
