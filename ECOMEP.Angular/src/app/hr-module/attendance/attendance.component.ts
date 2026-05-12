@@ -64,7 +64,7 @@ export class AttendanceComponent implements OnInit {
     private http: HttpClient,
     private service: HrModuleService,
     private holidayService: HolidayMasterService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.updateDays();
@@ -238,16 +238,16 @@ export class AttendanceComponent implements OnInit {
       groupedEmployees[employeeKey].dailyDetails[day - 1] = {
         in: item.firstPunch
           ? new Date(item.firstPunch).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
+            hour: "2-digit",
+            minute: "2-digit",
+          })
           : "-",
 
         out: item.lastPunch
           ? new Date(item.lastPunch).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
+            hour: "2-digit",
+            minute: "2-digit",
+          })
           : "-",
 
         total: item.workingHours || "-",
@@ -278,6 +278,7 @@ export class AttendanceComponent implements OnInit {
 
       let actualPresentDays = 0;
       let extraWorkingDays = 0;
+      let halfDays = 0;
 
       emp.dailyDetails.forEach((d: any, index: number) => {
         const day = index + 1;
@@ -290,17 +291,44 @@ export class AttendanceComponent implements OnInit {
         const isNonWorkingDay =
           isSunday || isHoliday || isSecondOrFourthSaturday;
 
-        if (!isNonWorkingDay && d.in !== "-") {
-          actualPresentDays++;
-        }
+        // if (!isNonWorkingDay && d.in !== "-") {
+        //   actualPresentDays++;
+        // }
 
-        if (isNonWorkingDay && d.in !== "-") {
-          extraWorkingDays++;
-        }
+        // if (isNonWorkingDay && d.in !== "-") {
+        //   extraWorkingDays++;
+        // }
+
+
+        if (!isNonWorkingDay && d.in !== "-") {
+
+  actualPresentDays++;
+
+  // HALF DAY COUNT
+  if (
+    d.total !== "-" &&
+    this.isHalfDay(d.total)
+  ) {
+
+    halfDays++;
+
+  }
+}
+
+if (isNonWorkingDay && d.in !== "-") {
+
+  extraWorkingDays++;
+
+}
       });
 
       emp.summary.presentDays = actualPresentDays;
       emp.summary.extraWorkingDays = extraWorkingDays;
+      emp.summary.paidDays =
+        actualPresentDays + extraWorkingDays;
+        emp.summary.halfDays = halfDays;
+
+
       emp.summary.absentDays = workingDays - actualPresentDays;
     });
   }
@@ -413,4 +441,26 @@ export class AttendanceComponent implements OnInit {
       console.log("Holiday Dates => ", this.holidays);
     });
   }
+
+
+
+
+  isHalfDay(totalHours: string): boolean {
+
+  if (!totalHours || totalHours === '-') {
+    return false;
+  }
+
+  const parts = totalHours.split(':');
+
+  const hours = Number(parts[0]);
+
+  const minutes = Number(parts[1]);
+
+  const totalMinutes =
+    (hours * 60) + minutes;
+
+  // 8 HOURS 30 MINUTES
+  return totalMinutes < 510;
+}
 }

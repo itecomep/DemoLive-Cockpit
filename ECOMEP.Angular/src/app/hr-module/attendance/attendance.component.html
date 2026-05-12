@@ -100,28 +100,30 @@
           <span>Sunday</span>
         </div>
 
-        <div class="legend-item">
+        <!-- <div class="legend-item">
           <span class="legend-color holiday-legend"></span>
           <span>Holiday</span>
-        </div>
+        </div> -->
+
+        <div class="legend-item">
+  <span class="legend-color holiday-legend"></span>
+  <span>Holiday</span>
+</div>
+
+<div class="legend-item">
+  <span class="legend-color halfday-legend-box">
+    H
+  </span>
+
+  <span>Half Day</span>
+</div>
       </div>
     </div>
   </div>
 
   <div class="employee-card" *ngFor="let user of attendanceData">
     <div class="card-header">
-      <!-- <h3>Employee: {{ user.name }} ({{ user.cardNo }})</h3> -->
-      <!-- <h3>
-  Employee: {{ user.name }} ({{ user.cardNo }})
-
-  <span
-    *ngIf="user.isTeamLeader"
-    class="leader-star"
-  >
-    ★
-  </span>
-</h3> -->
-
+    
       <h3 class="employee-title">
         <span class="employee-label"> Employee: </span>
 
@@ -229,6 +231,17 @@
               }"
             >
               {{ day.total }}
+
+
+               <span
+      *ngIf="
+        day.total !== '-' &&
+        isHalfDay(day.total)
+      "
+      class="half-day-mark"
+    >
+      H
+    </span>
             </td>
           </tr>
         </tbody>
@@ -252,9 +265,20 @@
       </div>
 
       <div class="summary-item">
-        <span>EW:</span>
+        <span>Extra Days:</span>
         {{ user.summary.extraWorkingDays }}
       </div>
+
+
+      <div class="summary-item">
+  <span>Paid Days:</span>
+  {{ user.summary.paidDays }}
+</div>
+
+<div class="summary-item">
+  <span>Half Days:</span>
+  {{ user.summary.halfDays || 0 }}
+</div>
 
       <div class="summary-item">
         <span>Absent Days:</span>

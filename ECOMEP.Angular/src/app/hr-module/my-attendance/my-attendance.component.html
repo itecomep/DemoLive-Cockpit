@@ -1,4 +1,4 @@
-  <div class="attendance-dashboard">
+<div class="attendance-dashboard">
 
   <!-- HEADER -->
   <div class="top-header">
@@ -11,36 +11,22 @@
     <div class="attendance-filters">
 
       <!-- MONTH -->
-      <select
-        [(ngModel)]="selectedMonth"
-        (change)="onFilterChange()"
-        class="filter-dropdown"
-      >
+      <select [(ngModel)]="selectedMonth" (change)="onFilterChange()" class="filter-dropdown">
 
         <option [ngValue]="null">All Months</option>
 
-        <option
-          *ngFor="let month of months"
-          [ngValue]="month.id"
-        >
+        <option *ngFor="let month of months" [ngValue]="month.id">
           {{ month.name }}
         </option>
 
       </select>
 
       <!-- YEAR -->
-      <select
-        [(ngModel)]="selectedYear"
-        (change)="onFilterChange()"
-        class="filter-dropdown"
-      >
+      <select [(ngModel)]="selectedYear" (change)="onFilterChange()" class="filter-dropdown">
 
         <option [ngValue]="null">All Years</option>
 
-        <option
-          *ngFor="let year of years"
-          [ngValue]="year"
-        >
+        <option *ngFor="let year of years" [ngValue]="year">
           {{ year }}
         </option>
 
@@ -66,15 +52,21 @@
         <span>Holiday</span>
       </div>
 
+
+      <div class="legend-item">
+  <span class="legend-color halfday-legend-box">
+    H
+  </span>
+
+  <span>Half Day</span>
+</div>
+
     </div>
 
   </div>
 
   <!-- EMPLOYEE NAME -->
-  <div
-    class="employee-main-header"
-    *ngIf="attendanceData.length > 0"
-  >
+  <div class="employee-main-header" *ngIf="attendanceData.length > 0">
 
     <h2 class="employee-main-title">
 
@@ -84,9 +76,9 @@
 
       <span class="employee-name">
         {{
-          attendanceData[0]?.employeeName ||
-          attendanceData[0]?.name ||
-          attendanceData[0]?.fullName
+        attendanceData[0]?.employeeName ||
+        attendanceData[0]?.name ||
+        attendanceData[0]?.fullName
         }}
       </span>
 
@@ -113,9 +105,7 @@
               {{ user.monthName }}
             </th>
 
-            <th
-              *ngFor="let d of user.days"
-              [ngClass]="{
+            <th *ngFor="let d of user.days" [ngClass]="{
 
                 'sunday-column':
                   getDayName(d, user.monthName) === 'Sun',
@@ -128,8 +118,7 @@
                   getDayName(d, user.monthName) !== 'Sun' &&
                   isHoliday(d, user.monthName)
 
-              }"
-            >
+              }">
 
               <div class="date-header">
 
@@ -156,9 +145,7 @@
 
             <td class="label-col">In</td>
 
-            <td
-              *ngFor="let day of user.dailyDetails; let i = index"
-              [ngClass]="{
+            <td *ngFor="let day of user.dailyDetails; let i = index" [ngClass]="{
 
                 'sunday-column':
                   getDayName(i + 1, user.monthName) === 'Sun',
@@ -171,8 +158,7 @@
                   getDayName(i + 1, user.monthName) !== 'Sun' &&
                   isHoliday(i + 1, user.monthName)
 
-              }"
-            >
+              }">
               {{ day.in || "-" }}
             </td>
 
@@ -183,9 +169,7 @@
 
             <td class="label-col">Out</td>
 
-            <td
-              *ngFor="let day of user.dailyDetails; let i = index"
-              [ngClass]="{
+            <td *ngFor="let day of user.dailyDetails; let i = index" [ngClass]="{
 
                 'sunday-column':
                   getDayName(i + 1, user.monthName) === 'Sun',
@@ -198,8 +182,7 @@
                   getDayName(i + 1, user.monthName) !== 'Sun' &&
                   isHoliday(i + 1, user.monthName)
 
-              }"
-            >
+              }">
               {{ day.out || "-" }}
             </td>
 
@@ -210,9 +193,7 @@
 
             <td class="label-col">Total Hours</td>
 
-            <td
-              *ngFor="let day of user.dailyDetails; let i = index"
-              [ngClass]="{
+            <td *ngFor="let day of user.dailyDetails; let i = index" [ngClass]="{
 
                 'sunday-column':
                   getDayName(i + 1, user.monthName) === 'Sun',
@@ -225,9 +206,16 @@
                   getDayName(i + 1, user.monthName) !== 'Sun' &&
                   isHoliday(i + 1, user.monthName)
 
-              }"
-            >
+              }">
               {{ day.total || "-" }}
+
+
+              <span *ngIf="
+               day.total !== '-' &&
+                isHalfDay(day.total)
+               " class="half-day-mark">
+                H
+              </span>
             </td>
 
           </tr>
@@ -256,15 +244,23 @@
         {{ user.summary?.presentDays || 0 }}
       </div>
 
-      <!-- <div class="summary-item">
-        <span>CL:</span>
-        {{ user.summary?.cl || 0 }}
-      </div> -->
+      <div class="summary-item">
+        <span>Extra Days:</span>
+        {{ user.summary?.extraDays || 0 }}
+      </div>
 
       <div class="summary-item">
-  <span>Extra Days:</span>
-  {{ user.summary?.extraDays || 0 }}
+        <span>Paid Days:</span>
+        {{ user.summary.paidDays }}
+      </div>
+
+
+
+      <div class="summary-item">
+  <span>Half Days:</span>
+  {{ user.summary.halfDays || 0 }}
 </div>
+
 
       <div class="summary-item">
         <span>Absent Days:</span>

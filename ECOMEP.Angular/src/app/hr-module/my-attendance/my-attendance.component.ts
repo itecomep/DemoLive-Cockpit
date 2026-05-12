@@ -280,143 +280,6 @@ if (!matchesMonth || !matchesYear) {
 
 
 
-// summary: (() => {
-
-//   const year =
-//     new Date(records[0].punchDate).getFullYear();
-
-//   const month =
-//     new Date(records[0].punchDate).getMonth();
-
-//   const totalMonthDays =
-//     new Date(year, month + 1, 0).getDate();
-
-//   let holidayCount = 0;
-
-//   let extraDays = 0;
-
-//   for (let d = 1; d <= totalMonthDays; d++) {
-
-//     const date = new Date(year, month, d);
-
-//     const isSunday =
-//       date.getDay() === 0;
-
-//     const isSaturday =
-//       date.getDay() === 6;
-
-//     const weekNumber =
-//       Math.ceil(d / 7);
-
-//     const isSecondOrFourthSaturday =
-//       isSaturday &&
-//       (weekNumber === 2 || weekNumber === 4);
-
-//     const fullDate =
-//       `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-
-//     const isApiHoliday =
-//       this.holidays.includes(fullDate);
-
-//     const isHolidayDay =
-//       isSunday ||
-//       isSecondOrFourthSaturday ||
-//       isApiHoliday;
-
-//     if (isHolidayDay) {
-
-//       holidayCount++;
-
-//       // CHECK IF EMPLOYEE WORKED
-//       const workedOnHoliday =
-//         records.some(
-//           (r: any) =>
-//             new Date(r.punchDate).getDate() === d
-//         );
-
-//       if (workedOnHoliday) {
-//         extraDays++;
-//       }
-//     }
-//   }
-
- 
-
-//   // PRESENT DAYS ONLY FOR WORKING DAYS
-// const uniquePresentDays = [
-//   ...new Set(
-//     records
-//       .filter((r: any) => {
-
-//         const date =
-//           new Date(r.punchDate);
-
-//         const day =
-//           date.getDate();
-
-//         const isSunday =
-//           date.getDay() === 0;
-
-//         const isSaturday =
-//           date.getDay() === 6;
-
-//         const weekNumber =
-//           Math.ceil(day / 7);
-
-//         const isSecondOrFourthSaturday =
-//           isSaturday &&
-//           (weekNumber === 2 || weekNumber === 4);
-
-//         const fullDate =
-//           `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-
-//         const isApiHoliday =
-//           this.holidays.includes(fullDate);
-
-//         // REMOVE HOLIDAY WORK FROM PRESENT DAYS
-//         return !(
-//           isSunday ||
-//           isSecondOrFourthSaturday ||
-//           isApiHoliday
-//         );
-
-//       })
-//       .map((r: any) =>
-//         new Date(r.punchDate).getDate()
-//       )
-//   )
-// ];
-
-// const presentDays =
-//   uniquePresentDays.length;
-
-//   const workingDays =
-//     totalMonthDays - holidayCount;
-
-//  // ABSENT ONLY FROM WORKING DAYS
-// const absentDays =
-//   workingDays - presentDays;
-
-//   return {
-
-//     totalDays: totalMonthDays,
-
-//     workingDays: workingDays,
-
-//     presentDays: presentDays,
-
-//     extraDays: extraDays,
-
-//     absentDays:
-//       absentDays > 0
-//         ? absentDays
-//         : 0,
-//   };
-
-// })(),
-
-
-
 
 summary: (() => {
 
@@ -433,6 +296,7 @@ summary: (() => {
   const holidayDates = new Set<number>();
 
   let extraDays = 0;
+  let halfDays = 0;
 
   // CHECK ALL DAYS
   for (let d = 1; d <= totalMonthDays; d++) {
@@ -483,26 +347,41 @@ summary: (() => {
     }
   }
 
-  // PRESENT ONLY FOR WORKING DAYS
-  const presentDays = [
-    ...new Set(
 
-      records
-        .filter((r: any) => {
 
-          const day =
-            new Date(r.punchDate).getDate();
+  const workingPresentDays = [
+  ...new Set(
 
-          // REMOVE HOLIDAYS
-          return !holidayDates.has(day);
+    records
+      .filter((r: any) => {
 
-        })
-        .map((r: any) =>
-          new Date(r.punchDate).getDate()
-        )
+        const day =
+          new Date(r.punchDate).getDate();
 
-    )
-  ].length;
+        // REMOVE HOLIDAYS
+        return !holidayDates.has(day);
+
+      })
+
+  )
+];
+
+workingPresentDays.forEach((r: any) => {
+
+  if (
+    r.workingHours &&
+    r.workingHours !== "-" &&
+    this.isHalfDay(r.workingHours)
+  ) {
+
+    halfDays++;
+
+  }
+
+});
+
+const presentDays =
+  workingPresentDays.length;
 
   // WORKING DAYS
   const workingDays =
@@ -521,6 +400,11 @@ summary: (() => {
     presentDays: presentDays,
 
     extraDays: extraDays,
+     halfDays: halfDays,
+
+     paidDays:
+    presentDays + extraDays,
+
 
     absentDays:
       absentDays > 0
@@ -616,5 +500,24 @@ generateYears() {
 }
 onFilterChange() {
   this.loadAttendance();
+}
+
+isHalfDay(totalHours: string): boolean {
+
+  if (!totalHours || totalHours === '-') {
+    return false;
+  }
+
+  const parts = totalHours.split(':');
+
+  const hours = Number(parts[0]);
+
+  const minutes = Number(parts[1]);
+
+  const totalMinutes =
+    (hours * 60) + minutes;
+
+  // LESS THAN 8:30
+  return totalMinutes < 510;
 }
 }
