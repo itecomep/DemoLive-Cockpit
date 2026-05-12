@@ -22,12 +22,10 @@ export class AttendanceComponent implements OnInit {
 
   activeTab: "all" | "team" = "all";
 
-  selectedMonthTab: "none" | "current" | "previous" | "next" = "none";
+  selectedMonthTab: "none" | "current" | "previous" | "all" = "current";
 
   filters = {
     employeeName: "",
-    startDate: "",
-    endDate: "",
   };
 
   holidays: string[] = ["2026-01-26", "2026-05-01", "2026-10-02"];
@@ -128,19 +126,23 @@ export class AttendanceComponent implements OnInit {
   }
 
   applyFilters() {
-    let filteredData = this.originalData.filter((item: any) => {
-      if (!item.punchDate) {
-        return false;
-      }
+    let filteredData = [...this.originalData];
 
-      const date = new Date(item.punchDate);
+    // ✅ MONTH FILTER
+    if (this.selectedMonthTab !== "all") {
+      filteredData = filteredData.filter((item: any) => {
+        if (!item.punchDate) {
+          return false;
+        }
 
-      // ✅ Existing Month + Year Filter
-      return (
-        date.getMonth() + 1 == this.selectedMonth &&
-        date.getFullYear() == this.selectedYear
-      );
-    });
+        const date = new Date(item.punchDate);
+
+        return (
+          date.getMonth() + 1 == this.selectedMonth &&
+          date.getFullYear() == this.selectedYear
+        );
+      });
+    }
 
     if (this.filters.employeeName?.trim()) {
       const searchText = this.filters.employeeName.toLowerCase().trim();
@@ -166,104 +168,129 @@ export class AttendanceComponent implements OnInit {
     if (this.activeTab === "team") {
       filteredData = filteredData.filter((x: any) => x.isTeamLeader === true);
     }
-
-    // 📅 Start + End Date Filter
-    if (this.filters.startDate && this.filters.endDate) {
-      const from = new Date(this.filters.startDate);
-
-      const to = new Date(this.filters.endDate);
-
-      // 🔥 Normalize Time
-      from.setHours(0, 0, 0, 0);
-
-      to.setHours(23, 59, 59, 999);
-
-      filteredData = filteredData.filter((x: any) => {
-        const punchDate = new Date(x.punchDate);
-
-        return punchDate >= from && punchDate <= to;
-      });
-    }
-
     this.processAttendanceData(filteredData);
   }
 
-  processAttendanceData(filteredData: any[]) {
-    const groupedEmployees: any = {};
+processAttendanceData(filteredData: any[]) {
 
-    filteredData.forEach((item: any) => {
-      const employeeKey = item.employeeId || item.cardNo || item.employeeName;
+  const groupedEmployees: any = {};
 
-      if (!groupedEmployees[employeeKey]) {
-        groupedEmployees[employeeKey] = {
-          name: item.employeeName,
-          cardNo: item.cardNo,
-          isTeamLeader: item.isTeamLeader,
+  filteredData.forEach((item: any) => {
 
-          dailyDetails: Array.from({ length: this.days.length }, () => ({
+    const punchDate = new Date(item.punchDate);
+
+    const month =
+      punchDate.toLocaleString('default', {
+        month: 'long'
+      });
+
+    const year = punchDate.getFullYear();
+
+    // ✅ UNIQUE KEY FOR EACH MONTH
+    const employeeKey =
+      `${item.cardNo}-${month}-${year}`;
+
+    if (!groupedEmployees[employeeKey]) {
+
+      const totalDays = new Date(
+        year,
+        punchDate.getMonth() + 1,
+        0
+      ).getDate();
+
+      groupedEmployees[employeeKey] = {
+
+        name: item.employeeName,
+
+        cardNo: item.cardNo,
+
+        isTeamLeader: item.isTeamLeader,
+
+        monthName: `${month} ${year}`,
+
+        monthNumber: punchDate.getMonth() + 1,
+
+        year: year,
+
+        days: Array.from(
+          { length: totalDays },
+          (_, i) => i + 1
+        ),
+
+        dailyDetails: Array.from(
+          { length: totalDays },
+          () => ({
             in: "-",
             out: "-",
             total: "-",
-          })),
+          })
+        ),
 
-          summary: {
-            totalDays: this.days.length,
-            workingDays: 0,
-            presentDays: 0,
-            cl: 0,
-            absentDays: 0,
-          },
-        };
-      }
+        summary: {
+          totalDays: totalDays,
+          workingDays: 0,
+          presentDays: 0,
+          cl: 0,
+          absentDays: 0,
+        },
+      };
+    }
 
-      const date = new Date(item.punchDate);
+    const day = punchDate.getDate();
 
-      const day = date.getDate();
+    groupedEmployees[employeeKey]
+      .dailyDetails[day - 1] = {
 
-      if (day <= this.days.length) {
-        groupedEmployees[employeeKey].dailyDetails[day - 1] = {
-          in: item.firstPunch
-            ? new Date(item.firstPunch).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })
-            : "-",
+      in: item.firstPunch
+        ? new Date(item.firstPunch)
+            .toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+        : "-",
 
-          out: item.lastPunch
-            ? new Date(item.lastPunch).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })
-            : "-",
+      out: item.lastPunch
+        ? new Date(item.lastPunch)
+            .toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+        : "-",
 
-          total: item.workingHours || "-",
-        };
+      total: item.workingHours || "-",
+    };
 
-        groupedEmployees[employeeKey].summary.presentDays++;
-      }
-    });
+    groupedEmployees[employeeKey]
+      .summary.presentDays++;
+  });
 
-    this.attendanceData = Object.values(groupedEmployees);
+  this.attendanceData =
+    Object.values(groupedEmployees);
 
-    this.attendanceData.forEach((emp: any) => {
-      emp.summary.workingDays = emp.summary.presentDays;
+  this.attendanceData.forEach((emp: any) => {
 
-      emp.summary.absentDays = emp.summary.totalDays - emp.summary.presentDays;
-    });
+    emp.summary.workingDays =
+      emp.summary.presentDays;
 
-    console.log("Filtered Attendance:", this.attendanceData);
-  }
+    emp.summary.absentDays =
+      emp.summary.totalDays -
+      emp.summary.presentDays;
+  });
+
+  console.log(
+    "Processed Attendance:",
+    this.attendanceData
+  );
+}
 
   resetFilters() {
     this.filters = {
       employeeName: "",
-      startDate: "",
-      endDate: "",
     };
 
     this.activeTab = "all";
 
-    this.selectedMonthTab = "none";
+    this.selectedMonthTab = "current";
 
     this.selectedMonth = new Date().getMonth() + 1;
 
@@ -274,7 +301,7 @@ export class AttendanceComponent implements OnInit {
     this.applyFilters();
   }
 
-  changeMonth(type: "previous" | "current" | "next") {
+  changeMonth(type: "previous" | "current" | "all") {
     this.selectedMonthTab = type;
 
     const now = new Date();
@@ -285,10 +312,6 @@ export class AttendanceComponent implements OnInit {
       this.selectedYear = now.getFullYear();
     } else if (type === "current") {
       this.selectedMonth = now.getMonth() + 1;
-
-      this.selectedYear = now.getFullYear();
-    } else {
-      this.selectedMonth = now.getMonth() + 2;
 
       this.selectedYear = now.getFullYear();
     }
@@ -325,5 +348,13 @@ export class AttendanceComponent implements OnInit {
     return date.toLocaleDateString("en-US", {
       weekday: "short",
     });
+  }
+
+  onMonthYearChange() {
+    this.selectedMonthTab = "none";
+
+    this.updateDays();
+
+    this.applyFilters();
   }
 }
