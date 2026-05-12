@@ -1,213 +1,71 @@
 <div class="attendance-dashboard">
-
-  <!-- HEADER -->
-  <div class="top-header">
-    <h2>Employee Attendance</h2>
-  </div>
-
-  <!-- FILTER BAR -->
-  <div class="filter-bar">
-
-<!--    
-    <input
-      type="text"
-      class="search-box"
-      placeholder="Search Employee..."
-    />
-
-   
-    <input type="date" />
-
-    <input type="date" />
-
-    
-    <button class="reset-btn">
-      Reset
-    </button>
-
-    
-    <div class="month-tabs">
-
-      <button
-        class="month-btn"
-        [class.active]="selectedMonthTab === 'previous'"
-        (click)="changeMonth('previous')"
-      >
-        Previous Month
-      </button>
-
-      <button
-        class="month-btn"
-        [class.active]="selectedMonthTab === 'current'"
-        (click)="changeMonth('current')"
-      >
-        Current Month
-      </button>
-
-      <button
-        class="month-btn"
-        [class.active]="selectedMonthTab === 'next'"
-        (click)="changeMonth('next')"
-      >
-        Next Month
-      </button> -->
-
-     
-      <div class="attendance-legend">
-
-        <div class="legend-item">
-          <span class="legend-color saturday-legend"></span>
-          <span>Saturday</span>
-        </div>
-
-        <div class="legend-item">
-          <span class="legend-color sunday-legend"></span>
-          <span>Sunday</span>
-        </div>
-
-        <div class="legend-item">
-          <span class="legend-color holiday-legend"></span>
-          <span>Holiday</span>
-        </div>
-
-      <!-- </div> -->
-
-    <!-- </div> -->
-
-  </div>
+  <h2>My Attendance</h2>
 
   <!-- NO DATA -->
   <div *ngIf="attendanceData.length === 0" class="no-data">
     No attendance data found.
   </div>
 
-  <!-- EMPLOYEE CARD -->
+  <!-- ATTENDANCE CARD -->
   <div class="employee-card" *ngFor="let user of attendanceData">
-
-    <div class="card-header">
-
-      <h3 class="employee-title">
-
-        <span class="employee-label">
-          Employee:
-        </span>
-
-        <span class="employee-name">
-          {{ user.employeeName || user.name || user.fullName }}
-        </span>
-
-        <span class="employee-cardno">
-          ({{ user.cardNo }})
-        </span>
-
+    <div class="card-header" *ngIf="attendanceData.indexOf(user) === 0">
+      <h3>
+        Employee:
+        {{ user.employeeName || user.name || user.fullName }}
+        &nbsp; | &nbsp; Card No:
+        {{ user.cardNo }}
       </h3>
-
     </div>
 
     <div class="table-wrapper">
-
       <table class="attendance-table">
-
         <thead>
-
           <tr>
-
+            <!-- MONTH -->
             <th class="label-col">
               {{ user.monthName }}
             </th>
 
-            <th
-              *ngFor="let d of user.days"
-              [ngClass]="{
-                'holiday-column': isHoliday(d),
-                'sunday-column': !isHoliday(d) && isSunday(d),
-                'saturday-column': !isHoliday(d) && isSecondOrFourthSaturday(d)
-              }"
-            >
-
-              <div class="date-header">
-
-                <span class="day-name">
-                  {{ getDayName(d) }}
-                </span>
-
-                <span class="date-number">
-                  {{ d }}
-                </span>
-
-              </div>
-
+            <!-- DAYS -->
+            <th *ngFor="let d of user.days">
+              {{ d }}
             </th>
-
           </tr>
-
         </thead>
 
         <tbody>
-
           <!-- IN -->
           <tr>
-
             <td class="label-col">In</td>
 
-            <td
-              *ngFor="let day of user.dailyDetails; let i = index"
-              [ngClass]="{
-                'holiday-column': isHoliday(i + 1),
-                'sunday-column': !isHoliday(i + 1) && isSunday(i + 1),
-                'saturday-column': !isHoliday(i + 1) && isSecondOrFourthSaturday(i + 1)
-              }"
-            >
+            <td *ngFor="let day of user.dailyDetails">
               {{ day.in || "-" }}
             </td>
-
           </tr>
 
           <!-- OUT -->
           <tr>
-
             <td class="label-col">Out</td>
 
-            <td
-              *ngFor="let day of user.dailyDetails; let i = index"
-              [ngClass]="{
-                'holiday-column': isHoliday(i + 1),
-                'sunday-column': !isHoliday(i + 1) && isSunday(i + 1),
-                'saturday-column': !isHoliday(i + 1) && isSecondOrFourthSaturday(i + 1)
-              }"
-            >
+            <td *ngFor="let day of user.dailyDetails">
               {{ day.out || "-" }}
             </td>
-
           </tr>
 
           <!-- TOTAL -->
           <tr class="total-row">
-
             <td class="label-col">Total Hours</td>
 
-            <td
-              *ngFor="let day of user.dailyDetails; let i = index"
-              [ngClass]="{
-                'holiday-column': isHoliday(i + 1),
-                'sunday-column': !isHoliday(i + 1) && isSunday(i + 1),
-                'saturday-column': !isHoliday(i + 1) && isSecondOrFourthSaturday(i + 1)
-              }"
-            >
+            <td *ngFor="let day of user.dailyDetails">
               {{ day.total || "-" }}
             </td>
-
           </tr>
-
         </tbody>
-
       </table>
-
     </div>
 
     <!-- SUMMARY -->
     <div class="card-footer">
-
       <div class="summary-item">
         <span>Total Days:</span>
         {{ user.summary?.totalDays || 0 }}
@@ -232,9 +90,6 @@
         <span>Absent Days:</span>
         {{ user.summary?.absentDays || 0 }}
       </div>
-
     </div>
-
   </div>
-
 </div>

@@ -1,70 +1,11 @@
-.attendance-dashboard {
+.attendance-container {
   padding: 20px;
   background: #f6fbf7;
 }
 
-.top-header h2 {
+h2 {
   color: #1b5e20;
   margin-bottom: 15px;
-}
-
-.filter-bar {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: center;
-  margin-bottom: 18px;
-}
-
-.search-box {
-  width: 180px;
-  height: 30px;
-  padding: 8px 10px;
-  border: 2px solid #c8e6c9;
-  border-radius: 6px;
-  font-size: 14px;
-}
-
-.filter-bar input[type="date"] {
-  width: 150px;
-  height: 30px;
-  padding: 8px 10px;
-  border: 2px solid #c8e6c9;
-  border-radius: 6px;
-}
-
-.reset-btn {
-  background: #2e7d32;
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.reset-btn:hover {
-  background: #1b5e20;
-}
-
-.month-tabs {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.month-btn {
-  background: #e8f5e9;
-  color: #1b5e20;
-  border: 1px solid #a5d6a7;
-  padding: 8px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.month-btn.active {
-  background: #2e7d32;
-  color: #fff;
 }
 
 .table-wrapper {
@@ -88,105 +29,55 @@
 }
 
 .attendance-table thead th {
-  background: #2e7d32 !important;
-  color: #fff !important;
+  background: #2e7d32;
+  color: #fff;
   font-weight: 600;
 }
 
-.employee-title {
+.fixed-col {
+  position: sticky;
+  left: 0;
+  background: #e8f5e9;
+  font-weight: bold;
+  z-index: 2;
+}
+
+.row-label {
+  background: #e8f5e9;
+}
+
+input {
+  width: 25px;
+  height: 20px;
+  border: none;
+  text-align: center;
+  font-size: 11px;
+}
+
+.summary {
+  margin-top: 15px;
   display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 18px;
-  margin: 15px 0;
-}
-
-.employee-label {
-  color: #2e7d32;
-  font-weight: 700;
-}
-
-.employee-name {
-  color: #000;
-  font-weight: 700;
-}
-
-.employee-cardno {
-  color: #444;
+  gap: 20px;
+  flex-wrap: wrap;
   font-weight: 600;
+  color: #1b5e20;
 }
 
 .card-footer {
   display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  flex-wrap: wrap;
-  padding: 12px 0;
+  flex-direction: row;
+  justify-content: space-between; /* or flex-start */
+  align-items: center;
+  gap: 20px; /* spacing between items */
+  flex-wrap: wrap; /* allows wrapping on small screens */
 }
 
 .summary-item {
   display: flex;
   gap: 6px;
   white-space: nowrap;
-  color: #2f2f2f;
-  font-weight: 600;
-  font-size: 14px;
 }
 
-/* HOLIDAY */
-.attendance-table tbody td.holiday-column {
-  background-color: #e6e6fa !important;
-  color: #5e548e;
-  font-weight: 600;
-}
 
-/* SATURDAY */
-.attendance-table tbody td.saturday-column {
-  background-color: #ffd6e7 !important;
-  color: #c2185b;
-  font-weight: 600;
-}
 
-/* SUNDAY */
-.attendance-table tbody td.sunday-column {
-  background-color: #fff3b0 !important;
-  color: #8a6d00;
-  font-weight: 600;
-}
 
-/* LEGEND */
-.attendance-legend {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-left: 10px;
-  flex-wrap: wrap;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #1b5e20;
-}
-
-.legend-color {
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
-
-.saturday-legend {
-  background-color: #ffd6e7;
-}
-
-.sunday-legend {
-  background-color: #fff3b0;
-}
-
-.holiday-legend {
-  background-color: #e6e6fa;
-}

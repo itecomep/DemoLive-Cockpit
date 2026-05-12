@@ -24,99 +24,6 @@ export class MyAttendanceComponent implements OnInit {
     private http: HttpClient,
   ) {}
 
-  selectedMonthTab: "none" | "current" | "previous" | "next" = "current";
-
-selectedMonth: number = new Date().getMonth() + 1;
-
-selectedYear: number = new Date().getFullYear();
-
-holidays: string[] = [
-  '2026-01-26',
-  '2026-05-01',
-  '2026-10-02'
-];
-
-changeMonth(type: "previous" | "current" | "next") {
-
-  this.selectedMonthTab = type;
-
-  const now = new Date();
-
-  if (type === "previous") {
-
-    this.selectedMonth = now.getMonth();
-
-    this.selectedYear = now.getFullYear();
-
-  } else if (type === "current") {
-
-    this.selectedMonth = now.getMonth() + 1;
-
-    this.selectedYear = now.getFullYear();
-
-  } else {
-
-    this.selectedMonth = now.getMonth() + 2;
-
-    this.selectedYear = now.getFullYear();
-  }
-
-  this.loadAttendance();
-}
-
-isSunday(day: number): boolean {
-
-  const date = new Date(
-    this.selectedYear,
-    this.selectedMonth - 1,
-    day
-  );
-
-  return date.getDay() === 0;
-}
-
-isSecondOrFourthSaturday(day: number): boolean {
-
-  const date = new Date(
-    this.selectedYear,
-    this.selectedMonth - 1,
-    day
-  );
-
-  const isSaturday = date.getDay() === 6;
-
-  const weekNumber = Math.ceil(day / 7);
-
-  return isSaturday && (weekNumber === 2 || weekNumber === 4);
-}
-
-isHoliday(day: number): boolean {
-
-  const month =
-    String(this.selectedMonth).padStart(2, '0');
-
-  const date =
-    String(day).padStart(2, '0');
-
-  const fullDate =
-    `${this.selectedYear}-${month}-${date}`;
-
-  return this.holidays.includes(fullDate);
-}
-
-getDayName(day: number): string {
-
-  const date = new Date(
-    this.selectedYear,
-    this.selectedMonth - 1,
-    day
-  );
-
-  return date.toLocaleDateString('en-US', {
-    weekday: 'short'
-  });
-}
-
   ngOnInit(): void {
     this.loadAttendance();
   }
@@ -139,41 +46,24 @@ getDayName(day: number): string {
 
         // FILTER CURRENT USER
         const filteredData = res.filter((x) => x.cardNo == cardNo);
+
+        // GROUP BY MONTH
         const groupedByMonth: any = {};
 
-filteredData.forEach((x) => {
+        filteredData.forEach((x) => {
+          const date = new Date(x.punchDate);
 
-  const date = new Date(x.punchDate);
-  const currentMonth =
-  new Date().getMonth() + 1;
+          const monthKey = date.toLocaleString("default", {
+            month: "long",
+            year: "numeric",
+          });
 
-const currentYear =
-  new Date().getFullYear();
+          if (!groupedByMonth[monthKey]) {
+            groupedByMonth[monthKey] = [];
+          }
 
-// ✅ SHOW CURRENT + PREVIOUS MONTH
-const isCurrentMonth =
-  date.getMonth() + 1 === currentMonth &&
-  date.getFullYear() === currentYear;
-
-const isPreviousMonth =
-  date.getMonth() + 1 === currentMonth - 1 &&
-  date.getFullYear() === currentYear;
-
-if (!isCurrentMonth && !isPreviousMonth) {
-  return;
-}
-
-  const monthKey = date.toLocaleString("default", {
-    month: "long",
-    year: "numeric",
-  });
-
-  if (!groupedByMonth[monthKey]) {
-    groupedByMonth[monthKey] = [];
-  }
-
-  groupedByMonth[monthKey].push(x);
-});
+          groupedByMonth[monthKey].push(x);
+        });
 
         // CONVERT FOR UI
         this.attendanceData = Object.keys(groupedByMonth).map((month) => {
