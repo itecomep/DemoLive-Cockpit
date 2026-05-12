@@ -144,16 +144,20 @@
             </th>
 
             <th
-              *ngFor="let d of days"
+              *ngFor="let d of user.days"
               [ngClass]="{
-                'holiday-column': isHoliday(d),
-                'sunday-column': !isHoliday(d) && isSunday(d),
-                'saturday-column': !isHoliday(d) && isSecondOrFourthSaturday(d),
+                'holiday-column': isHoliday(d, user.monthNumber, user.year),
+                'sunday-column':
+                  !isHoliday(d, user.monthNumber, user.year) &&
+                  isSunday(d, user.monthNumber, user.year),
+                'saturday-column':
+                  !isHoliday(d, user.monthNumber, user.year) &&
+                  isSecondOrFourthSaturday(d, user.monthNumber, user.year),
               }"
             >
               <div class="date-header">
                 <span class="day-name">
-                  {{ getDayName(d) }}
+                  {{ getDayName(d, user.monthNumber, user.year) }}
                 </span>
 
                 <span class="date-number">
@@ -171,10 +175,15 @@
             <td
               *ngFor="let day of user.dailyDetails; let i = index"
               [ngClass]="{
-                'holiday-column': isHoliday(i + 1),
-                'sunday-column': !isHoliday(i + 1) && isSunday(i + 1),
+                'holiday-column': isHoliday(i + 1, user.monthNumber, user.year),
+
+                'sunday-column':
+                  !isHoliday(i + 1, user.monthNumber, user.year) &&
+                  isSunday(i + 1, user.monthNumber, user.year),
+
                 'saturday-column':
-                  !isHoliday(i + 1) && isSecondOrFourthSaturday(i + 1),
+                  !isHoliday(i + 1, user.monthNumber, user.year) &&
+                  isSecondOrFourthSaturday(i + 1, user.monthNumber, user.year),
               }"
             >
               {{ day.in }}
@@ -187,10 +196,15 @@
             <td
               *ngFor="let day of user.dailyDetails; let i = index"
               [ngClass]="{
-                'holiday-column': isHoliday(i + 1),
-                'sunday-column': !isHoliday(i + 1) && isSunday(i + 1),
+                'holiday-column': isHoliday(i + 1, user.monthNumber, user.year),
+
+                'sunday-column':
+                  !isHoliday(i + 1, user.monthNumber, user.year) &&
+                  isSunday(i + 1, user.monthNumber, user.year),
+
                 'saturday-column':
-                  !isHoliday(i + 1) && isSecondOrFourthSaturday(i + 1),
+                  !isHoliday(i + 1, user.monthNumber, user.year) &&
+                  isSecondOrFourthSaturday(i + 1, user.monthNumber, user.year),
               }"
             >
               {{ day.out }}
@@ -203,10 +217,15 @@
             <td
               *ngFor="let day of user.dailyDetails; let i = index"
               [ngClass]="{
-                'holiday-column': isHoliday(i + 1),
-                'sunday-column': !isHoliday(i + 1) && isSunday(i + 1),
+                'holiday-column': isHoliday(i + 1, user.monthNumber, user.year),
+
+                'sunday-column':
+                  !isHoliday(i + 1, user.monthNumber, user.year) &&
+                  isSunday(i + 1, user.monthNumber, user.year),
+
                 'saturday-column':
-                  !isHoliday(i + 1) && isSecondOrFourthSaturday(i + 1),
+                  !isHoliday(i + 1, user.monthNumber, user.year) &&
+                  isSecondOrFourthSaturday(i + 1, user.monthNumber, user.year),
               }"
             >
               {{ day.total }}

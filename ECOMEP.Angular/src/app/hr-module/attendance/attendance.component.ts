@@ -3,6 +3,8 @@ import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { HttpClient } from "@angular/common/http";
 import { HrModuleService } from "../hr-module.service";
+import { HolidayMasterService } from "../../leave/services/holiday-master-api.service";
+import { Holiday } from "../../leave/models/holiday.model";
 
 @Component({
   selector: "app-attendance",
@@ -28,14 +30,14 @@ export class AttendanceComponent implements OnInit {
     employeeName: "",
   };
 
-  holidays: string[] = ["2026-01-26", "2026-05-01", "2026-10-02"];
+  holidays: string[] = [];
 
-  isHoliday(day: number): boolean {
-    const month = String(this.selectedMonth).padStart(2, "0");
+  isHoliday(day: number, monthNumber?: number, year?: number): boolean {
+    const month = String(monthNumber || this.selectedMonth).padStart(2, "0");
 
     const date = String(day).padStart(2, "0");
 
-    const fullDate = `${this.selectedYear}-${month}-${date}`;
+    const fullDate = `${year || this.selectedYear}-${month}-${date}`;
 
     return this.holidays.includes(fullDate);
   }
@@ -61,10 +63,12 @@ export class AttendanceComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private service: HrModuleService,
+    private holidayService: HolidayMasterService,
   ) {}
 
   ngOnInit(): void {
     this.updateDays();
+    this.loadHolidays();
     this.loadAttendance();
   }
 
@@ -240,9 +244,57 @@ export class AttendanceComponent implements OnInit {
     this.attendanceData = Object.values(groupedEmployees);
 
     this.attendanceData.forEach((emp: any) => {
-      emp.summary.workingDays = emp.summary.presentDays;
+      let workingDays = 0;
 
-      emp.summary.absentDays = emp.summary.totalDays - emp.summary.presentDays;
+      for (let day = 1; day <= emp.summary.totalDays; day++) {
+        const currentDate = new Date(emp.year, emp.monthNumber - 1, day);
+
+        const isSunday = currentDate.getDay() === 0;
+
+        const isHoliday = this.isHoliday(day, emp.monthNumber, emp.year);
+
+        // ✅ COUNT WORKING DAY
+        // Sundays + Holidays excluded
+        // Saturdays INCLUDED
+        const weekNumber = Math.ceil(day / 7);
+
+        const isSecondOrFourthSaturday =
+          currentDate.getDay() === 6 && (weekNumber === 2 || weekNumber === 4);
+
+        if (!isSunday && !isHoliday && !isSecondOrFourthSaturday) {
+          workingDays++;
+        }
+      }
+
+      emp.summary.workingDays = workingDays;
+
+      // ✅ PRESENT DAYS
+      // Count only present on non-sunday/non-holiday
+      let actualPresentDays = 0;
+
+      emp.dailyDetails.forEach((d: any, index: number) => {
+        const day = index + 1;
+
+        const currentDate = new Date(emp.year, emp.monthNumber - 1, day);
+
+        const isSunday = currentDate.getDay() === 0;
+
+        const isHoliday = this.isHoliday(day, emp.monthNumber, emp.year);
+
+        const weekNumber = Math.ceil(day / 7);
+
+        const isSecondOrFourthSaturday =
+          currentDate.getDay() === 6 && (weekNumber === 2 || weekNumber === 4);
+
+        if (!isSunday && !isHoliday && d.in !== "-") {
+          actualPresentDays++;
+        }
+      });
+
+      emp.summary.presentDays = actualPresentDays;
+
+      // ✅ ABSENT DAYS
+      emp.summary.absentDays = workingDays - actualPresentDays;
     });
   }
 
@@ -289,14 +341,26 @@ export class AttendanceComponent implements OnInit {
     this.applyFilters();
   }
 
-  isSunday(day: number): boolean {
-    const date = new Date(this.selectedYear, this.selectedMonth - 1, day);
+  isSunday(day: number, month?: number, year?: number): boolean {
+    const date = new Date(
+      year || this.selectedYear,
+      (month || this.selectedMonth) - 1,
+      day,
+    );
 
     return date.getDay() === 0;
   }
 
-  isSecondOrFourthSaturday(day: number): boolean {
-    const date = new Date(this.selectedYear, this.selectedMonth - 1, day);
+  isSecondOrFourthSaturday(
+    day: number,
+    month?: number,
+    year?: number,
+  ): boolean {
+    const date = new Date(
+      year || this.selectedYear,
+      (month || this.selectedMonth) - 1,
+      day,
+    );
 
     const isSaturday = date.getDay() === 6;
 
@@ -305,8 +369,12 @@ export class AttendanceComponent implements OnInit {
     return isSaturday && (weekNumber === 2 || weekNumber === 4);
   }
 
-  getDayName(day: number): string {
-    const date = new Date(this.selectedYear, this.selectedMonth - 1, day);
+  getDayName(day: number, month?: number, year?: number): string {
+    const date = new Date(
+      year || this.selectedYear,
+      (month || this.selectedMonth) - 1,
+      day,
+    );
 
     return date.toLocaleDateString("en-US", {
       weekday: "short",
@@ -319,5 +387,23 @@ export class AttendanceComponent implements OnInit {
     this.updateDays();
 
     this.applyFilters();
+  }
+
+  loadHolidays() {
+    this.holidayService.get().subscribe((data: Holiday[]) => {
+      this.holidays = data.map((x: Holiday) => {
+        const date = new Date(x.holidayDate);
+
+        const year = date.getFullYear();
+
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+
+        const day = String(date.getDate()).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+      });
+
+      console.log("Holiday Dates => ", this.holidays);
+    });
   }
 }
