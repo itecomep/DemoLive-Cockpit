@@ -57,7 +57,7 @@ export class AttendanceComponent implements OnInit {
     { id: 12, name: "December" },
   ];
 
-  years: number[] = [2024, 2025, 2026, 2027];
+  years: number[] = [];
 
   // constructor(private http: HttpClient) {}
   constructor(
@@ -112,6 +112,21 @@ export class AttendanceComponent implements OnInit {
               isTeamLeader: leaderCardNos.includes(x.cardNo?.toString().trim()),
             };
           });
+
+          // ✅ DYNAMIC YEARS FROM DB
+          const uniqueYears = [
+            ...new Set(
+              res
+                .filter((x: any) => x.punchDate)
+                .map((x: any) => new Date(x.punchDate).getFullYear()),
+            ),
+          ];
+
+          this.years = uniqueYears.sort((a, b) => a - b);
+
+          if (this.years.length > 0) {
+            this.selectedYear = Math.max(...this.years);
+          }
 
           this.applyFilters();
         },
