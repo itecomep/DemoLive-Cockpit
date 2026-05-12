@@ -102,18 +102,12 @@ export class AttendanceComponent implements OnInit {
       this.http.get<any[]>("http://localhost:5054/api/Attendance").subscribe({
         next: (res) => {
           this.originalData = res.map((x: any) => {
-            // const empName = x.employeeName?.toLowerCase().trim();
-
             return {
               ...x,
 
               isTeamLeader: leaderCardNos.includes(x.cardNo?.toString().trim()),
             };
           });
-
-          console.log("Leader Card Nos:", leaderCardNos);
-
-          console.log("Attendance Data:", this.originalData);
 
           this.applyFilters();
         },
@@ -171,117 +165,86 @@ export class AttendanceComponent implements OnInit {
     this.processAttendanceData(filteredData);
   }
 
-processAttendanceData(filteredData: any[]) {
+  processAttendanceData(filteredData: any[]) {
+    const groupedEmployees: any = {};
 
-  const groupedEmployees: any = {};
+    filteredData.forEach((item: any) => {
+      const punchDate = new Date(item.punchDate);
 
-  filteredData.forEach((item: any) => {
-
-    const punchDate = new Date(item.punchDate);
-
-    const month =
-      punchDate.toLocaleString('default', {
-        month: 'long'
+      const month = punchDate.toLocaleString("default", {
+        month: "long",
       });
 
-    const year = punchDate.getFullYear();
+      const year = punchDate.getFullYear();
 
-    // ✅ UNIQUE KEY FOR EACH MONTH
-    const employeeKey =
-      `${item.cardNo}-${month}-${year}`;
+      // ✅ UNIQUE KEY FOR EACH MONTH
+      const employeeKey = `${item.cardNo}-${month}-${year}`;
 
-    if (!groupedEmployees[employeeKey]) {
+      if (!groupedEmployees[employeeKey]) {
+        const totalDays = new Date(year, punchDate.getMonth() + 1, 0).getDate();
 
-      const totalDays = new Date(
-        year,
-        punchDate.getMonth() + 1,
-        0
-      ).getDate();
+        groupedEmployees[employeeKey] = {
+          name: item.employeeName,
 
-      groupedEmployees[employeeKey] = {
+          cardNo: item.cardNo,
 
-        name: item.employeeName,
+          isTeamLeader: item.isTeamLeader,
 
-        cardNo: item.cardNo,
+          monthName: `${month} ${year}`,
 
-        isTeamLeader: item.isTeamLeader,
+          monthNumber: punchDate.getMonth() + 1,
 
-        monthName: `${month} ${year}`,
+          year: year,
 
-        monthNumber: punchDate.getMonth() + 1,
+          days: Array.from({ length: totalDays }, (_, i) => i + 1),
 
-        year: year,
-
-        days: Array.from(
-          { length: totalDays },
-          (_, i) => i + 1
-        ),
-
-        dailyDetails: Array.from(
-          { length: totalDays },
-          () => ({
+          dailyDetails: Array.from({ length: totalDays }, () => ({
             in: "-",
             out: "-",
             total: "-",
-          })
-        ),
+          })),
 
-        summary: {
-          totalDays: totalDays,
-          workingDays: 0,
-          presentDays: 0,
-          cl: 0,
-          absentDays: 0,
-        },
+          summary: {
+            totalDays: totalDays,
+            workingDays: 0,
+            presentDays: 0,
+            cl: 0,
+            absentDays: 0,
+          },
+        };
+      }
+
+      const day = punchDate.getDate();
+
+      groupedEmployees[employeeKey].dailyDetails[day - 1] = {
+        in: item.firstPunch
+          ? new Date(item.firstPunch).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : "-",
+
+        out: item.lastPunch
+          ? new Date(item.lastPunch).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : "-",
+
+        total: item.workingHours || "-",
       };
-    }
 
-    const day = punchDate.getDate();
+      groupedEmployees[employeeKey].summary.presentDays++;
+    });
 
-    groupedEmployees[employeeKey]
-      .dailyDetails[day - 1] = {
+    this.attendanceData = Object.values(groupedEmployees);
 
-      in: item.firstPunch
-        ? new Date(item.firstPunch)
-            .toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
-        : "-",
+    this.attendanceData.forEach((emp: any) => {
+      emp.summary.workingDays = emp.summary.presentDays;
 
-      out: item.lastPunch
-        ? new Date(item.lastPunch)
-            .toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
-        : "-",
-
-      total: item.workingHours || "-",
-    };
-
-    groupedEmployees[employeeKey]
-      .summary.presentDays++;
-  });
-
-  this.attendanceData =
-    Object.values(groupedEmployees);
-
-  this.attendanceData.forEach((emp: any) => {
-
-    emp.summary.workingDays =
-      emp.summary.presentDays;
-
-    emp.summary.absentDays =
-      emp.summary.totalDays -
-      emp.summary.presentDays;
-  });
-
-  console.log(
-    "Processed Attendance:",
-    this.attendanceData
-  );
-}
+      emp.summary.absentDays = emp.summary.totalDays - emp.summary.presentDays;
+    });
+  }
 
   resetFilters() {
     this.filters = {

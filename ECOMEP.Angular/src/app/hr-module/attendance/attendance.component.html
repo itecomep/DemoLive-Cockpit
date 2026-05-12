@@ -37,27 +37,27 @@
     />
 
     <!-- Date Filters -->
-<!-- MONTH DROPDOWN -->
-<select
-  [(ngModel)]="selectedMonth"
-  (change)="onMonthYearChange()"
-  class="dropdown"
->
-  <option *ngFor="let m of months" [value]="m.id">
-    {{ m.name }}
-  </option>
-</select>
+    <!-- MONTH DROPDOWN -->
+    <select
+      [(ngModel)]="selectedMonth"
+      (change)="onMonthYearChange()"
+      class="dropdown"
+    >
+      <option *ngFor="let m of months" [value]="m.id">
+        {{ m.name }}
+      </option>
+    </select>
 
-<!-- YEAR DROPDOWN -->
-<select
-  [(ngModel)]="selectedYear"
-  (change)="onMonthYearChange()"
-  class="dropdown"
->
-  <option *ngFor="let y of years" [value]="y">
-    {{ y }}
-  </option>
-</select>
+    <!-- YEAR DROPDOWN -->
+    <select
+      [(ngModel)]="selectedYear"
+      (change)="onMonthYearChange()"
+      class="dropdown"
+    >
+      <option *ngFor="let y of years" [value]="y">
+        {{ y }}
+      </option>
+    </select>
 
     <!-- Reset -->
     <button class="reset-btn" (click)="resetFilters()">Reset</button>
@@ -81,12 +81,12 @@
       </button>
 
       <button
-  class="month-btn"
-  [class.active]="selectedMonthTab === 'all'"
-  (click)="changeMonth('all')"
->
-  All
-</button>
+        class="month-btn"
+        [class.active]="selectedMonthTab === 'all'"
+        (click)="changeMonth('all')"
+      >
+        All
+      </button>
 
       <!-- Color Legend -->
       <div class="attendance-legend">
@@ -142,8 +142,6 @@
             <th class="label-col">
               {{ user.monthName }}
             </th>
-
-
 
             <th
               *ngFor="let d of days"
