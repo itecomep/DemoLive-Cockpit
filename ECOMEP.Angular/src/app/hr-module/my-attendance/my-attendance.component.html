@@ -256,10 +256,15 @@
         {{ user.summary?.presentDays || 0 }}
       </div>
 
-      <div class="summary-item">
+      <!-- <div class="summary-item">
         <span>CL:</span>
         {{ user.summary?.cl || 0 }}
-      </div>
+      </div> -->
+
+      <div class="summary-item">
+  <span>Extra Days:</span>
+  {{ user.summary?.extraDays || 0 }}
+</div>
 
       <div class="summary-item">
         <span>Absent Days:</span>

@@ -179,6 +179,14 @@ ngOnInit(): void {
       next: (res: any[]) => {
         console.log("Attendance Response => ", res);
 
+        this.years = [
+  ...new Set(
+    res.map((x: any) =>
+      new Date(x.punchDate).getFullYear()
+    )
+  )
+].sort((a, b) => b - a);
+
         // FILTER CURRENT USER
         const filteredData = res.filter((x) => x.cardNo == cardNo);
         const groupedByMonth: any = {};
@@ -268,7 +276,149 @@ if (!matchesMonth || !matchesYear) {
               },
             ),
 
-         summary: (() => {
+
+
+
+
+// summary: (() => {
+
+//   const year =
+//     new Date(records[0].punchDate).getFullYear();
+
+//   const month =
+//     new Date(records[0].punchDate).getMonth();
+
+//   const totalMonthDays =
+//     new Date(year, month + 1, 0).getDate();
+
+//   let holidayCount = 0;
+
+//   let extraDays = 0;
+
+//   for (let d = 1; d <= totalMonthDays; d++) {
+
+//     const date = new Date(year, month, d);
+
+//     const isSunday =
+//       date.getDay() === 0;
+
+//     const isSaturday =
+//       date.getDay() === 6;
+
+//     const weekNumber =
+//       Math.ceil(d / 7);
+
+//     const isSecondOrFourthSaturday =
+//       isSaturday &&
+//       (weekNumber === 2 || weekNumber === 4);
+
+//     const fullDate =
+//       `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
+//     const isApiHoliday =
+//       this.holidays.includes(fullDate);
+
+//     const isHolidayDay =
+//       isSunday ||
+//       isSecondOrFourthSaturday ||
+//       isApiHoliday;
+
+//     if (isHolidayDay) {
+
+//       holidayCount++;
+
+//       // CHECK IF EMPLOYEE WORKED
+//       const workedOnHoliday =
+//         records.some(
+//           (r: any) =>
+//             new Date(r.punchDate).getDate() === d
+//         );
+
+//       if (workedOnHoliday) {
+//         extraDays++;
+//       }
+//     }
+//   }
+
+ 
+
+//   // PRESENT DAYS ONLY FOR WORKING DAYS
+// const uniquePresentDays = [
+//   ...new Set(
+//     records
+//       .filter((r: any) => {
+
+//         const date =
+//           new Date(r.punchDate);
+
+//         const day =
+//           date.getDate();
+
+//         const isSunday =
+//           date.getDay() === 0;
+
+//         const isSaturday =
+//           date.getDay() === 6;
+
+//         const weekNumber =
+//           Math.ceil(day / 7);
+
+//         const isSecondOrFourthSaturday =
+//           isSaturday &&
+//           (weekNumber === 2 || weekNumber === 4);
+
+//         const fullDate =
+//           `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+//         const isApiHoliday =
+//           this.holidays.includes(fullDate);
+
+//         // REMOVE HOLIDAY WORK FROM PRESENT DAYS
+//         return !(
+//           isSunday ||
+//           isSecondOrFourthSaturday ||
+//           isApiHoliday
+//         );
+
+//       })
+//       .map((r: any) =>
+//         new Date(r.punchDate).getDate()
+//       )
+//   )
+// ];
+
+// const presentDays =
+//   uniquePresentDays.length;
+
+//   const workingDays =
+//     totalMonthDays - holidayCount;
+
+//  // ABSENT ONLY FROM WORKING DAYS
+// const absentDays =
+//   workingDays - presentDays;
+
+//   return {
+
+//     totalDays: totalMonthDays,
+
+//     workingDays: workingDays,
+
+//     presentDays: presentDays,
+
+//     extraDays: extraDays,
+
+//     absentDays:
+//       absentDays > 0
+//         ? absentDays
+//         : 0,
+//   };
+
+// })(),
+
+
+
+
+summary: (() => {
 
   const year =
     new Date(records[0].punchDate).getFullYear();
@@ -279,8 +429,12 @@ if (!matchesMonth || !matchesYear) {
   const totalMonthDays =
     new Date(year, month + 1, 0).getDate();
 
-  let holidayCount = 0;
+  // STORE UNIQUE HOLIDAYS
+  const holidayDates = new Set<number>();
 
+  let extraDays = 0;
+
+  // CHECK ALL DAYS
   for (let d = 1; d <= totalMonthDays; d++) {
 
     const date = new Date(year, month, d);
@@ -298,36 +452,86 @@ if (!matchesMonth || !matchesYear) {
       isSaturday &&
       (weekNumber === 2 || weekNumber === 4);
 
-    if (
+    const fullDate =
+      `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
+    const isApiHoliday =
+      this.holidays.includes(fullDate);
+
+    const isHolidayDay =
       isSunday ||
-      isSecondOrFourthSaturday
-    ) {
-      holidayCount++;
+      isSecondOrFourthSaturday ||
+      isApiHoliday;
+
+    // SAVE HOLIDAY ONLY ONCE
+    if (isHolidayDay) {
+
+      holidayDates.add(d);
+
+      // CHECK WORK ON HOLIDAY
+      const workedOnHoliday =
+        records.some(
+          (r: any) =>
+            new Date(r.punchDate).getDate() === d
+        );
+
+      if (workedOnHoliday) {
+
+        extraDays++;
+
+      }
     }
   }
 
-  const presentDays = records.length;
+  // PRESENT ONLY FOR WORKING DAYS
+  const presentDays = [
+    ...new Set(
 
+      records
+        .filter((r: any) => {
+
+          const day =
+            new Date(r.punchDate).getDate();
+
+          // REMOVE HOLIDAYS
+          return !holidayDates.has(day);
+
+        })
+        .map((r: any) =>
+          new Date(r.punchDate).getDate()
+        )
+
+    )
+  ].length;
+
+  // WORKING DAYS
   const workingDays =
-    totalMonthDays - holidayCount;
+    totalMonthDays - holidayDates.size;
 
+  // ABSENT ONLY FOR WORKING DAYS
   const absentDays =
     workingDays - presentDays;
 
   return {
+
     totalDays: totalMonthDays,
 
     workingDays: workingDays,
 
     presentDays: presentDays,
 
-    cl: 0,
+    extraDays: extraDays,
 
     absentDays:
-      absentDays > 0 ? absentDays : 0,
+      absentDays > 0
+        ? absentDays
+        : 0,
   };
 
 })(),
+
+
+
           };
         });
 
@@ -370,13 +574,44 @@ if (!matchesMonth || !matchesYear) {
 
 }
 
+// generateYears() {
+
+//   const currentYear = new Date().getFullYear();
+
+//   for (let i = currentYear - 5; i <= currentYear + 5; i++) {
+//     this.years.push(i);
+//   }
+
+// }
+
+
+
+// generateYears() {
+
+//   this.years = [];
+
+//   const currentYear = new Date().getFullYear();
+
+//   // Start from 2020
+//   const startYear = 2020;
+
+//   // Automatically till current year
+//   for (let year = startYear; year <= currentYear; year++) {
+
+//     this.years.push(year);
+
+//   }
+
+// }
+
 generateYears() {
+
+  this.years = [];
 
   const currentYear = new Date().getFullYear();
 
-  for (let i = currentYear - 5; i <= currentYear + 5; i++) {
-    this.years.push(i);
-  }
+  // Show only current year
+  this.years.push(currentYear);
 
 }
 onFilterChange() {
