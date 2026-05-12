@@ -7,6 +7,7 @@ import { HeaderComponent } from '../../mcv-header/components/header/header.compo
 
 import { WfhRequestsComponent } from '../wfh-requests/wfh-requests.component';
 import { MyAttendanceComponent } from '../my-attendance/my-attendance.component';
+import { HolidayListComponent } from '../holiday-list/holiday-list.component';
 
 @Component({
   selector: 'app-employee',
@@ -16,7 +17,8 @@ import { MyAttendanceComponent } from '../my-attendance/my-attendance.component'
     MatTabsModule,
     HeaderComponent,
     WfhRequestsComponent,
-    MyAttendanceComponent
+    MyAttendanceComponent,
+    HolidayListComponent
   ],
   templateUrl: './employee.component.html',
   styleUrls: ['./employee.component.scss']
