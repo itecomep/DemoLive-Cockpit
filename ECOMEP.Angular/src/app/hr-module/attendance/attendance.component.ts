@@ -227,7 +227,7 @@ export class AttendanceComponent implements OnInit {
             totalDays: totalDays,
             workingDays: 0,
             presentDays: 0,
-            cl: 0,
+            extraWorkingDays: 0,
             absentDays: 0,
           },
         };
@@ -263,16 +263,9 @@ export class AttendanceComponent implements OnInit {
 
       for (let day = 1; day <= emp.summary.totalDays; day++) {
         const currentDate = new Date(emp.year, emp.monthNumber - 1, day);
-
         const isSunday = currentDate.getDay() === 0;
-
         const isHoliday = this.isHoliday(day, emp.monthNumber, emp.year);
-
-        // ✅ COUNT WORKING DAY
-        // Sundays + Holidays excluded
-        // Saturdays INCLUDED
         const weekNumber = Math.ceil(day / 7);
-
         const isSecondOrFourthSaturday =
           currentDate.getDay() === 6 && (weekNumber === 2 || weekNumber === 4);
 
@@ -283,32 +276,31 @@ export class AttendanceComponent implements OnInit {
 
       emp.summary.workingDays = workingDays;
 
-      // ✅ PRESENT DAYS
-      // Count only present on non-sunday/non-holiday
       let actualPresentDays = 0;
+      let extraWorkingDays = 0;
 
       emp.dailyDetails.forEach((d: any, index: number) => {
         const day = index + 1;
-
         const currentDate = new Date(emp.year, emp.monthNumber - 1, day);
-
         const isSunday = currentDate.getDay() === 0;
-
         const isHoliday = this.isHoliday(day, emp.monthNumber, emp.year);
-
         const weekNumber = Math.ceil(day / 7);
-
         const isSecondOrFourthSaturday =
           currentDate.getDay() === 6 && (weekNumber === 2 || weekNumber === 4);
+        const isNonWorkingDay =
+          isSunday || isHoliday || isSecondOrFourthSaturday;
 
-        if (!isSunday && !isHoliday && d.in !== "-") {
+        if (!isNonWorkingDay && d.in !== "-") {
           actualPresentDays++;
+        }
+
+        if (isNonWorkingDay && d.in !== "-") {
+          extraWorkingDays++;
         }
       });
 
       emp.summary.presentDays = actualPresentDays;
-
-      // ✅ ABSENT DAYS
+      emp.summary.extraWorkingDays = extraWorkingDays;
       emp.summary.absentDays = workingDays - actualPresentDays;
     });
   }
