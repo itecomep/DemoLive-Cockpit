@@ -6,6 +6,8 @@ import { HeaderComponent } from "../../mcv-header/components/header/header.compo
 
 import { AuthService } from "src/app/auth/services/auth.service";
 import { HttpClient, HttpClientModule } from "@angular/common/http";
+import { HolidayMasterService } from '../../leave/services/holiday-master-api.service';
+import { Holiday } from '../../leave/models/holiday.model';
 
 @Component({
   selector: "app-my-attendance",
@@ -22,6 +24,8 @@ export class MyAttendanceComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private http: HttpClient,
+      private holidayService: HolidayMasterService
+
   ) {}
 
   selectedMonthTab: "none" | "current" | "previous" | "next" = "current";
@@ -30,12 +34,7 @@ selectedMonth: number = new Date().getMonth() + 1;
 
 selectedYear: number = new Date().getFullYear();
 
-holidays: string[] = [
-  '2026-01-26',
-  '2026-05-01',
-  '2026-10-02'
-];
-
+holidays: string[] = [];
 changeMonth(type: "previous" | "current" | "next") {
 
   this.selectedMonthTab = type;
@@ -90,16 +89,34 @@ isSecondOrFourthSaturday(day: number): boolean {
   return isSaturday && (weekNumber === 2 || weekNumber === 4);
 }
 
-isHoliday(day: number): boolean {
+// isHoliday(day: number): boolean {
+
+//   const month =
+//     String(this.selectedMonth).padStart(2, '0');
+
+//   const date =
+//     String(day).padStart(2, '0');
+
+//   const fullDate =
+//     `${this.selectedYear}-${month}-${date}`;
+
+//   return this.holidays.includes(fullDate);
+// }
+
+isHoliday(day: number, monthName: string): boolean {
+
+  const date = new Date(`${monthName} 1`);
+
+  const year = date.getFullYear();
 
   const month =
-    String(this.selectedMonth).padStart(2, '0');
+    String(date.getMonth() + 1).padStart(2, '0');
 
-  const date =
+  const dayString =
     String(day).padStart(2, '0');
 
   const fullDate =
-    `${this.selectedYear}-${month}-${date}`;
+    `${year}-${month}-${dayString}`;
 
   return this.holidays.includes(fullDate);
 }
@@ -117,9 +134,17 @@ getDayName(day: number): string {
   });
 }
 
+  // ngOnInit(): void {
+  //   this.loadAttendance();
+  // }
+
   ngOnInit(): void {
-    this.loadAttendance();
-  }
+
+  this.loadHolidays();
+
+  this.loadAttendance();
+
+}
 
   loadAttendance(): void {
     const currentUser = this.authService.currentUserStore;
@@ -258,4 +283,29 @@ if (!isCurrentMonth && !isPreviousMonth) {
     month: "long",
     year: "numeric",
   });
+
+  loadHolidays() {
+
+  this.holidayService.get().subscribe((data: Holiday[]) => {
+
+    this.holidays = data.map((x: Holiday) => {
+
+      const date = new Date(x.holidayDate);
+
+      const year = date.getFullYear();
+
+      const month =
+        String(date.getMonth() + 1).padStart(2, '0');
+
+      const day =
+        String(date.getDate()).padStart(2, '0');
+
+      return `${year}-${month}-${day}`;
+    });
+
+    console.log('Holiday Dates => ', this.holidays);
+
+  });
+
+}
 }
