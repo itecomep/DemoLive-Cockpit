@@ -5,8 +5,6 @@ import { HttpClient } from "@angular/common/http";
 import { HrModuleService } from "../hr-module.service";
 import { HolidayMasterService } from "../../leave/services/holiday-master-api.service";
 import { Holiday } from "../../leave/models/holiday.model";
-import { forkJoin } from "rxjs";
-import { MeetingSummary } from "../hr-module.service";
 
 @Component({
   selector: "app-attendance",
@@ -16,7 +14,6 @@ import { MeetingSummary } from "../hr-module.service";
   styleUrls: ["./attendance.component.scss"],
 })
 export class AttendanceComponent implements OnInit {
-  meetings: MeetingSummary[] = [];
   attendanceData: any[] = [];
   originalData: any[] = [];
 
@@ -65,7 +62,7 @@ export class AttendanceComponent implements OnInit {
     private http: HttpClient,
     private service: HrModuleService,
     private holidayService: HolidayMasterService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.updateDays();
@@ -89,57 +86,53 @@ export class AttendanceComponent implements OnInit {
   }
 
   loadAttendance() {
-    forkJoin({
-      teams: this.service.getContactTeams(),
-      meetings: this.service.getMeetings(),
-      attendance: this.http.get<any[]>("http://localhost:5054/api/Attendance"),
-    }).subscribe({
-      next: ({ teams, meetings, attendance }) => {
-        this.meetings = meetings;
+    this.service.getContactTeams().subscribe((teams: any[]) => {
+      const leaderCardNos: string[] = [];
 
-        const leaderCardNos: string[] = [];
+      teams.forEach((team) => {
+        team.members?.forEach((m: any) => {
+          if (m.contactID === team.leaderID) {
+            const cardNo = m.contact?.card_No?.toString().trim();
 
-        teams.forEach((team) => {
-          team.members?.forEach((m: any) => {
-            if (m.contactID === team.leaderID) {
-              const cardNo = m.contact?.card_No?.toString().trim();
-
-              if (cardNo && !leaderCardNos.includes(cardNo)) {
-                leaderCardNos.push(cardNo);
-              }
+            if (cardNo && !leaderCardNos.includes(cardNo)) {
+              leaderCardNos.push(cardNo);
             }
+          }
+        });
+      });
+
+      this.http.get<any[]>("http://localhost:5054/api/Attendance").subscribe({
+        next: (res) => {
+          this.originalData = res.map((x: any) => {
+            return {
+              ...x,
+
+              isTeamLeader: leaderCardNos.includes(x.cardNo?.toString().trim()),
+            };
           });
-        });
 
-        this.originalData = attendance.map((x: any) => {
-          return {
-            ...x,
+          // ✅ DYNAMIC YEARS FROM DB
+          const uniqueYears = [
+            ...new Set(
+              res
+                .filter((x: any) => x.punchDate)
+                .map((x: any) => new Date(x.punchDate).getFullYear()),
+            ),
+          ];
 
-            isTeamLeader: leaderCardNos.includes(x.cardNo?.toString().trim()),
-          };
-        });
+          this.years = uniqueYears.sort((a, b) => a - b);
 
-        // YEARS
-        const uniqueYears = [
-          ...new Set(
-            attendance
-              .filter((x: any) => x.punchDate)
-              .map((x: any) => new Date(x.punchDate).getFullYear()),
-          ),
-        ];
+          if (this.years.length > 0) {
+            this.selectedYear = Math.max(...this.years);
+          }
 
-        this.years = uniqueYears.sort((a, b) => a - b);
+          this.applyFilters();
+        },
 
-        if (this.years.length > 0) {
-          this.selectedYear = Math.max(...this.years);
-        }
-
-        this.applyFilters();
-      },
-
-      error: (err) => {
-        console.error(err);
-      },
+        error: (err) => {
+          console.error(err);
+        },
+      });
     });
   }
 
@@ -223,8 +216,6 @@ export class AttendanceComponent implements OnInit {
             in: "-",
             out: "-",
             total: "-",
-            meetingHours: "-",
-            grandTotal: "-",
           })),
 
           summary: {
@@ -239,38 +230,22 @@ export class AttendanceComponent implements OnInit {
 
       const day = punchDate.getDate();
 
-      const workingMinutes = item.workingHours
-        ? this.convertTimeToMinutes(item.workingHours)
-        : 0;
-
-      const meetingMinutes =
-        item.meetingHours > 0 ? Math.round(item.meetingHours * 60) : 0;
-
-      const grandTotalMinutes = workingMinutes + meetingMinutes;
-
       groupedEmployees[employeeKey].dailyDetails[day - 1] = {
         in: item.firstPunch
           ? new Date(item.firstPunch).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
+            hour: "2-digit",
+            minute: "2-digit",
+          })
           : "-",
 
         out: item.lastPunch
           ? new Date(item.lastPunch).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
+            hour: "2-digit",
+            minute: "2-digit",
+          })
           : "-",
 
         total: item.workingHours || "-",
-
-        meetingHours:
-          item.meetingHours > 0
-            ? this.formatMinutes(Math.round(item.meetingHours * 60))
-            : "-",
-
-        grandTotal: this.formatMinutes(grandTotalMinutes),
       };
 
       groupedEmployees[employeeKey].summary.presentDays++;
@@ -311,32 +286,34 @@ export class AttendanceComponent implements OnInit {
         const isNonWorkingDay =
           isSunday || isHoliday || isSecondOrFourthSaturday;
 
-        // if (!isNonWorkingDay && d.in !== "-") {
-        //   actualPresentDays++;
-        // }
+         if (!isNonWorkingDay && d.in !== "-") {
 
-        // if (isNonWorkingDay && d.in !== "-") {
-        //   extraWorkingDays++;
-        // }
+  actualPresentDays++;
 
-        if (!isNonWorkingDay && d.in !== "-") {
-          actualPresentDays++;
+  // HALF DAY COUNT
+  if (
+    d.total !== "-" &&
+    this.isHalfDay(d.total)
+  ) {
 
-          // HALF DAY COUNT
-          if (d.total !== "-" && this.isHalfDay(d.total)) {
-            halfDays++;
-          }
-        }
+    halfDays++;
 
-        if (isNonWorkingDay && d.in !== "-") {
-          extraWorkingDays++;
-        }
+  }
+}
+
+if (isNonWorkingDay && d.in !== "-") {
+
+  extraWorkingDays++;
+
+}
       });
 
       emp.summary.presentDays = actualPresentDays;
       emp.summary.extraWorkingDays = extraWorkingDays;
-      emp.summary.paidDays = actualPresentDays + extraWorkingDays;
-      emp.summary.halfDays = halfDays;
+      emp.summary.paidDays =
+        actualPresentDays + extraWorkingDays;
+        emp.summary.halfDays = halfDays;
+
 
       emp.summary.absentDays = workingDays - actualPresentDays;
     });
@@ -451,46 +428,23 @@ export class AttendanceComponent implements OnInit {
     });
   }
 
+
+
+
   isHalfDay(totalHours: string): boolean {
-    if (!totalHours || totalHours === "-") {
-      return false;
-    }
 
-    const parts = totalHours.split(":");
-
-    const hours = Number(parts[0]);
-
-    const minutes = Number(parts[1]);
-
-    const totalMinutes = hours * 60 + minutes;
-
-    // 8 HOURS 30 MINUTES
-    return totalMinutes < 510;
+  if (!totalHours || totalHours === '-') {
+    return false;
   }
 
-  convertTimeToMinutes(time: string): number {
-    if (!time || time === "-") {
-      return 0;
-    }
+  const parts = totalHours.split(':');
 
-    const parts = time.split(":");
+  const hours = Number(parts[0]);
 
-    const hours = Number(parts[0]);
+  const minutes = Number(parts[1]);
 
-    const minutes = Number(parts[1]);
-
-    return hours * 60 + minutes;
-  }
-
-  formatMinutes(totalMinutes: number): string {
-    if (!totalMinutes || totalMinutes <= 0) {
-      return "-";
-    }
-
-    const hours = Math.floor(totalMinutes / 60);
-
-    const minutes = totalMinutes % 60;
-
-    return `${hours}:${minutes.toString().padStart(2, "0")}`;
-  }
+  const totalMinutes =
+    (hours * 60) + minutes;
+  return totalMinutes < 510;
+}
 }

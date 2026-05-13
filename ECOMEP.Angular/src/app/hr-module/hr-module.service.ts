@@ -31,7 +31,7 @@ export interface MeetingSummary {
   title: string;
   purpose: string;
   location: string;
-  totalHours: number;
+  travellingHours: number;
 }
 
 @Injectable({
