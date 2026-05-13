@@ -49,6 +49,7 @@ export class ProjectTargetComponent implements OnInit {
   stages: any[] = [];
   statuses: string[] = [];
   targets: any[] = [];
+  editSelectedFiles: File[] = [];
 
   editRow: any = {
     stage: "",
@@ -212,15 +213,49 @@ export class ProjectTargetComponent implements OnInit {
         "T00:00:00";
     }
 
-    const payload = {
-      projectId: original.projectId,
-      stage: this.editRow.stage,
-      stageStatus: this.editRow.stageStatus,
-      targetDate: fixedDate,
-      feedback: this.editRow.feedback,
-    };
+    // const payload = {
+    //   projectId: original.projectId,
+    //   stage: this.editRow.stage,
+    //   stageStatus: this.editRow.stageStatus,
+    //   targetDate: fixedDate,
+    //   feedback: this.editRow.feedback,
+    // };
 
-    this.service.update(this.editId!, payload).subscribe(() => {
+
+    const formData = new FormData();
+
+formData.append(
+  "projectId",
+  original.projectId
+);
+
+formData.append(
+  "stage",
+  this.editRow.stage
+);
+
+formData.append(
+  "stageStatus",
+  this.editRow.stageStatus
+);
+
+formData.append(
+  "targetDate",
+  fixedDate || ""
+);
+
+formData.append(
+  "feedback",
+  this.editRow.feedback || ""
+);
+
+this.editSelectedFiles.forEach((file: File) => {
+  formData.append("attachments", file);
+});
+
+    // this.service.update(this.editId!, payload).subscribe(() => {
+    this.service.update(this.editId!, formData).subscribe(() => {
+       this.editSelectedFiles = []; 
       this.editId = null;
       this.loadTargets();
     });
@@ -562,5 +597,18 @@ applyAllFilters() {
   });
 
   this.applyProjectNames();
+}
+
+onEditFilesSelected(event: any) {
+
+  if (event.target.files && event.target.files.length > 0) {
+
+    this.editSelectedFiles = Array.from(event.target.files);
+
+    console.log(
+      "Edit Selected Files => ",
+      this.editSelectedFiles
+    );
+  }
 }
 }

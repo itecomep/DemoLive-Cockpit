@@ -33,6 +33,7 @@ export class ProjectTargetFormComponent implements OnInit {
   projectSearch: string = "";
   filteredProjects: any[] = [];
   targets: any[] = [];
+  selectedFiles: File[] = [];
   isEdit = false;
   id: number | null = null;
 
@@ -172,17 +173,32 @@ export class ProjectTargetFormComponent implements OnInit {
         "T00:00:00";
     }
 
-    const payload = {
-      ...this.form,
-      targetDate: fixedDate,
-    };
+    // const payload = {
+    //   ...this.form,
+    //   targetDate: fixedDate,
+    // };
+
+
+    const formData = new FormData();
+
+formData.append("projectId", this.form.projectId);
+formData.append("stage", this.form.stage);
+formData.append("stageStatus", this.form.stageStatus);
+formData.append("targetDate", fixedDate || "");
+formData.append("feedback", this.form.feedback || "");
+
+this.selectedFiles.forEach((file: File) => {
+  formData.append("attachments", file);
+});
 
     if (this.isEdit && this.id) {
-      this.service.update(this.id, payload).subscribe(() => {
+      // this.service.update(this.id, payload).subscribe(() => {
+      this.service.update(this.id, formData).subscribe(() => {
         this.router.navigate(["/project-target"]);
       });
     } else {
-      this.service.create(payload).subscribe(() => {
+      // this.service.create(payload).subscribe(() => {
+      this.service.create(formData).subscribe(() => {
         this.router.navigate(["/project-target"]);
       });
     }
@@ -226,4 +242,13 @@ export class ProjectTargetFormComponent implements OnInit {
 
     this.onProjectChange();
   }
+
+  onFilesSelected(event: any) {
+  if (event.target.files && event.target.files.length > 0) {
+
+    this.selectedFiles = Array.from(event.target.files);
+
+    console.log("Selected Files => ", this.selectedFiles);
+  }
+}
 }
