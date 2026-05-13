@@ -23,7 +23,7 @@
           (optionSelected)="onProjectSelected($event.option.value)"
         >
           <mat-option *ngFor="let p of filteredProjects" [value]="p">
-            {{ p.code ? (p.code + ' - ') : '' }}{{ p.title }}
+            {{ p.code ? p.code + " - " : "" }}{{ p.title }}
           </mat-option>
         </mat-autocomplete>
       </mat-form-field>
@@ -61,6 +61,16 @@
 
       <h3>Feedback</h3>
       <textarea [(ngModel)]="form.feedback"></textarea>
+
+      <h3>Attachments</h3>
+
+      <input type="file" multiple (change)="onFilesSelected($event)" />
+
+      <div class="attachment-list" *ngIf="selectedFiles.length > 0">
+        <div *ngFor="let file of selectedFiles">
+          {{ file.name }}
+        </div>
+      </div>
     </div>
 
     <div class="form-actions">

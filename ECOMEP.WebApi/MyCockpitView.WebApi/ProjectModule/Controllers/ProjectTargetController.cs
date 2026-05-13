@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MyCockpitView.WebApi.ProjectModule.Dtos;
 using MyCockpitView.WebApi.ProjectModule.Entities;
 using MyCockpitView.WebApi.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace MyCockpitView.WebApi.ProjectModule.Controllers
 {
@@ -18,7 +19,8 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(ProjectTargetDto dto)
+        // public async Task<IActionResult> Create(ProjectTargetDto dto)
+        public async Task<IActionResult> Create([FromForm] ProjectTargetDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -65,7 +67,90 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
                 return BadRequest("This stage is already completed for this project.");
             }
 
+            // ATTACHMENT UPLOAD
+if (dto.Attachments != null && dto.Attachments.Any())
+{
+    var uploadPath = Path.Combine(
+        Directory.GetCurrentDirectory(),
+        "wwwroot",
+        "uploads",
+        "project-targets"
+    );
+
+    if (!Directory.Exists(uploadPath))
+    {
+        Directory.CreateDirectory(uploadPath);
+    }
+
+    var uploadedFiles = new List<string>();
+
+    foreach (var file in dto.Attachments)
+    {
+        var fileName =
+            Guid.NewGuid().ToString() + "_" + file.FileName;
+
+        var filePath = Path.Combine(uploadPath, fileName);
+
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        uploadedFiles.Add(
+            "/uploads/project-targets/" + fileName
+        );
+    }
+
+    entity.Attachment = string.Join(",", uploadedFiles);
+}
+
             _db.ProjectTargets.Add(entity);
+
+
+            // UPDATE ATTACHMENTS
+if (dto.Attachments != null && dto.Attachments.Any())
+{
+    var uploadPath = Path.Combine(
+        Directory.GetCurrentDirectory(),
+        "wwwroot",
+        "uploads",
+        "project-targets"
+    );
+
+    if (!Directory.Exists(uploadPath))
+    {
+        Directory.CreateDirectory(uploadPath);
+    }
+
+    var uploadedFiles = new List<string>();
+
+    // OLD FILES
+    if (!string.IsNullOrEmpty(entity.Attachment))
+    {
+        uploadedFiles = entity.Attachment
+            .Split(",", StringSplitOptions.RemoveEmptyEntries)
+            .ToList();
+    }
+
+    foreach (var file in dto.Attachments)
+    {
+        var fileName =
+            Guid.NewGuid().ToString() + "_" + file.FileName;
+
+        var filePath = Path.Combine(uploadPath, fileName);
+
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        uploadedFiles.Add(
+            "/uploads/project-targets/" + fileName
+        );
+    }
+
+    entity.Attachment = string.Join(",", uploadedFiles);
+}
             await _db.SaveChangesAsync();
 
             return Ok(entity);
@@ -73,7 +158,11 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
 
         //UPDATE
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, ProjectTargetDto dto)
+        // public async Task<IActionResult> Update(int id, ProjectTargetDto dto)
+        public async Task<IActionResult> Update(
+    int id,
+    [FromForm] ProjectTargetDto dto
+)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

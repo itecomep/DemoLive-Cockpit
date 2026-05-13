@@ -50,44 +50,40 @@
       </div>
     </div>
   </div>
-<div class="employee-main-header" *ngIf="attendanceData.length > 0">
-  <h2 class="employee-main-title">
-    <span class="employee-label"> Employee: </span>
+  <div class="employee-main-header" *ngIf="attendanceData.length > 0">
+    <h2 class="employee-main-title">
+      <span class="employee-label"> Employee: </span>
 
-    <span class="employee-name">
-      {{
-        attendanceData[0]?.employeeName ||
-          attendanceData[0]?.name ||
-          attendanceData[0]?.fullName
-      }}
-    </span>
+      <span class="employee-name">
+        {{
+          attendanceData[0]?.employeeName ||
+            attendanceData[0]?.name ||
+            attendanceData[0]?.fullName
+        }}
+      </span>
 
-    <!-- CURRENT MONTH WARNING -->
-    <span
-      *ngIf="
-        attendanceData[0]?.summary?.halfDays > 5 &&
-        attendanceData[0]?.monthName === currentMonthName
-      "
-      class="halfday-warning"
-    >
-      ⚠ HALF DAY ALERT
-    </span>
+      <!-- CURRENT MONTH WARNING -->
+      <span
+        *ngIf="
+          attendanceData[0]?.summary?.halfDays > 5 &&
+          attendanceData[0]?.monthName === currentMonthName
+        "
+        class="halfday-warning"
+      >
+        ⚠ HALF DAY ALERT
+      </span>
 
-    <span class="employee-cardno"> ({{ attendanceData[0]?.cardNo }}) </span>
-  </h2>
-</div>
+      <span class="employee-cardno"> ({{ attendanceData[0]?.cardNo }}) </span>
+    </h2>
+  </div>
   <div class="employee-card" *ngFor="let user of attendanceData">
     <!-- PREVIOUS MONTH WARNING -->
-<div
-  *ngIf="
-    user.summary?.halfDays > 5 &&
-    user.monthName !== currentMonthName
-  "
-  class="previous-month-warning"
->
-  ⚠ WARNING :
-  You have more than 5 half days in {{ user.monthName }}
-</div>
+    <div
+      *ngIf="user.summary?.halfDays > 5 && user.monthName !== currentMonthName"
+      class="previous-month-warning"
+    >
+      ⚠ WARNING : You have more than 5 half days in {{ user.monthName }}
+    </div>
     <div class="table-wrapper">
       <table class="attendance-table">
         <thead>
@@ -194,6 +190,54 @@
               >
                 H
               </span>
+            </td>
+          </tr>
+
+          <!-- MEETING START TIME ROW -->
+          <tr>
+            <td class="label-col">Meeting Start</td>
+
+            <td
+              *ngFor="let day of user.dailyDetails; let i = index"
+              [ngClass]="{
+                'sunday-column': getDayName(i + 1, user.monthName) === 'Sun',
+
+                'saturday-column': isSecondOrFourthSaturday(
+                  i + 1,
+                  user.monthName
+                ),
+
+                'holiday-column':
+                  !isSecondOrFourthSaturday(i + 1, user.monthName) &&
+                  getDayName(i + 1, user.monthName) !== 'Sun' &&
+                  isHoliday(i + 1, user.monthName),
+              }"
+            >
+              {{ day.meetingStart || "-" }}
+            </td>
+          </tr>
+
+          <!-- MEETING END TIME ROW -->
+          <tr>
+            <td class="label-col">Meeting End</td>
+
+            <td
+              *ngFor="let day of user.dailyDetails; let i = index"
+              [ngClass]="{
+                'sunday-column': getDayName(i + 1, user.monthName) === 'Sun',
+
+                'saturday-column': isSecondOrFourthSaturday(
+                  i + 1,
+                  user.monthName
+                ),
+
+                'holiday-column':
+                  !isSecondOrFourthSaturday(i + 1, user.monthName) &&
+                  getDayName(i + 1, user.monthName) !== 'Sun' &&
+                  isHoliday(i + 1, user.monthName),
+              }"
+            >
+              {{ day.meetingEnd || "-" }}
             </td>
           </tr>
 

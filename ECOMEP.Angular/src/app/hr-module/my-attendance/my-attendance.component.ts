@@ -132,8 +132,6 @@ export class MyAttendanceComponent implements OnInit {
     });
   }
 
-  
-
   ngOnInit(): void {
     this.generateYears();
 
@@ -245,7 +243,28 @@ export class MyAttendanceComponent implements OnInit {
                     : "-",
 
                   total: foundRecord?.workingHours || "-",
+                  // meeting: this.getMeetingHours(
+                  //   currentUser?.contact?.name,
+                  //   dayNumber,
+                  //   new Date(records[0].punchDate).getMonth(),
+                  //   new Date(records[0].punchDate).getFullYear(),
+                  // ),
+
                   meeting: this.getMeetingHours(
+                    currentUser?.contact?.name,
+                    dayNumber,
+                    new Date(records[0].punchDate).getMonth(),
+                    new Date(records[0].punchDate).getFullYear(),
+                  ),
+
+                  meetingStart: this.getMeetingStartTime(
+                    currentUser?.contact?.name,
+                    dayNumber,
+                    new Date(records[0].punchDate).getMonth(),
+                    new Date(records[0].punchDate).getFullYear(),
+                  ),
+
+                  meetingEnd: this.getMeetingEndTime(
                     currentUser?.contact?.name,
                     dayNumber,
                     new Date(records[0].punchDate).getMonth(),
@@ -493,5 +512,63 @@ export class MyAttendanceComponent implements OnInit {
     const mins = totalMinutes % 60;
 
     return `${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
+  }
+
+  getMeetingStartTime(
+    employeeName: string,
+    day: number,
+    month: number,
+    year: number,
+  ): string {
+    const meeting = this.meetingsData.find((m: any) => {
+      const meetingDate = new Date(m.startTime);
+
+      return (
+        m.attendeeName
+          ?.toLowerCase()
+          .includes(employeeName?.toLowerCase().trim()) &&
+        meetingDate.getDate() === day &&
+        meetingDate.getMonth() === month &&
+        meetingDate.getFullYear() === year
+      );
+    });
+
+    if (!meeting?.startTime) {
+      return "-";
+    }
+
+    return new Date(meeting.startTime).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+
+  getMeetingEndTime(
+    employeeName: string,
+    day: number,
+    month: number,
+    year: number,
+  ): string {
+    const meeting = this.meetingsData.find((m: any) => {
+      const meetingDate = new Date(m.endTime);
+
+      return (
+        m.attendeeName
+          ?.toLowerCase()
+          .includes(employeeName?.toLowerCase().trim()) &&
+        meetingDate.getDate() === day &&
+        meetingDate.getMonth() === month &&
+        meetingDate.getFullYear() === year
+      );
+    });
+
+    if (!meeting?.endTime) {
+      return "-";
+    }
+
+    return new Date(meeting.endTime).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   }
 }
