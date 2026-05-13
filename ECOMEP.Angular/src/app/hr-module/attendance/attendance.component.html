@@ -4,7 +4,6 @@
   </div>
 
   <div class="filter-bar">
-    <!-- All / Team Leaders -->
     <label class="radio-option">
       <input
         type="radio"
@@ -26,8 +25,6 @@
       />
       Team Leaders
     </label>
-
-    <!-- Employee Search -->
     <input
       type="text"
       class="search-box"
@@ -36,8 +33,7 @@
       (input)="applyFilters()"
     />
 
-    <!-- Date Filters -->
-    <!-- MONTH DROPDOWN -->
+   
     <select
       [(ngModel)]="selectedMonth"
       (change)="onMonthYearChange()"
@@ -48,7 +44,7 @@
       </option>
     </select>
 
-    <!-- YEAR DROPDOWN -->
+    
     <select
       [(ngModel)]="selectedYear"
       (change)="onMonthYearChange()"
@@ -58,11 +54,7 @@
         {{ y }}
       </option>
     </select>
-
-    <!-- Reset -->
     <button class="reset-btn" (click)="resetFilters()">Reset</button>
-
-    <!-- Month Tabs -->
     <div class="month-tabs">
       <button
         class="month-btn"
@@ -87,8 +79,6 @@
       >
         All
       </button>
-
-      <!-- Color Legend -->
       <div class="attendance-legend">
         <div class="legend-item">
           <span class="legend-color saturday-legend"></span>
@@ -99,11 +89,6 @@
           <span class="legend-color sunday-legend"></span>
           <span>Sunday</span>
         </div>
-
-        <!-- <div class="legend-item">
-          <span class="legend-color holiday-legend"></span>
-          <span>Holiday</span>
-        </div> -->
 
         <div class="legend-item">
   <span class="legend-color holiday-legend"></span>
@@ -246,7 +231,7 @@
             </td>
           </tr>
 
-          <!-- MEETING -->
+          
 <tr>
 
   <td class="label-col">Meeting</td>
@@ -269,8 +254,6 @@
   </td>
 
 </tr>
-
-<!-- TOTAL -->
 <tr>
 
   <td class="label-col">Total</td>

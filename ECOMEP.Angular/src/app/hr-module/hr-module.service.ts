@@ -69,6 +69,11 @@ export class HrModuleService {
     return this.http.put(`${this.baseUrl}/update/${id}`, data);
   }
 
+
+
+
+  
+
   deleteRequest(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/delete/${id}`);
   }

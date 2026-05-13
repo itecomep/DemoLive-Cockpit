@@ -58,8 +58,6 @@ export class AttendanceComponent implements OnInit {
   ];
 
   years: number[] = [];
-
-  // constructor(private http: HttpClient) {}
   constructor(
     private http: HttpClient,
     private service: HrModuleService,
@@ -167,17 +165,15 @@ export class AttendanceComponent implements OnInit {
 
         const cardNo = x.cardNo?.toString().toLowerCase() || "";
 
-        /* 🔢 Exact match for numbers */
         if (isNumber) {
           return cardNo === searchText;
         }
 
-        /* 🔤 Partial match for names */
+       
         return employeeName.includes(searchText);
       });
     }
 
-    // 👑 Team Leader Filter
     if (this.activeTab === "team") {
       filteredData = filteredData.filter((x: any) => x.isTeamLeader === true);
     }
@@ -196,7 +192,6 @@ export class AttendanceComponent implements OnInit {
 
       const year = punchDate.getFullYear();
 
-      // ✅ UNIQUE KEY FOR EACH MONTH
       const employeeKey = `${item.cardNo}-${month}-${year}`;
 
       if (!groupedEmployees[employeeKey]) {
@@ -291,16 +286,7 @@ export class AttendanceComponent implements OnInit {
         const isNonWorkingDay =
           isSunday || isHoliday || isSecondOrFourthSaturday;
 
-        // if (!isNonWorkingDay && d.in !== "-") {
-        //   actualPresentDays++;
-        // }
-
-        // if (isNonWorkingDay && d.in !== "-") {
-        //   extraWorkingDays++;
-        // }
-
-
-        if (!isNonWorkingDay && d.in !== "-") {
+         if (!isNonWorkingDay && d.in !== "-") {
 
   actualPresentDays++;
 
@@ -459,8 +445,6 @@ if (isNonWorkingDay && d.in !== "-") {
 
   const totalMinutes =
     (hours * 60) + minutes;
-
-  // 8 HOURS 30 MINUTES
   return totalMinutes < 510;
 }
 }

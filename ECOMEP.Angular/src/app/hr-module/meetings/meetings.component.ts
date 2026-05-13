@@ -39,6 +39,7 @@ export class MeetingsComponent implements OnInit {
   meetings: Meeting[] = [];
   filteredMeetings: Meeting[] = [];
   activeMonthFilter: "none" | "current" | "previous" | "next" = "none";
+  
 
 
   constructor(private http: HttpClient,private dialog: MatDialog, private contactService: ContactApiService, private hrService: HrModuleService ) {}
