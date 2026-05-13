@@ -11,10 +11,7 @@ namespace MyCockpitView.WebApi.AttendanceModule.Services
         private readonly AttendanceContext _context;
         private readonly EntitiesContext _db;
 
-        public AttendanceService(
-    AttendanceContext context,
-    EntitiesContext db
-)
+        public AttendanceService(AttendanceContext context, EntitiesContext db)
         {
             _context = context;
             _db = db;
@@ -35,37 +32,27 @@ namespace MyCockpitView.WebApi.AttendanceModule.Services
             var result = attendance.Select(item =>
             {
                 decimal totalMeetingHours = 0;
-
+                var employeeMeetings = new List<Meeting>();
                 var contact = contacts.FirstOrDefault(c =>
 
                     c.Card_No != null
-
                     &&
-
                     c.Card_No.ToString().Trim() ==
                     item.CardNo?.Trim()
                 );
 
                 if (contact != null)
                 {
-                    var employeeMeetings = meetings
+                    employeeMeetings = meetings
                         .Where(m =>
-
                             item.PunchDate != null
-
                             &&
-
                             DateOnly.FromDateTime(m.StartDate.Date) ==
                             item.PunchDate.Value
-
                             &&
-
                             m.Attendees.Any(a =>
-
                                 a.Name != null
-
                                 &&
-
                                 a.Name.ToLower().Trim() ==
                                 contact.Name.ToLower().Trim()
                             )
@@ -81,22 +68,26 @@ namespace MyCockpitView.WebApi.AttendanceModule.Services
                 return new
                 {
                     item.Id,
-
                     item.CardNo,
-
                     item.EmployeeId,
-
                     item.EmployeeName,
-
                     item.FirstPunch,
-
                     item.LastPunch,
-
                     item.PunchDate,
-
                     item.WorkingHours,
+                    MeetingHours = totalMeetingHours,
 
-                    MeetingHours = totalMeetingHours
+                    MeetingStartTime = employeeMeetings.Any()
+                        ? employeeMeetings
+                            .OrderBy(x => x.StartDate)
+                            .FirstOrDefault()?.StartDate
+                        : null,
+
+                    MeetingEndTime = employeeMeetings.Any()
+                        ? employeeMeetings
+                            .OrderByDescending(x => x.EndDate)
+                            .FirstOrDefault()?.EndDate
+                        : null
                 };
             });
 
