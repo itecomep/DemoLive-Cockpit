@@ -223,6 +223,50 @@
             </td>
           </tr>
 
+          <!-- START TIME -->
+          <tr>
+            <td class="label-col">Start Time</td>
+
+            <td
+              *ngFor="let day of user.dailyDetails; let i = index"
+              [ngClass]="{
+                'holiday-column': isHoliday(i + 1, user.monthNumber, user.year),
+
+                'sunday-column':
+                  !isHoliday(i + 1, user.monthNumber, user.year) &&
+                  isSunday(i + 1, user.monthNumber, user.year),
+
+                'saturday-column':
+                  !isHoliday(i + 1, user.monthNumber, user.year) &&
+                  isSecondOrFourthSaturday(i + 1, user.monthNumber, user.year),
+              }"
+            >
+              {{ day.meetingStartTime || "-" }}
+            </td>
+          </tr>
+
+          <!-- END TIME -->
+          <tr>
+            <td class="label-col">End Time</td>
+
+            <td
+              *ngFor="let day of user.dailyDetails; let i = index"
+              [ngClass]="{
+                'holiday-column': isHoliday(i + 1, user.monthNumber, user.year),
+
+                'sunday-column':
+                  !isHoliday(i + 1, user.monthNumber, user.year) &&
+                  isSunday(i + 1, user.monthNumber, user.year),
+
+                'saturday-column':
+                  !isHoliday(i + 1, user.monthNumber, user.year) &&
+                  isSecondOrFourthSaturday(i + 1, user.monthNumber, user.year),
+              }"
+            >
+              {{ day.meetingEndTime || "-" }}
+            </td>
+          </tr>
+
           <!-- MEETING -->
           <tr>
             <td class="label-col">Meeting</td>

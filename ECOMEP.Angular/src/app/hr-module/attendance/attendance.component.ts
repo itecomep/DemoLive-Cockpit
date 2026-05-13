@@ -247,31 +247,71 @@ export class AttendanceComponent implements OnInit {
 
       const grandTotalMinutes = workingMinutes + meetingMinutes;
 
+      // groupedEmployees[employeeKey].dailyDetails[day - 1] = {
+      //   in: item.firstPunch
+      //     ? new Date(item.firstPunch).toLocaleTimeString([], {
+      //         hour: "2-digit",
+      //         minute: "2-digit",
+      //       })
+      //     : "-",
+
+      //   out: item.lastPunch
+      //     ? new Date(item.lastPunch).toLocaleTimeString([], {
+      //         hour: "2-digit",
+      //         minute: "2-digit",
+      //       })
+      //     : "-",
+
+      //   total: item.workingHours || "-",
+
+      //   meetingHours:
+      //     item.meetingHours > 0
+      //       ? this.formatMinutes(Math.round(item.meetingHours * 60))
+      //       : "-",
+
+      //   grandTotal: this.formatMinutes(grandTotalMinutes),
+      // };
+
+
+
       groupedEmployees[employeeKey].dailyDetails[day - 1] = {
-        in: item.firstPunch
-          ? new Date(item.firstPunch).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
-          : "-",
+  in: item.firstPunch
+    ? new Date(item.firstPunch).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "-",
 
-        out: item.lastPunch
-          ? new Date(item.lastPunch).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
-          : "-",
+  out: item.lastPunch
+    ? new Date(item.lastPunch).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "-",
 
-        total: item.workingHours || "-",
+  total: item.workingHours || "-",
 
-        meetingHours:
-          item.meetingHours > 0
-            ? this.formatMinutes(Math.round(item.meetingHours * 60))
-            : "-",
+  meetingStartTime: item.meetingStartTime
+    ? new Date(item.meetingStartTime).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "-",
 
-        grandTotal: this.formatMinutes(grandTotalMinutes),
-      };
+  meetingEndTime: item.meetingEndTime
+    ? new Date(item.meetingEndTime).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "-",
 
+  meetingHours:
+    item.meetingHours > 0
+      ? this.formatMinutes(Math.round(item.meetingHours * 60))
+      : "-",
+
+  grandTotal: this.formatMinutes(grandTotalMinutes),
+};
       groupedEmployees[employeeKey].summary.presentDays++;
     });
 
