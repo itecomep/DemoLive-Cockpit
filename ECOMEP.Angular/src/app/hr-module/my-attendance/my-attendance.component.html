@@ -50,22 +50,44 @@
       </div>
     </div>
   </div>
-  <div class="employee-main-header" *ngIf="attendanceData.length > 0">
-    <h2 class="employee-main-title">
-      <span class="employee-label"> Employee: </span>
+<div class="employee-main-header" *ngIf="attendanceData.length > 0">
+  <h2 class="employee-main-title">
+    <span class="employee-label"> Employee: </span>
 
-      <span class="employee-name">
-        {{
-          attendanceData[0]?.employeeName ||
-            attendanceData[0]?.name ||
-            attendanceData[0]?.fullName
-        }}
-      </span>
+    <span class="employee-name">
+      {{
+        attendanceData[0]?.employeeName ||
+          attendanceData[0]?.name ||
+          attendanceData[0]?.fullName
+      }}
+    </span>
 
-      <span class="employee-cardno"> ({{ attendanceData[0]?.cardNo }}) </span>
-    </h2>
-  </div>
+    <!-- CURRENT MONTH WARNING -->
+    <span
+      *ngIf="
+        attendanceData[0]?.summary?.halfDays > 5 &&
+        attendanceData[0]?.monthName === currentMonthName
+      "
+      class="halfday-warning"
+    >
+      ⚠ HALF DAY ALERT
+    </span>
+
+    <span class="employee-cardno"> ({{ attendanceData[0]?.cardNo }}) </span>
+  </h2>
+</div>
   <div class="employee-card" *ngFor="let user of attendanceData">
+    <!-- PREVIOUS MONTH WARNING -->
+<div
+  *ngIf="
+    user.summary?.halfDays > 5 &&
+    user.monthName !== currentMonthName
+  "
+  class="previous-month-warning"
+>
+  ⚠ WARNING :
+  You have more than 5 half days in {{ user.monthName }}
+</div>
     <div class="table-wrapper">
       <table class="attendance-table">
         <thead>

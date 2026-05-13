@@ -112,11 +112,10 @@
         </span>
 
         <span class="employee-cardno"> ({{ user.cardNo }}) </span>
-        <span *ngIf="user.summary.halfDays > 5" class="halfday-warning">
-          ⚠ Warning
-        </span>
-
         <span *ngIf="user.isTeamLeader" class="leader-star"> ★ </span>
+        <span *ngIf="user.summary.halfDays > 5" class="halfday-warning">
+          ⚠ Warning (This employee has more then 5 half days)
+        </span>
       </h3>
     </div>
 
