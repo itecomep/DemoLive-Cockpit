@@ -465,7 +465,7 @@ export class AttendanceComponent implements OnInit {
     const totalMinutes = hours * 60 + minutes;
 
     // 8 HOURS 30 MINUTES
-    return totalMinutes < 510;
+    return totalMinutes < 540;
   }
 
   convertTimeToMinutes(time: string): number {
