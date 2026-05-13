@@ -176,7 +176,6 @@ export class AttendanceComponent implements OnInit {
           return cardNo === searchText;
         }
 
-       
         return employeeName.includes(searchText);
       });
     }
@@ -333,12 +332,14 @@ export class AttendanceComponent implements OnInit {
         }
       });
 
-      emp.summary.presentDays = actualPresentDays;
-      emp.summary.extraWorkingDays = extraWorkingDays;
-      emp.summary.paidDays = actualPresentDays + extraWorkingDays;
-      emp.summary.halfDays = halfDays;
-
-      emp.summary.absentDays = workingDays - actualPresentDays;
+      emp.summary = {
+        ...emp.summary,
+        presentDays: actualPresentDays,
+        extraWorkingDays: extraWorkingDays,
+        paidDays: actualPresentDays + extraWorkingDays,
+        halfDays: halfDays,
+        absentDays: workingDays - actualPresentDays,
+      };
     });
   }
 

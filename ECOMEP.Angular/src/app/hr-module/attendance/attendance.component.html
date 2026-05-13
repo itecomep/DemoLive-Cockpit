@@ -33,7 +33,6 @@
       (input)="applyFilters()"
     />
 
-   
     <select
       [(ngModel)]="selectedMonth"
       (change)="onMonthYearChange()"
@@ -44,7 +43,6 @@
       </option>
     </select>
 
-    
     <select
       [(ngModel)]="selectedYear"
       (change)="onMonthYearChange()"
@@ -114,6 +112,9 @@
         </span>
 
         <span class="employee-cardno"> ({{ user.cardNo }}) </span>
+        <span *ngIf="user.summary.halfDays > 5" class="halfday-warning">
+          ⚠ Warning
+        </span>
 
         <span *ngIf="user.isTeamLeader" class="leader-star"> ★ </span>
       </h3>

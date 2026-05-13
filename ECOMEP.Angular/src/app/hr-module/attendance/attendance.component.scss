@@ -297,3 +297,24 @@ input {
   align-items: center;
   justify-content: center;
 }
+
+.halfday-warning {
+  color: #ff0000;
+  font-weight: 700;
+  margin-left: 10px;
+  animation: blinkWarning 1s infinite;
+}
+
+@keyframes blinkWarning {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
