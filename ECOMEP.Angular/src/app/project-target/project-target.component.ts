@@ -131,6 +131,9 @@ export class ProjectTargetComponent implements OnInit {
       this.originalTargets = data.map((t) => ({
         ...t,
         projectName: this.getProjectName(t.projectId) || "",
+
+        // fallback safety
+        attachments: t.attachments || [],
       }));
 
       this.targets = [...this.originalTargets];
@@ -213,49 +216,25 @@ export class ProjectTargetComponent implements OnInit {
         "T00:00:00";
     }
 
-    // const payload = {
-    //   projectId: original.projectId,
-    //   stage: this.editRow.stage,
-    //   stageStatus: this.editRow.stageStatus,
-    //   targetDate: fixedDate,
-    //   feedback: this.editRow.feedback,
-    // };
-
-
     const formData = new FormData();
 
-formData.append(
-  "projectId",
-  original.projectId
-);
+    formData.append("projectId", original.projectId);
 
-formData.append(
-  "stage",
-  this.editRow.stage
-);
+    formData.append("stage", this.editRow.stage);
 
-formData.append(
-  "stageStatus",
-  this.editRow.stageStatus
-);
+    formData.append("stageStatus", this.editRow.stageStatus);
 
-formData.append(
-  "targetDate",
-  fixedDate || ""
-);
+    formData.append("targetDate", fixedDate || "");
 
-formData.append(
-  "feedback",
-  this.editRow.feedback || ""
-);
+    formData.append("feedback", this.editRow.feedback || "");
 
-this.editSelectedFiles.forEach((file: File) => {
-  formData.append("attachments", file);
-});
+    this.editSelectedFiles.forEach((file: File) => {
+      formData.append("attachments", file);
+    });
 
     // this.service.update(this.editId!, payload).subscribe(() => {
     this.service.update(this.editId!, formData).subscribe(() => {
-       this.editSelectedFiles = []; 
+      this.editSelectedFiles = [];
       this.editId = null;
       this.loadTargets();
     });
@@ -295,10 +274,9 @@ this.editSelectedFiles.forEach((file: File) => {
       projectName: this.getProjectName(t.projectId) || "",
     }));
 
-   
     if (this.sortColumn) {
-  this.sortData(this.sortColumn);
-}
+      this.sortData(this.sortColumn);
+    }
   }
 
   sortData(column: string) {
@@ -371,244 +349,96 @@ this.editSelectedFiles.forEach((file: File) => {
     });
   }
 
-  // applySearch() {
-  //   const text = this.searchText.toLowerCase();
-
-  //   this.targets = this.originalTargets.filter((t: any) => {
-  //     const project = this.getProjectName(t.projectId).toLowerCase();
-  //     const code = (t.projectCode || "").toLowerCase();
-
-  //     return project.includes(text) || code.includes(text);
-  //   });
-
-  //   this.applyProjectNames();
-  // }
-
   applySearch() {
-  this.applyAllFilters();
-}
-
-  // applyFilter(type: string) {
-  //   this.activeTab = type;
-
-  //   const now = new Date();
-  //   const currentMonth = now.getMonth();
-  //   const currentYear = now.getFullYear();
-
-  //   this.targets = this.originalTargets.filter((t: any) => {
-  //     if (!t.targetDate) return false;
-
-  //     const d = new Date(t.targetDate);
-  //     const month = d.getMonth();
-  //     const year = d.getFullYear();
-
-  //     switch (type) {
-  //       case "all":
-  //         return true;
-
-  //       case "current":
-  //         return month === currentMonth && year === currentYear;
-
-  //       case "prev":
-  //         return (
-  //           (month === currentMonth - 1 && year === currentYear) ||
-  //           (currentMonth === 0 && month === 11 && year === currentYear - 1)
-  //         );
-
-  //       case "next":
-  //         return (
-  //           (month === currentMonth + 1 && year === currentYear) ||
-  //           (currentMonth === 11 && month === 0 && year === currentYear + 1)
-  //         );
-
-  //       default:
-  //         return true;
-  //     }
-  //   });
-
-  //   this.applyProjectNames();
-  // }
-
-
-
+    this.applyAllFilters();
+  }
 
   applyFilter(type: string) {
-  this.activeTab = type;
-  this.applyAllFilters();
-}
-
-  // applyCustomDate() {
-  //   if (!this.fromDate || !this.toDate) {
-  //     // if one date missing → reset
-  //     this.targets = [...this.originalTargets];
-  //     this.applyProjectNames();
-  //     return;
-  //   }
-
-  //   const parseDate = (d: any) => {
-  //     if (!d) return 0;
-
-  //     const parts = d.toString().split("T")[0].split("-");
-  //     if (parts.length !== 3) return 0;
-
-  //     const year = Number(parts[0]);
-  //     const month = Number(parts[1]) - 1;
-  //     const day = Number(parts[2]);
-
-  //     return new Date(year, month, day).getTime();
-  //   };
-
-  //   const from = parseDate(this.fromDate);
-  //   const to = parseDate(this.toDate);
-
-  //   this.targets = this.originalTargets.filter((t: any) => {
-  //     const time = parseDate(t.targetDate);
-  //     return time >= from && time <= to;
-  //   });
-
-  //   this.applyProjectNames(); // keep sorting
-  // }
- 
-
-
-//   applyAllFilters() {
-//   const text = this.searchText.toLowerCase();
-
-//   const now = new Date();
-//   const currentMonth = now.getMonth();
-//   const currentYear = now.getFullYear();
-
-//   this.targets = this.originalTargets.filter((t: any) => {
-//     // 🔍 SEARCH FILTER
-//     const project = this.getProjectName(t.projectId).toLowerCase();
-//     const code = (t.projectCode || "").toLowerCase();
-
-//     const matchesSearch =
-//       project.includes(text) || code.includes(text);
-
-//     // 📅 TAB FILTER
-//     if (!t.targetDate) return false;
-
-//     const d = new Date(t.targetDate);
-//     const month = d.getMonth();
-//     const year = d.getFullYear();
-
-//     let matchesTab = true;
-
-//     switch (this.activeTab) {
-//       case "current":
-//         matchesTab = month === currentMonth && year === currentYear;
-//         break;
-
-//       case "prev":
-//         matchesTab =
-//           (month === currentMonth - 1 && year === currentYear) ||
-//           (currentMonth === 0 && month === 11 && year === currentYear - 1);
-//         break;
-
-//       case "next":
-//         matchesTab =
-//           (month === currentMonth + 1 && year === currentYear) ||
-//           (currentMonth === 11 && month === 0 && year === currentYear + 1);
-//         break;
-
-//       case "all":
-//       default:
-//         matchesTab = true;
-//     }
-
-//     return matchesSearch && matchesTab;
-//   });
-
-//   this.applyProjectNames();
-// } 
-
-closeDialog() {
-  this.dialog.closeAll();
-}
-
-applyAllFilters() {
-  const text = this.searchText.toLowerCase();
-
-  const now = new Date();
-  const currentMonth = now.getMonth();
-  const currentYear = now.getFullYear();
-
-  const parseDate = (d: any) => {
-    if (!d) return 0;
-
-    const parts = d.toString().split("T")[0].split("-");
-    if (parts.length !== 3) return 0;
-
-    const year = Number(parts[0]);
-    const month = Number(parts[1]) - 1;
-    const day = Number(parts[2]);
-
-    return new Date(year, month, day).getTime();
-  };
-
-  const from = this.fromDate ? parseDate(this.fromDate) : null;
-  const to = this.toDate ? parseDate(this.toDate) : null;
-
-  this.targets = this.originalTargets.filter((t: any) => {
-    // 🔍 SEARCH
-    const project = this.getProjectName(t.projectId).toLowerCase();
-    const code = (t.projectCode || "").toLowerCase();
-
-    const matchesSearch =
-      !text || project.includes(text) || code.includes(text);
-
-    // 📅 TAB FILTER
-    let matchesTab = true;
-
-    if (t.targetDate) {
-      const d = new Date(t.targetDate);
-      const month = d.getMonth();
-      const year = d.getFullYear();
-
-      switch (this.activeTab) {
-        case "current":
-          matchesTab = month === currentMonth && year === currentYear;
-          break;
-
-        case "prev":
-          matchesTab =
-            (month === currentMonth - 1 && year === currentYear) ||
-            (currentMonth === 0 && month === 11 && year === currentYear - 1);
-          break;
-
-        case "next":
-          matchesTab =
-            (month === currentMonth + 1 && year === currentYear) ||
-            (currentMonth === 11 && month === 0 && year === currentYear + 1);
-          break;
-      }
-    }
-
-    // 📆 CUSTOM DATE FILTER
-    let matchesDateRange = true;
-
-    if (from !== null && to !== null) {
-      const time = parseDate(t.targetDate);
-      matchesDateRange = time >= from && time <= to;
-    }
-
-    return matchesSearch && matchesTab && matchesDateRange;
-  });
-
-  this.applyProjectNames();
-}
-
-onEditFilesSelected(event: any) {
-
-  if (event.target.files && event.target.files.length > 0) {
-
-    this.editSelectedFiles = Array.from(event.target.files);
-
-    console.log(
-      "Edit Selected Files => ",
-      this.editSelectedFiles
-    );
+    this.activeTab = type;
+    this.applyAllFilters();
   }
-}
+
+  closeDialog() {
+    this.dialog.closeAll();
+  }
+
+  applyAllFilters() {
+    const text = this.searchText.toLowerCase();
+
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    const parseDate = (d: any) => {
+      if (!d) return 0;
+
+      const parts = d.toString().split("T")[0].split("-");
+      if (parts.length !== 3) return 0;
+
+      const year = Number(parts[0]);
+      const month = Number(parts[1]) - 1;
+      const day = Number(parts[2]);
+
+      return new Date(year, month, day).getTime();
+    };
+
+    const from = this.fromDate ? parseDate(this.fromDate) : null;
+    const to = this.toDate ? parseDate(this.toDate) : null;
+
+    this.targets = this.originalTargets.filter((t: any) => {
+      // 🔍 SEARCH
+      const project = this.getProjectName(t.projectId).toLowerCase();
+      const code = (t.projectCode || "").toLowerCase();
+
+      const matchesSearch =
+        !text || project.includes(text) || code.includes(text);
+
+      // 📅 TAB FILTER
+      let matchesTab = true;
+
+      if (t.targetDate) {
+        const d = new Date(t.targetDate);
+        const month = d.getMonth();
+        const year = d.getFullYear();
+
+        switch (this.activeTab) {
+          case "current":
+            matchesTab = month === currentMonth && year === currentYear;
+            break;
+
+          case "prev":
+            matchesTab =
+              (month === currentMonth - 1 && year === currentYear) ||
+              (currentMonth === 0 && month === 11 && year === currentYear - 1);
+            break;
+
+          case "next":
+            matchesTab =
+              (month === currentMonth + 1 && year === currentYear) ||
+              (currentMonth === 11 && month === 0 && year === currentYear + 1);
+            break;
+        }
+      }
+
+      // 📆 CUSTOM DATE FILTER
+      let matchesDateRange = true;
+
+      if (from !== null && to !== null) {
+        const time = parseDate(t.targetDate);
+        matchesDateRange = time >= from && time <= to;
+      }
+
+      return matchesSearch && matchesTab && matchesDateRange;
+    });
+
+    this.applyProjectNames();
+  }
+
+  onEditFilesSelected(event: any) {
+    if (event.target.files && event.target.files.length > 0) {
+      this.editSelectedFiles = Array.from(event.target.files);
+
+      console.log("Edit Selected Files => ", this.editSelectedFiles);
+    }
+  }
 }

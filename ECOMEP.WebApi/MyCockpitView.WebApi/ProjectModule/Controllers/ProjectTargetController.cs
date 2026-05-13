@@ -1,9 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MyCockpitView.WebApi.AppSettingMasterModule;
+using MyCockpitView.WebApi.AzureBlobsModule;
+using MyCockpitView.WebApi.Entities;
 using MyCockpitView.WebApi.ProjectModule.Dtos;
 using MyCockpitView.WebApi.ProjectModule.Entities;
-using MyCockpitView.WebApi.Entities;
-using Microsoft.AspNetCore.Http;
+using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace MyCockpitView.WebApi.ProjectModule.Controllers
 {
@@ -12,14 +16,21 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
     public class ProjectTargetController : ControllerBase
     {
         private readonly EntitiesContext _db;
+        private readonly IAzureBlobService _blobService;
+        private readonly IAppSettingMasterService _appSetting;
 
-        public ProjectTargetController(EntitiesContext db)
+        public ProjectTargetController(
+            EntitiesContext db,
+            IAzureBlobService blobService,
+            IAppSettingMasterService appSetting
+        )
         {
             _db = db;
+            _blobService = blobService;
+            _appSetting = appSetting;
         }
 
         [HttpPost]
-        // public async Task<IActionResult> Create(ProjectTargetDto dto)
         public async Task<IActionResult> Create([FromForm] ProjectTargetDto dto)
         {
             if (!ModelState.IsValid)
@@ -67,103 +78,60 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
                 return BadRequest("This stage is already completed for this project.");
             }
 
-            // ATTACHMENT UPLOAD
-if (dto.Attachments != null && dto.Attachments.Any())
-{
-    var uploadPath = Path.Combine(
-        Directory.GetCurrentDirectory(),
-        "wwwroot",
-        "uploads",
-        "project-targets"
-    );
+            // AZURE BLOB ATTACHMENT UPLOAD
+            if (dto.Attachments != null && dto.Attachments.Any())
+            {
+                var azureKey = await _appSetting.GetPresetValue("AZURE_STORAGE_KEY");
 
-    if (!Directory.Exists(uploadPath))
-    {
-        Directory.CreateDirectory(uploadPath);
-    }
+                List<string> uploadedFiles = new();
 
-    var uploadedFiles = new List<string>();
+                foreach (var file in dto.Attachments)
+                {
+                    if (file == null || file.Length == 0)
+                        continue;
 
-    foreach (var file in dto.Attachments)
-    {
-        var fileName =
-            Guid.NewGuid().ToString() + "_" + file.FileName;
+                    var originalFileName = Path.GetFileName(file.FileName);
 
-        var filePath = Path.Combine(uploadPath, fileName);
+                    var safeFileName = Regex.Replace(
+                        originalFileName,
+                        @"[^a-zA-Z0-9\._-]",
+                        "_"
+                    );
 
-        using (var stream = new FileStream(filePath, FileMode.Create))
-        {
-            await file.CopyToAsync(stream);
-        }
+                    if (string.IsNullOrWhiteSpace(safeFileName))
+                    {
+                        safeFileName = "file";
+                    }
 
-        uploadedFiles.Add(
-            "/uploads/project-targets/" + fileName
-        );
-    }
+                    var uniqueFileName =
+                        $"{DateTime.Now:yyyyMMddHHmmssfff}_{safeFileName}";
 
-    entity.Attachment = string.Join(",", uploadedFiles);
-}
+                    var blobPath =
+                        $"project-target/{dto.ProjectId}/{uniqueFileName}";
 
+                    await using var stream = file.OpenReadStream();
+
+                    await _blobService.UploadAsync(
+                        azureKey,
+                        "projecttargets",
+                        blobPath,
+                        stream
+                    );
+
+                    uploadedFiles.Add(uniqueFileName);
+                }
+
+                entity.Attachment = string.Join(",", uploadedFiles);
+            }
             _db.ProjectTargets.Add(entity);
 
-
-            // UPDATE ATTACHMENTS
-if (dto.Attachments != null && dto.Attachments.Any())
-{
-    var uploadPath = Path.Combine(
-        Directory.GetCurrentDirectory(),
-        "wwwroot",
-        "uploads",
-        "project-targets"
-    );
-
-    if (!Directory.Exists(uploadPath))
-    {
-        Directory.CreateDirectory(uploadPath);
-    }
-
-    var uploadedFiles = new List<string>();
-
-    // OLD FILES
-    if (!string.IsNullOrEmpty(entity.Attachment))
-    {
-        uploadedFiles = entity.Attachment
-            .Split(",", StringSplitOptions.RemoveEmptyEntries)
-            .ToList();
-    }
-
-    foreach (var file in dto.Attachments)
-    {
-        var fileName =
-            Guid.NewGuid().ToString() + "_" + file.FileName;
-
-        var filePath = Path.Combine(uploadPath, fileName);
-
-        using (var stream = new FileStream(filePath, FileMode.Create))
-        {
-            await file.CopyToAsync(stream);
-        }
-
-        uploadedFiles.Add(
-            "/uploads/project-targets/" + fileName
-        );
-    }
-
-    entity.Attachment = string.Join(",", uploadedFiles);
-}
             await _db.SaveChangesAsync();
-
             return Ok(entity);
         }
 
-        //UPDATE
         [HttpPut("{id}")]
-        // public async Task<IActionResult> Update(int id, ProjectTargetDto dto)
-        public async Task<IActionResult> Update(
-    int id,
-    [FromForm] ProjectTargetDto dto
-)
-        {
+        public async Task<IActionResult> Update(int id, [FromForm] ProjectTargetDto dto)
+                    {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -224,12 +192,66 @@ if (dto.Attachments != null && dto.Attachments.Any())
                 _db.ProjectTargetHistories.AddRange(histories);
             }
 
+            // AZURE BLOB ATTACHMENT UPDATE
+            List<string> existingFiles = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(entity.Attachment))
+            {
+                existingFiles = entity.Attachment
+                    .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                    .ToList();
+            }
+
+            if (dto.Attachments != null && dto.Attachments.Any())
+            {
+                var azureKey =
+                    await _appSetting.GetPresetValue("AZURE_STORAGE_KEY");
+
+                foreach (var file in dto.Attachments)
+                {
+                    if (file == null || file.Length == 0)
+                        continue;
+
+                    var originalFileName =
+                        Path.GetFileName(file.FileName);
+
+                    var safeFileName = Regex.Replace(
+                        originalFileName,
+                        @"[^a-zA-Z0-9\._-]",
+                        "_"
+                    );
+
+                    if (string.IsNullOrWhiteSpace(safeFileName))
+                    {
+                        safeFileName = "file";
+                    }
+
+                    var uniqueFileName =
+                        $"{DateTime.Now:yyyyMMddHHmmssfff}_{safeFileName}";
+
+                    var blobPath =
+                        $"project-target/{dto.ProjectId}/{uniqueFileName}";
+
+                    await using var stream = file.OpenReadStream();
+
+                    await _blobService.UploadAsync(
+                        azureKey,
+                        "projecttargets",
+                        blobPath,
+                        stream
+                    );
+
+                    existingFiles.Add(uniqueFileName);
+                }
+
+                entity.Attachment = string.Join(",", existingFiles);
+            }
+
             await _db.SaveChangesAsync();
 
             return Ok(entity);
         }
 
-        //FORM DATA
         [HttpGet("form-data")]
         public async Task<IActionResult> GetFormData(int? projectId = null)
         {
@@ -269,7 +291,6 @@ if (dto.Attachments != null && dto.Attachments.Any())
             });
         }
 
-        //GET STAGES BY PROJECT
         [HttpGet("stages/{projectId}")]
         public async Task<IActionResult> GetStagesByProject(int projectId)
         {
@@ -319,6 +340,7 @@ if (dto.Attachments != null && dto.Attachments.Any())
             }
 
             await _db.SaveChangesAsync();
+            var storageAccount = await _appSetting.GetPresetValue("AZURE_STORAGE_ACCOUNT");
 
             var result = data
                 .OrderByDescending(x => x.CreatedDate)
@@ -331,6 +353,16 @@ if (dto.Attachments != null && dto.Attachments.Any())
                     x.TargetDate,
                     x.StageStatus,
                     x.Feedback,
+
+                    attachments = string.IsNullOrEmpty(x.Attachment)
+                    ? new List<object>()
+                    : x.Attachment.Split(',')
+                        .Select(file => (object)new
+                        {
+                            fileName = file,
+                            fileUrl =
+                                $"https://{storageAccount}.blob.core.windows.net/projecttargets/project-target/{x.ProjectId}/{file}"
+                        }).ToList(),
 
                     teamIds = _db.ProjectTeams
                         .Where(pt => pt.ProjectID == x.ProjectId)
