@@ -426,8 +426,8 @@ export class MyAttendanceComponent implements OnInit {
 
     const totalMinutes = hours * 60 + minutes;
 
-    // LESS THAN 8:30
-    return totalMinutes < 510;
+    // LESS THAN 9:00
+    return totalMinutes < 540;
   }
 
   getMeetingHours(
