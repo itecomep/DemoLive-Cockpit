@@ -4,8 +4,6 @@
   min-height: 100vh;
 }
 
-
-
 .page-actions {
   margin-top: 22px;
 }
@@ -25,7 +23,7 @@
 table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
+  table-layout: auto;
   font-size: 13px;
 }
 
@@ -55,74 +53,60 @@ tbody tr:hover {
 }
 
 /* ================= COLUMN WIDTHS ================= */
-// th:nth-child(1),
-// td:nth-child(1) {
-//   width: 50px;
-//   text-align: center;
-// }
-// th:nth-child(2),
-// td:nth-child(2) {
-//   width: 90px;
-// }
-// th:nth-child(3),
-// td:nth-child(3) {
-//   width: 260px;
-// }
-// th:nth-child(4),
-// td:nth-child(4) {
-//   width: 180px;
-// }
-// th:nth-child(5),
-// td:nth-child(5) {
-//   width: 140px;
-// }
-// th:nth-child(6),
-// td:nth-child(6) {
-//   width: 130px;
-// }
-// th:nth-child(7),
-// td:nth-child(7) {
-//   width: 260px;
-// }
-// th:nth-child(8),
-// td:nth-child(8) {
-//   width: 90px;
-// }
+
 th:nth-child(1),
 td:nth-child(1) {
-  width: 50px;
+  width: 55px;
   text-align: center;
 }
+
 th:nth-child(2),
 td:nth-child(2) {
   width: 90px;
 }
+
 th:nth-child(3),
 td:nth-child(3) {
-  width: 260px;
+  min-width: 240px;
 }
+
 th:nth-child(4),
 td:nth-child(4) {
-  width: 180px;
+  min-width: 170px;
 }
+
 th:nth-child(5),
 td:nth-child(5) {
-  width: 140px;
-}
-th:nth-child(6),
-td:nth-child(6) {
   width: 130px;
 }
+
+th:nth-child(6),
+td:nth-child(6) {
+  width: 120px;
+  white-space: nowrap;
+}
+
 th:nth-child(7),
 td:nth-child(7) {
-  width: 260px;
+  min-width: 180px;
 }
-// th:nth-child(8), td:nth-child(8) { width: 90px; }
+
 th:nth-child(8),
 td:nth-child(8) {
   width: 160px;
 }
 
+// th:nth-child(9),
+// td:nth-child(9) {
+//   width: 90px;
+//   text-align: center;
+// }
+
+th:nth-child(9),
+td:nth-child(9) {
+  min-width: 170px;
+  text-align: center;
+}
 /* ================= ID ================= */
 .id-badge {
   font-weight: 600;
@@ -247,10 +231,10 @@ td {
 }
 
 /* ================= ACTION ================= */
-.actions {
-  display: flex;
-  gap: 6px;
-}
+// .actions {
+//   display: flex;
+//   gap: 6px;
+// }
 
 /* ================= BUTTONS ================= */
 // .edit-btn {
@@ -262,9 +246,8 @@ td {
 //   font-size: 12px;
 // }
 
-
 .edit-btn {
-  background: #16a34a;   /* same family as your green theme */
+  background: #16a34a; /* same family as your green theme */
   color: #ffffff;
   border: none;
   padding: 6px 12px;
@@ -276,19 +259,19 @@ td {
 
 /* hover */
 .edit-btn:hover {
-  background: #15803d;   /* slightly darker green */
+  background: #15803d; /* slightly darker green */
 }
 
 .edit-btn:disabled {
-  background: #d1d5db;   /* light grey */
-  color: #6b7280;        /* muted text */
+  background: #d1d5db; /* light grey */
+  color: #6b7280; /* muted text */
   cursor: not-allowed;
   opacity: 0.8;
 }
 
 /* optional hover fix */
 .edit-btn:disabled:hover {
-  background: #d1d5db;   /* prevent hover color change */
+  background: #d1d5db; /* prevent hover color change */
 }
 
 .primary-btn {
@@ -456,9 +439,6 @@ input {
   word-break: break-word; /* ✅ break long words */
 }
 
-
-
-
 /* ===== SCROLL ===== */
 .dialog-body {
   max-height: 350px;
@@ -568,14 +548,18 @@ input {
   background: #f3f4f6;
   border-color: #9ca3af;
 }
+
 .primary-btn,
 .secondary-btn {
-  height: 32px; /* ✅ fixed height */
+  height: 32px;
+  min-width: 72px;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
-}
 
+  white-space: nowrap;
+}
 th {
   text-align: left;
   padding: 10px;
@@ -643,7 +627,6 @@ th {
   border-radius: 6px;
   border: 1px solid #ccc;
   font-family: inherit;
-
 }
 
 .feedback-line {
@@ -665,8 +648,6 @@ th {
   white-space: nowrap;
 }
 
-
-
 .dialog-header {
   display: flex;
   justify-content: space-between;
@@ -685,4 +666,55 @@ th {
 .close-icon:hover {
   color: #ef4444; /* red on hover */
   transform: scale(1.2);
+}
+
+.attachment-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.attachment-link,
+.file-name {
+  color: #2563eb;
+  font-size: 12px;
+  text-decoration: none;
+  word-break: break-word;
+}
+
+.attachment-link:hover {
+  text-decoration: underline;
+}
+
+// .actions {
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+// }
+
+.actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+td {
+  vertical-align: middle;
+}
+
+.attachment-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 2px;
+}
+
+.attachment-link {
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

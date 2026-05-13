@@ -293,12 +293,20 @@
               </ng-template>
             </td>
 
-            <td>
-              <ng-container *ngIf="editId !== t.id; else editAttachment">
+            <td class="attachment-cell">
+              <!-- NORMAL VIEW -->
+              <ng-container *ngIf="editId !== t.id">
                 <div *ngIf="t.attachments?.length; else noAttachment">
-                  <div *ngFor="let file of t.attachments">
-                    <a [href]="file.fileUrl" target="_blank">
-                      {{ file.fileName }}
+                  <div
+                    class="attachment-item"
+                    *ngFor="let file of t.attachments"
+                  >
+                    <a
+                      [href]="file.fileUrl"
+                      target="_blank"
+                      class="attachment-link"
+                    >
+                      {{ getDisplayFileName(file.fileName) }}
                     </a>
                   </div>
                 </div>
@@ -306,22 +314,49 @@
                 <ng-template #noAttachment> - </ng-template>
               </ng-container>
 
-              <ng-template #editAttachment>
-                <input
-                  type="file"
-                  multiple
-                  (change)="onEditFilesSelected($event)"
-                />
-
+              <!-- EDIT VIEW -->
+              <ng-container *ngIf="editId === t.id">
+                <!-- existing files -->
                 <div
-                  class="attachment-list"
-                  *ngIf="editSelectedFiles.length > 0"
+                  class="attachment-item"
+                  *ngFor="let file of t.attachments; let i = index"
                 >
-                  <div *ngFor="let file of editSelectedFiles">
-                    {{ file.name }}
-                  </div>
+                  <a
+                    [href]="file.fileUrl"
+                    target="_blank"
+                    class="attachment-link"
+                  >
+                    {{ getDisplayFileName(file.fileName) }}
+                  </a>
+
+                  <span class="remove-file" (click)="removeAttachment(t, i)">
+                    ✖
+                  </span>
                 </div>
-              </ng-template>
+
+                <!-- upload -->
+                <div class="upload-section">
+                  <input
+                    type="file"
+                    multiple
+                    (change)="onEditFilesSelected($event)"
+                  />
+                </div>
+
+                <!-- newly selected -->
+                <div
+                  class="attachment-item"
+                  *ngFor="let file of editSelectedFiles; let i = index"
+                >
+                  <span class="file-name">
+                    {{ getDisplayFileName(file.name) }}
+                  </span>
+
+                  <span class="remove-file" (click)="removeSelectedFile(i)">
+                    ✖
+                  </span>
+                </div>
+              </ng-container>
             </td>
 
             <!-- ACTION -->

@@ -441,4 +441,32 @@ export class ProjectTargetComponent implements OnInit {
       console.log("Edit Selected Files => ", this.editSelectedFiles);
     }
   }
+
+  getDisplayFileName(fileName: string): string {
+    if (!fileName) {
+      return "";
+    }
+
+    const parts = fileName.split("_");
+
+    if (parts.length > 1) {
+      parts.shift();
+
+      return parts.join("_");
+    }
+
+    return fileName;
+  }
+
+  removeSelectedFile(index: number) {
+    this.editSelectedFiles.splice(index, 1);
+
+    this.editSelectedFiles = [...this.editSelectedFiles];
+  }
+
+  removeAttachment(row: any, index: number) {
+    row.attachments.splice(index, 1);
+
+    row.attachments = [...row.attachments];
+  }
 }
