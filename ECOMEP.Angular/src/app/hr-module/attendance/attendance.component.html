@@ -106,24 +106,21 @@
         </div> -->
 
         <div class="legend-item">
-  <span class="legend-color holiday-legend"></span>
-  <span>Holiday</span>
-</div>
+          <span class="legend-color holiday-legend"></span>
+          <span>Holiday</span>
+        </div>
 
-<div class="legend-item">
-  <span class="legend-color halfday-legend-box">
-    H
-  </span>
+        <div class="legend-item">
+          <span class="legend-color halfday-legend-box"> H </span>
 
-  <span>Half Day</span>
-</div>
+          <span>Half Day</span>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="employee-card" *ngFor="let user of attendanceData">
     <div class="card-header">
-    
       <h3 class="employee-title">
         <span class="employee-label"> Employee: </span>
 
@@ -232,16 +229,56 @@
             >
               {{ day.total }}
 
+              <span
+                *ngIf="day.total !== '-' && isHalfDay(day.total)"
+                class="half-day-mark"
+              >
+                H
+              </span>
+            </td>
+          </tr>
 
-               <span
-      *ngIf="
-        day.total !== '-' &&
-        isHalfDay(day.total)
-      "
-      class="half-day-mark"
-    >
-      H
-    </span>
+          <!-- MEETING -->
+          <tr>
+            <td class="label-col">Meeting</td>
+
+            <td
+              *ngFor="let day of user.dailyDetails; let i = index"
+              [ngClass]="{
+                'holiday-column': isHoliday(i + 1, user.monthNumber, user.year),
+
+                'sunday-column':
+                  !isHoliday(i + 1, user.monthNumber, user.year) &&
+                  isSunday(i + 1, user.monthNumber, user.year),
+
+                'saturday-column':
+                  !isHoliday(i + 1, user.monthNumber, user.year) &&
+                  isSecondOrFourthSaturday(i + 1, user.monthNumber, user.year),
+              }"
+            >
+              {{ day.meetingHours || "-" }}
+            </td>
+          </tr>
+
+          <!-- TOTAL -->
+          <tr>
+            <td class="label-col">Total</td>
+
+            <td
+              *ngFor="let day of user.dailyDetails; let i = index"
+              [ngClass]="{
+                'holiday-column': isHoliday(i + 1, user.monthNumber, user.year),
+
+                'sunday-column':
+                  !isHoliday(i + 1, user.monthNumber, user.year) &&
+                  isSunday(i + 1, user.monthNumber, user.year),
+
+                'saturday-column':
+                  !isHoliday(i + 1, user.monthNumber, user.year) &&
+                  isSecondOrFourthSaturday(i + 1, user.monthNumber, user.year),
+              }"
+            >
+              {{ day.grandTotal || "-" }}
             </td>
           </tr>
         </tbody>
@@ -269,16 +306,15 @@
         {{ user.summary.extraWorkingDays }}
       </div>
 
+      <div class="summary-item">
+        <span>Paid Days:</span>
+        {{ user.summary.paidDays }}
+      </div>
 
       <div class="summary-item">
-  <span>Paid Days:</span>
-  {{ user.summary.paidDays }}
-</div>
-
-<div class="summary-item">
-  <span>Half Days:</span>
-  {{ user.summary.halfDays || 0 }}
-</div>
+        <span>Half Days:</span>
+        {{ user.summary.halfDays || 0 }}
+      </div>
 
       <div class="summary-item">
         <span>Absent Days:</span>
