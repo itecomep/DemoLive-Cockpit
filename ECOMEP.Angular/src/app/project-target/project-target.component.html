@@ -358,6 +358,7 @@
   class="attachment-item"
   *ngFor="let file of t.attachments; let index = index"
 >
+  <span
     class="attachment-link clickable"
     (click)="openPreview(t.attachments, index)"
   >
