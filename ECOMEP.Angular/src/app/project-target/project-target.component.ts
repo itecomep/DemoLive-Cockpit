@@ -232,6 +232,10 @@ export class ProjectTargetComponent implements OnInit {
       formData.append("attachments", file);
     });
 
+    original.attachments?.forEach((file: any) => {
+      formData.append("existingAttachments", file.fileName);
+    });
+
     // this.service.update(this.editId!, payload).subscribe(() => {
     this.service.update(this.editId!, formData).subscribe(() => {
       this.editSelectedFiles = [];

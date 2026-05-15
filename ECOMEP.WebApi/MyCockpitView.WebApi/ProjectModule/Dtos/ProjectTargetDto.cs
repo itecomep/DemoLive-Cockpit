@@ -20,8 +20,9 @@ namespace MyCockpitView.WebApi.ProjectModule.Dtos
         public string StageStatus { get; set; }
 
         public string Feedback { get; set; }
-
-        // NEW
+     
         public List<IFormFile>? Attachments { get; set; }
+
+        public List<string>? ExistingAttachments { get; set; }
     }
 }

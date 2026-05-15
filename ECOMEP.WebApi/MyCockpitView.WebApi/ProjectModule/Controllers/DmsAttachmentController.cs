@@ -76,20 +76,8 @@ namespace MyCockpitView.WebApi.Controllers
 
             var savedFiles = new List<object>();
 
-            //ProjectFolder? folder = null;
-
-            //if (dto.FolderId.HasValue)
-            //{
-            //    folder = await _db.ProjectFolders
-            //        .FirstOrDefaultAsync(f => f.Id == dto.FolderId && f.ProjectId == dto.ProjectId);
-
-            //    if (folder == null)
-            //        return BadRequest("Folder not found");
-            //}
-
             string classification = dto.Classification?.Trim() ?? "";
 
-            // 🔥 SAME classification logic
             if (!string.IsNullOrWhiteSpace(classification))
             {
                 var exists = await _db.DmsClassificationMasters
@@ -110,29 +98,6 @@ namespace MyCockpitView.WebApi.Controllers
                 }
             }
 
-            //string finalFolderPath = "";
-
-            //if (folder != null)
-            //{
-            //    var fullFolderPath = await BuildFolderPath(folder);
-
-            //    if (!string.IsNullOrWhiteSpace(classification))
-            //    {
-            //        if (fullFolderPath.StartsWith(classification + "/", StringComparison.OrdinalIgnoreCase))
-            //            fullFolderPath = fullFolderPath.Substring(classification.Length + 1);
-            //        else if (string.Equals(fullFolderPath, classification, StringComparison.OrdinalIgnoreCase))
-            //            fullFolderPath = "";
-            //    }
-
-            //    finalFolderPath = string.IsNullOrWhiteSpace(fullFolderPath)
-            //        ? classification
-            //        : $"{classification}/{fullFolderPath}";
-            //}
-            //else if (!string.IsNullOrWhiteSpace(classification))
-            //{
-            //    finalFolderPath = classification;
-            //}
-
             ProjectFolder? categoryFolder = null;
             ProjectFolder? dateFolder = null;
 
@@ -146,32 +111,8 @@ namespace MyCockpitView.WebApi.Controllers
 
             if (!string.IsNullOrWhiteSpace(classification))
             {
-                //categoryFolder = await _db.ProjectFolders
-                //    .FirstOrDefaultAsync(x =>
-                //        x.ProjectId == dto.ProjectId &&
-                //        x.ParentFolderId == null &&
-                //        x.FolderName.ToLower() == classification.ToLower());
-
-                //// CREATE CATEGORY IF NOT EXISTS
-                //if (categoryFolder == null)
-                //{
-                //    categoryFolder = new ProjectFolder
-                //    {
-                //        ProjectId = dto.ProjectId,
-                //        FolderName = classification,
-                //        Classification = classification,
-                //        ParentFolderId = null,
-                //        CreatedBy = dto.CreatedBy ?? "System",
-                //        Created = DateTime.UtcNow
-                //    };
-
-                //    _db.ProjectFolders.Add(categoryFolder);
-                //    await _db.SaveChangesAsync();
-                //}
 
                 const string rootFolderName = "SiteVisit";
-
-                // ================= ROOT FOLDER =================
 
                 var rootFolder = await _db.ProjectFolders
                     .FirstOrDefaultAsync(x =>
@@ -179,7 +120,6 @@ namespace MyCockpitView.WebApi.Controllers
                         x.ParentFolderId == null &&
                         x.FolderName == rootFolderName);
 
-                // CREATE ROOT IF NOT EXISTS
                 if (rootFolder == null)
                 {
                     rootFolder = new ProjectFolder
@@ -196,15 +136,12 @@ namespace MyCockpitView.WebApi.Controllers
                     await _db.SaveChangesAsync();
                 }
 
-                // ================= CATEGORY FOLDER =================
-
                 categoryFolder = await _db.ProjectFolders
                     .FirstOrDefaultAsync(x =>
                         x.ProjectId == dto.ProjectId &&
                         x.ParentFolderId == rootFolder.Id &&
                         x.FolderName.ToLower() == classification.ToLower());
 
-                // CREATE CATEGORY IF NOT EXISTS
                 if (categoryFolder == null)
                 {
                     categoryFolder = new ProjectFolder
@@ -221,15 +158,12 @@ namespace MyCockpitView.WebApi.Controllers
                     await _db.SaveChangesAsync();
                 }
 
-                // ================= DATE FOLDER =================
-
                 dateFolder = await _db.ProjectFolders
                     .FirstOrDefaultAsync(x =>
                         x.ProjectId == dto.ProjectId &&
                         x.ParentFolderId == categoryFolder.Id &&
                         x.FolderName == dateFolderName);
 
-                // CREATE DATE FOLDER IF NOT EXISTS
                 if (dateFolder == null)
                 {
                     dateFolder = new ProjectFolder
@@ -280,7 +214,7 @@ namespace MyCockpitView.WebApi.Controllers
                     FolderId = dateFolder?.Id,
                     FileName = finalFileName,
                     BlobPath = blobPath,
-                    BlobUrl = file.BlobUrl, // 🔥 already uploaded
+                    BlobUrl = file.BlobUrl,
                     Classification = classification,
                     FileSize = file.FileSize,
                     CreatedBy = dto.CreatedBy ?? "",
@@ -374,7 +308,7 @@ namespace MyCockpitView.WebApi.Controllers
             return string.Join("/", segments);
         }
 
-       
+
         [HttpGet("folderTree/{projectId}")]
         public async Task<IActionResult> GetFolderTree(int projectId, [FromQuery] string userId, [FromQuery] bool isMaster)
         {
@@ -753,7 +687,6 @@ namespace MyCockpitView.WebApi.Controllers
             if (string.IsNullOrWhiteSpace(dto.Classification))
                 return BadRequest("Classification required");
 
-            // 🔹 1. Save Level 1
             var main = await _db.DmsClassificationMasters
                 .FirstOrDefaultAsync(x => x.Name.ToLower() == dto.Classification.ToLower());
 
@@ -771,7 +704,6 @@ namespace MyCockpitView.WebApi.Controllers
                 await _db.SaveChangesAsync();
             }
 
-            // 🔹 2. Save Level 2
             DmsSubClassificationMaster? sub = null;
 
             if (!string.IsNullOrWhiteSpace(dto.SubClassification))
@@ -797,7 +729,6 @@ namespace MyCockpitView.WebApi.Controllers
                 }
             }
 
-            // 🔹 3. Save Level 3
             if (!string.IsNullOrWhiteSpace(dto.SubSubClassification) && sub != null)
             {
                 var subsub = await _db.DmsSubSubClassificationMasters
@@ -1087,6 +1018,40 @@ namespace MyCockpitView.WebApi.Controllers
             public int? FolderId { get; set; }
             public int? FileId { get; set; }
             public List<string>? DeniedUsers { get; set; }
+        }
+
+        [Authorize]
+        [HttpGet("{projectId}/AccessUsers")]
+        public async Task<IActionResult> GetProjectAccessUsers(int projectId)
+        {
+            var project = await _db.Projects
+                .AsNoTracking()
+                .Include(x => x.Teams)
+                    .ThenInclude(t => t.ContactTeam)
+                .SingleOrDefaultAsync(x => x.ID == projectId);
+
+            if (project == null)
+                return NotFound("Project not found");
+
+            var result = project.Teams.Select(x => new
+            {
+                teamId = x.ContactTeamID,
+                teamName = x.ContactTeam.Title,
+                userIds = _db.ContactTeams
+                    .Where(t => t.ID == x.ContactTeamID)
+                    .SelectMany(t => t.Members)
+                    .Select(m => m.ContactID)
+                    .Distinct()
+                    .ToList(),
+
+                totalUsers = _db.ContactTeams
+                    .Where(t => t.ID == x.ContactTeamID)
+                    .SelectMany(t => t.Members)
+                    .Select(m => m.ContactID)
+                    .Distinct()
+                    .Count()
+            });
+            return Ok(result);
         }
 
     }

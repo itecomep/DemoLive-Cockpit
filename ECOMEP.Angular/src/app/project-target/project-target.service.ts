@@ -1,13 +1,3 @@
-// import { Injectable } from '@angular/core';
-
-// @Injectable({
-//   providedIn: 'root'
-// })
-// export class ProjectTargetService {
-
-//   constructor() { }
-// }
-
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
@@ -61,17 +51,13 @@ export class ProjectTargetService {
   }
 
   getFilteredProjects(allProjects: any[], authService: any) {
+    if (!authService.currentUserStore?.roles.includes("MASTER")) {
+      const userTeamIds =
+        authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
 
-  if (!authService.currentUserStore?.roles.includes('MASTER')) {
+      return allProjects.filter((p: any) => userTeamIds.includes(p.teamId));
+    }
 
-    const userTeamIds =
-      authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
-
-    return allProjects.filter((p: any) =>
-      userTeamIds.includes(p.teamId)
-    );
+    return allProjects;
   }
-
-  return allProjects;
-}
 }
