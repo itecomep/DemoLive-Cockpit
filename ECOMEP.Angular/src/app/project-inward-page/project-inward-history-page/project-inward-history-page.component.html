@@ -1,68 +1,42 @@
-<!-- <div class="history-wrapper">
-
-  <table class="history-table">
-
-    <thead>
-      <tr>
-        <th>Sr No</th>
-        <th>Received Date</th>
-        <th>Project</th>
-        <th>Received From</th>
-        <th>Title</th>
-        <th>Category</th>
-        <th>Message</th>
-        <th>Files</th>
-      </tr>
-    </thead>
-
-    <tbody>
-
-      <tr *ngFor="let item of inwardList; let i = index">
-
-        <td>{{ i + 1 }}</td>
-
-        <td>
-          {{ item.receivedDate | date:'dd MMM yyyy' }}
-        </td>
-
-        <td>
-          {{ item.projectInput?.title }}
-        </td>
-
-        <td>
-          {{ item.contact?.name }}
-        </td>
-
-        <td>
-          {{ item.title }}
-        </td>
-
-        <td>
-          {{ item.category }}
-        </td>
-
-        <td>
-          {{ item.message }}
-        </td>
-
-        <td>
-          {{ item.attachments?.length || 0 }}
-        </td>
-
-      </tr>
-
-    </tbody>
-
-  </table>
-
-</div> -->
-
-
-
 <div class="history-wrapper">
 
   <!-- TOP BAR -->
   <div class="top-bar">
+
+
+  <input
+    type="text"
+    class="search-input"
+    placeholder="Search Project..."
+    [(ngModel)]="searchText"
+    (input)="filterProjects()"
+  />
+
+
+
+    <input
+    type="date"
+    class="date-input"
+    [(ngModel)]="fromDate"
+    (change)="filterProjects()"
+  />
+
+  <span class="date-separator">To</span>
+
+  <input
+    type="date"
+    class="date-input"
+    [(ngModel)]="toDate"
+    (change)="filterProjects()"
+  />
+
+
+  <button
+  class="reset-btn"
+  (click)="resetFilters()"
+>
+  ↺ Reset
+</button>
 
     <button
       class="create-btn"
@@ -77,14 +51,117 @@
 
     <thead>
       <tr>
+
         <th>Sr No</th>
-        <th>Received Date</th>
-        <th>Project</th>
-        <th>Received From</th>
-        <th>Title</th>
+
+
+
+        <th
+  class="sortable"
+  (click)="sortBy('receivedDate')"
+>
+  Received Date
+
+  <span
+    class="sort-arrow"
+    *ngIf="sortColumn === 'receivedDate'"
+  >
+    {{ getArrow('receivedDate') }}
+  </span>
+</th>
+
+<th
+  class="sortable"
+  (click)="sortBy('projectName')"
+>
+  Project
+
+  <span
+    class="sort-arrow"
+    *ngIf="sortColumn === 'projectName'"
+  >
+    {{ getArrow('projectName') }}
+  </span>
+</th>
+
+<th
+  class="sortable"
+  (click)="sortBy('receivedFrom')"
+>
+  Received From
+
+  <span
+    class="sort-arrow"
+    *ngIf="sortColumn === 'receivedFrom'"
+  >
+    {{ getArrow('receivedFrom') }}
+  </span>
+</th>
+
+        <!-- <th>Title</th>
+
         <th>Category</th>
+
         <th>Message</th>
-        <th>Files</th>
+
+        <th>Files</th> -->
+
+        <th
+  class="sortable"
+  (click)="sortBy('title')"
+>
+  Title
+
+  <span
+    class="sort-arrow"
+    *ngIf="sortColumn === 'title'"
+  >
+    {{ getArrow('title') }}
+  </span>
+</th>
+
+<th
+  class="sortable"
+  (click)="sortBy('category')"
+>
+  Category
+
+  <span
+    class="sort-arrow"
+    *ngIf="sortColumn === 'category'"
+  >
+    {{ getArrow('category') }}
+  </span>
+</th>
+
+<th
+  class="sortable"
+  (click)="sortBy('message')"
+>
+  Message
+
+  <span
+    class="sort-arrow"
+    *ngIf="sortColumn === 'message'"
+  >
+    {{ getArrow('message') }}
+  </span>
+</th>
+
+<th
+  class="sortable"
+  (click)="sortBy('attachments')"
+>
+  Files
+
+  <span
+    class="sort-arrow"
+    *ngIf="sortColumn === 'attachments'"
+  >
+    {{ getArrow('attachments') }}
+  </span>
+</th>
+
       </tr>
     </thead>
 
@@ -99,8 +176,7 @@
         </td>
 
         <td>
-            {{ item.projectName }}
-
+          {{ item.projectName }}
         </td>
 
         <td>
@@ -115,9 +191,34 @@
           {{ item.category }}
         </td>
 
-        <td>
+        <!-- <td>
           {{ item.message }}
-        </td>
+        </td> -->
+
+        <td>
+  <ng-container *ngIf="item.message?.length > 80; else shortMessage">
+
+    <span *ngIf="!item.showFullMessage">
+      {{ item.message | slice:0:80 }}...
+    </span>
+
+    <span *ngIf="item.showFullMessage">
+      {{ item.message }}
+    </span>
+
+    <button
+      class="toggle-btn"
+      (click)="item.showFullMessage = !item.showFullMessage"
+    >
+      {{ item.showFullMessage ? 'Show Less' : 'Show More' }}
+    </button>
+
+  </ng-container>
+
+  <ng-template #shortMessage>
+    {{ item.message }}
+  </ng-template>
+</td>
 
         <td>
           {{ item.attachments?.length || 0 }}
