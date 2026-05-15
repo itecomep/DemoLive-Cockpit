@@ -28,6 +28,14 @@
       </option>
     </select>
 
+    <!-- DATE FILTER -->
+    <input
+      type="date"
+      [(ngModel)]="selectedDate"
+      (change)="onDateChange()"
+      class="dropdown"
+    />
+
     <button class="reset-btn" (click)="resetFilters()">Reset</button>
   </div>
 
@@ -36,6 +44,7 @@
       *ngFor="let tab of tabs"
       (click)="selectedTab = tab.key"
       [class.active]="selectedTab === tab.key"
+      [disabled]="selectedDate"
     >
       {{ tab.label }}
     </button>

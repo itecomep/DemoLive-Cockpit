@@ -34,12 +34,10 @@ export class HrModuleComponent implements OnInit {
 
   constructor(private hrService: HrModuleService) {}
 
-  // ✅ ALWAYS call single source method
   ngOnInit(): void {
     this.loadRequests();
   }
 
-  // ✅ SINGLE API METHOD (used everywhere)
   loadRequests() {
     this.hrService.getRequests().subscribe((data) => {
       this.requests = data.map((x) => ({

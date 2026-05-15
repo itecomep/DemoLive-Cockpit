@@ -274,7 +274,7 @@ export class LeavesComponent implements OnInit, AfterViewInit {
 
     this.service.updateLeaveStatus(row.id, status).subscribe({
       next: () => {
-        console.log("Status updated");
+        // console.log("Status updated");
         this.loadLeaves();
       },
       error: (err) => console.error("Error updating status", err),

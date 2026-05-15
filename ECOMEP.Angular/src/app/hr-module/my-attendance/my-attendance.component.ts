@@ -143,11 +143,7 @@ export class MyAttendanceComponent implements OnInit {
 
   loadAttendance(): void {
     const currentUser = this.authService.currentUserStore;
-
     const cardNo = currentUser?.contact?.card_No;
-
-    console.log("Logged In Card No => ", cardNo);
-
     if (!cardNo) {
       console.error("Card No not found");
       return;
@@ -155,8 +151,6 @@ export class MyAttendanceComponent implements OnInit {
 
     this.http.get<any[]>("http://localhost:5054/api/Attendance").subscribe({
       next: (res: any[]) => {
-        console.log("Attendance Response => ", res);
-
         this.years = [
           ...new Set(res.map((x: any) => new Date(x.punchDate).getFullYear())),
         ].sort((a, b) => b - a);
@@ -368,8 +362,6 @@ export class MyAttendanceComponent implements OnInit {
             })(),
           };
         });
-
-        console.log("Final Attendance Data => ", this.attendanceData);
       },
 
       error: (err) => {
@@ -382,12 +374,6 @@ export class MyAttendanceComponent implements OnInit {
     this.http.get<any[]>("http://localhost:5054/Meeting/summary").subscribe({
       next: (res) => {
         this.meetingsData = res;
-
-        console.log("Meetings => ", this.meetingsData);
-
-        console.log("FIRST MEETING FULL DATA");
-        console.log(JSON.stringify(res[0], null, 2));
-
         this.loadAttendance();
       },
 
@@ -415,8 +401,6 @@ export class MyAttendanceComponent implements OnInit {
 
         return `${year}-${month}-${day}`;
       });
-
-      console.log("Holiday Dates => ", this.holidays);
     });
   }
 
@@ -471,10 +455,7 @@ export class MyAttendanceComponent implements OnInit {
     let totalMinutes = 0;
 
     meetings.forEach((m: any) => {
-      console.log("Meeting => ", m);
-
       const totalHours = Number(m.totalHours || 0);
-
       totalMinutes += Math.round(totalHours * 60);
     });
 
@@ -515,79 +496,71 @@ export class MyAttendanceComponent implements OnInit {
   // }
 
   calculateDayTotal(
-  punchIn: string,
-  punchOut: string,
-  meetingStart: string,
-  meetingEnd: string
-): string {
+    punchIn: string,
+    punchOut: string,
+    meetingStart: string,
+    meetingEnd: string,
+  ): string {
+    const convertTimeToDate = (time: string): Date | null => {
+      if (!time || time === "-") {
+        return null;
+      }
 
-  const convertTimeToDate = (time: string): Date | null => {
+      const today = new Date();
 
-    if (!time || time === "-") {
-      return null;
+      const parsed = new Date(`1970-01-01 ${time}`);
+
+      if (isNaN(parsed.getTime())) {
+        return null;
+      }
+
+      return parsed;
+    };
+
+    const inTime = convertTimeToDate(punchIn);
+
+    const outTime = convertTimeToDate(punchOut);
+
+    const meetingStartTime = convertTimeToDate(meetingStart);
+
+    const meetingEndTime = convertTimeToDate(meetingEnd);
+
+    // SMALLER START TIME
+    let startTime: Date | null = null;
+
+    if (inTime && meetingStartTime) {
+      startTime = inTime < meetingStartTime ? inTime : meetingStartTime;
+    } else {
+      startTime = inTime || meetingStartTime;
     }
 
-    const today = new Date();
+    // GREATER END TIME
+    let endTime: Date | null = null;
 
-    const parsed = new Date(`1970-01-01 ${time}`);
-
-    if (isNaN(parsed.getTime())) {
-      return null;
+    if (outTime && meetingEndTime) {
+      endTime = outTime > meetingEndTime ? outTime : meetingEndTime;
+    } else {
+      endTime = outTime || meetingEndTime;
     }
 
-    return parsed;
-  };
+    if (!startTime || !endTime) {
+      return "-";
+    }
 
-  const inTime = convertTimeToDate(punchIn);
+    const totalMinutes = Math.floor(
+      (endTime.getTime() - startTime.getTime()) / 60000,
+    );
 
-  const outTime = convertTimeToDate(punchOut);
+    if (totalMinutes <= 0) {
+      return "-";
+    }
 
-  const meetingStartTime = convertTimeToDate(meetingStart);
+    const hrs = Math.floor(totalMinutes / 60);
 
-  const meetingEndTime = convertTimeToDate(meetingEnd);
+    const mins = totalMinutes % 60;
 
-  // SMALLER START TIME
-  let startTime: Date | null = null;
-
-  if (inTime && meetingStartTime) {
-    startTime =
-      inTime < meetingStartTime
-        ? inTime
-        : meetingStartTime;
-  } else {
-    startTime = inTime || meetingStartTime;
+    return `${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
   }
-
-  // GREATER END TIME
-  let endTime: Date | null = null;
-
-  if (outTime && meetingEndTime) {
-    endTime =
-      outTime > meetingEndTime
-        ? outTime
-        : meetingEndTime;
-  } else {
-    endTime = outTime || meetingEndTime;
-  }
-
-  if (!startTime || !endTime) {
-    return "-";
-  }
-
-  const totalMinutes = Math.floor(
-    (endTime.getTime() - startTime.getTime()) / 60000
-  );
-
-  if (totalMinutes <= 0) {
-    return "-";
-  }
-
-  const hrs = Math.floor(totalMinutes / 60);
-
-  const mins = totalMinutes % 60;
-
-  return `${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
-}
 
   getMeetingStartTime(
     employeeName: string,

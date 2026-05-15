@@ -14,6 +14,7 @@ import { HrModuleService } from "../hr-module.service";
 })
 export class AbsentsComponent implements OnInit {
   selectedMonth: number = new Date().getMonth() + 1;
+  selectedDate: string = "";
 
   selectedYear: number = new Date().getFullYear();
 
@@ -128,7 +129,7 @@ export class AbsentsComponent implements OnInit {
                   return memberCardNo === attendanceCardNo;
                 });
 
-              console.log("MATCHED MEMBER => ", matchedMember);
+              // console.log("MATCHED MEMBER => ", matchedMember);
 
               return {
                 ...x,
@@ -200,11 +201,14 @@ export class AbsentsComponent implements OnInit {
           new Date(b.punchDate).getTime() - new Date(a.punchDate).getTime()
         );
       });
+      const baseDate = this.selectedDate
+        ? new Date(this.selectedDate)
+        : new Date();
 
       for (let i = 0; i < 7; i++) {
-        const checkDate = new Date();
+        const checkDate = new Date(baseDate);
 
-        checkDate.setDate(checkDate.getDate() - i);
+        checkDate.setDate(baseDate.getDate() - i);
 
         const dateStr = checkDate.toISOString().split("T")[0];
 
@@ -240,7 +244,18 @@ export class AbsentsComponent implements OnInit {
         isTeamLeader: emp.records[0]?.isTeamLeader || false,
       };
 
-      if (absentDates.length >= 1) {
+      // if (absentDates.length >= 1) {
+      //   this.absentGroups.today.push({
+      //     ...employeeData,
+      //     absentCount: 1,
+      //     absentDates: absentDates.slice(0, 1),
+      //   });
+      // }
+      const selectedDateStr = this.selectedDate
+        ? new Date(this.selectedDate).toISOString().split("T")[0]
+        : new Date().toISOString().split("T")[0];
+
+      if (absentDates.length >= 1 && absentDates[0] === selectedDateStr) {
         this.absentGroups.today.push({
           ...employeeData,
           absentCount: 1,
@@ -311,6 +326,31 @@ export class AbsentsComponent implements OnInit {
 
     let filteredAttendance = [...this.attendanceData];
 
+    // filteredAttendance = filteredAttendance.filter((x: any) => {
+    //   if (!x.punchDate) {
+    //     return false;
+    //   }
+
+    //   const date = new Date(x.punchDate);
+
+    //   const matchesMonthYear =
+    //     date.getMonth() + 1 == this.selectedMonth &&
+    //     date.getFullYear() == this.selectedYear;
+
+    //   if (!matchesMonthYear) {
+    //     return false;
+    //   }
+
+    //   // DATE FILTER
+    //   if (this.selectedDate) {
+    //     const punchDate = new Date(x.punchDate).toISOString().split("T")[0];
+
+    //     return punchDate === this.selectedDate;
+    //   }
+
+    //   return true;
+    // });
+
     filteredAttendance = filteredAttendance.filter((x: any) => {
       if (!x.punchDate) {
         return false;
@@ -343,6 +383,8 @@ export class AbsentsComponent implements OnInit {
       employeeName: "",
     };
 
+    this.selectedDate = "";
+
     this.selectedMonth = new Date().getMonth() + 1;
 
     this.selectedYear = new Date().getFullYear();
@@ -362,5 +404,10 @@ export class AbsentsComponent implements OnInit {
 
   closeDialog() {
     this.dialog.closeAll();
+  }
+
+  onDateChange() {
+    this.selectedTab = "today";
+    this.applyFilters();
   }
 }

@@ -118,10 +118,6 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
             this.allRequests = normalizeData(this.requests);
             this.filteredRequests = [...this.allRequests];
           }
-
-          console.log("Logged User:", this.currentUserId);
-          console.log("Is TL:", this.isTeamLeader);
-          console.log("Final Data:", this.filteredRequests);
         });
       });
     }
@@ -294,8 +290,6 @@ export class WfhHistoryComponent implements OnInit, OnChanges {
               photoUrl: contact?.photoUrl || "",
             };
           });
-
-          console.log("TEAM LEADERS WFH:", this.filteredRequests);
         });
       });
     });
