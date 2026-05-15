@@ -785,7 +785,7 @@ export class ProjectFileComponent implements OnInit, OnChanges {
     const zip = new JSZip();
     await this.addFolderToZip(zip, folder);
 
-    zip.generateAsync({ type: "blob" }).then((content) => {
+    zip.generateAsync({ type: "blob" }).then((content:any) => {
       saveAs(content, `${folder.name}.zip`);
     });
   }

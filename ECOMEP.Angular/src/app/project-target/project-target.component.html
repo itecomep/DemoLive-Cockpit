@@ -294,96 +294,44 @@
             </td>
 
             <td class="attachment-cell">
-              <!-- NORMAL VIEW -->
-              <!-- <ng-container *ngIf="editId !== t.id">
+              <ng-container *ngIf="editId !== t.id">
                 <div *ngIf="t.attachments?.length; else noAttachment">
                   <div
                     class="attachment-item"
-                    *ngFor="let file of t.attachments"
+                    *ngFor="let file of t.attachments; let index = index"
                   >
-                    <a
-                      [href]="file.fileUrl"
-                      target="_blank"
-                      class="attachment-link"
+                    <span
+                      class="attachment-link clickable"
+                      (click)="openPreview(t.attachments, index)"
                     >
                       {{ getDisplayFileName(file.fileName) }}
-                    </a>
+                    </span>
                   </div>
                 </div>
 
                 <ng-template #noAttachment> - </ng-template>
-              </ng-container> -->
-
-              <ng-container *ngIf="editId !== t.id">
-  <div *ngIf="t.attachments?.length; else noAttachment">
-
-    <div
-      class="attachment-item"
-      *ngFor="let file of t.attachments; let index = index"
-    >
-      <span
-        class="attachment-link clickable"
-        (click)="openPreview(t.attachments, index)"
-      >
-        {{ getDisplayFileName(file.fileName) }}
-      </span>
-    </div>
-
-  </div>
-
-  <ng-template #noAttachment> - </ng-template>
-</ng-container>
+              </ng-container>
 
               <!-- EDIT VIEW -->
               <ng-container *ngIf="editId === t.id">
-                <!-- existing files -->
-                <!-- <div
+                <div
                   class="attachment-item"
-                  *ngFor="let file of t.attachments; let i = index"
+                  *ngFor="let file of t.attachments; let index = index"
                 >
-                  <a
-                    [href]="file.fileUrl"
-                    target="_blank"
-                    class="attachment-link"
+                  <span
+                    class="attachment-link clickable"
+                    (click)="openPreview(t.attachments, index)"
                   >
                     {{ getDisplayFileName(file.fileName) }}
-                  </a>
+                  </span>
 
-                  <span class="remove-file" (click)="removeAttachment(t, i)">
+                  <span
+                    class="remove-file"
+                    (click)="removeAttachment(t, index)"
+                  >
                     ✖
                   </span>
-                </div> -->
-
-                <!-- <div
-  class="attachment-item"
-  *ngFor="let file of t.attachments; let index = index"
->
-  <span
-    class="attachment-link clickable"
-    (click)="openPreview(t.attachments, index)"
-  >
-    {{ getDisplayFileName(file.fileName) }}
-  </span>
-</div> -->
-
-<div
-  class="attachment-item"
-  *ngFor="let file of t.attachments; let index = index"
->
-  <span
-    class="attachment-link clickable"
-    (click)="openPreview(t.attachments, index)"
-  >
-    {{ getDisplayFileName(file.fileName) }}
-  </span>
-
-  <span
-    class="remove-file"
-    (click)="removeAttachment(t, index)"
-  >
-    ✖
-  </span>
-</div>
+                </div>
 
                 <!-- upload -->
                 <div class="upload-section">
@@ -474,23 +422,15 @@
   </div>
 </ng-template>
 
-
 <!-- FILE PREVIEW MODAL -->
 
 <div class="preview-overlay" *ngIf="previewVisible">
-
-  <button
-  class="top-download-btn"
-  (click)="downloadFile(currentPreview)"
->
-  ⭳
-</button>
-
+  <button class="top-download-btn" (click)="downloadFile(currentPreview)">
+    ⭳
+  </button>
 
   <!-- CLOSE -->
-  <button class="close-btn" (click)="closePreview()">
-    ✕
-  </button>
+  <button class="close-btn" (click)="closePreview()">✕</button>
 
   <!-- PREVIOUS -->
   <button
@@ -503,7 +443,6 @@
 
   <!-- CONTENT -->
   <div class="preview-container">
-
     <!-- IMAGE -->
     <img
       *ngIf="isImage(currentPreview?.fileUrl)"
@@ -523,44 +462,22 @@
     <div
       class="file-preview-box"
       *ngIf="
-        !isImage(currentPreview?.fileUrl) &&
-        !isPdf(currentPreview?.fileUrl)
+        !isImage(currentPreview?.fileUrl) && !isPdf(currentPreview?.fileUrl)
       "
     >
       <div class="file-name-preview">
         {{ currentPreview?.fileName }}
       </div>
 
-      <a
-        [href]="currentPreview?.fileUrl"
-        target="_blank"
-        class="open-file-btn"
-      >
+      <a [href]="currentPreview?.fileUrl" target="_blank" class="open-file-btn">
         Open File
       </a>
     </div>
-
-    <!-- DOWNLOAD -->
-    <!-- <a
-      class="download-btn"
-      [href]="currentPreview?.fileUrl"
-      [download]="currentPreview?.fileName"
-    >
-      ⬇ Download
-    </a> -->
-
-    <!-- <button
-  class="download-btn"
-  (click)="downloadFile(currentPreview)"
->
-  ⬇ Download
-</button> -->
 
     <!-- COUNTER -->
     <div class="preview-counter">
       Attachment {{ currentIndex + 1 }} of {{ previewFiles.length }}
     </div>
-
   </div>
 
   <!-- NEXT -->
@@ -571,5 +488,4 @@
   >
     ❯
   </button>
-
 </div>

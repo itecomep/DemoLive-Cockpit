@@ -54,11 +54,11 @@ export class ProjectTargetComponent implements OnInit {
 
   previewVisible = false;
 
-previewFiles: any[] = [];
+  previewFiles: any[] = [];
 
-currentPreview: any = null;
+  currentPreview: any = null;
 
-currentIndex = 0;
+  currentIndex = 0;
 
   editRow: any = {
     stage: "",
@@ -497,77 +497,74 @@ currentIndex = 0;
   }
 
   openPreview(files: any[], index: number) {
-  this.previewFiles = files;
-  this.currentIndex = index;
-  this.currentPreview = files[index];
+    this.previewFiles = files;
+    this.currentIndex = index;
+    this.currentPreview = files[index];
 
-  this.previewVisible = true;
-}
-
-closePreview() {
-  this.previewVisible = false;
-}
-
-nextFile() {
-  if (this.currentIndex < this.previewFiles.length - 1) {
-    this.currentIndex++;
-  } else {
-    this.currentIndex = 0;
+    this.previewVisible = true;
   }
 
-  this.currentPreview = this.previewFiles[this.currentIndex];
-}
-
-previousFile() {
-  if (this.currentIndex > 0) {
-    this.currentIndex--;
-  } else {
-    this.currentIndex = this.previewFiles.length - 1;
+  closePreview() {
+    this.previewVisible = false;
   }
 
-  this.currentPreview = this.previewFiles[this.currentIndex];
-}
+  nextFile() {
+    if (this.currentIndex < this.previewFiles.length - 1) {
+      this.currentIndex++;
+    } else {
+      this.currentIndex = 0;
+    }
 
-isImage(url: string): boolean {
-  if (!url) return false;
+    this.currentPreview = this.previewFiles[this.currentIndex];
+  }
 
-  return (
-    url.includes(".png") ||
-    url.includes(".jpg") ||
-    url.includes(".jpeg") ||
-    url.includes(".gif") ||
-    url.includes(".webp")
-  );
-}
+  previousFile() {
+    if (this.currentIndex > 0) {
+      this.currentIndex--;
+    } else {
+      this.currentIndex = this.previewFiles.length - 1;
+    }
 
-isPdf(url: string): boolean {
-  if (!url) return false;
+    this.currentPreview = this.previewFiles[this.currentIndex];
+  }
 
-  return url.includes(".pdf");
-}
+  isImage(url: string): boolean {
+    if (!url) return false;
 
+    return (
+      url.includes(".png") ||
+      url.includes(".jpg") ||
+      url.includes(".jpeg") ||
+      url.includes(".gif") ||
+      url.includes(".webp")
+    );
+  }
 
-downloadFile(file: any) {
+  isPdf(url: string): boolean {
+    if (!url) return false;
 
-  fetch(file.fileUrl)
-    .then(response => response.blob())
-    .then(blob => {
+    return url.includes(".pdf");
+  }
 
-      const blobUrl = window.URL.createObjectURL(blob);
+  downloadFile(file: any) {
+    fetch(file.fileUrl)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const blobUrl = window.URL.createObjectURL(blob);
 
-      const a = document.createElement('a');
+        const a = document.createElement("a");
 
-      a.href = blobUrl;
+        a.href = blobUrl;
 
-      a.download = this.getDisplayFileName(file.fileName);
+        a.download = this.getDisplayFileName(file.fileName);
 
-      document.body.appendChild(a);
+        document.body.appendChild(a);
 
-      a.click();
+        a.click();
 
-      document.body.removeChild(a);
+        document.body.removeChild(a);
 
-      window.URL.revokeObjectURL(blobUrl);
-    });
-}
+        window.URL.revokeObjectURL(blobUrl);
+      });
+  }
 }
