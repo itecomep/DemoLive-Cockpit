@@ -18,6 +18,12 @@ public class Project : BaseEntity
     public string? Title { get; set; }
     [StringLength(255)]
     public string? Location { get; set; }
+
+    [StringLength(255)]
+public string? OfficeLocation { get; set; }
+
+[StringLength(255)]
+public string? SiteLocation { get; set; }
     [StringLength(255)]
     public string? City { get; set; }
     [StringLength(255)]

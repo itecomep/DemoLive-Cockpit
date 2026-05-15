@@ -1,0 +1,132 @@
+<!-- <div class="history-wrapper">
+
+  <table class="history-table">
+
+    <thead>
+      <tr>
+        <th>Sr No</th>
+        <th>Received Date</th>
+        <th>Project</th>
+        <th>Received From</th>
+        <th>Title</th>
+        <th>Category</th>
+        <th>Message</th>
+        <th>Files</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      <tr *ngFor="let item of inwardList; let i = index">
+
+        <td>{{ i + 1 }}</td>
+
+        <td>
+          {{ item.receivedDate | date:'dd MMM yyyy' }}
+        </td>
+
+        <td>
+          {{ item.projectInput?.title }}
+        </td>
+
+        <td>
+          {{ item.contact?.name }}
+        </td>
+
+        <td>
+          {{ item.title }}
+        </td>
+
+        <td>
+          {{ item.category }}
+        </td>
+
+        <td>
+          {{ item.message }}
+        </td>
+
+        <td>
+          {{ item.attachments?.length || 0 }}
+        </td>
+
+      </tr>
+
+    </tbody>
+
+  </table>
+
+</div> -->
+
+
+
+<div class="history-wrapper">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+
+    <button
+      class="create-btn"
+      (click)="openCreateForm()"
+    >
+      ➕ Create
+    </button>
+
+  </div>
+
+  <table class="history-table">
+
+    <thead>
+      <tr>
+        <th>Sr No</th>
+        <th>Received Date</th>
+        <th>Project</th>
+        <th>Received From</th>
+        <th>Title</th>
+        <th>Category</th>
+        <th>Message</th>
+        <th>Files</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      <tr *ngFor="let item of inwardList; let i = index">
+
+        <td>{{ i + 1 }}</td>
+
+        <td>
+          {{ item.receivedDate | date:'dd MMM yyyy' }}
+        </td>
+
+        <td>
+            {{ item.projectName }}
+
+        </td>
+
+        <td>
+          {{ item.contact?.name }}
+        </td>
+
+        <td>
+          {{ item.title }}
+        </td>
+
+        <td>
+          {{ item.category }}
+        </td>
+
+        <td>
+          {{ item.message }}
+        </td>
+
+        <td>
+          {{ item.attachments?.length || 0 }}
+        </td>
+
+      </tr>
+
+    </tbody>
+
+  </table>
+
+</div>

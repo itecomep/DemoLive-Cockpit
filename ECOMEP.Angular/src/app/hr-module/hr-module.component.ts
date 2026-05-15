@@ -7,6 +7,7 @@ import { WfhRequestsComponent } from "./wfh-requests/wfh-requests.component";
 import { WfhHistoryComponent } from "./wfh-history/wfh-history.component";
 import { MeetingsComponent } from "./meetings/meetings.component";
 import { AttendanceComponent } from "./attendance/attendance.component";
+import { AbsentsComponent } from "./absents/absents.component";
 import { LeavesComponent } from "./leaves/leaves.component";
 
 import { HeaderComponent } from "../mcv-header/components/header/header.component";
@@ -21,6 +22,7 @@ import { HeaderComponent } from "../mcv-header/components/header/header.componen
     WfhHistoryComponent,
     MeetingsComponent,
     AttendanceComponent,
+    AbsentsComponent,
     LeavesComponent,
     HeaderComponent,
   ],

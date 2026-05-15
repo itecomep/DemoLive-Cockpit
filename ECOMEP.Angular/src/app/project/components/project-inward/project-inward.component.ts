@@ -392,6 +392,48 @@ export class ProjectInwardComponent {
   }
 
   uploadQueue: UploadResult[] = [];
+
+  // FULLSCREEN VIEWER
+isPhotoViewerOpen = false;
+
+viewerPhotos: any[] = [];
+
+currentViewerIndex = 0;
+
+// OPEN VIEWER
+openPhotoViewer(item: any, index: number) {
+
+  this.viewerPhotos =
+    item.attachments.filter((x: any) => x.thumbUrl);
+
+  this.currentViewerIndex = index;
+
+  this.isPhotoViewerOpen = true;
+}
+
+// CLOSE VIEWER
+closePhotoViewer() {
+
+  this.isPhotoViewerOpen = false;
+}
+
+// NEXT
+nextViewerPhoto() {
+
+  if (this.currentViewerIndex < this.viewerPhotos.length - 1) {
+
+    this.currentViewerIndex++;
+  }
+}
+
+// PREVIOUS
+previousViewerPhoto() {
+
+  if (this.currentViewerIndex > 0) {
+
+    this.currentViewerIndex--;
+  }
+}
   onUpload(uploads: UploadResult[]) {
     //Creating a dummy object
     uploads.forEach((x) => {

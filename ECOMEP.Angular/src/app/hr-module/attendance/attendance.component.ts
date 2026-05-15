@@ -240,39 +240,63 @@ export class AttendanceComponent implements OnInit {
 
       const day = punchDate.getDate();
 
-      const workingMinutes = item.workingHours
-        ? this.convertTimeToMinutes(item.workingHours)
-        : 0;
+      // const workingMinutes = item.workingHours
+      //   ? this.convertTimeToMinutes(item.workingHours)
+      //   : 0;
 
-      const meetingMinutes =
-        item.meetingHours > 0 ? Math.round(item.meetingHours * 60) : 0;
+      // const meetingMinutes =
+      //   item.meetingHours > 0 ? Math.round(item.meetingHours * 60) : 0;
 
-      const grandTotalMinutes = workingMinutes + meetingMinutes;
+      // const grandTotalMinutes = workingMinutes + meetingMinutes;
 
-      // groupedEmployees[employeeKey].dailyDetails[day - 1] = {
-      //   in: item.firstPunch
-      //     ? new Date(item.firstPunch).toLocaleTimeString([], {
-      //         hour: "2-digit",
-      //         minute: "2-digit",
-      //       })
-      //     : "-",
+      
 
-      //   out: item.lastPunch
-      //     ? new Date(item.lastPunch).toLocaleTimeString([], {
-      //         hour: "2-digit",
-      //         minute: "2-digit",
-      //       })
-      //     : "-",
+      // PUNCH IN
+const punchIn = item.firstPunch
+  ? new Date(item.firstPunch)
+  : null;
 
-      //   total: item.workingHours || "-",
+// PUNCH OUT
+const punchOut = item.lastPunch
+  ? new Date(item.lastPunch)
+  : null;
 
-      //   meetingHours:
-      //     item.meetingHours > 0
-      //       ? this.formatMinutes(Math.round(item.meetingHours * 60))
-      //       : "-",
+// MEETING START
+const meetingStart = item.meetingStartTime
+  ? new Date(item.meetingStartTime)
+  : null;
 
-      //   grandTotal: this.formatMinutes(grandTotalMinutes),
-      // };
+// MEETING END
+const meetingEnd = item.meetingEndTime
+  ? new Date(item.meetingEndTime)
+  : null;
+
+// TAKE SMALLER START TIME
+let finalStart: Date | null = null;
+
+if (punchIn && meetingStart) {
+  finalStart = punchIn < meetingStart ? punchIn : meetingStart;
+} else {
+  finalStart = punchIn || meetingStart;
+}
+
+// TAKE GREATER END TIME
+let finalEnd: Date | null = null;
+
+if (punchOut && meetingEnd) {
+  finalEnd = punchOut > meetingEnd ? punchOut : meetingEnd;
+} else {
+  finalEnd = punchOut || meetingEnd;
+}
+
+// FINAL TOTAL MINUTES
+let grandTotalMinutes = 0;
+
+if (finalStart && finalEnd) {
+  grandTotalMinutes = Math.floor(
+    (finalEnd.getTime() - finalStart.getTime()) / 60000
+  );
+}
 
       groupedEmployees[employeeKey].dailyDetails[day - 1] = {
         in: item.firstPunch

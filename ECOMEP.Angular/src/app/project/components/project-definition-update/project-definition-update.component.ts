@@ -216,6 +216,8 @@ export class ProjectDefinitionUpdateComponent implements OnInit {
       title: new FormControl<any>(null, { nonNullable: true, validators: [Validators.required, Validators.minLength(3)] }),
       location: new FormControl<any>(null),
       city: new FormControl<any>(null),
+      officeLocation: new FormControl<any>(null),
+siteLocation: new FormControl<any>(null),
       state: new FormControl<any>(null),
       country: new FormControl<any>(null),
       pinCode: new FormControl<any>(null),

@@ -54,14 +54,44 @@
               </button>
             </div>
 
-            <ul class="inward-photos">
+            <!-- <ul class="inward-photos">
               <li *ngFor="let file of getPhotos(item.attachments); let i = index">
                 <img alt="" [src]="file.thumbUrl">
               </li>
               <li *ngIf="item.attachments.length > 4">
                 <h6>+ {{item.attachments.length - 4}} more..</h6>
               </li>
-            </ul>
+            </ul> -->
+
+            <!-- <ul class="inward-photos">
+  <li
+    *ngFor="let file of getPhotos(item.attachments); let i = index"
+    (click)="openPhotoViewer(item, i)"
+  >
+    <img alt="" [src]="file.thumbUrl">
+  </li>
+</ul> -->
+
+              <ul class="inward-photos">
+
+  <!-- PREVIEW PHOTOS -->
+  <li
+    *ngFor="let file of getPhotos(item.attachments); let i = index"
+    (click)="openPhotoViewer(item, i)"
+  >
+    <img alt="" [src]="file.thumbUrl">
+  </li>
+
+  <!-- MORE COUNT -->
+  <li
+    class="more-photo-box"
+    *ngIf="item.attachments.length > 4"
+    (click)="openPhotoViewer(item, 4)"
+  >
+    + {{ item.attachments.length - 4 }} more
+  </li>
+
+</ul>
 
           </li>
         </ul>
@@ -189,4 +219,62 @@
     </mat-expansion-panel>
 
   </div>
+</div>
+
+
+
+<!-- FULLSCREEN IMAGE VIEWER -->
+<div
+  class="fullscreen-viewer"
+  *ngIf="isPhotoViewerOpen"
+>
+
+  <!-- CLOSE -->
+  <button
+    class="close-btn"
+    (click)="closePhotoViewer()"
+  >
+    ✕
+  </button>
+
+  <!-- PREVIOUS -->
+  <button
+    class="nav-btn left-btn"
+    (click)="previousViewerPhoto()"
+    [disabled]="currentViewerIndex === 0"
+  >
+    ❮
+  </button>
+
+  <!-- IMAGE -->
+  <div class="viewer-image-wrapper">
+
+    <img
+      [src]="viewerPhotos[currentViewerIndex]?.url || viewerPhotos[currentViewerIndex]?.thumbUrl"
+      class="viewer-image"
+    />
+
+  </div>
+
+  <!-- NEXT -->
+  <button
+    class="nav-btn right-btn"
+    (click)="nextViewerPhoto()"
+    [disabled]="currentViewerIndex >= viewerPhotos.length - 1"
+  >
+    ❯
+  </button>
+
+  <!-- COUNT -->
+  <!-- <div class="viewer-count">
+    {{ currentViewerIndex + 1 }} / {{ viewerPhotos.length }}
+  </div> -->
+<div class="viewer-count">
+
+  Attachment
+  {{ currentViewerIndex + 1 }}
+  of
+  {{ viewerPhotos.length }}
+
+</div>
 </div>

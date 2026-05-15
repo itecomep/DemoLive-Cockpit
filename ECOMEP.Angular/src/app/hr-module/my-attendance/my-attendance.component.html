@@ -285,7 +285,16 @@
                   isHoliday(i + 1, user.monthName),
               }"
             >
-              {{ calculateDayTotal(day.total, day.meeting) }}
+              <!-- {{ calculateDayTotal(day.total, day.meeting) }} -->
+
+              {{
+  calculateDayTotal(
+    day.in,
+    day.out,
+    day.meetingStart,
+    day.meetingEnd
+  )
+}}
             </td>
           </tr>
         </tbody>

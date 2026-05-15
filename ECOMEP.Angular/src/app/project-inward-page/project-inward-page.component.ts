@@ -46,7 +46,7 @@ import { switchMap } from "rxjs/operators";
 import { AuthService } from "src/app/auth/services/auth.service";
 // import { ProjectInwardService } from "./project-inward.service";
 import { DmsService } from "../project/services/dms.service";
-
+import { ProjectInwardHistoryPageComponent } from "./project-inward-history-page/project-inward-history-page.component";
 @Component({
   selector: "app-project-inward-page",
   standalone: true,
@@ -65,9 +65,14 @@ import { DmsService } from "../project/services/dms.service";
     McvFileUploadComponent,
     McvFileComponent,
     HeaderComponent,
+    ProjectInwardHistoryPageComponent,
   ],
 })
 export class ProjectInwardPageComponent implements OnInit {
+
+
+    activeTab: 'history' | 'create' = 'history';
+
   pageTitle = "Project Inward Form";
 
   form!: FormGroup;
