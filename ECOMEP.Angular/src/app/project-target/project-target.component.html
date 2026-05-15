@@ -354,7 +354,18 @@
                   </span>
                 </div> -->
 
-                <div
+                <!-- <div
+  class="attachment-item"
+  *ngFor="let file of t.attachments; let index = index"
+>
+    class="attachment-link clickable"
+    (click)="openPreview(t.attachments, index)"
+  >
+    {{ getDisplayFileName(file.fileName) }}
+  </span>
+</div> -->
+
+<div
   class="attachment-item"
   *ngFor="let file of t.attachments; let index = index"
 >
@@ -363,6 +374,13 @@
     (click)="openPreview(t.attachments, index)"
   >
     {{ getDisplayFileName(file.fileName) }}
+  </span>
+
+  <span
+    class="remove-file"
+    (click)="removeAttachment(t, index)"
+  >
+    ✖
   </span>
 </div>
 
