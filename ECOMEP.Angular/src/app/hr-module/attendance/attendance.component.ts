@@ -512,7 +512,7 @@ if (finalStart && finalEnd) {
         return `${year}-${month}-${day}`;
       });
 
-      console.log("Holiday Dates => ", this.holidays);
+      // console.log("Holiday Dates => ", this.holidays);
     });
   }
 

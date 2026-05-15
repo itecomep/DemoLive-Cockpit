@@ -394,46 +394,39 @@ export class ProjectInwardComponent {
   uploadQueue: UploadResult[] = [];
 
   // FULLSCREEN VIEWER
-isPhotoViewerOpen = false;
+  isPhotoViewerOpen = false;
 
-viewerPhotos: any[] = [];
+  viewerPhotos: any[] = [];
 
-currentViewerIndex = 0;
+  currentViewerIndex = 0;
 
-// OPEN VIEWER
-openPhotoViewer(item: any, index: number) {
+  // OPEN VIEWER
+  openPhotoViewer(item: any, index: number) {
+    this.viewerPhotos = item.attachments.filter((x: any) => x.thumbUrl);
 
-  this.viewerPhotos =
-    item.attachments.filter((x: any) => x.thumbUrl);
+    this.currentViewerIndex = index;
 
-  this.currentViewerIndex = index;
-
-  this.isPhotoViewerOpen = true;
-}
-
-// CLOSE VIEWER
-closePhotoViewer() {
-
-  this.isPhotoViewerOpen = false;
-}
-
-// NEXT
-nextViewerPhoto() {
-
-  if (this.currentViewerIndex < this.viewerPhotos.length - 1) {
-
-    this.currentViewerIndex++;
+    this.isPhotoViewerOpen = true;
   }
-}
 
-// PREVIOUS
-previousViewerPhoto() {
-
-  if (this.currentViewerIndex > 0) {
-
-    this.currentViewerIndex--;
+  // CLOSE VIEWER
+  closePhotoViewer() {
+    this.isPhotoViewerOpen = false;
   }
-}
+
+  // NEXT
+  nextViewerPhoto() {
+    if (this.currentViewerIndex < this.viewerPhotos.length - 1) {
+      this.currentViewerIndex++;
+    }
+  }
+
+  // PREVIOUS
+  previousViewerPhoto() {
+    if (this.currentViewerIndex > 0) {
+      this.currentViewerIndex--;
+    }
+  }
   onUpload(uploads: UploadResult[]) {
     //Creating a dummy object
     uploads.forEach((x) => {
@@ -533,4 +526,101 @@ previousViewerPhoto() {
             ),
         );
   }
+
+  // downloadCurrentImage() {
+  //   const currentFile = this.viewerPhotos[this.currentViewerIndex];
+
+  //   if (!currentFile) return;
+
+  //   const link = document.createElement("a");
+
+  //   link.href = currentFile.url || currentFile.thumbUrl;
+
+  //   link.download =
+  //     currentFile.filename || `attachment-${this.currentViewerIndex + 1}`;
+
+  //   link.target = "_blank";
+
+  //   document.body.appendChild(link);
+
+  //   link.click();
+
+  //   document.body.removeChild(link);
+  // }
+
+  async downloadCurrentImage() {
+    const currentFile = this.viewerPhotos[this.currentViewerIndex];
+
+    if (!currentFile) return;
+
+    try {
+      const response = await fetch(currentFile.url || currentFile.thumbUrl);
+
+      const blob = await response.blob();
+
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+
+      link.href = blobUrl;
+
+      link.download =
+        currentFile.filename || `attachment-${this.currentViewerIndex + 1}`;
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      document.body.removeChild(link);
+
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Download failed", error);
+    }
+  }
+
+  async downloadAllAttachments(attachments: any[]) {
+
+  for (const file of attachments) {
+
+    try {
+
+      const response = await fetch(
+        file.url || file.thumbUrl
+      );
+
+      const blob = await response.blob();
+
+      const blobUrl =
+        window.URL.createObjectURL(blob);
+
+      const link =
+        document.createElement("a");
+
+      link.href = blobUrl;
+
+      link.download =
+        file.filename || "attachment";
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      document.body.removeChild(link);
+
+      window.URL.revokeObjectURL(blobUrl);
+
+      await new Promise(resolve =>
+        setTimeout(resolve, 300)
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Download failed",
+        error
+      );
+    }
+  }
+}
 }

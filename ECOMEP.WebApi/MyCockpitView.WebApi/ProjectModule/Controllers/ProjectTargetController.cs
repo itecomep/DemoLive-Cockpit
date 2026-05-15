@@ -131,7 +131,7 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromForm] ProjectTargetDto dto)
-                    {
+        {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -202,6 +202,13 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
                     .ToList();
             }
 
+            if (dto.DeletedAttachments != null && dto.DeletedAttachments.Any())
+            {
+                existingFiles = existingFiles
+                    .Where(x => !dto.DeletedAttachments.Contains(x))
+                    .ToList();
+            }
+
             if (dto.Attachments != null && dto.Attachments.Any())
             {
                 var azureKey =
@@ -243,9 +250,8 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
 
                     existingFiles.Add(uniqueFileName);
                 }
-
-                entity.Attachment = string.Join(",", existingFiles);
             }
+            entity.Attachment = string.Join(",", existingFiles);
 
             await _db.SaveChangesAsync();
 
@@ -374,7 +380,6 @@ namespace MyCockpitView.WebApi.ProjectModule.Controllers
                         .OrderByDescending(h => h.ChangedOn)
                         .ToList()
                 });
-
             return Ok(result);
         }
     }

@@ -23,6 +23,6 @@ namespace MyCockpitView.WebApi.ProjectModule.Dtos
      
         public List<IFormFile>? Attachments { get; set; }
 
-        public List<string>? ExistingAttachments { get; set; }
+        public List<string>? DeletedAttachments { get; set; }
     }
 }

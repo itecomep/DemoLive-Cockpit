@@ -50,6 +50,7 @@ export class ProjectTargetComponent implements OnInit {
   statuses: string[] = [];
   targets: any[] = [];
   editSelectedFiles: File[] = [];
+  deletedAttachments: string[] = [];
 
   editRow: any = {
     stage: "",
@@ -232,13 +233,18 @@ export class ProjectTargetComponent implements OnInit {
       formData.append("attachments", file);
     });
 
-    original.attachments?.forEach((file: any) => {
-      formData.append("existingAttachments", file.fileName);
+    // original.attachments?.forEach((file: any) => {
+    //   formData.append("existingAttachments", file.fileName);
+    // });
+
+    this.deletedAttachments.forEach((fileName: string) => {
+      formData.append("deletedAttachments", fileName);
     });
 
     // this.service.update(this.editId!, payload).subscribe(() => {
     this.service.update(this.editId!, formData).subscribe(() => {
       this.editSelectedFiles = [];
+      this.deletedAttachments = [];
       this.editId = null;
       this.loadTargets();
     });
@@ -469,8 +475,16 @@ export class ProjectTargetComponent implements OnInit {
   }
 
   removeAttachment(row: any, index: number) {
+    const removedFile = row.attachments[index];
+
+    if (removedFile?.fileName) {
+      this.deletedAttachments.push(removedFile.fileName);
+    }
+
     row.attachments.splice(index, 1);
 
     row.attachments = [...row.attachments];
+
+    console.log("Deleted Attachments => ", this.deletedAttachments);
   }
 }
