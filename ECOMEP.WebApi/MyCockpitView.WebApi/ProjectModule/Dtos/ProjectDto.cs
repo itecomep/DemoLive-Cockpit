@@ -18,6 +18,8 @@ public class ProjectListDto : BaseEntityDto
     public DateTime? InquiryConvertionDate { get; set; }
     public DateTime? ExpectedCompletionDate { get; set; }
     public string? Location { get; set; }
+    public string? OfficeLocation { get; set; }
+    public string? SiteLocation { get; set; }
     public int? CompanyID { get; set; }
     public string? Segment { get; set; }
     public string? Typology { get; set; }

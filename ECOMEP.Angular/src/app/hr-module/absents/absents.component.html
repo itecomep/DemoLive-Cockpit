@@ -1,0 +1,120 @@
+<div class="absent-page">
+  <div class="filter-bar">
+    <input
+      type="text"
+      class="search-box"
+      placeholder="Search Employee..."
+      [(ngModel)]="filters.employeeName"
+      (input)="applyFilters()"
+    />
+
+    <select
+      [(ngModel)]="selectedMonth"
+      (change)="applyFilters()"
+      class="dropdown"
+    >
+      <option *ngFor="let m of months" [value]="m.id">
+        {{ m.name }}
+      </option>
+    </select>
+
+    <select
+      [(ngModel)]="selectedYear"
+      (change)="applyFilters()"
+      class="dropdown"
+    >
+      <option *ngFor="let y of years" [value]="y">
+        {{ y }}
+      </option>
+    </select>
+
+    <!-- DATE FILTER -->
+    <input
+      type="date"
+      [(ngModel)]="selectedDate"
+      (change)="onDateChange()"
+      class="dropdown"
+    />
+
+    <button class="reset-btn" (click)="resetFilters()">Reset</button>
+  </div>
+
+  <div class="tabs">
+    <button
+      *ngFor="let tab of tabs"
+      (click)="selectedTab = tab.key"
+      [class.active]="selectedTab === tab.key"
+      [disabled]="selectedDate"
+    >
+      {{ tab.label }}
+    </button>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="absent-table">
+      <thead>
+        <tr>
+          <th>Employee Name</th>
+          <th>Card No</th>
+          <th>Absent Days</th>
+          <th>Absent Dates</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let emp of absentGroups[selectedTab]">
+          <td>
+            <div class="employee-cell">
+              <img
+                *ngIf="emp.photoUrl"
+                [src]="emp.photoUrl"
+                class="avatar-img"
+                (click)="openProfileModal(emp)"
+              />
+
+              <ng-template #fallbackAvatar>
+                <div class="avatar">
+                  {{ emp.name?.charAt(0) }}
+                </div>
+              </ng-template>
+
+              <div class="employee-name">
+                <span class="employee-text">
+                  {{ emp.name }}
+                </span>
+
+                <span *ngIf="emp.isTeamLeader" class="leader-star"> ★ </span>
+              </div>
+            </div>
+          </td>
+
+          <td>{{ emp.cardNo }}</td>
+
+          <td>{{ emp.absentCount }}</td>
+
+          <td>
+            <div *ngFor="let d of emp.absentDates">
+              {{ d }}
+            </div>
+          </td>
+        </tr>
+
+        <tr *ngIf="absentGroups[selectedTab]?.length === 0">
+          <td colspan="4" class="no-data">No absentees found</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<ng-template #profileDialog let-data>
+  <div class="profile-modal">
+    <button class="close-btn" (click)="closeDialog()">✕</button>
+
+    <img [src]="data.photoUrl" class="profile-img" />
+
+    <h3>
+      {{ data.name }}
+    </h3>
+  </div>
+</ng-template>

@@ -1,0 +1,254 @@
+import { Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { ActivatedRoute, Router } from "@angular/router";
+import { ProjectTargetService } from "../project-target.service";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
+import { MatSelectModule } from "@angular/material/select";
+import { MatButtonModule } from "@angular/material/button";
+import { MatIconModule } from "@angular/material/icon";
+import { HeaderComponent } from "../../mcv-header/components/header/header.component";
+import { AuthService } from "src/app/auth/services/auth.service";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
+
+@Component({
+  selector: "app-project-target-form",
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatIconModule,
+    MatAutocompleteModule,
+    HeaderComponent,
+  ],
+  templateUrl: "./project-target-form.component.html",
+  styleUrls: ["./project-target-form.component.scss"],
+})
+export class ProjectTargetFormComponent implements OnInit {
+  projectSearch: string = "";
+  filteredProjects: any[] = [];
+  targets: any[] = [];
+  selectedFiles: File[] = [];
+  isEdit = false;
+  id: number | null = null;
+
+  form: any = {
+    projectId: null,
+    stage: "",
+    stageStatus: "",
+    targetDate: null,
+    feedback: "",
+  };
+
+  projects: any[] = [];
+  stages: any[] = [];
+  statuses: string[] = [];
+
+  constructor(
+    private service: ProjectTargetService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private authService: AuthService,
+  ) {}
+
+  ngOnInit() {
+    this.loadFormData();
+
+    const idParam = this.route.snapshot.paramMap.get("id");
+
+    if (idParam) {
+      this.isEdit = true;
+      this.id = +idParam;
+      this.loadById(this.id);
+    }
+
+    this.service.getAll().subscribe((res: any) => {
+      this.targets = res || [];
+    });
+  }
+
+  loadFormData() {
+    this.service.getFormData().subscribe((res: any) => {
+      const allProjects = res.projects || [];
+
+      if (!this.authService.currentUserStore?.roles.includes("MASTER")) {
+        const userTeamIds =
+          this.authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
+
+        this.projects = allProjects.filter((p: any) =>
+          p.teamIds?.some((id: number) => userTeamIds.includes(id)),
+        );
+      } else {
+        this.projects = allProjects;
+      }
+
+      this.filteredProjects = [...this.projects];
+      this.stages = res.stages || [];
+      this.statuses = res.statuses || [];
+    });
+  }
+
+  loadById(id: number) {
+    this.service.getById(id).subscribe((res: any) => {
+      this.form = res;
+
+      if (this.form?.targetDate) {
+        const d = new Date(this.form.targetDate);
+
+        this.form.targetDate =
+          d.getFullYear() +
+          "-" +
+          String(d.getMonth() + 1).padStart(2, "0") +
+          "-" +
+          String(d.getDate()).padStart(2, "0");
+      }
+
+      if (this.form?.projectId) {
+        this.loadStages(this.form.projectId);
+      }
+    });
+  }
+
+  onProjectChange() {
+    if (!this.form.projectId) {
+      this.stages = [];
+      return;
+    }
+
+    this.loadStages(this.form.projectId);
+  }
+
+  // loadStages(projectId: number) {
+  //   this.service.getStagesByProject(projectId).subscribe((res: any) => {
+  //     this.stages = res || [];
+  //   });
+  // }
+
+
+  loadStages(projectId: number) {
+  this.service.getStagesByProject(projectId).subscribe((res: any) => {
+
+    const uniqueStages = (res || []).filter(
+      (stage: any, index: number, self: any[]) =>
+        index === self.findIndex(
+          (s) =>
+            s.title?.trim().toLowerCase() ===
+            stage.title?.trim().toLowerCase()
+        )
+    );
+
+    this.stages = uniqueStages;
+  });
+}
+
+  save() {
+    if (
+      !this.form.projectId ||
+      !this.form.stage ||
+      !this.form.stageStatus ||
+      !this.form.targetDate
+    ) {
+      alert("Please fill all required fields");
+      return;
+    }
+
+    let fixedDate = null;
+
+    if (this.form.targetDate) {
+      const d = new Date(this.form.targetDate);
+
+      d.setDate(d.getDate() + 1);
+
+      fixedDate =
+        d.getFullYear() +
+        "-" +
+        String(d.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(d.getDate()).padStart(2, "0") +
+        "T00:00:00";
+    }
+
+    // const payload = {
+    //   ...this.form,
+    //   targetDate: fixedDate,
+    // };
+
+
+    const formData = new FormData();
+
+formData.append("projectId", this.form.projectId);
+formData.append("stage", this.form.stage);
+formData.append("stageStatus", this.form.stageStatus);
+formData.append("targetDate", fixedDate || "");
+formData.append("feedback", this.form.feedback || "");
+
+this.selectedFiles.forEach((file: File) => {
+  formData.append("attachments", file);
+});
+
+    if (this.isEdit && this.id) {
+      // this.service.update(this.id, payload).subscribe(() => {
+      this.service.update(this.id, formData).subscribe(() => {
+        this.router.navigate(["/project-target"]);
+      });
+    } else {
+      // this.service.create(payload).subscribe(() => {
+      this.service.create(formData).subscribe(() => {
+        this.router.navigate(["/project-target"]);
+      });
+    }
+  }
+
+  cancel() {
+    this.router.navigate(["/project-target"]);
+  }
+
+  trackById(index: number, item: any) {
+    return item.id;
+  }
+
+  isStageAlreadyUsed(stageTitle: string): boolean {
+    return this.targets?.some(
+      (t: any) => t.projectId === this.form.projectId && t.stage === stageTitle,
+    );
+  }
+
+  onStageChange() {
+    if (this.form.stage) {
+      this.form.stageStatus = "Yet to Start";
+    }
+  }
+
+  filterProjects() {
+    const search = (this.projectSearch || "").toLowerCase();
+
+    this.filteredProjects = this.projects.filter(
+      (p: any) =>
+        p.title?.toLowerCase().includes(search) ||
+        p.code?.toLowerCase().includes(search),
+    );
+  }
+
+  onProjectSelected(project: any) {
+    this.form.projectId = project.id;
+    this.projectSearch = project.code
+      ? project.code + " - " + project.title
+      : project.title;
+
+    this.onProjectChange();
+  }
+
+  onFilesSelected(event: any) {
+  if (event.target.files && event.target.files.length > 0) {
+
+    this.selectedFiles = Array.from(event.target.files);
+
+    console.log("Selected Files => ", this.selectedFiles);
+  }
+}
+}

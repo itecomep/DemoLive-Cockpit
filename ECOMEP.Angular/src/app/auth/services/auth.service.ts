@@ -428,4 +428,21 @@ export class AuthService
     return this.isInAnyRole([this.permissions.TASK_VIEW]);
   }
 
+
+
+
+
+
+
+  getCurrentUserTeamIds(): number[] {
+  if (
+    this.currentUserStore &&
+    Array.isArray(this.currentUserStore.teams)
+  ) {
+    return this.currentUserStore.teams.map((t: any) => t.id);
+  }
+  return [];
+}
+
+
 }

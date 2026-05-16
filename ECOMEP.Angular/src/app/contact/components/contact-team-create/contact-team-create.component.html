@@ -76,6 +76,12 @@
                   <mat-error>{{ getErrorMessage(f.lastName) }}</mat-error>
                 </mat-form-field>
 
+                <mat-form-field appearance="outline" class="col-md-6">
+  <mat-label>Card No</mat-label>
+  <input placeholder="Card No" aria-label="Card No" matInput formControlName="card_No" />
+  <mat-error>{{ getErrorMessage(f.card_No) }}</mat-error>
+</mat-form-field>
+
               </ng-container>
 
               <ng-container *ngIf="isCompany">

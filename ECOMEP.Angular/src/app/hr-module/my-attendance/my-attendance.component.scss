@@ -1,0 +1,284 @@
+.attendance-dashboard {
+  padding: 20px;
+  background: #f6fbf7;
+}
+
+.top-header h2 {
+  color: #1b5e20;
+  margin-bottom: 15px;
+}
+
+.filter-bar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.search-box {
+  width: 180px;
+  height: 30px;
+  padding: 8px 10px;
+  border: 2px solid #c8e6c9;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.filter-bar input[type="date"] {
+  width: 150px;
+  height: 30px;
+  padding: 8px 10px;
+  border: 2px solid #c8e6c9;
+  border-radius: 6px;
+}
+
+.reset-btn {
+  background: #2e7d32;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.reset-btn:hover {
+  background: #1b5e20;
+}
+
+.month-tabs {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.month-btn {
+  background: #e8f5e9;
+  color: #1b5e20;
+  border: 1px solid #a5d6a7;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.month-btn.active {
+  background: #2e7d32;
+  color: #fff;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  background: #fff;
+  border: 1px solid #c8e6c9;
+}
+
+.attendance-table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 1200px;
+}
+
+.attendance-table th,
+.attendance-table td {
+  border: 1px solid #c8e6c9;
+  text-align: center;
+  font-size: 12px;
+  padding: 5px;
+}
+
+.attendance-table thead th {
+  background: #2e7d32 !important;
+  color: #fff !important;
+  font-weight: 600;
+}
+
+.employee-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 18px;
+  margin: 15px 0;
+}
+
+.employee-label {
+  color: #2e7d32;
+  font-weight: 700;
+}
+
+.employee-name {
+  color: #000;
+  font-weight: 700;
+}
+
+.employee-cardno {
+  color: #444;
+  font-weight: 600;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 12px 0;
+}
+
+.summary-item {
+  display: flex;
+  gap: 6px;
+  white-space: nowrap;
+  color: #2f2f2f;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* HOLIDAY */
+.attendance-table tbody td.holiday-column {
+  background-color: #e6e6fa !important;
+  color: #5e548e;
+  font-weight: 600;
+}
+
+/* SATURDAY */
+.attendance-table tbody td.saturday-column {
+  background-color: #ffd6e7 !important;
+  color: #c2185b;
+  font-weight: 600;
+}
+
+/* SUNDAY */
+.attendance-table tbody td.sunday-column {
+  background-color: #fff3b0 !important;
+  color: #8a6d00;
+  font-weight: 600;
+}
+
+/* LEGEND */
+.attendance-legend {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-left: 10px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1b5e20;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.saturday-legend {
+  background-color: #ffd6e7;
+}
+
+.sunday-legend {
+  background-color: #fff3b0;
+}
+
+
+
+
+.holiday-legend {
+  background-color: #e6e6fa;
+}
+
+.attendance-filters {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filter-dropdown {
+  min-width: 150px;
+  height: 38px;
+  padding: 0 12px;
+  border: 2px solid #c8e6c9;
+  border-radius: 8px;
+  background: #fff;
+  color: #1b5e20;
+  font-size: 14px;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+}
+
+.filter-dropdown:focus {
+  border-color: #2e7d32;
+}
+
+.employee-main-header {
+  margin: 20px 0;
+}
+
+.employee-main-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* HALF DAY MARK */
+.half-day-mark {
+  color: #d32f2f;
+  font-weight: 700;
+  margin-left: 4px;
+  font-size: 12px;
+}
+
+/* HALF DAY LEGEND BOX */
+.halfday-legend-box {
+  background-color: #ffe5e5;
+  color: #d32f2f;
+  font-weight: 700;
+  font-size: 11px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.halfday-warning {
+  color: red;
+  font-weight: 700;
+  margin-left: 10px;
+  animation: blinkWarning 1s infinite;
+}
+
+.previous-month-warning {
+  color: red;
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 12px;
+  padding: 10px;
+  border: 1px solid red;
+  border-radius: 6px;
+  background: #fff3f3;
+}
+
+@keyframes blinkWarning {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}

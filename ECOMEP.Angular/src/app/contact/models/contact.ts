@@ -46,6 +46,7 @@ export class Contact extends BaseEntity
   hsn?: string;
   arn?: string;
   aadhaar?: string;
+  card_No?: string;
   udhyam?: string;
 
   parent?:Contact;

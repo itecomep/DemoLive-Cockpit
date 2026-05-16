@@ -1,0 +1,330 @@
+<div class="table-container">
+  <div class="table-header">
+    <h2>🌴 Leaves Requests</h2>
+
+    <div class="summary-container">
+      <div class="summary-box approved-box">
+        <span>Approved 👍</span>
+        <h3>{{ getApprovedDays() }}</h3>
+      </div>
+
+      <div class="summary-box rejected-box">
+        <span>Rejected 👎</span>
+        <h3>{{ getRejectedDays() }}</h3>
+      </div>
+
+      <div class="summary-box total-box">
+        <span>Total Days</span>
+        <h3>{{ getTotalDays() }}</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <label class="radio-option">
+      <input type="radio" name="leaveType" value="all" [(ngModel)]="activeTab" (change)="onFilterTypeChange()" />
+      All
+    </label>
+
+    <label class="radio-option">
+      <input type="radio" name="leaveType" value="team" [(ngModel)]="activeTab" (change)="onFilterTypeChange()" />
+      Team Leaders
+    </label>
+
+    <input type="text" class="search-input" placeholder="Search Employee..." [(ngModel)]="filters.employeeName"
+      (input)="applyFilters()" />
+
+    <input type="date" [(ngModel)]="filters.startDate" (change)="applyFilters()" />
+
+    <input type="date" [(ngModel)]="filters.endDate" (change)="applyFilters()" />
+
+    <button (click)="resetFilters()">Reset</button>
+
+    <div class="month-tabs">
+
+      <button class="month-btn" [class.active]="selectedMonthTab === 'previous'"
+        (click)="selectedMonthTab = 'previous'; applyFilters()">
+        Previous Month
+      </button>
+
+      <button class="month-btn" [class.active]="selectedMonthTab === 'current'"
+        (click)="selectedMonthTab = 'current'; applyFilters()">
+        Current Month
+      </button>
+
+      <button class="month-btn" [class.active]="selectedMonthTab === 'next'"
+        (click)="selectedMonthTab = 'next'; applyFilters()">
+        Next Month
+      </button>
+
+    </div>
+
+  </div>
+
+  <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z2 full-table">
+    <ng-container matColumnDef="employee">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="employee">
+        Employee
+      </th>
+      <td mat-cell *matCellDef="let element">
+        <div class="employee-cell">
+          <!-- <img *ngIf="element.photoUrl; else fallbackAvatar" [src]="element.photoUrl" class="avatar-img" /> -->
+          <img *ngIf="element.photoUrl; else fallbackAvatar" [src]="element.photoUrl" class="avatar-img"
+            (click)="openProfileModal(element)" />
+
+
+          <ng-template #fallbackAvatar>
+            <div class="avatar">
+              {{ element.employeeName?.charAt(0) }}
+            </div>
+          </ng-template>
+
+         <!-- <div class="employee-name">
+  {{ element.employeeName }}
+
+  <mat-icon
+    *ngIf="element.isTeamLeader === true"
+    class="leader-icon">
+    star
+  </mat-icon>
+</div> -->
+
+
+        <div class="employee-name">
+
+  <span class="employee-text">
+    {{ element.employeeName }}
+  </span>
+
+  <mat-icon
+    *ngIf="element.isTeamLeader === true"
+    class="leader-icon">
+    star
+  </mat-icon>
+
+</div>
+        </div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="reason">
+      <th mat-header-cell *matHeaderCellDef>Reason</th>
+      <td mat-cell *matCellDef="let element">
+        <div class="reason-wrapper">
+          <div class="reason-text" [class.expanded]="element.expanded">
+            {{ element.reason || "-" }}
+          </div>
+
+          <span class="toggle" *ngIf="element.reason?.length > 80" (click)="toggleReason(element)">
+            {{ element.expanded ? "Show Less" : "Show More" }}
+          </span>
+        </div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="createdDate">
+      <th mat-header-cell *matHeaderCellDef>
+        Created Date
+      </th>
+
+      <!-- <td mat-cell *matCellDef="let element">
+        {{ element.createdDate | date:'dd MMM yyyy' }}
+      </td> -->
+
+
+      <td mat-cell *matCellDef="let element">
+  <div class="date-wrap">
+    {{ element.createdDate | date:'dd MMM yyyy' }}
+  </div>
+</td>
+    </ng-container>
+
+    <ng-container matColumnDef="type">
+      <th mat-header-cell *matHeaderCellDef>Leave Type</th>
+      <!-- <td mat-cell *matCellDef="let element">
+        {{ element.type }}
+      </td> -->
+      <td mat-cell *matCellDef="let element">
+        <div class="leave-type">
+          <span>{{ element.type?.split('/')[0] }}</span><br />
+          <span class="leave-sub">{{ element.type?.split('/')[1] }}</span>
+        </div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="start">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="start">
+        Start Date
+      </th>
+      <!-- <td mat-cell *matCellDef="let element">
+        {{ element.start | date: "dd MMM yyyy" }}
+      </td> -->
+
+      <td mat-cell *matCellDef="let element">
+  <div class="date-wrap">
+    {{ element.start | date: "dd MMM yyyy" }}
+  </div>
+</td>
+    </ng-container>
+
+    <ng-container matColumnDef="end">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="end">End Date</th>
+      <!-- <td mat-cell *matCellDef="let element">
+        {{ element.end | date: "dd MMM yyyy" }}
+      </td> -->
+
+      <td mat-cell *matCellDef="let element">
+  <div class="date-wrap">
+    {{ element.end | date: "dd MMM yyyy" }}
+  </div>
+</td>
+    </ng-container>
+
+    <ng-container matColumnDef="total">
+      <th mat-header-cell *matHeaderCellDef class="text-center-cell">Days</th>
+      <td mat-cell *matCellDef="let element" class="text-center-cell">
+        <span class="days-badge">{{ element.total }}</span>
+      </td>
+    </ng-container>
+
+
+    <ng-container matColumnDef="approvedDate">
+      <th mat-header-cell *matHeaderCellDef>
+        Approved Date
+      </th>
+
+      <!-- <td mat-cell *matCellDef="let element">
+        <span *ngIf="element.approvedDate">
+            {{ element.approvedDate | date:'dd MMM yyyy' }}
+        </span>
+
+        <span *ngIf="!element.approvedDate">
+          -
+        </span>
+      </td> -->
+
+      <td mat-cell *matCellDef="let element">
+  <div class="date-wrap" *ngIf="element.approvedDate">
+    {{ element.approvedDate | date:'dd MMM yyyy' }}
+  </div>
+
+  <span *ngIf="!element.approvedDate">-</span>
+</td>
+    </ng-container>
+
+    <ng-container matColumnDef="approvedBy">
+      <th mat-header-cell *matHeaderCellDef>
+        Approved By
+      </th>
+
+      <!-- <td mat-cell *matCellDef="let element">
+        {{ element.approvedBy || '-' }}
+      </td> -->
+
+      <td mat-cell *matCellDef="let element">
+  <div class="approved-by-name">
+    {{ element.approvedBy || '-' }}
+  </div>
+</td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>Status</th>
+      <td mat-cell *matCellDef="let element">
+        <div class="status-cell">
+          <ng-container *ngIf="element.statusFlag === 0">
+            <button class="approve-btn" (click)="updateStatus(element, 'Approved')">
+              Approve
+            </button>
+
+            <button class="reject-btn" (click)="updateStatus(element, 'Rejected')">
+              Reject
+            </button>
+          </ng-container>
+
+          <span *ngIf="element.statusFlag === 1" class="approved">
+            <mat-icon class="status-icon">thumb_up</mat-icon>
+            Approved
+          </span>
+
+          <span *ngIf="element.statusFlag === -1" class="rejected">
+            <mat-icon class="status-icon">thumb_down</mat-icon>
+            Rejected
+          </span>
+        </div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="attachment">
+      <th mat-header-cell *matHeaderCellDef class="text-center-cell">
+        Attachment
+      </th>
+
+      <td mat-cell *matCellDef="let element" class="text-center-cell">
+        <div *ngIf="element.attachmentUrl" class="attachment-trigger" (click)="openCvViewer(element)"
+          matTooltip="View Attachment">
+          <mat-icon>attach_file</mat-icon>
+        </div>
+
+        <span *ngIf="!element.attachmentUrl">-</span>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+</div>
+
+<ng-template #cvViewerDialog>
+  <div class="unique-modal-container">
+    <header class="modal-glass-header">
+      <div class="header-content">
+        <div class="title-group">
+          <h3>CV Viewer — {{ selectedEmployeeName }}</h3>
+        </div>
+
+        <button class="close-circle" (click)="closeDialog()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </header>
+
+    <div class="workspace-body">
+      <div class="accent-bar"></div>
+
+      <div class="document-container">
+        <img *ngIf="selectedCvUrl && isImage(rawCvUrl)" [src]="rawCvUrl" class="doc-image" />
+
+        <iframe *ngIf="selectedCvUrl && isPdf(rawCvUrl)" [src]="selectedCvUrl" frameborder="0"></iframe>
+      </div>
+    </div>
+
+    <footer class="modal-action-footer">
+      <div class="action-group">
+        <a [href]="rawCvUrl" target="_blank" class="btn-neo secondary">
+          <mat-icon>open_in_new</mat-icon>
+          <span>Preview Mode</span>
+        </a>
+
+        <a [href]="rawCvUrl" download class="btn-neo primary">
+          <mat-icon>cloud_download</mat-icon>
+          <span>Get Copy</span>
+        </a>
+      </div>
+    </footer>
+  </div>
+</ng-template>
+
+<ng-template #profileDialog let-data>
+  <div class="profile-modal">
+
+    <button class="close-btn" (click)="closeDialog()">
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <img [src]="data.photoUrl" class="profile-img" />
+
+    <h3>{{ data.employeeName }}</h3>
+
+  </div>
+</ng-template>

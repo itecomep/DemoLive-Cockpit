@@ -1,105 +1,322 @@
-@import 'variables';
+.fullscreen-viewer {
+  position: fixed;
+  inset: 0;
 
-.inward-list {
+  background: rgba(0, 0, 0, 0.92);
+
+  z-index: 99999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.viewer-image-wrapper {
+  position: relative;
+
+  width: 55%;
+  height: 65%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-left: 180px;
+
+  padding: 20px;
+
+  background: rgba(255, 255, 255, 0.03);
+
+  border-radius: 12px;
+}
+
+.viewer-image {
+  max-width: 75%;
+  max-height: 75%;
+
+  object-fit: contain;
+
+  border-radius: 8px;
+
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.nav-btn {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 34px;
+  height: 34px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.18);
+
+  color: #fff;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  z-index: 100000;
+
+  transition: 0.2s ease;
+}
+
+.nav-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.left-btn {
+  left: 470px;
+}
+
+.right-btn {
+  right: 140px;
+}
+
+.nav-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+// .close-btn {
+//   position: absolute;
+
+//   top: 12%;
+//   right: 12%;
+
+//   width: 32px;
+//   height: 32px;
+
+//   border: none;
+//   border-radius: 50%;
+
+//   background: rgba(255,255,255,0.18);
+
+//   color: #fff;
+
+//   font-size: 16px;
+//   font-weight: 700;
+
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+
+//   cursor: pointer;
+
+//   z-index: 100001;
+
+//   transition: 0.2s ease;
+// }
+
+// .close-btn:hover {
+//   background: rgba(255,255,255,0.3);
+// }
+
+.viewer-count {
+  position: fixed;
+
+  bottom: 28px;
+  left: 58%;
+
+  transform: translateX(-50%);
+
+  z-index: 999999;
+
+  background: rgba(0, 0, 0, 0.75);
+
+  color: #fff;
+
+  padding: 8px 16px;
+
+  bottom: 70px;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  letter-spacing: 0.3px;
+}
+
+.inward-photos {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+  margin-top: 10px;
+
+  padding: 0;
+}
+
+.inward-photos li {
   list-style: none;
+
+  cursor: pointer;
+}
+
+.inward-photos img {
+  width: 110px;
+  height: 85px;
+
+  object-fit: cover;
+
+  border-radius: 6px;
+
+  border: 1px solid #ddd;
+
+  transition: 0.2s ease;
+}
+
+.inward-photos img:hover {
+  transform: scale(1.03);
+}
+
+.more-photo-box {
+  width: 110px;
+  height: 85px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #f3f3f3;
+
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+
+  color: #555;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .viewer-image-wrapper {
+    width: 100%;
+    height: 100%;
+
+    padding: 0 20px;
+  }
+
+  .viewer-image {
+    max-width: 100%;
+    max-height: 80%;
+  }
+
+  .left-btn {
+    left: 10px;
+  }
+
+  .right-btn {
+    right: 10px;
+  }
+}
+
+.viewer-actions {
+  position: absolute;
+
+  top: 12%;
+  right: 12%;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  z-index: 100001;
+}
+
+.download-btn,
+.close-btn {
+  width: 38px;
+  height: 38px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.18);
+
+  color: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.download-btn:hover,
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.download-btn mat-icon {
+  font-size: 20px;
+}
+
+.more-photo-wrapper {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+}
+
+.download-all-btn {
+  border: none;
+
+  background: transparent;
+
+  color: #000;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+
+  gap: 4px;
+
   padding: 0;
 
-  &>li {
-    border-bottom: 1px solid $gray-200;
-    padding: 0.3rem;
-
-    small {
-      color: $gray-600;
-    }
-
-    .inward-photos {
-      list-style: none;
-      padding: 0;
-      display: flex;
-      gap: 0.3rem;
-      padding: 0.3rem;
-
-      &>li {
-        width: 4rem;
-        height: 3rem;
-        flex-grow: 0;
-        flex-shrink: 0;
-        border: 1px solid $gray-300;
-        border-radius: $border-radius;
-
-        img {
-          height: 100%;
-          width: 100%;
-          // Makes `<img>` tags behave like `background-size: cover`. Not supported
-          // in IE, but we're using it as a progressive enhancement.
-          -o-object-fit: cover;
-          object-fit: cover;
-          border-radius: $border-radius;
-        }
-
-      }
-    }
-  }
+  margin-left: 4px;
 }
 
+.download-all-btn mat-icon {
+  font-size: 18px;
 
-.project-inward-action-wrapper{
-  .inward-documents-wrapper {
-    flex-grow: 1;
-    flex-shrink: 1;
-    // padding: 0.3rem;
-}
-  .action-buttons{
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.3rem;
-  }
+  width: 18px;
+  height: 18px;
+
+  color: #000;
 }
 
-// Mobile view
-@media (max-width: 768px) {
-  .inward-list {
-    &>li {
-      padding: 0.5rem;
-
-      .d-flex.flex-wrap {
-        flex-direction: column;
-        align-items: flex-start !important;
-
-        .d-flex.justify-content-end {
-          width: 100%;
-          justify-content: flex-start !important;
-          flex-direction: row;
-          gap: 1rem;
-
-          .pr-2 {
-            text-align: left !important;
-          }
-        }
-      }
-
-      .inward-photos {
-        flex-wrap: wrap;
-        
-        &>li {
-          width: 3rem;
-          height: 2.5rem;
-        }
-      }
-    }
-  }
-
-  .project-inward-action-wrapper {
-    flex-direction: column;
-    
-    .action-buttons {
-      width: 100%;
-      justify-content: stretch;
-      
-      button {
-        flex: 1;
-      }
-    }
-  }
+.download-all-btn:hover {
+  opacity: 0.7;
 }
+
+// .download-all-btn:hover {
+
+//   transform: scale(1.05);
+
+//   background: #1565c0;
+// }
+
+// .download-all-btn mat-icon {
+
+//   font-size: 18px;
+// }

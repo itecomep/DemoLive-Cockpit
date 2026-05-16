@@ -51,7 +51,66 @@ export const ROOT_ROUTES: Routes = [
     ]
   },
 
+
+   // Notifications
+  {
+    path: 'notifications',
+    loadComponent: () => import('./notifications/notifications.component')
+      .then(m => m.NotificationsComponent)
+  },
+
+  
+  {
+    path: 'hr-module',
+    loadComponent: () =>
+      import('./hr-module/hr-module.component').then(m => m.HrModuleComponent)
+  },
+
+  // {
+  //   path: 'wfh-request-status',
+  //   loadComponent: () =>
+  //     import('./hr-module/wfh-requests/wfh-requests.component')
+  //       .then(m => m.WfhRequestsComponent)
+  // },
+
+
+
+  {
+  path: 'wfh-request-status',
+  loadComponent: () =>
+    import('./hr-module/employee/employee.component')
+      .then(m => m.EmployeeComponent)
+},
+
+
+  {
+  path: 'project-target',
+  children: [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./project-target/project-target.component')
+          .then(m => m.ProjectTargetComponent)
+    },
+    {
+      path: 'create',
+      loadComponent: () =>
+        import('./project-target/project-target-form/project-target-form.component')
+          .then(m => m.ProjectTargetFormComponent)
+    },
+  ]
+},
+
+{
+  path: 'project-inward',
+  loadComponent: () =>
+    import('./project-inward-page/project-inward-page.component')
+      .then(m => m.ProjectInwardPageComponent),
+  canActivate: [AuthGuard]
+},
+
   { path: '', redirectTo: 'cockpit', pathMatch: 'full' },
+
   { path: '**', redirectTo: '/cockpit', pathMatch: 'full' },
 ];
 

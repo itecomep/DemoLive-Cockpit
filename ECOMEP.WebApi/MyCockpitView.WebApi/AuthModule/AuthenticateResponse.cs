@@ -16,4 +16,6 @@ public class AuthenticateResponse
     public int UserId { get; set; }
     public bool IsOutsideIP { get; set; }
     public List<string> AllowedModules { get; set; } = new List<string>();
+
+    public object? Contact { get; set; }
 }

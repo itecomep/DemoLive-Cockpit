@@ -1,0 +1,121 @@
+@import 'variables';
+@import 'theme';
+
+.holiday-list-wrapper {
+  padding: 24px;
+  background: #f5f7fa;
+  min-height: 100vh;
+}
+
+.page-title {
+  font-size: 30px;
+  font-weight: 700;
+  color: #2e7d32;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* HEADER */
+thead tr {
+  background: linear-gradient(135deg, #43a047, #2e7d32);
+}
+
+th {
+  padding: 18px 16px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 0.4px;
+  border: none;
+}
+
+/* BODY */
+td {
+  padding: 16px;
+  font-size: 14px;
+  color: #444;
+  text-align: center;
+  border-bottom: 1px solid #eeeeee;
+  transition: all 0.2s ease;
+}
+
+tbody tr {
+  background: #ffffff;
+  transition: background 0.2s ease;
+}
+
+tbody tr:nth-child(even) {
+  background: #fafafa;
+}
+
+tbody tr:hover {
+  background: #f1f8f2;
+}
+
+/* Remove last border */
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* INDEX COLUMN */
+td:first-child {
+  font-weight: 600;
+  color: #2e7d32;
+  width: 90px;
+}
+
+/* DATE COLUMN */
+td:nth-child(2) {
+  font-weight: 500;
+  color: #555;
+}
+
+/* TITLE COLUMN */
+td:nth-child(3) {
+  font-weight: 500;
+  color: #333;
+}
+
+/* Rounded table corners */
+thead tr th:first-child {
+  border-top-left-radius: 16px;
+}
+
+thead tr th:last-child {
+  border-top-right-radius: 16px;
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+  .holiday-list-wrapper {
+    padding: 14px;
+  }
+
+  .page-title {
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+
+  table {
+    border-radius: 12px;
+  }
+
+  th,
+  td {
+    padding: 12px 8px;
+    font-size: 13px;
+  }
+}

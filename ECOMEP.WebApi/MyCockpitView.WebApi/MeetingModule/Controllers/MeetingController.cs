@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using MyCockpitView.CoreModule;
 using MyCockpitView.Utility.Common;
@@ -12,9 +13,12 @@ using MyCockpitView.WebApi.Exceptions;
 using MyCockpitView.WebApi.MeetingModule.Dtos;
 using MyCockpitView.WebApi.MeetingModule.Entities;
 using MyCockpitView.WebApi.MeetingModule.Services;
+using MyCockpitView.WebApi.NotificationModule;
+using MyCockpitView.WebApi.NotificationModule.Entities;
 using MyCockpitView.WebApi.Responses;
 using MyCockpitView.WebApi.Services;
 using MyCockpitView.WebApi.StatusMasterModule;
+using MyCockpitView.WebApi.WFTaskModule.Entities;
 using MyCockpitView.WebApi.WFTaskModule.Services;
 using Newtonsoft.Json;
 
@@ -35,6 +39,7 @@ namespace MyCockpitView.WebApi.MeetingModule.Controllers
         private readonly IContactService contactService;
         private readonly EntitiesContext _db;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IHubContext<NotificationHub> _hub;
 
         public MeetingController(
             ILogger<MeetingController> logger,
@@ -46,7 +51,8 @@ namespace MyCockpitView.WebApi.MeetingModule.Controllers
             ISharedService sharedService,
             IWFTaskService wFTaskService,
             IContactService contactService,
-            ICurrentUserService currentUserService
+            ICurrentUserService currentUserService,
+            IHubContext<NotificationHub> hub
             )
         {
             this._logger = logger;
@@ -59,6 +65,7 @@ namespace MyCockpitView.WebApi.MeetingModule.Controllers
             this.wFTaskService = wFTaskService;
             this.contactService = contactService;
             _currentUserService = currentUserService;
+            _hub = hub;
         }
 
         [Authorize]
@@ -79,7 +86,7 @@ namespace MyCockpitView.WebApi.MeetingModule.Controllers
             foreach (var obj in results)
             {
                 obj.StatusValue = _statusMasters.Any(x => x.Value == obj.StatusFlag) ? _statusMasters.FirstOrDefault(x => x.Value == obj.StatusFlag).Title : "";
-                obj.IsDelayed =await _service.IsDelayed(obj.ID);
+                obj.IsDelayed = await _service.IsDelayed(obj.ID);
                 //obj.IsEditable = await _service.IsEditable(obj.ID);
             }
 
@@ -122,14 +129,14 @@ namespace MyCockpitView.WebApi.MeetingModule.Controllers
         {
 
             var obj = _mapper.Map<MeetingDto>(await _service.GetById(id));
-                if(obj==null) return NotFound();
+            if (obj == null) return NotFound();
             var _statusMasters = await statusMasterService.Get()
                     .Where(x => x.Entity == nameof(Meeting))
                     .ToListAsync();
 
 
-                obj.StatusValue = _statusMasters.Any(x => x.Value == obj.StatusFlag) ? _statusMasters.FirstOrDefault(x => x.Value == obj.StatusFlag).Title : "";
-                obj.IsDelayed = await _service.IsDelayed(obj.ID);
+            obj.StatusValue = _statusMasters.Any(x => x.Value == obj.StatusFlag) ? _statusMasters.FirstOrDefault(x => x.Value == obj.StatusFlag).Title : "";
+            obj.IsDelayed = await _service.IsDelayed(obj.ID);
 
             var username = _currentUserService.GetCurrentUsername();
             var currentContact = await contactService.Get()
@@ -165,7 +172,11 @@ namespace MyCockpitView.WebApi.MeetingModule.Controllers
         public async Task<IActionResult> Create([FromBody] MeetingDto Dto)
         {
             var _attendees = Dto.Attendees;
-            var obj = _mapper.Map<MeetingDto>(await _service.GetById(await _service.Create(_mapper.Map<Meeting>(Dto))));
+            var meetingEntity = _mapper.Map<Meeting>(Dto);
+            meetingEntity.TypeFlag = Dto.SubjectType == "Event" ? 1 : 0;
+            var createdId = await _service.Create(meetingEntity);
+            var obj = _mapper.Map<MeetingDto>(await _service.GetById(createdId));
+
             if (obj == null) throw new BadRequestException($"{nameof(Meeting)} could not be created!");
 
             var _statusMasters = await statusMasterService.Get()
@@ -189,14 +200,67 @@ namespace MyCockpitView.WebApi.MeetingModule.Controllers
                                                                     );
             }
             await wFTaskService.StartFlow(nameof(Meeting), obj.TypeFlag, obj.ID, ProjectID: obj.ProjectID);
+
+            // ================= NOTIFICATION (ONLY INTERNAL ATTENDEES) =================
+
+            var meeting = await _db.Meetings
+                .Include(x => x.Attendees)
+                .FirstOrDefaultAsync(x => x.ID == obj.ID);
+
+            if (meeting != null)
+            {
+                var attendeeContactIds = Dto.Attendees
+    .Where(a => a.TypeFlag == McvConstant.MEETING_ATTENDEE_INTERNAL)
+    .Select(a => a.ContactID)
+    .ToList();
+
+                var users = await contactService.Get()
+                    .Where(x => attendeeContactIds.Contains(x.ID) && !string.IsNullOrEmpty(x.Username))
+                    .ToListAsync();
+
+                foreach (var user in users)
+                {
+                    var source = Dto.SubjectType == "Event" ? "event" : "meeting";
+
+                    var message = source == "event"
+                        ? $"📅 New Event Created: {meeting.Title}"
+                        : $"📌 New Meeting Scheduled: {meeting.Title}";
+
+                    var notification = new Notification
+                    {
+                        Username = user.Username,
+                        Message = message,
+                        Source = source,
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    _db.Notifications.Add(notification);
+
+                    if (NotificationHub.UserConnections.TryGetValue(user.Username, out var connectionId))
+                    {
+                        await _hub.Clients.Client(connectionId)
+                            .SendAsync("ReceiveNotification", notification);
+                    }
+                }
+
+                await _db.SaveChangesAsync();
+            }
+
             if (_attendees != null)
             {
                 var _attendee = _attendees
-                                .Where(x => x.OrderFlag == 0)
-                                .Where(x => x.TypeFlag == McvConstant.MEETING_ATTENDEE_INTERNAL)
-                                .FirstOrDefault();
+                    .Where(x => x.OrderFlag == 0)
+                    .Where(x => x.TypeFlag == McvConstant.MEETING_ATTENDEE_INTERNAL)
+                    .FirstOrDefault();
 
-                await wFTaskService.StartFlow(nameof(Meeting), obj.TypeFlag, obj.ID, null, ProjectID: obj.ProjectID, _attendee);
+                await wFTaskService.StartFlow(
+                    nameof(Meeting),
+                    obj.TypeFlag,
+                    obj.ID,
+                    null,
+                    ProjectID: obj.ProjectID,
+                    _attendee
+                );
             }
 
             return Ok(obj);
@@ -304,7 +368,7 @@ namespace MyCockpitView.WebApi.MeetingModule.Controllers
         public async Task<IActionResult> CheckIfDelayed(int id)
         {
 
-                return Ok(await _service.IsDelayed(id));
+            return Ok(await _service.IsDelayed(id));
 
         }
 
@@ -372,35 +436,77 @@ namespace MyCockpitView.WebApi.MeetingModule.Controllers
         public async Task<IActionResult> Report(string ReportName, string size, Guid id, string Filters = null, string sort = null, string output = "PDF", bool inline = false)
         {
 
-                ReportDefinition _reportDef = null;
-                var _filters = Filters != null ? JsonConvert.DeserializeObject<APIFilter>(Filters).Filters : null;
+            ReportDefinition _reportDef = null;
+            var _filters = Filters != null ? JsonConvert.DeserializeObject<APIFilter>(Filters).Filters : null;
 
-                //var _parameters = paramaters != null ? JsonConvert.DeserializeObject(paramaters) : null;
+            //var _parameters = paramaters != null ? JsonConvert.DeserializeObject(paramaters) : null;
 
-                if (ReportName.ToLower() == "minutes")
-                    _reportDef = await _service.GetMinutesReport(size, id, sort);
-                else
-                    return BadRequest("No matching reportname found!");
+            if (ReportName.ToLower() == "minutes")
+                _reportDef = await _service.GetMinutesReport(size, id, sort);
+            else
+                return BadRequest("No matching reportname found!");
 
-                if (_reportDef == null || _reportDef.FileContent == null)
-                {
-                    return BadRequest("Report not generated!");
-                }
-                if (inline)
-                {
-                    // Set the content type to indicate PDF
-                    Response.Headers.Add("Content-Type", _reportDef.FileContentType);
+            if (_reportDef == null || _reportDef.FileContent == null)
+            {
+                return BadRequest("Report not generated!");
+            }
+            if (inline)
+            {
+                // Set the content type to indicate PDF
+                Response.Headers.Add("Content-Type", _reportDef.FileContentType);
 
-                    // Optionally, you can set a content disposition to indicate inline display
-                    Response.Headers.Add("Content-Disposition", "inline; filename=" + _reportDef.Filename + _reportDef.FileExtension);
+                // Optionally, you can set a content disposition to indicate inline display
+                Response.Headers.Add("Content-Disposition", "inline; filename=" + _reportDef.Filename + _reportDef.FileExtension);
 
-                    return File(_reportDef.FileContent, _reportDef.FileContentType);
-                }
-                return new FileContentResult(_reportDef.FileContent, _reportDef.FileContentType)
-                {
-                    FileDownloadName = _reportDef.Filename + _reportDef.FileExtension,
-                };
+                return File(_reportDef.FileContent, _reportDef.FileContentType);
+            }
+            return new FileContentResult(_reportDef.FileContent, _reportDef.FileContentType)
+            {
+                FileDownloadName = _reportDef.Filename + _reportDef.FileExtension,
+            };
 
         }
+
+        [Authorize]
+        [HttpGet("summary")]
+        public async Task<IActionResult> GetMeetingSummary()
+        {
+            var meetings = await _db.Meetings
+                .Include(m => m.Attendees)
+                .OrderByDescending(m => m.StartDate)
+                .ToListAsync();
+
+            var result = meetings
+                .SelectMany(m =>
+                {
+                    return m.Attendees
+                        .Where(a => a.TypeFlag == McvConstant.MEETING_ATTENDEE_INTERNAL)
+                        .Select(a =>
+                        {
+                            var totalHours = m.EndDate != null && m.StartDate != null
+                                ? (decimal)(m.EndDate - m.StartDate).TotalHours
+                                : 0;
+
+                            return new MeetingSummaryDto
+                            {
+                                AttendeeName = a.Name,
+                                StartTime = m.StartDate,
+                                EndTime = m.EndDate,
+                                Type = m.TypeFlag == 0 ? "Project" :
+                                       m.TypeFlag == 1 ? "Event" :
+                                       "Unknown",
+                                Title = m.Title,
+                                Purpose = m.Purpose,
+                                Location = m.Location,
+
+                                TotalHours = totalHours
+                            };
+                        });
+                })
+                .ToList();
+
+            return Ok(result);
+        }
+
     }
 }

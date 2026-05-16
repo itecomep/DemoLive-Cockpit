@@ -2547,6 +2547,10 @@ namespace MyCockpitView.WebApi.Migrations
                     b.Property<DateTime?>("Birth")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Card_No")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
@@ -4258,6 +4262,10 @@ namespace MyCockpitView.WebApi.Migrations
                     b.Property<int?>("ModifiedByContactID")
                         .HasColumnType("int");
 
+                    b.Property<string>("OfficeLocation")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<int>("OrderFlag")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
@@ -4288,6 +4296,10 @@ namespace MyCockpitView.WebApi.Migrations
                     b.Property<string>("Segment")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("SiteLocation")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("State")
                         .HasMaxLength(255)
@@ -6979,6 +6991,53 @@ namespace MyCockpitView.WebApi.Migrations
                     b.ToTable("ProjectWorkOrderServiceAmounts");
                 });
 
+            modelBuilder.Entity("MyCockpitView.WebApi.HrModule.Entities.WorkFromHomeRequest", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("AttachmentName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("Modified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TeamLeaderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("WorkFromHomeRequests");
+                });
+
             modelBuilder.Entity("MyCockpitView.WebApi.ImageLibraryModule.Entities.ImageLibraryEntity", b =>
                 {
                     b.Property<int>("ID")
@@ -7240,6 +7299,9 @@ namespace MyCockpitView.WebApi.Migrations
 
                     b.Property<bool>("AllDay")
                         .HasColumnType("bit");
+
+                    b.Property<string>("ApprovedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ContactID")
                         .HasColumnType("int");
@@ -8551,6 +8613,37 @@ namespace MyCockpitView.WebApi.Migrations
                     b.ToTable("MeetingVoucherAttachments");
                 });
 
+            modelBuilder.Entity("MyCockpitView.WebApi.NotificationModule.Entities.Notification", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Notifications");
+                });
+
             modelBuilder.Entity("MyCockpitView.WebApi.PackageModule.Entities.Package", b =>
                 {
                     b.Property<int>("ID")
@@ -9744,6 +9837,81 @@ namespace MyCockpitView.WebApi.Migrations
                     b.HasIndex("UID");
 
                     b.ToTable("ProjectStageMasterDeliveries");
+                });
+
+            modelBuilder.Entity("MyCockpitView.WebApi.ProjectModule.Entities.ProjectTarget", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Attachment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Feedback")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Stage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StageStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("TargetDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ProjectTargets");
+                });
+
+            modelBuilder.Entity("MyCockpitView.WebApi.ProjectModule.Entities.ProjectTargetHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("ChangedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FieldName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NewValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OldValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProjectTargetId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectTargetId");
+
+                    b.ToTable("ProjectTargetHistories");
                 });
 
             modelBuilder.Entity("MyCockpitView.WebApi.RequestTicketModule.Entities.RequestTicket", b =>
@@ -11019,6 +11187,10 @@ namespace MyCockpitView.WebApi.Migrations
 
                     b.Property<int?>("ProjectID")
                         .HasColumnType("int");
+
+                    b.Property<string>("Stage")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -14284,6 +14456,28 @@ namespace MyCockpitView.WebApi.Migrations
                         .IsRequired();
 
                     b.Navigation("ProjectStageMaster");
+                });
+
+            modelBuilder.Entity("MyCockpitView.WebApi.ProjectModule.Entities.ProjectTarget", b =>
+                {
+                    b.HasOne("MyCockpitView.WebApi.Entities.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("MyCockpitView.WebApi.ProjectModule.Entities.ProjectTargetHistory", b =>
+                {
+                    b.HasOne("MyCockpitView.WebApi.ProjectModule.Entities.ProjectTarget", "ProjectTarget")
+                        .WithMany()
+                        .HasForeignKey("ProjectTargetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProjectTarget");
                 });
 
             modelBuilder.Entity("MyCockpitView.WebApi.RequestTicketModule.Entities.RequestTicket", b =>

@@ -29,6 +29,9 @@ update(id: number, formData: FormData) {
 }
 
 // DELETE
+// delete(id: number) {
+//   return this.http.delete(`${this.baseUrl}/delete/${id}`);
+// }
 delete(id: number) {
   return this.http.delete(`${this.baseUrl}/delete/${id}`);
 }

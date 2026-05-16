@@ -42,6 +42,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProjectAttachmentApiService } from 'src/app/project/services/project-attachment-api.service';
 import { TodoDmsFolderNavigatorComponent } from '../todo-dms-folder-navigator/todo-dms-folder-navigator.component';
 import { FilterPipe } from "src/app/shared/pipes/filter.pipe";
+import { ProjectTargetService } from 'src/app/project-target/project-target.service';
 
 
 @Component({
@@ -62,7 +63,7 @@ import { FilterPipe } from "src/app/shared/pipes/filter.pipe";
     MatDatepickerModule,
     NgxMaterialTimepickerModule,
     MatTooltipModule,
-      FilterPipe,  
+    FilterPipe,
 
     //Components
     McvFileComponent,
@@ -91,8 +92,10 @@ export class TodoCreateDialogComponent implements OnInit {
   contactOptions: Contact[] = [];
   projectFiles: ProjectAttachment[] = [];
   stageTree: any[] = [];
-expandedCategory: string | null = null;
-checklistSearch: string = '';
+  projectStages: any[] = [];
+  selectedStage: string = '';
+  expandedCategory: string | null = null;
+  checklistSearch: string = '';
 
 
   selectedAssignee: Contact | null = null;
@@ -134,6 +137,7 @@ checklistSearch: string = '';
     private appSettingService: AppSettingMasterApiService,
     private matDialog: MatDialog,
     private teamService: ContactTeamApiService,
+    private projectTargetService: ProjectTargetService,
   ) {
     if (data) {
       console.log(data);
@@ -256,65 +260,65 @@ checklistSearch: string = '';
 
 
 
-            //changes from here //
+  //changes from here //
 
   loadStageTree() {
-  this.todoApiService.getStageTree().subscribe((res: any) => {
-    this.stageTree = res;
-  });
-}
-
-toggleCategory(category: any) {
-  this.expandedCategory =
-    this.expandedCategory === category.title ? null : category.title;
-}
-
-onChecklistSelect(event: any, item: any, category: any, stage: any) {
-  const combinedTitle = `${stage.title} -> ${category.title}: ${item.title}`;
-
-  if (event.target.checked) {
-    const obj = new TodoAgenda();
-    obj.title = combinedTitle;
-
-    if (!this.currentEntity.agendas.some(x => x.title === combinedTitle)) {
-      this.currentEntity.agendas.push(obj);
-    }
-  } else {
-    this.currentEntity.agendas =
-      this.currentEntity.agendas.filter(x => x.title !== combinedTitle);
+    this.todoApiService.getStageTree().subscribe((res: any) => {
+      this.stageTree = res;
+    });
   }
 
-  this.setAgendaConfig();
-}
+  toggleCategory(category: any) {
+    this.expandedCategory =
+      this.expandedCategory === category.title ? null : category.title;
+  }
 
-isChecklistSelected(item: any, category: any, stage: any): boolean {
-  const combinedTitle = `${stage.title} -> ${category.title}: ${item.title}`;
-  return this.currentEntity.agendas.some(x => x.title === combinedTitle);
-}
+  onChecklistSelect(event: any, item: any, category: any, stage: any) {
+    const combinedTitle = `${stage.title} -> ${category.title}: ${item.title}`;
 
-onSelectAllCategory(event: any, category: any, stage: any) {
-  if (event.target.checked) {
-    category.checklists.forEach((item: any) => {
-      const combinedTitle = `${stage.title} -> ${category.title}: ${item.title}`;
+    if (event.target.checked) {
+      const obj = new TodoAgenda();
+      obj.title = combinedTitle;
 
       if (!this.currentEntity.agendas.some(x => x.title === combinedTitle)) {
-        const obj = new TodoAgenda();
-        obj.title = combinedTitle;
         this.currentEntity.agendas.push(obj);
       }
-    });
-  } else {
-    const prefix = `${stage.title} -> ${category.title}: `;
-    this.currentEntity.agendas =
-      this.currentEntity.agendas.filter(x => !x.title.startsWith(prefix));
+    } else {
+      this.currentEntity.agendas =
+        this.currentEntity.agendas.filter(x => x.title !== combinedTitle);
+    }
+
+    this.setAgendaConfig();
   }
 
-  this.setAgendaConfig();
-}
+  isChecklistSelected(item: any, category: any, stage: any): boolean {
+    const combinedTitle = `${stage.title} -> ${category.title}: ${item.title}`;
+    return this.currentEntity.agendas.some(x => x.title === combinedTitle);
+  }
+
+  onSelectAllCategory(event: any, category: any, stage: any) {
+    if (event.target.checked) {
+      category.checklists.forEach((item: any) => {
+        const combinedTitle = `${stage.title} -> ${category.title}: ${item.title}`;
+
+        if (!this.currentEntity.agendas.some(x => x.title === combinedTitle)) {
+          const obj = new TodoAgenda();
+          obj.title = combinedTitle;
+          this.currentEntity.agendas.push(obj);
+        }
+      });
+    } else {
+      const prefix = `${stage.title} -> ${category.title}: `;
+      this.currentEntity.agendas =
+        this.currentEntity.agendas.filter(x => !x.title.startsWith(prefix));
+    }
+
+    this.setAgendaConfig();
+  }
 
 
 
-                    //till here //
+  //till here //
 
 
 
@@ -339,11 +343,29 @@ onSelectAllCategory(event: any, category: any, stage: any) {
     return this.utilityService.getErrorMessage(control);
   }
 
-  async onProjectSelected(event: MatAutocompleteSelectedEvent) {
-    this.selectedProject = event;
-    this.todoApiService.clearCopied();
-    this.buildTodoDMS();
-  }
+  // async onProjectSelected(event: MatAutocompleteSelectedEvent) {
+  //   this.selectedProject = event;
+  //   this.todoApiService.clearCopied();
+  //   this.buildTodoDMS();
+  // }
+ async onProjectSelected(event: any) {
+
+  this.selectedProject = event;
+
+  this.selectedStage = '';
+
+  this.todoApiService.clearCopied();
+
+  this.buildTodoDMS();
+
+  this.projectTargetService
+    .getStagesByProject(event.id)
+    .subscribe((res: any) => {
+
+      this.projectStages = res || [];
+
+    });
+}
 
   private getProjectOptions(search: string): Observable<string[]> {
 
@@ -592,6 +614,8 @@ onSelectAllCategory(event: any, category: any, stage: any) {
     this.currentEntity.comment = this.f['comment'].value;
     this.currentEntity.mHrAssigned = this.f['mHrAssigned'].value;
     this.currentEntity.priority = this.f['priority'].value;
+
+    this.currentEntity.stage = this.selectedStage;
 
     this.todoApiService.create(this.currentEntity).subscribe(
       (data: any) => {

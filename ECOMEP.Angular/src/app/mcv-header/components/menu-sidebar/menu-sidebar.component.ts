@@ -16,6 +16,7 @@ import { AppPermissions } from 'src/app/app.permissions';
 import { AssetApiService } from 'src/app/asset/services/asset-api.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { ElementRef, HostListener } from '@angular/core';
 
 @Component({
   selector: 'app-menu-sidebar',
@@ -26,7 +27,7 @@ import { environment } from 'src/environments/environment';
 })
 export class MenuSidebarComponent {
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private elRef: ElementRef) {}
 
   public readonly config = inject(AppConfig);
   private readonly appService = inject(AppService);
@@ -44,9 +45,18 @@ export class MenuSidebarComponent {
     private readonly router = inject(Router);
 
   showMenu: boolean = false;
+  // isPermissionWorkFromHome: boolean =  true;
+
   get isPermissionContactList() { return this.contactService.isPermissionList; }
   get isPermissionTeamList(): boolean { return this.contactService.isPermissionTeamList; }
   get isPermissionProjectList() { return this.projectService.isPermissionList; }
+
+//   get isPermissionList(): boolean {
+//   return this.authService.isInAnyRole([
+//     this.permissions.PROJECT_TARGET_VIEW,
+//     this.permissions.MASTER
+//   ]);
+// }
   get isPermissionTodoList() { return this.todoService.isPermissionList; }
   get isPermissionTaskList() { return this.wfTaskService.isPermissionList; }
   get isPermissionRequestTicketList() { return this.requestTicketService.isPermissionList; }
@@ -58,14 +68,11 @@ export class MenuSidebarComponent {
   get isPermissionAllowedIpView(): boolean { return this.authService.isAllowedIpBypassView;}
   get isPermissionAnalysisListView(): boolean { return this.authService.isAnalysisListView; }
   get isPermissionTaskView(): boolean { return this.authService.isTaskView; }
-  // get isPermissionChecklistEdit(): boolean { return this.authService.isTaskView; }
 
-  
-  // get isPermissionAssetList(){return this.authService.isInAnyRole([
-  //     this.permissions.ROLE_ADMIN_EXECUTIVE,
-  //     this.permissions.ROLE_MAINTENANCE_EXECUTIVE
-  //   ])
-  // }
+  get isPermissionWorkFromHome(): boolean {
+  return this.authService.isInAnyRole([this.permissions.HR_MODULE]);
+}
+ 
 
   ngOnInit(): void {
     this.getMenuStatus();
@@ -83,10 +90,7 @@ export class MenuSidebarComponent {
     this.appService.setMenuStatus(false);
   }
 
-  // openNewChecklist() {
-  //   this.appService.setMenuStatus(false);
-  //   this.router.navigate(['/checklist']);
-  // }
+  
 
   openTask() {
     this.http.post<any>(
@@ -96,8 +100,8 @@ export class MenuSidebarComponent {
     ).subscribe({
       next: (res) => {
         if (res.token) {
-          // window.location.href = `http://localhost:5173/sso-login?token=${res.token}`, '_blank';
-           window.open(`https://task.pointcloudengg.com/sso-login?token=${res.token}`, "_blank");
+          window.location.href = `http://localhost:5173/sso-login?token=${res.token}`, '_blank';
+          //  window.open(`https://task.pointcloudengg.com/sso-login?token=${res.token}`, "_blank");
         } else if (res.redirectUrl) {
           // window.location.href = res.redirectUrl;
            window.open(res.redirectUrl, "_blank");
@@ -108,4 +112,31 @@ export class MenuSidebarComponent {
       error: (err) => console.error("Cockpit token error:", err)
     });
   }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const clickedInside = this.elRef.nativeElement.contains(event.target);
+
+    if (!clickedInside && this.showMenu) {
+      this.appService.setMenuStatus(false);
+    }
+  }
+
+  
+  closeMenuDelayed() {
+  setTimeout(() => {
+    this.appService.setMenuStatus(false);
+  }, 100);
+}
+
+// get isPermissionProjectTarget(): boolean {
+//   return this.authService.isRoleMaster;
+// }
+
+get isPermissionProjectTarget(): boolean {
+  return this.authService.isInAnyRole([
+    this.permissions.PROJECT_TARGET_VIEW,
+    this.permissions.MASTER
+  ]);
+}
 }
