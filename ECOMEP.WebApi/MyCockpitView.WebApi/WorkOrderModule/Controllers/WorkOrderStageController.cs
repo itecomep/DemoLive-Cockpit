@@ -83,7 +83,12 @@ public class WorkOrderStageController : ControllerBase
     [Authorize]
     public async Task<IActionResult> Post([FromBody] WorkOrderStageDto Dto)
     {
-        var id = await service.Create(mapper.Map<WorkOrderStage>(Dto));
+        var entity = mapper.Map<WorkOrderStage>(Dto);
+
+        await CalculatePoints(entity);
+
+        var id = await service.Create(entity); 
+
         var results = mapper.Map<WorkOrderStageDto>(await service.Get().SingleOrDefaultAsync(x => x.ID == id));
 
         if (results == null) throw new BadRequestException($"{nameof(WorkOrderStage)} could not be created!");
@@ -125,7 +130,13 @@ public class WorkOrderStageController : ControllerBase
             await db.SaveChangesAsync();
         }
 
-        await service.Update(mapper.Map<WorkOrderStage>(Dto));
+        //await service.Update(mapper.Map<WorkOrderStage>(Dto));
+
+        var entity = mapper.Map<WorkOrderStage>(Dto);
+
+        await CalculatePoints(entity);
+
+        await service.Update(entity);
 
         var results = mapper.Map<WorkOrderStageDto>(await service.GetById(id));
         if (results == null) throw new NotFoundException($"{nameof(WorkOrderStage)} not found!");
@@ -152,6 +163,48 @@ public class WorkOrderStageController : ControllerBase
     {
         var results = await service.GetSearchTagOptions();
         return Ok(results);
+    }
+
+    private async Task CalculatePoints(WorkOrderStage stage)
+    {
+        var workOrder = await db.WorkOrders
+            .AsNoTracking()
+            .SingleOrDefaultAsync(x => x.ID == stage.WorkOrderID);
+
+        if (workOrder == null)
+        {
+            stage.Points = 0;
+            return;
+        }
+
+        decimal totalPoints = workOrder.Amount / 1000m;
+
+        stage.Points = (totalPoints * stage.Percentage) / 100m;
+    }
+
+    [HttpPost("UpdatePoints")]
+    public async Task<IActionResult> UpdatePoints()
+    {
+        var stages = await db.WorkOrderStages.ToListAsync();
+
+        foreach (var stage in stages)
+        {
+            var workOrder = await db.WorkOrders
+                .AsNoTracking()
+                .SingleOrDefaultAsync(x => x.ID == stage.WorkOrderID);
+
+            if (workOrder != null)
+            {
+                decimal totalPoints = workOrder.Amount / 1000m;
+
+                stage.Points =
+                    (totalPoints * stage.Percentage) / 100m;
+            }
+        }
+
+        await db.SaveChangesAsync();
+
+        return Ok("Points Updated");
     }
 
 }

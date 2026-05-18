@@ -42,6 +42,8 @@ import { ProjectFileComponent } from '../project-file/project-file.component';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { AllMailComponent } from '../../.././gmail/all-mail/all-mail.component';
 import { GmailService } from "../../../gmail/services/gmail.service";
+import { ProjectPointsComponent } from '../project-points/project-points.component';
+
 
 @Component({
   selector: 'app-project',
@@ -74,7 +76,8 @@ import { GmailService } from "../../../gmail/services/gmail.service";
     ProjectWorkOrderBillViewComponent,
     ProjectGmailDialogComponent,
     AllMailComponent,
-    ProjectFileComponent
+    ProjectFileComponent,
+    ProjectPointsComponent
 ]
 })
 export class ProjectComponent implements OnInit {
@@ -133,6 +136,7 @@ export class ProjectComponent implements OnInit {
   get PROJECT_INWARDS_TYPE_FLAG_INWARDS() { return this.projectInwardService.PROJECT_INWARDS_TYPE_FLAG_INWARDS; }
   get PROJECT_INWARDS_TYPE_FLAG_PHOTOS() { return this.projectInwardService.PROJECT_INWARDS_TYPE_FLAG_PHOTOS; }
   get PROJECT_INWARDS_TYPE_FLAG_REPORTS() { return this.projectInwardService.PROJECT_INWARDS_TYPE_FLAG_REPORTS; }
+  get isPermissionPointsView() { return this.entityApiService.isPermissionPointsView;}
 
   segmentOptions: string[] = [];
   associationGroupOptions: string[] = [];

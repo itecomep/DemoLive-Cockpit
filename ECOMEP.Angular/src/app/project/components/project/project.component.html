@@ -189,5 +189,13 @@
       </ng-template>
     </mat-tab>
 
+    <mat-tab label="Points" *ngIf="isPermissionPointsView">
+      <ng-template matTabContent>
+        <app-project-points
+          [project]="currentEntity">
+        </app-project-points>
+      </ng-template>
+    </mat-tab>
+
   </mat-tab-group>
 </div>

@@ -1,0 +1,95 @@
+// .points-wrapper {
+//   padding: 10px;
+// }
+
+// .points-table {
+//   width: 100%;
+//   border-collapse: collapse;
+//   font-size: 14px;
+// }
+
+// .points-table th {
+//   background: #91969c;
+//   color: white;
+//   padding: 10px;
+//   text-align: left;
+// }
+
+// .points-table td {
+//   border: 1px solid #dcdcdc;
+//   padding: 10px;
+// }
+
+// .points-table tr:nth-child(even) {
+//   background: #f5f5f5;
+// }
+
+
+
+
+
+
+
+
+// .total-row {
+//   background: #6c757d;
+//   color: white;
+// }
+
+// .total-row th {
+//   padding: 8px;
+//   border: 1px solid #6c757d;
+// }
+
+
+.points-wrapper {
+  padding: 0;
+}
+
+.points-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.points-table table {
+  border-spacing: 0;
+}
+
+/* MAIN HEADER */
+
+.points-table thead tr:first-child th {
+  background: #d7dbe0;
+  color: #000;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 4px 8px;
+  border: 1px solid #c8ccd1;
+  text-align: center;
+}
+
+/* TOTAL ROW */
+
+.total-row th {
+  background: #6f7882 !important;
+  color: white !important;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border: 1px solid #7d858d;
+  text-align: center;
+}
+
+/* BODY */
+
+.points-table td {
+  border: 1px solid #d7dbe0;
+  padding: 8px;
+  font-size: 14px;
+}
+
+/* ALTERNATE ROW */
+
+.points-table tbody tr:nth-child(even) {
+  background: #f7f7f7;
+}

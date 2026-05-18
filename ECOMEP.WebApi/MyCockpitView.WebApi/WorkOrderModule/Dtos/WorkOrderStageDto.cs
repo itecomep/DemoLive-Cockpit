@@ -24,6 +24,7 @@ namespace MyCockpitView.WebApi.WorkOrderModule.Dtos
         public string? Abbreviation { get; set; }
         [Precision(18, 2)] public decimal Percentage { get; set; }
         [Precision(18, 2)] public decimal Amount { get; set; }
+        [Precision(18, 2)] public decimal Points { get; set; }
         public bool IsLumpsum { get; set; }
         public int Revisions { get; set; }
         public DateTime? DueDate { get; set; }

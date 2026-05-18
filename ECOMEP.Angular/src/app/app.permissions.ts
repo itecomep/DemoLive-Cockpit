@@ -206,6 +206,9 @@ export class AppPermissions
 
   public readonly PROJECT_TARGET_VIEW = 'PROJECT_TARGET_VIEW';
 
+  
+  public readonly POINTS = 'POINTS';
+
 }
 
 

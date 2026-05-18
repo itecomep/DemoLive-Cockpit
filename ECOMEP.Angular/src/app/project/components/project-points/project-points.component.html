@@ -1,0 +1,49 @@
+<div class="points-wrapper mt-5">
+
+  <table class="points-table">
+
+    <thead>
+
+      <tr>
+        <th>Sr No</th>
+        <th>Stage</th>
+        <th>Value</th>
+        <th>Points</th>
+      </tr>
+
+      <tr class="total-row">
+        <th></th>
+        <th>Total</th>
+        <th>100%</th>
+        <th>{{ totalPoints }}</th>
+      </tr>
+
+    </thead>
+
+    <tbody>
+
+      <tr *ngFor="let item of stages; let i = index">
+
+        <td>
+          {{ i + 1 }}
+        </td>
+
+        <td>
+          {{ item.title }}
+        </td>
+
+        <td>
+          {{ item.percentage }}%
+        </td>
+
+        <td>
+          {{ item.points }}
+        </td>
+
+      </tr>
+
+    </tbody>
+
+  </table>
+
+</div>
