@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
+import { environment } from "src/environments/environment";
 
 /* ================= EXISTING ================= */
 
@@ -39,7 +40,7 @@ export interface MeetingSummary {
 })
 export class HrModuleService {
   // ✅ COMMON BASE URL
-  private baseApi = "http://localhost:5054";
+  private baseApi = `${environment.apiPath}`;
 
   private baseUrl = `${this.baseApi}/api/WorkFromHome`;
   private baseleaveUrl = `${this.baseApi}/Leave`;

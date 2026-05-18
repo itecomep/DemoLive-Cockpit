@@ -1,13 +1,10 @@
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using MyCockpitView.WebApi.ActivityModule;
+
 using MyCockpitView.WebApi.AppSettingMasterModule;
 using MyCockpitView.WebApi.AssetModule.Extensions;
-using MyCockpitView.WebApi.AttendanceModule.Data;
-using MyCockpitView.WebApi.AttendanceModule.Services;
 using MyCockpitView.WebApi.AuthModule;
 using MyCockpitView.WebApi.AuthModule.Extensions;
 using MyCockpitView.WebApi.AzureBlobsModule;
@@ -15,14 +12,10 @@ using MyCockpitView.WebApi.CompanyModule;
 using MyCockpitView.WebApi.ContactModule.Extensions;
 using MyCockpitView.WebApi.Exceptions;
 using MyCockpitView.WebApi.Extensions;
-using MyCockpitView.WebApi.GmailModule.Configuration;
-using MyCockpitView.WebApi.GmailModule.Extensions;
 using MyCockpitView.WebApi.ImageLibraryModule;
 using MyCockpitView.WebApi.LeaveModule.Extensions;
 using MyCockpitView.WebApi.MeetingModule.Extensions;
 using MyCockpitView.WebApi.Middleware;
-using MyCockpitView.WebApi.NotificationModule;
-using MyCockpitView.WebApi.NotificationModule.Services;
 using MyCockpitView.WebApi.PackageModule.Extensions;
 using MyCockpitView.WebApi.ProjectModule.Extensions;
 using MyCockpitView.WebApi.RequestTicketModule.Extensions;
@@ -34,7 +27,15 @@ using MyCockpitView.WebApi.TodoModule.Extensions;
 using MyCockpitView.WebApi.TypeMasterModule;
 using MyCockpitView.WebApi.WFTaskModule.Extensions;
 using MyCockpitView.WebApi.WorkOrderModule.Extensions;
+using MyCockpitView.WebApi.GmailModule.Extensions;
+using Microsoft.EntityFrameworkCore;
+using MyCockpitView.WebApi.GmailModule.Configuration;
+using Microsoft.AspNetCore.Http.Features;
+using MyCockpitView.WebApi.NotificationModule;
+using MyCockpitView.WebApi.NotificationModule.Services;
 using System.Text.Json.Serialization;
+using MyCockpitView.WebApi.AttendanceModule.Data;
+using MyCockpitView.WebApi.AttendanceModule.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

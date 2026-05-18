@@ -7,10 +7,8 @@
         <img src="{{ logoUrl_two || 'assets/images/logo.png' }}" />
       </div>
 
-      <!-- <h2 class="login-title">WELCOME</h2> -->
-       <!-- <h2 class="login-title" style="font-family: Arial, sans-serif;">WELCOME</h2> -->
-        <h2 class="login-title">WELCOME</h2>
-
+      <!-- <h2 class="login-title">EMC&PCEview</h2> -->
+      <h2 class="login-title">WELCOME</h2>
 
       <form *ngIf="!isLoggedIn" [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off">
 
@@ -28,8 +26,7 @@
             {{getErrorMessage(f.password)}}</mat-error>
         </mat-form-field>
 
-        <button type="submit" [disabled]="!locationOn" mat-raised-button color="primary"
-          class="btn btn-block mt-2">Login</button>
+        <button type="submit" [disabled]="!locationOn" mat-raised-button color="primary" class="btn btn-block mt-2">Login</button>
         <small *ngIf="!locationOn">Location is required to login.</small>
         <!--  <mat-form-field appearance="outline">
   <mat-label>Enter your mobile number</mat-label>

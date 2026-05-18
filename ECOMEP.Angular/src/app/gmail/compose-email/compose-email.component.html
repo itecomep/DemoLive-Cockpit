@@ -1,12 +1,10 @@
-<div class="compose-wrapper" [class.maximized]="isMaximized"  [class.minimized]="isMinimized">
-  <div class="compose-header">
+<div class="compose-wrapper" [class.maximized]="isMaximized"  [class.minimized]="isMinimized" [class.embedded-compose]="embeddedMode" #composeContainer>
+  <div class="compose-header" *ngIf="!embeddedMode">
     <span class="title">New Message</span>
-
-    <div class="header-buttons">
+    <div class="header-buttons" *ngIf="!embeddedMode">
       <button mat-icon-button (click)="toggleMinimize()">
         <mat-icon>remove</mat-icon>
       </button>
-
       <button mat-icon-button (click)="toggleMaximize()">
         <mat-icon>{{ isMaximized ? "fullscreen_exit" : "fullscreen" }}</mat-icon>
       </button>
@@ -106,80 +104,10 @@
         </mat-autocomplete>
       </mat-form-field>
 
-      <mat-expansion-panel *ngIf="selectedProjectId" [expanded]="true">
-        <mat-expansion-panel-header>
-          <mat-panel-title>Project associations</mat-panel-title>
-        </mat-expansion-panel-header>
-        <ul class="project-association-list">
-          <li *ngFor="let item of associations; let i=index" [class.added]="isContactAdded(item)">
-            <div class="d-flex justify-content-between">
-              <div class="association-contact d-flex">
-                <div class="flex-grow-0 flex-shrink-0">
-                  <img 
-                    [src]="item.contact?.photoUrl || (item.contact?.isCompany ? 'assets/images/company-icon.svg' : 'assets/images/person-icon.svg')"
-                    class="user-thumbnail mr-2"
-                    alt=""
-                    matTooltip="{{item.contact?.fullName}}"
-                  />
-                </div>
-                <div class="flex-grow-1">
-                  <div>
-                    <span class="font-focused">{{ item.contact?.fullName }}</span>
-                  </div>
-                  <span class="badge badge-warning mr-1"
-                    *ngFor="let cat of item.contact?.categories">
-                    {{ cat }}
-                  </span>
-                  <span class="badge badge-gray mr-1"
-                    *ngFor="let tag of item.contact?.searchTags">
-                    {{ tag }}
-                  </span>
-                </div>
-              </div>
-              <div class="association-actions d-flex flex-wrap">
-                <button mat-button type="button"
-                  (click)="addToRecipients(item, 'TO')"
-                  [class.active]="getContactTypeFlag(item) === 'TO'">
-                  To
-                </button>
-                <button mat-button type="button"
-                  (click)="addToRecipients(item, 'CC')"
-                  [class.active]="getContactTypeFlag(item) === 'CC'">
-                  CC
-                </button>
-                <button mat-button type="button"
-                  (click)="addToRecipients(item, 'BCC')"
-                  [class.active]="getContactTypeFlag(item) === 'BCC'">
-                  BCC
-                </button>
-              </div>
-            </div>
-            <hr class="mb-0" />
-            <div class="association-details">
-              <h6 class="font-focused">{{item.title}}</h6>
-              <mat-icon class="mr-1">email</mat-icon>
-              <span *ngIf="item.contact?.email">{{item.contact.email}}</span>
-              <mat-icon class="ml-2 mr-1">phone</mat-icon>
-              <span *ngIf="item.contact?.phone">{{item.contact.phone}}</span>
-            </div>
-          </li>
-        </ul>
-        <ul *ngIf="!associations || associations.length === 0">
-          <li>
-            <h6>No Project Associations Found!!!</h6>
-          </li>
-        </ul>
-      </mat-expansion-panel>
-
-      <!-- <div class="attachment-drop-zone" (click)="openDmsDialog()">
-        <span class="material-icons">perm_media</span>
-        Select files from DMS
-      </div> -->
       <div class="attachment-drop-zone" (click)="openDmsDialog()">
         <span class="material-icons upload-icon">cloud_upload</span>
         <p class="title">Select files from DMS</p>
       </div>
-
         <div class="attachment-container" *ngIf="attachments.length > 0 || dmsAttachments.length > 0">
           <div class="attachment-box" *ngFor="let att of attachments; let i = index">
             <div class="file-icon">
@@ -195,11 +123,9 @@
                 {{ att.size }}
               </div>
             </div>
-
             <button mat-icon-button class="remove-btn" (click)="removeAttachment(i)">
               <mat-icon>close</mat-icon>
             </button>
-
           </div>
           <div class="attachment-box" *ngFor="let att of dmsAttachments; let i = index">
             <div class="file-icon">
@@ -209,7 +135,6 @@
               <div class="file-name">{{ att.name }}</div>
               <div class="file-size">{{ att.size }}</div>
             </div>
-
             <button mat-icon-button class="remove-btn" (click)="removeDmsAttachment(i)">
               <mat-icon>close</mat-icon>
             </button>
@@ -299,10 +224,6 @@
         ></div>
       </div>
 
-      <!-- <div class="attachment-drop-zone" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)" (click)="fileInput.click()">
-         Drag & Drop files here or click Attach Files
-        <input type="file" #fileInput multiple (change)="onFileSelected($event)" hidden />
-      </div> -->
     </form>
   </div>
   <div class="compose-footer" [class.hidden]="isMinimized">

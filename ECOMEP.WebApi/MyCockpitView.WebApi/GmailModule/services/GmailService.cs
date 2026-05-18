@@ -15,7 +15,7 @@ public class GmailService : IGmailService
         _http = http;
     }
     public async Task<(List<GmailEmailDto> Emails, int Total, string? NextPageToken)> GetEmailsAsync(
-    string accessToken, string? pageToken = null, int pageSize = 20)
+        string accessToken, string? pageToken = null, int pageSize = 20)
     {
         _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
@@ -32,7 +32,9 @@ public class GmailService : IGmailService
                 l => l.GetProperty("name").GetString()!
             );
 
-        string url = $"https://gmail.googleapis.com/gmail/v1/users/me/messages?labelIds=INBOX&maxResults={pageSize}";
+        // int fetchSize = pageSize * 5;
+        int fetchSize = pageSize;
+        string url = $"https://gmail.googleapis.com/gmail/v1/users/me/messages?labelIds=INBOX&maxResults={fetchSize}";
         if (!string.IsNullOrEmpty(pageToken))
             url += $"&pageToken={pageToken}";
 
@@ -60,25 +62,34 @@ public class GmailService : IGmailService
                 try
                 {
                     var id = msg.GetProperty("id").GetString()!;
-                    var msgResponse = await _http.GetAsync($"https://gmail.googleapis.com/gmail/v1/users/me/messages/{id}?format=full");
+                    // var msgResponse = await _http.GetAsync($"https://gmail.googleapis.com/gmail/v1/users/me/messages/{id}?format=full");
+                    var msgResponse = await _http.GetAsync(
+                     $"https://gmail.googleapis.com/gmail/v1/users/me/messages/{id}?format=metadata&metadataHeaders=From&metadataHeaders=To&metadataHeaders=Cc&metadataHeaders=Bcc&metadataHeaders=Subject&metadataHeaders=Date");
                     msgResponse.EnsureSuccessStatusCode();
 
                     var msgJson = await msgResponse.Content.ReadAsStringAsync();
                     using var msgDoc = JsonDocument.Parse(msgJson);
 
                     var payload = msgDoc.RootElement.GetProperty("payload");
-                    var body = ExtractBody(payload);
                     var headers = payload.GetProperty("headers");
-                    var attachments = ExtractAttachments(payload);
+                    // var body = ExtractBody(payload);
+                    // var attachments = ExtractAttachments(payload);
+                    string body = null;
+                    var attachments = new List<GmailAttachmentDto>();
 
                     foreach (var att in attachments)
                     {
                         att.Url = $"/api/gmail/attachment/{id}/{att.AttachmentId}";
                     }
 
-                    body = await ReplaceInlineImagesAsync(accessToken, body, attachments, id);
+                    // body = await ReplaceInlineImagesAsync(accessToken, body, attachments, id);
+                    if (attachments.Any(a => a.IsInline))
+                    {
+                        body = await ReplaceInlineImagesAsync(accessToken, body, attachments, id);
+                    }
 
                     string from = "", to = "", cc = "", bcc = "", subject = "", messageId = "", dateStr = "";
+
                     foreach (var h in headers.EnumerateArray())
                     {
                         var name = h.GetProperty("name").GetString();
@@ -105,22 +116,45 @@ public class GmailService : IGmailService
 
                     bool isUnread = false;
                     var emailLabels = new List<string>();
+
                     if (msgDoc.RootElement.TryGetProperty("labelIds", out var labelIds))
                     {
                         foreach (var l in labelIds.EnumerateArray())
                         {
                             var labelId = l.GetString();
                             if (labelId == "UNREAD") isUnread = true;
+
                             if (labelId != null && labelMap.ContainsKey(labelId))
                             {
                                 var labelName = labelMap[labelId];
                                 var systemLabels = new[]
-                                { "INBOX", "IMPORTANT", "CATEGORY_PERSONAL", "CATEGORY_SOCIAL", "CATEGORY_PROMOTIONS", "CATEGORY_UPDATES", "CATEGORY_FORUMS", "SENT", "DRAFT", "UNREAD", "STARRED", "TRASH", "SPAM"};
-                                if (!systemLabels.Contains(labelName)) emailLabels.Add(labelName);
+                                { "INBOX","IMPORTANT","CATEGORY_PERSONAL","CATEGORY_SOCIAL","CATEGORY_PROMOTIONS",
+                                "CATEGORY_UPDATES","CATEGORY_FORUMS","SENT","DRAFT","UNREAD","STARRED","TRASH","SPAM"};
+
+                                if (!systemLabels.Contains(labelName))
+                                    emailLabels.Add(labelName);
                             }
                         }
                     }
 
+                    // return new GmailEmailDto
+                    // {
+                    //     Id = id,
+                    //     ThreadId = msgDoc.RootElement.GetProperty("threadId").GetString()!,
+                    //     From = from,
+                    //     To = to,
+                    //     Cc = cc,
+                    //     Bcc = bcc,
+                    //     Subject = subject,
+                    //     Body = body,
+                    //     Snippet = msgDoc.RootElement.GetProperty("snippet").GetString()!,
+                    //     Date = emailDate,
+                    //     MessageId = messageId,
+                    //     RfcMessageId = messageId,
+                    //     Attachments = attachments.Where(a => !a.IsInline).ToList(),
+                    //     Read = !isUnread,
+                    //     Labels = emailLabels
+                    // };
                     return new GmailEmailDto
                     {
                         Id = id,
@@ -130,13 +164,10 @@ public class GmailService : IGmailService
                         Cc = cc,
                         Bcc = bcc,
                         Subject = subject,
-                        Body = body,
                         Snippet = msgDoc.RootElement.GetProperty("snippet").GetString()!,
                         Date = emailDate,
-                        MessageId = messageId,
-                        RfcMessageId = messageId,
-                        Attachments = attachments,
                         Read = !isUnread,
+                        Attachments = new List<GmailAttachmentDto>(),
                         Labels = emailLabels
                     };
                 }
@@ -146,14 +177,19 @@ public class GmailService : IGmailService
                 }
             });
 
-        emails = (await Task.WhenAll(fetchTasks)).ToList();
+        var allEmails = (await Task.WhenAll(fetchTasks)).ToList();
+        var uniqueThreads = allEmails
+            .GroupBy(e => e.ThreadId)
+            .Select(g => g.OrderByDescending(x => x.Date).First())
+            .Take(pageSize)
+            .ToList();
 
         int totalEmails = doc.RootElement.GetProperty("resultSizeEstimate").GetInt32();
         string? nextPageToken = doc.RootElement.TryGetProperty("nextPageToken", out var tokenEl)
             ? tokenEl.GetString()
             : null;
 
-        return (emails, totalEmails, nextPageToken);
+        return (uniqueThreads, totalEmails, nextPageToken);
     }
     public async Task<int> GetTotalEmailCount(string accessToken)
     {
@@ -229,7 +265,17 @@ public class GmailService : IGmailService
                 }
 
                 body = ExtractBody(payload);
-                var attachments = ExtractAttachments(payload);
+                var attachments = ExtractAttachments(payload, body);
+
+                long internalDateMs = 0;
+                if (message.TryGetProperty("internalDate", out var internalDateProp))
+                {
+                    long.TryParse(internalDateProp.GetString(), out internalDateMs);
+                }
+
+                DateTime emailDate = internalDateMs > 0
+                    ? DateTimeOffset.FromUnixTimeMilliseconds(internalDateMs).LocalDateTime
+                    : DateTime.UtcNow;
 
                 emails.Add(new GmailEmailDto
                 {
@@ -243,8 +289,9 @@ public class GmailService : IGmailService
                     Subject = subject,
                     Snippet = snippet,
                     Body = body,
-                    Attachments = attachments,
-                    Read = true
+                    Attachments = attachments.Where(a => !a.IsInline).ToList(),
+                    Read = true,
+                    Date = emailDate
                 });
             }
         }
@@ -337,8 +384,10 @@ public class GmailService : IGmailService
     string accessToken, string? pageToken = null, int pageSize = 20)
     {
         _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        // int fetchSize = pageSize * 5;
+        int fetchSize = pageSize;
 
-        string url = $"https://gmail.googleapis.com/gmail/v1/users/me/messages?labelIds=SENT&maxResults={pageSize}";
+        string url = $"https://gmail.googleapis.com/gmail/v1/users/me/messages?labelIds=SENT&maxResults={fetchSize}";
         if (!string.IsNullOrEmpty(pageToken))
             url += $"&pageToken={pageToken}";
 
@@ -366,20 +415,41 @@ public class GmailService : IGmailService
                 try
                 {
                     var id = msg.GetProperty("id").GetString()!;
-                    var msgResponse = await _http.GetAsync($"https://gmail.googleapis.com/gmail/v1/users/me/messages/{id}?format=full");
-                    msgResponse.EnsureSuccessStatusCode();
+                    // var msgResponse = await _http.GetAsync($"https://gmail.googleapis.com/gmail/v1/users/me/messages/{id}?format=full");
+                    // msgResponse.EnsureSuccessStatusCode();
 
+                    // var msgJson = await msgResponse.Content.ReadAsStringAsync();
+                    // using var msgDoc = JsonDocument.Parse(msgJson);
+
+                    // var payload = msgDoc.RootElement.GetProperty("payload");
+                    // var headers = payload.GetProperty("headers");
+                    // var body = ExtractBody(payload);
+                    // var attachments = ExtractAttachments(payload);
+
+                    var msgResponse = await _http.GetAsync(
+                    $"https://gmail.googleapis.com/gmail/v1/users/me/messages/{id}?format=metadata&metadataHeaders=From&metadataHeaders=To&metadataHeaders=Cc&metadataHeaders=Bcc&metadataHeaders=Subject&metadataHeaders=Date");
+
+                    msgResponse.EnsureSuccessStatusCode();
                     var msgJson = await msgResponse.Content.ReadAsStringAsync();
                     using var msgDoc = JsonDocument.Parse(msgJson);
-
                     var payload = msgDoc.RootElement.GetProperty("payload");
-                    var body = ExtractBody(payload);
                     var headers = payload.GetProperty("headers");
-                    var attachments = ExtractAttachments(payload);
+                    string body = null;
+                    var attachments = new List<GmailAttachmentDto>();
 
-                    body = await ReplaceInlineImagesAsync(accessToken, body, attachments, id);
+                    foreach (var att in attachments)
+                    {
+                        att.Url = $"/api/gmail/attachment/{id}/{att.AttachmentId}";
+                    }
 
-                    string from = "", to = "", cc = "", bcc = "", subject = "", messageId = "", dateStr = "";
+                    // body = await ReplaceInlineImagesAsync(accessToken, body, attachments, id);
+                    if (attachments.Any(a => a.IsInline))
+                    {
+                        body = await ReplaceInlineImagesAsync(accessToken, body, attachments, id);
+                    }
+
+                    string from = "", to = "", cc = "", bcc = "", subject = "", messageId = "";
+
                     foreach (var h in headers.EnumerateArray())
                     {
                         var name = h.GetProperty("name").GetString();
@@ -393,7 +463,6 @@ public class GmailService : IGmailService
                             case "Bcc": bcc = value!; break;
                             case "Subject": subject = value!; break;
                             case "Message-ID": messageId = value!; break;
-                            case "Date": dateStr = value!; break;
                         }
                     }
 
@@ -403,7 +472,25 @@ public class GmailService : IGmailService
                         long.TryParse(internalDateStr, out internalDateMs);
 
                     DateTime emailDate = DateTimeOffset.FromUnixTimeMilliseconds(internalDateMs).LocalDateTime;
-                    
+
+                    // return new GmailEmailDto
+                    // {
+                    //     Id = id,
+                    //     ThreadId = msgDoc.RootElement.GetProperty("threadId").GetString()!,
+                    //     From = from,
+                    //     To = to,
+                    //     Cc = cc,
+                    //     Bcc = bcc,
+                    //     Subject = subject,
+                    //     Body = body,
+                    //     Snippet = msgDoc.RootElement.GetProperty("snippet").GetString()!,
+                    //     Date = emailDate,
+                    //     MessageId = messageId,
+                    //     RfcMessageId = messageId,
+                    //     Attachments = attachments.Where(a => !a.IsInline).ToList(),
+                    //     Read = true
+                    // };
+
                     return new GmailEmailDto
                     {
                         Id = id,
@@ -413,13 +500,10 @@ public class GmailService : IGmailService
                         Cc = cc,
                         Bcc = bcc,
                         Subject = subject,
-                        Body = body,
                         Snippet = msgDoc.RootElement.GetProperty("snippet").GetString()!,
                         Date = emailDate,
-                        MessageId = messageId,
-                        RfcMessageId = messageId,
-                        Attachments = attachments,
-                        Read = true
+                        Read = true,
+                        Attachments = new List<GmailAttachmentDto>() // empty
                     };
                 }
                 finally
@@ -428,12 +512,20 @@ public class GmailService : IGmailService
                 }
             });
 
-        emails = (await Task.WhenAll(fetchTasks)).ToList();
+        var allEmails = (await Task.WhenAll(fetchTasks)).ToList();
+
+        var uniqueThreads = allEmails
+            .GroupBy(e => e.ThreadId)
+            .Select(g => g.OrderByDescending(x => x.Date).First())
+            .Take(pageSize)
+            .ToList();
 
         int totalEmails = doc.RootElement.GetProperty("resultSizeEstimate").GetInt32();
-        string? nextPageToken = doc.RootElement.TryGetProperty("nextPageToken", out var tokenEl) ? tokenEl.GetString() : null;
+        string? nextPageToken = doc.RootElement.TryGetProperty("nextPageToken", out var tokenEl)
+            ? tokenEl.GetString()
+            : null;
 
-        return (emails, totalEmails, nextPageToken);
+        return (uniqueThreads, totalEmails, nextPageToken);
     }
     private static string ExtractBody(JsonElement payload)
     {
@@ -631,13 +723,162 @@ public class GmailService : IGmailService
                 .GetString()!;
     }
 
-    private List<GmailAttachmentDto> ExtractAttachments(JsonElement payload)
-    {
-        var attachments = new List<GmailAttachmentDto>();
-        ExtractAttachmentsRecursive(payload, attachments);
-        return attachments;
-    }
+    // private List<GmailAttachmentDto> ExtractAttachments(JsonElement element)
+    // {
+    //     var list = new List<GmailAttachmentDto>();
+    //     void Walk(JsonElement part)
+    //     {
+    //         string fileName = part.TryGetProperty("filename", out var filenameProp)
+    //             ? filenameProp.GetString()
+    //             : null;
+    //         string mimeType = part.GetProperty("mimeType").GetString();
+    //         string? contentDisposition = null;
+    //         string? contentId = null;
 
+    //         if (part.TryGetProperty("headers", out var headers))
+    //         {
+    //             foreach (var h in headers.EnumerateArray())
+    //             {
+    //                 var name = h.GetProperty("name").GetString();
+    //                 var value = h.GetProperty("value").GetString();
+    //                 if (name == "Content-Disposition")
+    //                     contentDisposition = value;
+    //                 if (name == "Content-ID")
+    //                     contentId = value;
+    //             }
+    //         }
+
+    //         bool isInline = mimeType.StartsWith("image/") && !string.IsNullOrEmpty(contentId);
+    //         if (
+    //             part.TryGetProperty("body", out var body) &&
+    //             body.TryGetProperty("attachmentId", out var attachmentIdProp)
+    //         )
+    //         {
+    //             list.Add(new GmailAttachmentDto
+    //             {
+    //                 FileName = string.IsNullOrEmpty(fileName) ? "attachment" : fileName,
+    //                 MimeType = mimeType,
+    //                 AttachmentId = attachmentIdProp.GetString(),
+    //                 Size = body.TryGetProperty("size", out var sizeProp) ? sizeProp.GetInt32() : 0,
+    //                 ContentId = contentId?.Trim('<', '>'),
+    //                 IsInline = isInline
+    //             });
+    //         }
+    //         if (part.TryGetProperty("parts", out var parts))
+    //         {
+    //             foreach (var p in parts.EnumerateArray())
+    //                 Walk(p);
+    //         }
+    //     }
+    //     Walk(element);
+    //     return list;
+    // }
+
+    private List<GmailAttachmentDto> ExtractAttachments(JsonElement element, string htmlBody)
+    {
+        var list = new List<GmailAttachmentDto>();
+        void Walk(JsonElement part)
+        {
+            string fileName = part.TryGetProperty("filename", out var filenameProp)
+                ? filenameProp.GetString()
+                : null;
+
+            string mimeType = part.TryGetProperty("mimeType", out var mimeTypeProp)
+                ? mimeTypeProp.GetString()
+                : "application/octet-stream";
+
+            string? contentDisposition = null;
+            string? contentId = null;
+
+            if (part.TryGetProperty("headers", out var headers))
+            {
+                foreach (var h in headers.EnumerateArray())
+                {
+                    var name = h.GetProperty("name").GetString();
+                    var value = h.GetProperty("value").GetString();
+
+                    if (
+                        name.Equals(
+                            "Content-Disposition",
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    )
+                    {
+                        contentDisposition = value;
+                    }
+
+                    if (
+                        name.Equals(
+                            "Content-ID",
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    )
+                    {
+                        contentId = value;
+                    }
+                }
+            }
+
+            // bool isInline =
+            //     !string.IsNullOrEmpty(contentId) &&
+            //     !string.IsNullOrEmpty(contentDisposition) &&
+            //     contentDisposition.Contains("inline", StringComparison.OrdinalIgnoreCase) &&
+            //     mimeType.StartsWith("image/", StringComparison.OrdinalIgnoreCase);
+
+            string cleanedCid = contentId?.Trim('<', '>');
+
+            bool isInline = false;
+
+           if (
+                !string.IsNullOrEmpty(cleanedCid)
+                && !string.IsNullOrEmpty(htmlBody)
+            )
+            {
+                isInline =
+                    htmlBody.Contains(
+                        $"cid:{cleanedCid}",
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                    ||
+                    htmlBody.Contains(
+                        $"cid:<{cleanedCid}>",
+                        StringComparison.OrdinalIgnoreCase
+                    );
+            }
+
+            if (
+                part.TryGetProperty("body", out var body)
+                && body.TryGetProperty("attachmentId", out var attachmentIdProp)
+            )
+            {
+                list.Add(new GmailAttachmentDto
+                {
+                    FileName = string.IsNullOrEmpty(fileName)
+                        ? "attachment"
+                        : fileName,
+                    MimeType = mimeType,
+                    AttachmentId = attachmentIdProp.GetString(),
+                    Size = body.TryGetProperty("size", out var sizeProp)
+                        ? sizeProp.GetInt32()
+                        : 0,
+                    ContentId = contentId?.Trim('<', '>'),
+                    IsInline = isInline
+                });
+            }
+
+            if (part.TryGetProperty("parts", out var parts))
+            {
+                foreach (var p in parts.EnumerateArray())
+                {
+                    Walk(p);
+                }
+            }
+        }
+
+        Walk(element);
+        return list;
+    }
+    
     private void ExtractAttachmentsRecursive(JsonElement element, List<GmailAttachmentDto> attachments)
     {
         if (!element.TryGetProperty("parts", out var parts))
@@ -679,25 +920,40 @@ public class GmailService : IGmailService
         }
     }
 
-    private async Task<string> ReplaceInlineImagesAsync(string accessToken, string html, List<GmailAttachmentDto> attachments, string messageId)
+     private async Task<string> ReplaceInlineImagesAsync(string accessToken, string html, List<GmailAttachmentDto> attachments, string messageId)
     {
-        foreach (var att in attachments.Where(a => a.IsInline))
+        var inlineAttachments = attachments.Where(a => a.IsInline).ToList();
+
+        var tasks = inlineAttachments.Select(async att =>
         {
-            var response = await _http.GetAsync($"https://gmail.googleapis.com/gmail/v1/users/me/messages/{messageId}/attachments/{att.AttachmentId}");
-            response.EnsureSuccessStatusCode();
+            var cid = att.ContentId?.Trim('<', '>');
+            if (string.IsNullOrEmpty(cid)) return (cid, (string?)null);
+
+            var response = await _http.GetAsync(
+                $"https://gmail.googleapis.com/gmail/v1/users/me/messages/{messageId}/attachments/{att.AttachmentId}");
+
+            if (!response.IsSuccessStatusCode) return (cid, null);
 
             var json = await response.Content.ReadAsStringAsync();
             using var doc = JsonDocument.Parse(json);
+
             var data = doc.RootElement.GetProperty("data").GetString();
+            if (string.IsNullOrEmpty(data)) return (cid, null);
 
-            if (!string.IsNullOrEmpty(data))
-            {
-                var bytes = Convert.FromBase64String(data.Replace('-', '+').Replace('_', '/'));
-                var base64 = Convert.ToBase64String(bytes);
-                var dataUri = $"data:{att.MimeType};base64,{base64}";
+            var bytes = Convert.FromBase64String(data.Replace('-', '+').Replace('_', '/'));
+            var base64 = Convert.ToBase64String(bytes);
 
-                html = html.Replace($"cid:{att.ContentId}", dataUri, StringComparison.OrdinalIgnoreCase);
-            }
+            return (cid, $"data:{att.MimeType};base64,{base64}");
+        });
+
+        var results = await Task.WhenAll(tasks);
+
+        foreach (var (cid, dataUri) in results)
+        {
+            if (cid == null || dataUri == null) continue;
+
+            html = html.Replace($"cid:{cid}", dataUri, StringComparison.OrdinalIgnoreCase);
+            html = html.Replace($"cid:<{cid}>", dataUri, StringComparison.OrdinalIgnoreCase);
         }
 
         return html;
@@ -728,7 +984,23 @@ public class GmailService : IGmailService
             var body = ExtractBody(payload);
             var headers = payload.GetProperty("headers");
 
-            string from = "", to = "", subject = "", messageId = "";
+            // string from = "", to = "", subject = "", messageId = "";
+
+            // foreach (var h in headers.EnumerateArray())
+            // {
+            //     var name = h.GetProperty("name").GetString();
+            //     var value = h.GetProperty("value").GetString();
+
+            //     switch (name)
+            //     {
+            //         case "From": from = value!; break;
+            //         case "To": to = value!; break;
+            //         case "Subject": subject = value!; break;
+            //         case "Message-ID": messageId = value!; break;
+            //     }
+            // }
+
+            string from = "", to = "", cc = "", bcc = "", subject = "", messageId = "";
 
             foreach (var h in headers.EnumerateArray())
             {
@@ -737,10 +1009,29 @@ public class GmailService : IGmailService
 
                 switch (name)
                 {
-                    case "From": from = value!; break;
-                    case "To": to = value!; break;
-                    case "Subject": subject = value!; break;
-                    case "Message-ID": messageId = value!; break;
+                    case "From":
+                        from = value!;
+                        break;
+
+                    case "To":
+                        to = value!;
+                        break;
+
+                    case "Cc":
+                        cc = value!;
+                        break;
+
+                    case "Bcc":
+                        bcc = value!;
+                        break;
+
+                    case "Subject":
+                        subject = value!;
+                        break;
+
+                    case "Message-ID":
+                        messageId = value!;
+                        break;
                 }
             }
 
@@ -755,18 +1046,20 @@ public class GmailService : IGmailService
             var date = internalDateMs > 0
                 ? DateTimeOffset.FromUnixTimeMilliseconds(internalDateMs).UtcDateTime
                 : DateTime.UtcNow;
-            var attachments = ExtractAttachments(payload);
+            var attachments = ExtractAttachments(payload, body);
             messages.Add(new GmailEmailDto
             {
                 Id = id,
                 ThreadId = threadId,
                 From = from,
                 To = to,
+                Cc = cc,
+                Bcc = bcc,
                 Subject = subject,
                 Body = body,
                 MessageId = messageId,
                 Date = date,
-                Attachments = attachments
+                Attachments = attachments.Where(a => !a.IsInline).ToList()
             });
         }
 
@@ -790,108 +1083,101 @@ public class GmailService : IGmailService
     }
 
     public async Task<(List<GmailEmailDto> Emails, int Total, string? NextPageToken)> SearchEmailsAsync(
-    string accessToken, string query, string? pageToken = null, int pageSize = 20)
+        string accessToken,
+        string query,
+        string? pageToken = null,
+        int pageSize = 20)
     {
-        using var client = new HttpClient();
-        client.DefaultRequestHeaders.Authorization =
+        _http.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", accessToken);
-
-        var labelResponse = await client.GetAsync("https://gmail.googleapis.com/gmail/v1/users/me/labels");
-        labelResponse.EnsureSuccessStatusCode();
-
-        var labelJson = await labelResponse.Content.ReadAsStringAsync();
-        using var labelDoc = JsonDocument.Parse(labelJson);
-
-        var labelMap = labelDoc.RootElement
-            .GetProperty("labels")
-            .EnumerateArray()
-            .Where(l => l.GetProperty("type").GetString() == "user")
-            .ToDictionary(
-                l => l.GetProperty("id").GetString()!,
-                l => l.GetProperty("name").GetString()!
-            );
-
         string url = $"https://gmail.googleapis.com/gmail/v1/users/me/messages?q={Uri.EscapeDataString(query)}&maxResults={pageSize}";
         if (!string.IsNullOrEmpty(pageToken))
             url += $"&pageToken={pageToken}";
 
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-        var listJson = await client.GetStringAsync(url);
-        using var listDoc = JsonDocument.Parse(listJson);
-
+        var listResponse = await _http.GetAsync(url);
+        listResponse.EnsureSuccessStatusCode();
+        var listJson = await listResponse.Content.ReadAsStringAsync();
+        using var doc = JsonDocument.Parse(listJson);
         var emails = new List<GmailEmailDto>();
-
-        if (!listDoc.RootElement.TryGetProperty("messages", out var messages))
+        if (!doc.RootElement.TryGetProperty("messages", out var messages))
         {
-            return (emails, 0, null);
+            int totalEmpty = doc.RootElement.GetProperty("resultSizeEstimate").GetInt32();
+            return (emails, totalEmpty, null);
         }
-
-        foreach (var msg in messages.EnumerateArray())
+        int maxParallel = 3;
+        using var semaphore = new SemaphoreSlim(maxParallel);
+        var tasks = messages.EnumerateArray().Select(async msg =>
         {
-            var messageId = msg.GetProperty("id").GetString()!;
-            var msgJson = await client.GetStringAsync(
-                $"https://gmail.googleapis.com/gmail/v1/users/me/messages/{messageId}?format=full");
-
-            using var msgDoc = JsonDocument.Parse(msgJson);
-
-            var payload = msgDoc.RootElement.GetProperty("payload");
-            var headers = payload.GetProperty("headers");
-
-            string GetHeader(string name)
+            await semaphore.WaitAsync();
+            try
             {
-                foreach (var h in headers.EnumerateArray())
-                    if (h.GetProperty("name").GetString() == name)
-                        return h.GetProperty("value").GetString() ?? "";
-                return "";
-            }
-
-            var emailLabels = new List<string>();
-            bool isUnread = false;
-
-            if (msgDoc.RootElement.TryGetProperty("labelIds", out var labelIds))
-            {
-                foreach (var l in labelIds.EnumerateArray())
+                var id = msg.GetProperty("id").GetString()!;
+                var msgResponse = await _http.GetAsync($"https://gmail.googleapis.com/gmail/v1/users/me/messages/{id}?format=full");
+                msgResponse.EnsureSuccessStatusCode();
+                var msgJson = await msgResponse.Content.ReadAsStringAsync();
+                using var msgDoc = JsonDocument.Parse(msgJson);
+                var payload = msgDoc.RootElement.GetProperty("payload");
+                var headers = payload.GetProperty("headers");
+                var body = ExtractBody(payload);
+                var attachments = ExtractAttachments(payload, body);
+                foreach (var att in attachments)
                 {
-                    var labelId = l.GetString();
-
-                    if (labelId == "UNREAD")
-                        isUnread = true;
-
-                    if (labelId != null && labelMap.ContainsKey(labelId))
+                    att.Url = $"/api/gmail/attachment/{id}/{att.AttachmentId}";
+                }
+                if (attachments.Any(a => a.IsInline))
+                {
+                    body = await ReplaceInlineImagesAsync(accessToken, body, attachments, id);
+                }
+                string from = "", to = "", subject = "", messageId = "";
+                foreach (var h in headers.EnumerateArray())
+                {
+                    var name = h.GetProperty("name").GetString();
+                    var value = h.GetProperty("value").GetString();
+                    switch (name)
                     {
-                        emailLabels.Add(labelMap[labelId]);
+                        case "From": from = value!; break;
+                        case "To": to = value!; break;
+                        case "Subject": subject = value!; break;
+                        case "Message-ID": messageId = value!; break;
                     }
                 }
+
+                long internalDateMs = 0;
+                var internalDateStr = msgDoc.RootElement.GetProperty("internalDate").GetString();
+                if (!string.IsNullOrEmpty(internalDateStr))
+                    long.TryParse(internalDateStr, out internalDateMs);
+
+                DateTime emailDate = DateTimeOffset
+                    .FromUnixTimeMilliseconds(internalDateMs)
+                    .LocalDateTime;
+
+                return new GmailEmailDto
+                {
+                    Id = id,
+                    ThreadId = msgDoc.RootElement.GetProperty("threadId").GetString()!,
+                    From = from,
+                    To = to,
+                    Subject = subject,
+                    Body = body,
+                    Snippet = msgDoc.RootElement.GetProperty("snippet").GetString()!,
+                    Date = emailDate,
+                    MessageId = messageId,
+                    Attachments = attachments.Where(a => !a.IsInline).ToList(),
+                    Read = true
+                };
             }
-
-            emails.Add(new GmailEmailDto
+            finally
             {
-                MessageId = messageId,
-                ThreadId = msgDoc.RootElement.GetProperty("threadId").GetString()!,
-                Subject = GetHeader("Subject"),
-                From = GetHeader("From"),
-                To = GetHeader("To"),
-                Cc = GetHeader("Cc"),
-                Bcc = GetHeader("Bcc"),
-                Date = DateTime.TryParse(GetHeader("Date"), out var d) ? d : DateTime.UtcNow,
-                Snippet = msgDoc.RootElement.GetProperty("snippet").GetString() ?? "",
-                Body = ExtractBody(payload),
-                Attachments = ExtractAttachments(payload),
-                Read = !isUnread,
-                Labels = emailLabels
-            });
-        }
+                semaphore.Release();
+            }
+        });
 
-        int totalEmails = listDoc.RootElement.TryGetProperty("resultSizeEstimate", out var totalEl)
-            ? totalEl.GetInt32()
-            : emails.Count;
-
-        string? nextPageToken = listDoc.RootElement.TryGetProperty("nextPageToken", out var tokenEl)
+        emails = (await Task.WhenAll(tasks)).ToList();
+        int total = doc.RootElement.GetProperty("resultSizeEstimate").GetInt32();
+        string? nextPageToken = doc.RootElement.TryGetProperty("nextPageToken", out var tokenEl)
             ? tokenEl.GetString()
             : null;
-
-        return (emails, totalEmails, nextPageToken);
+        return (emails, total, nextPageToken);
     }
 
     private static string DecodeHeader(string header)
@@ -920,5 +1206,64 @@ public class GmailService : IGmailService
 
         var bytesLatin1 = Encoding.GetEncoding("iso-8859-1").GetBytes(decoded);
         return Encoding.UTF8.GetString(bytesLatin1);
+    }
+
+    public async Task<GmailEmailDto> GetFullEmailById(string accessToken, string id)
+    {
+        _http.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", accessToken);
+
+        var response = await _http.GetAsync(
+            $"https://gmail.googleapis.com/gmail/v1/users/me/messages/{id}?format=full");
+
+        response.EnsureSuccessStatusCode();
+
+        var json = await response.Content.ReadAsStringAsync();
+        using var doc = JsonDocument.Parse(json);
+
+        var payload = doc.RootElement.GetProperty("payload");
+        var headers = payload.GetProperty("headers");
+
+        var body = ExtractBody(payload);
+        var attachments = ExtractAttachments(payload, body);
+
+        if (attachments.Any(a => a.IsInline))
+        {
+            body = await ReplaceInlineImagesAsync(accessToken, body, attachments, id);
+        }
+
+        string from = "", to = "", subject = "";
+
+        foreach (var h in headers.EnumerateArray())
+        {
+            var name = h.GetProperty("name").GetString();
+            var value = h.GetProperty("value").GetString();
+
+            switch (name)
+            {
+                case "From": from = value!; break;
+                case "To": to = value!; break;
+                case "Subject": subject = value!; break;
+            }
+        }
+
+        return new GmailEmailDto
+        {
+            Id = id,
+            From = from,
+            To = to,
+            Subject = subject,
+            Body = body,
+            Attachments = attachments.Where(a => !a.IsInline).ToList()
+        };
+    }
+
+    public async Task<string> GetValidAccessTokenAsync(GmailToken token)
+    {
+        if (token.ExpiryTime > DateTime.UtcNow.AddMinutes(-5))
+        {
+            return token.AccessToken;
+        }
+        return token.AccessToken;
     }
 }

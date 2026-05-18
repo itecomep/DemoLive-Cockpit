@@ -35,11 +35,10 @@ import { SiteVisitApiService } from 'src/app/site-visit/services/site-visit-api.
 import { SitevisitCreateComponent } from 'src/app/site-visit/component/site-visit-create/site-visit-create.component';
 import { AssetCreateComponent } from 'src/app/asset/components/asset-create/asset-create.component';
 import { AssetApiService } from 'src/app/asset/services/asset-api.service';
+import { WorkFromHomeComponent } from 'src/app/work-from-home/work-from-home/work-from-home.component';
 import { SignalRService } from "src/app/shared/services/signalr.service";
 import { NotificationService } from "src/app/notifications/notification.service";
 import { MatBadgeModule } from '@angular/material/badge';
-import { WorkFromHomeComponent } from 'src/app/work-from-home/work-from-home/work-from-home.component';
-
 
 
 @Component({
@@ -52,7 +51,7 @@ import { WorkFromHomeComponent } from 'src/app/work-from-home/work-from-home/wor
      MatIconModule, 
      MatMenuModule, 
      CommonModule,
-       MatBadgeModule, 
+    MatBadgeModule,
      //Components
      MenuSidebarComponent,
      TodoCreateDialogComponent,
@@ -77,14 +76,12 @@ export class HeaderComponent implements OnInit, OnDestroy
   private assetService = inject(AssetApiService);
   private appService = inject(AppService);
   private swUpdate = inject(SwUpdate);
-    private signalR = inject(SignalRService);
+  private signalR = inject(SignalRService);
   private notificationService = inject(NotificationService);
 
 
   @Input() title!: string;
   @Input() titleCount: number = 0;
-  
-  
 
   get user() { return this.authService.currentUserStore; }
   get isMobileView() { return this.utilityService.isMobileView; }
@@ -116,6 +113,7 @@ export class HeaderComponent implements OnInit, OnDestroy
 
   get ROUTE_SESSIONS() { return this.config.ROUTE_SESSIONS; }
   get ROUTE_CHANGE_PASSWORD() { return this.config.ROUTE_CHANGE_PASSWORD; }
+  notifications: { message: string; isRead: boolean }[] = [];
 
   ngOnDestroy()
   {
@@ -127,8 +125,6 @@ export class HeaderComponent implements OnInit, OnDestroy
   //   // {
   //   //   this.logout();
   //   // }
-
-    
   //   this.checkForVersionUpdate();
   //   if (this.appSettingService.presets.length == 0)
   //   {
@@ -146,31 +142,22 @@ export class HeaderComponent implements OnInit, OnDestroy
   // }
 
   ngOnInit() {
-
     const token = localStorage.getItem("token") || "";
-
-    /* SIGNALR CONNECTION */
     this.signalR.startConnection(token);
-
-    /* LOAD EXISTING NOTIFICATIONS FROM DB */
     this.notificationService.loadNotificationsFromApi();
-
-    /* SUBSCRIBE TO NOTIFICATION STREAM */
     this.notificationService.getNotifications()
-      .subscribe((data) => {
-        this.notifications = data;
-      });
+        .subscribe((data) => {
+            this.notifications = data;
+        });
 
     this.checkForVersionUpdate();
-
     if (this.appSettingService.presets.length === 0) {
-      this.appSettingService.loadPresets();
+        this.appSettingService.loadPresets();
     }
 
     if (this.authService.currentUserStore?.isChangePassword) {
-      this.router.navigate([this.config.ROUTE_CHANGE_PASSWORD]);
+        this.router.navigate([this.config.ROUTE_CHANGE_PASSWORD]);
     }
-
     this.authService.refreshRoles();
   }
 
@@ -183,35 +170,6 @@ export class HeaderComponent implements OnInit, OnDestroy
       });
     });
   }
-
-
-
-   // ------------------- Notifications -------------------
-  notifications: { message: string; isRead: boolean }[] = [];
-
-  get unreadNotificationCount(): number {
-    return this.notifications.filter((n) => !n.isRead).length;
-  }
-
-  loadNotifications() {
-    if (!this.authService.currentUserStore) return;
-
-    this.notifications = [
-      { message: "New Task assigned to you", isRead: false },
-      { message: "Meeting scheduled today", isRead: false },
-    ];
-  }
-
-  markAsRead(notification: any) {
-    notification.isRead = true;
-  }
-
-  openNotifications() {
-    this.router.navigate(["/notifications"]);
-  }
-
-  // -----------------------------------------------------
-
 
   updateVersion() {
     this.swUpdate.activateUpdate().then(() => {
@@ -409,19 +367,6 @@ export class HeaderComponent implements OnInit, OnDestroy
   });
 }
 
-
-openWorkFromHome() {
-  const dialogConfig = new MatDialogConfig();
-  dialogConfig.disableClose = true;
-  dialogConfig.autoFocus = true;
-
-  const dialogRef = this.dialog.open(WorkFromHomeComponent, dialogConfig);
-
-  dialogRef.afterClosed().subscribe(() => {
-    this.leaveService.refreshList();
-  });
-}
-
   onClickDataBank() {
     window.open('https://ecomumbai.ezconnect.to/');
   }
@@ -432,6 +377,39 @@ openWorkFromHome() {
       return !!this.user.allowedModules?.includes(module);
     }
     return true;
+  }
+
+  openWorkFromHome() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+
+    const dialogRef = this.dialog.open(WorkFromHomeComponent, dialogConfig);
+
+    dialogRef.afterClosed().subscribe(() => {
+      this.leaveService.refreshList();
+    });
+  }
+
+  get unreadNotificationCount(): number {
+    return this.notifications.filter((n) => !n.isRead).length;
+  }
+
+  loadNotifications() {
+    if (!this.authService.currentUserStore) return;
+
+    this.notifications = [
+      { message: "New Task assigned to you", isRead: false },
+      { message: "Meeting scheduled today", isRead: false },
+    ];
+  }
+
+  markAsRead(notification: any) {
+    notification.isRead = true;
+  }
+
+  openNotifications() {
+    this.router.navigate(["/notifications"]);
   }
 }
 

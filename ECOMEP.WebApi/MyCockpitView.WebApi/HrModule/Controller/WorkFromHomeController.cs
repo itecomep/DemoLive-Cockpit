@@ -118,7 +118,7 @@ namespace MyCockpitView.WebApi.HrModule.Controller
                 {
                     UserID = userId,
                     UserName = userName,
-                    TeamLeaderId = teamLeaderId,
+                    // TeamLeaderId = teamLeaderId,
                     StartDate = startDate,
                     EndDate = endDate,
                     Reason = reason,
@@ -233,7 +233,7 @@ namespace MyCockpitView.WebApi.HrModule.Controller
                     id = x.ID,
                     userId = x.UserID,
                     userName = x.UserName,
-                    teamLeaderId = x.TeamLeaderId,
+                    // teamLeaderId = x.TeamLeaderId,
                     startDate = x.StartDate,
                     endDate = x.EndDate,
                     reason = x.Reason,
@@ -465,7 +465,7 @@ namespace MyCockpitView.WebApi.HrModule.Controller
         {
             var data = await _db.WorkFromHomeRequests
                 .Where(x =>
-                    x.TeamLeaderId == teamLeaderId &&
+                    // x.TeamLeaderId == teamLeaderId &&
                     x.UserID != teamLeaderId &&   
                     !x.IsDeleted
                 )

@@ -12,8 +12,8 @@ using MyCockpitView.WebApi;
 namespace MyCockpitView.WebApi.Migrations
 {
     [DbContext(typeof(EntitiesContext))]
-    [Migration("20260508124543_GS130")]
-    partial class GS130
+    [Migration("20260515072108_GS113")]
+    partial class GS113
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -7015,9 +7015,6 @@ namespace MyCockpitView.WebApi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("TeamLeaderId")
-                        .HasColumnType("int");
-
                     b.Property<int>("UserID")
                         .HasColumnType("int");
 
@@ -7290,9 +7287,6 @@ namespace MyCockpitView.WebApi.Migrations
 
                     b.Property<bool>("AllDay")
                         .HasColumnType("bit");
-
-                    b.Property<string>("ApprovedBy")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ContactID")
                         .HasColumnType("int");
@@ -9902,6 +9896,79 @@ namespace MyCockpitView.WebApi.Migrations
                     b.ToTable("ProjectTargetHistories");
                 });
 
+            modelBuilder.Entity("MyCockpitView.WebApi.ProjectStageModule.Entities.ProjectStageMail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BccMail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Body")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CcMail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("GenerateInvoice")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("GenerateInvoiceRevision")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GmailMessageId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GmailThreadId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("MailSentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProjectName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Rework")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ReworkRevision")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("StageComplete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("StageCompleteRevision")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("StageId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StageName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Subject")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ToMail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProjectStageMails");
+                });
+
             modelBuilder.Entity("MyCockpitView.WebApi.RequestTicketModule.Entities.RequestTicket", b =>
                 {
                     b.Property<int>("ID")
@@ -11175,10 +11242,6 @@ namespace MyCockpitView.WebApi.Migrations
 
                     b.Property<int?>("ProjectID")
                         .HasColumnType("int");
-
-                    b.Property<string>("Stage")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");

@@ -56,11 +56,8 @@ export class Project extends BaseEntity {
   workOrders: ProjectWorkOrder[] = [];
   followUps: ProjectFollowUp[] = [];
   scopeOfWork?: string;
-//   officeLocation?: string;
-// siteLocation?: string;
-
-officeLocations?: string[];
-siteLocations?: string[];
+  officeLocations?: string[];
+  siteLocations?: string[];
 
   constructor(init?: Partial<Project>) {
     super(init);

@@ -896,3 +896,76 @@ td {
   transform: scale(1.15);
   color: #dc2626;
 }
+
+/* ================= STAGE MAIL STATUS ================= */
+
+.status-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid transparent;
+  box-sizing: border-box;
+}
+
+.badge.complete {
+  background: #dcfce7;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+.badge.invoice {
+  background: #e0e7ff;
+  color: #4338ca;
+  border-color: #c7d2fe;
+}
+
+.badge.rework {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.tick-mark {
+  font-size: 13px;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+th:nth-child(5),
+td:nth-child(5) {
+  width: 260px;
+}
+
+th:nth-child(6),
+td:nth-child(6) {
+  width: 150px;
+}
+
+th:nth-child(7),
+td:nth-child(7) {
+  width: 140px;
+}
+
+.clickable-mail-status {
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.clickable-mail-status:hover {
+  transform: scale(1.01);
+  opacity: 0.9;
+}

@@ -1,0 +1,228 @@
+/* ===== ASSOCIATION LIST ===== */
+.heading {
+  background-color: grey;
+  color: white;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background-color: grey;
+  color: white;
+  border-bottom: 1px solid #ddd;
+}
+
+.dialog-header .heading {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.close-btn {
+  color: white;
+  width: 32px;
+  height: 32px;
+}
+
+.close-btn:hover {
+  background-color: rgba(255,255,255,0.2);
+  border-radius: 50%;
+}
+
+.toolbar-search {
+  flex: 1 1 300px;
+  min-width: 250px;
+  padding: 10px 16px;
+}
+
+.email-search-field {
+  width: 100%;
+}
+
+.email-search {
+  display: flex;
+  align-items: center;
+}
+
+.email-search-field .mat-mdc-form-field-flex {
+  align-items: center;
+}
+
+mat-form-field {
+  min-width: 200px;
+  flex: 1 1 220px;
+}
+
+mat-dialog-content {
+  padding: 0 !important;
+}
+
+.association-popup {
+  padding: 12px 16px;
+}
+
+.project-association-list {
+  list-style: none;
+  padding: 8px;
+  margin: 0;
+}
+
+.project-association-list li {
+  padding: 14px 14px;
+  transition: all 0.2s ease;
+  border-radius: 8px;
+  border: 2px solid lightgrey;
+  margin: 8px 6px;
+}
+
+.project-association-list li:hover {
+  background: #f5f7fa;
+}
+
+.project-association-list li.added {
+  background: #e8f0fe;
+}
+
+.association-contact {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-thumbnail {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #eee;
+  border: 1px solid #ddd;
+}
+
+.font-focused {
+  font-weight: 600;
+  font-size: 14px;
+  color: #202124;
+}
+
+.badge {
+  display: inline-block;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  margin-top: 4px;
+}
+
+.badge-warning {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.badge-gray {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.association-actions {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.association-actions button {
+  border: 1px solid grey;
+  min-width: 40px;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 6px;
+  color: #5f6368;
+  transition: all 0.2s ease;
+}
+
+.association-actions button:hover {
+  background-color: #e8eaed;
+}
+
+.association-actions button.active {
+  background-color: #1a73e8;
+  color: white;
+}
+
+.association-details {
+  margin-top: 10px;
+  padding-left: 50px;
+  font-size: 12px;
+  color: #5f6368;
+}
+
+.association-details h6 {
+  margin: 4px 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.association-details span {
+  margin: 4px 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.association-details mat-icon {
+  font-size: 16px;
+  vertical-align: middle;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0;
+}
+
+.detail-row mat-icon {
+  font-size: 16px;
+  color: #5f6368;
+}
+
+.detail-row span {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+mat-dialog-actions {
+  padding: 10px 16px;
+}
+
+.close {
+  background-color: #e8eaed;
+  color: black;
+  transition: all 0.2s ease;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.previous-ticket-ul {
+  list-style: none;
+  padding: 10px;
+  text-align: center;
+  color: #999;
+}
+
+::ng-deep .mat-expansion-panel {
+  border-radius: 10px !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+::ng-deep .mat-expansion-panel-header {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+::ng-deep mark {
+  background-color: #fcd60c;
+  color: black;
+  padding: 0 2px;
+  border-radius: 3px;
+}

@@ -76,8 +76,20 @@ namespace MyCockpitView.WebApi.Controllers
 
             var savedFiles = new List<object>();
 
+            ProjectFolder? folder = null;
+
+            if (dto.FolderId.HasValue)
+            {
+                folder = await _db.ProjectFolders
+                    .FirstOrDefaultAsync(f => f.Id == dto.FolderId && f.ProjectId == dto.ProjectId);
+
+                if (folder == null)
+                    return BadRequest("Folder not found");
+            }
+
             string classification = dto.Classification?.Trim() ?? "";
 
+            // 🔥 SAME classification logic
             if (!string.IsNullOrWhiteSpace(classification))
             {
                 var exists = await _db.DmsClassificationMasters
@@ -98,89 +110,27 @@ namespace MyCockpitView.WebApi.Controllers
                 }
             }
 
-            ProjectFolder? categoryFolder = null;
-            ProjectFolder? dateFolder = null;
-
-            string dateFolderName =
-                (dto.ReceivedDate ?? DateTime.Now)
-                .ToString("yyyy-MM-dd");
-
             string finalFolderPath = "";
 
-            // ================= CATEGORY FOLDER =================
-
-            if (!string.IsNullOrWhiteSpace(classification))
+            if (folder != null)
             {
+                var fullFolderPath = await BuildFolderPath(folder);
 
-                const string rootFolderName = "SiteVisit";
-
-                var rootFolder = await _db.ProjectFolders
-                    .FirstOrDefaultAsync(x =>
-                        x.ProjectId == dto.ProjectId &&
-                        x.ParentFolderId == null &&
-                        x.FolderName == rootFolderName);
-
-                if (rootFolder == null)
+                if (!string.IsNullOrWhiteSpace(classification))
                 {
-                    rootFolder = new ProjectFolder
-                    {
-                        ProjectId = dto.ProjectId,
-                        FolderName = rootFolderName,
-                        Classification = rootFolderName,
-                        ParentFolderId = null,
-                        CreatedBy = dto.CreatedBy ?? "System",
-                        Created = DateTime.UtcNow
-                    };
-
-                    _db.ProjectFolders.Add(rootFolder);
-                    await _db.SaveChangesAsync();
+                    if (fullFolderPath.StartsWith(classification + "/", StringComparison.OrdinalIgnoreCase))
+                        fullFolderPath = fullFolderPath.Substring(classification.Length + 1);
+                    else if (string.Equals(fullFolderPath, classification, StringComparison.OrdinalIgnoreCase))
+                        fullFolderPath = "";
                 }
 
-                categoryFolder = await _db.ProjectFolders
-                    .FirstOrDefaultAsync(x =>
-                        x.ProjectId == dto.ProjectId &&
-                        x.ParentFolderId == rootFolder.Id &&
-                        x.FolderName.ToLower() == classification.ToLower());
-
-                if (categoryFolder == null)
-                {
-                    categoryFolder = new ProjectFolder
-                    {
-                        ProjectId = dto.ProjectId,
-                        FolderName = classification,
-                        Classification = classification,
-                        ParentFolderId = rootFolder.Id,
-                        CreatedBy = dto.CreatedBy ?? "System",
-                        Created = DateTime.UtcNow
-                    };
-
-                    _db.ProjectFolders.Add(categoryFolder);
-                    await _db.SaveChangesAsync();
-                }
-
-                dateFolder = await _db.ProjectFolders
-                    .FirstOrDefaultAsync(x =>
-                        x.ProjectId == dto.ProjectId &&
-                        x.ParentFolderId == categoryFolder.Id &&
-                        x.FolderName == dateFolderName);
-
-                if (dateFolder == null)
-                {
-                    dateFolder = new ProjectFolder
-                    {
-                        ProjectId = dto.ProjectId,
-                        FolderName = dateFolderName,
-                        Classification = classification,
-                        ParentFolderId = categoryFolder.Id,
-                        CreatedBy = dto.CreatedBy ?? "System",
-                        Created = DateTime.UtcNow
-                    };
-
-                    _db.ProjectFolders.Add(dateFolder);
-                    await _db.SaveChangesAsync();
-                }
-
-                finalFolderPath = $"{classification}/{dateFolderName}";
+                finalFolderPath = string.IsNullOrWhiteSpace(fullFolderPath)
+                    ? classification
+                    : $"{classification}/{fullFolderPath}";
+            }
+            else if (!string.IsNullOrWhiteSpace(classification))
+            {
+                finalFolderPath = classification;
             }
 
             foreach (var file in dto.Files)
@@ -211,10 +161,10 @@ namespace MyCockpitView.WebApi.Controllers
                 var attachment = new ProjectFiles
                 {
                     ProjectID = dto.ProjectId,
-                    FolderId = dateFolder?.Id,
+                    FolderId = folder?.Id,
                     FileName = finalFileName,
                     BlobPath = blobPath,
-                    BlobUrl = file.BlobUrl,
+                    BlobUrl = file.BlobUrl, // 🔥 already uploaded
                     Classification = classification,
                     FileSize = file.FileSize,
                     CreatedBy = dto.CreatedBy ?? "",
@@ -235,7 +185,7 @@ namespace MyCockpitView.WebApi.Controllers
 
                 _db.ProjectFiles.Add(attachment);
                 await _db.SaveChangesAsync();
-
+            
                 if (dto.DeniedUsers != null && dto.DeniedUsers.Any())
                 {
                     var denyList = dto.DeniedUsers.Select(userId => new ProjectFileDeny
@@ -253,7 +203,7 @@ namespace MyCockpitView.WebApi.Controllers
                     Id = attachment.ID,
                     attachment.FileName,
                     attachment.BlobUrl,
-                    Folder = dateFolder?.FolderName,
+                    Folder = folder?.FolderName,
                     attachment.Classification,
                     attachment.FileSize,
                     Tags = attachment.Tags?.Select(t => t.TagName).ToList() ?? new List<string>()
@@ -269,7 +219,6 @@ namespace MyCockpitView.WebApi.Controllers
             public int? FolderId { get; set; }
             public string? Classification { get; set; }
             public string? CreatedBy { get; set; }
-            public DateTime? ReceivedDate { get; set; }
             public List<string>? Tags { get; set; }
             public List<FileMetaDto> Files { get; set; } = new();
             public string Visibility { get; set; } = "Public";
@@ -307,7 +256,6 @@ namespace MyCockpitView.WebApi.Controllers
 
             return string.Join("/", segments);
         }
-
 
         [HttpGet("folderTree/{projectId}")]
         public async Task<IActionResult> GetFolderTree(int projectId, [FromQuery] string userId, [FromQuery] bool isMaster)
@@ -400,40 +348,39 @@ namespace MyCockpitView.WebApi.Controllers
                     : c.Trim();
 
             var rootDict = projectFolders
-            .Where(f => !f.ParentFolderId.HasValue)
-            .ToDictionary(
-                f => f.FolderName,
-                f => new FolderNodeDto
+                .Select(f => Normalize(f.Classification))
+                .Union(projectFiles.Select(f => Normalize(f.Classification)))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(
+                    c => c,
+                    c => new FolderNodeDto
+                    {
+                        Name = c,
+                        Children = new List<FolderNodeDto>(),
+                        Files = new List<FileDto>(),
+                        DeniedUsers = new List<string>() 
+                    },
+                    StringComparer.OrdinalIgnoreCase
+                );
+
+            foreach (var root in rootDict)
+            {
+                var classification = root.Key;
+
+                var realRoot = projectFolders.FirstOrDefault(f =>
+                    f.Classification == classification &&
+                    !f.ParentFolderId.HasValue
+                );
+
+                if (realRoot != null)
                 {
-                    Id = f.Id,
-                    Name = f.FolderName,
-                    Children = new List<FolderNodeDto>(),
-                    Files = new List<FileDto>(),
-                    DeniedUsers = f.DeniedUsers
-                        .Select(d => d.UserId)
-                        .ToList()
-                },
-                StringComparer.OrdinalIgnoreCase
-            );
-
-            //foreach (var root in rootDict)
-            //{
-            //    var classification = root.Key;
-
-            //    var realRoot = projectFolders.FirstOrDefault(f =>
-            //        f.Classification == classification &&
-            //        !f.ParentFolderId.HasValue
-            //    );
-
-            //    if (realRoot != null)
-            //    {
-            //        root.Value.Id = realRoot.Id;
-            //        root.Value.Name = realRoot.FolderName;
-            //        root.Value.DeniedUsers = realRoot.DeniedUsers
-            //       .Select(d => d.UserId)
-            //       .ToList();
-            //    }
-            //}
+                    root.Value.Id = realRoot.Id;
+                    root.Value.Name = realRoot.FolderName;
+                     root.Value.DeniedUsers = realRoot.DeniedUsers
+                    .Select(d => d.UserId)
+                    .ToList();
+                }
+            }
 
             var folderDict = projectFolders.ToDictionary(
                 f => f.Id,
@@ -469,16 +416,14 @@ namespace MyCockpitView.WebApi.Controllers
 
             foreach (var folder in rootFolders)
             {
-                if (!rootDict.ContainsKey(folder.FolderName))
+                var classification = Normalize(folder.Classification);
+                if (!rootDict.ContainsKey(classification))
                     continue;
 
                 var node = folderDict[folder.Id];
-
-                if (!rootDict[folder.FolderName]
-                    .Children.Any(c => c.Id == node.Id))
+                if (!rootDict[classification].Children.Any(c => c.Id == node.Id))
                 {
-                    rootDict[folder.FolderName]
-                        .Children.Add(node);
+                    rootDict[classification].Children.Add(node);
                 }
             }
 
@@ -505,10 +450,10 @@ namespace MyCockpitView.WebApi.Controllers
                 {
                     folderDict[file.FolderId.Value].Files.Add(fileDto);
                 }
-                //else if (rootDict.ContainsKey(classification))
-                //{
-                //    rootDict[classification].Files.Add(fileDto);
-                //}
+                else if (rootDict.ContainsKey(classification))
+                {
+                    rootDict[classification].Files.Add(fileDto);
+                }
             }
 
             foreach (var root in rootDict.Values)
@@ -589,14 +534,14 @@ namespace MyCockpitView.WebApi.Controllers
         }
 
         [HttpGet("search")]
-        public async Task<IActionResult> Search(int projectId, string? query, DateTime? fromDate, DateTime? toDate, [FromQuery] bool isMaster)
+        public async Task<IActionResult> Search(int projectId,  string? query,  DateTime? fromDate,  DateTime? toDate, [FromQuery] bool isMaster)
         {
             if (projectId <= 0)
                 return BadRequest("Invalid project");
 
             var filesQuery = _db.ProjectFiles
                 .Where(x => x.ProjectID == projectId)
-                .Include(x => x.Tags)
+                .Include(x => x.Tags) 
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(query))
@@ -687,6 +632,7 @@ namespace MyCockpitView.WebApi.Controllers
             if (string.IsNullOrWhiteSpace(dto.Classification))
                 return BadRequest("Classification required");
 
+            // 🔹 1. Save Level 1
             var main = await _db.DmsClassificationMasters
                 .FirstOrDefaultAsync(x => x.Name.ToLower() == dto.Classification.ToLower());
 
@@ -704,6 +650,7 @@ namespace MyCockpitView.WebApi.Controllers
                 await _db.SaveChangesAsync();
             }
 
+            // 🔹 2. Save Level 2
             DmsSubClassificationMaster? sub = null;
 
             if (!string.IsNullOrWhiteSpace(dto.SubClassification))
@@ -729,6 +676,7 @@ namespace MyCockpitView.WebApi.Controllers
                 }
             }
 
+            // 🔹 3. Save Level 3
             if (!string.IsNullOrWhiteSpace(dto.SubSubClassification) && sub != null)
             {
                 var subsub = await _db.DmsSubSubClassificationMasters
@@ -863,7 +811,7 @@ namespace MyCockpitView.WebApi.Controllers
             return Ok(new { message = "File deleted successfully" });
         }
 
-        [HttpDelete("folder/{folderId}")]
+       [HttpDelete("folder/{folderId}")]
         public async Task<IActionResult> DeleteFolder(int folderId)
         {
             var setting = await _db.AppSettingMasters

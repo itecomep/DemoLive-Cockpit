@@ -9,6 +9,7 @@ import { HttpClient, HttpClientModule } from "@angular/common/http";
 import { HolidayMasterService } from "../../leave/services/holiday-master-api.service";
 import { Holiday } from "../../leave/models/holiday.model";
 import { FormsModule } from "@angular/forms";
+import { environment } from "src/environments/environment";
 
 @Component({
   selector: "app-my-attendance",
@@ -149,7 +150,7 @@ export class MyAttendanceComponent implements OnInit {
       return;
     }
 
-    this.http.get<any[]>("http://localhost:5054/api/Attendance").subscribe({
+    this.http.get<any[]>(`${environment.apiPath}/api/Attendance`).subscribe({
       next: (res: any[]) => {
         this.years = [
           ...new Set(res.map((x: any) => new Date(x.punchDate).getFullYear())),
@@ -371,7 +372,7 @@ export class MyAttendanceComponent implements OnInit {
   }
 
   loadMeetings() {
-    this.http.get<any[]>("http://localhost:5054/Meeting/summary").subscribe({
+    this.http.get<any[]>(`${environment.apiPath}/Meeting/summary`).subscribe({
       next: (res) => {
         this.meetingsData = res;
         this.loadAttendance();

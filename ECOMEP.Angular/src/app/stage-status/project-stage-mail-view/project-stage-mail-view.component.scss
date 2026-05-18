@@ -1,0 +1,166 @@
+.mail-popup {
+  padding: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #f4f7fb;
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 24px 28px;
+  background: #ffffff;
+  border-bottom: 1px solid #e8edf3;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.header-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.popup-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.mail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.meta-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #eef3ff;
+  border: 1px solid #dbe7ff;
+  padding: 8px 14px;
+  border-radius: 5px;
+  font-size: 13px;
+  color: #334155;
+}
+
+.meta-chip .label {
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.close-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.mail-to {
+  margin: 20px 28px 0;
+  padding: 14px 18px;
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.to-label {
+  font-weight: 700;
+  color: #2563eb;
+}
+
+.to-value {
+  color: #374151;
+  word-break: break-word;
+}
+
+.mail-body {
+  flex: 1;
+  margin: 20px 28px 28px;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 18px;
+  overflow: auto;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+  scrollbar-width: thin;
+}
+
+.mail-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.mail-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.mail-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+.status-chip {
+  align-items: baseline;
+  // flex-direction: column;
+}
+
+.status-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.complete {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.invoice {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.rework {
+  background: #fff3e0;
+  color: #ef6c00;
+}

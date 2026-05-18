@@ -149,8 +149,10 @@ export class ProjectWorkOrderBillUpdateComponent implements OnInit {
   }
 
   draftBill: ProjectBill = new ProjectBill();
+  draftTaxInvoiceFC = new FormControl<any>(null);
   async getDraft(projectID: number) {
     this.draftBill = await firstValueFrom(this.billApiService.getDraft(projectID, this.PROJECT_BILL_TYPEFLAG_TAX_INVOICE, this.bill.isPreDated));
+    this.draftTaxInvoiceFC.setValue(this.draftBill.taxInvoiceNo);
   }
 
   buildForm() {
@@ -328,7 +330,7 @@ export class ProjectWorkOrderBillUpdateComponent implements OnInit {
     this.utilityService.showConfirmationDialog('Do you want to convert this Proforma Invoice to Tax Invoice?. This action is not reversible.', async () => {
       this.bill = Object.assign(this.bill, this.form.getRawValue());
       if (!this.bill.isPreDated) {
-        this.bill.taxInvoiceNo = this.draftBill.taxInvoiceNo
+        this.bill.taxInvoiceNo = this.draftTaxInvoiceFC.value;
       }
       this.bill.typeFlag = this.PROJECT_BILL_TYPEFLAG_TAX_INVOICE;
       this.bill = await firstValueFrom(this.billApiService.update(this.bill))
@@ -357,7 +359,7 @@ export class ProjectWorkOrderBillUpdateComponent implements OnInit {
 
     this.bill = Object.assign(this.bill, this.form.getRawValue());
     if (!this.bill.isPreDated) {
-      this.bill.taxInvoiceNo = this.draftBill.taxInvoiceNo
+      this.bill.taxInvoiceNo = this.draftTaxInvoiceFC.value;
     }
 
     this.bill.cgstShare = this.cgstRate;

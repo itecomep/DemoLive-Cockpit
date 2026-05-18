@@ -67,8 +67,11 @@
                 <mat-form-field appearance="outline" class="col-md-6 col-6"
                     *ngIf="f.typeFlag.value == LEAVE_TYPEFLAG_CASUAL || f.typeFlag.value == LEAVE_TYPEFLAG_EMERGENCY">
                     <mat-label>To Date</mat-label>
+                    <!-- <input matInput formControlName="end" [matDatepicker]="endDatePicker"
+                        [matDatepickerFilter]="dateFilter" placeholder="Select End Date" readonly /> -->
                     <input matInput formControlName="end" [matDatepicker]="endDatePicker"
-                        [matDatepickerFilter]="dateFilter" placeholder="Select End Date" readonly />
+                    [matDatepickerFilter]="dateFilter" [min]="f['start'].value" placeholder="Select End Date"
+                    readonly />
                     <mat-error>{{ getErrorMessage(f.end) }}</mat-error>
                     <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
                     <mat-datepicker [touchUi]="isMobileView" #endDatePicker></mat-datepicker>

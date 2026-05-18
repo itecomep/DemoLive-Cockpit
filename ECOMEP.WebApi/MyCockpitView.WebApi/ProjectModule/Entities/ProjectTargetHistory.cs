@@ -1,4 +1,4 @@
-﻿namespace MyCockpitView.WebApi.ProjectModule.Entities
+namespace MyCockpitView.WebApi.ProjectModule.Entities
 {
     public class ProjectTargetHistory
     {

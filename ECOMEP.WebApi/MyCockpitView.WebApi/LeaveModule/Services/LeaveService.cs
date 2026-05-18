@@ -967,66 +967,34 @@ public class LeaveService : BaseEntityService<Leave>, ILeaveService
         }
     }
 
-    // public async Task Update(Leave Entity)
-    // {
-    //     await ValidateOverlapp(Entity);
-
-
-    //     if (Entity.TypeFlag == McvConstant.LEAVE_TYPEFLAG_CASUAL_FIRST_HALF 
-    //         || Entity.TypeFlag == McvConstant.LEAVE_TYPEFLAG_CASUAL_SECOND_HALF
-    //         || Entity.TypeFlag == McvConstant.LEAVE_TYPEFLAG_EMERGENCY_FIRST_HALF
-    //         || Entity.TypeFlag == McvConstant.LEAVE_TYPEFLAG_EMERGENCY_SECOND_HALF
-    //         ) //ApprovedHalfDay
-    //     {
-    //         //TimeSpan duration = Entity.End - Entity.Start;
-
-    //         //if (duration.TotalHours > 4)
-    //         //{
-    //         //    throw new Exception("Half-Day can't exceed 4 hours");
-    //         //}
-    //         Entity.Total = 0.5m;
-
-    //     }
-    //     else
-    //     {
-    //         Entity.Total = await GetTotalLeaveDurationIST(ClockTools.GetIST(Entity.Start), ClockTools.GetIST(Entity.End));
-    //     }
-    //     await base.Update(Entity);
-
-
-    // }
-
-
     public async Task Update(Leave Entity)
-{
-    await ValidateOverlapp(Entity);
-
-    if (Entity.TypeFlag == McvConstant.LEAVE_TYPEFLAG_CASUAL_FIRST_HALF
-        || Entity.TypeFlag == McvConstant.LEAVE_TYPEFLAG_CASUAL_SECOND_HALF
-        || Entity.TypeFlag == McvConstant.LEAVE_TYPEFLAG_EMERGENCY_FIRST_HALF
-        || Entity.TypeFlag == McvConstant.LEAVE_TYPEFLAG_EMERGENCY_SECOND_HALF)
     {
-        Entity.Total = 0.5m;
+        await ValidateOverlapp(Entity);
+
+
+        if (Entity.TypeFlag == McvConstant.LEAVE_TYPEFLAG_CASUAL_FIRST_HALF 
+            || Entity.TypeFlag == McvConstant.LEAVE_TYPEFLAG_CASUAL_SECOND_HALF
+            || Entity.TypeFlag == McvConstant.LEAVE_TYPEFLAG_EMERGENCY_FIRST_HALF
+            || Entity.TypeFlag == McvConstant.LEAVE_TYPEFLAG_EMERGENCY_SECOND_HALF
+            ) //ApprovedHalfDay
+        {
+            //TimeSpan duration = Entity.End - Entity.Start;
+
+            //if (duration.TotalHours > 4)
+            //{
+            //    throw new Exception("Half-Day can't exceed 4 hours");
+            //}
+            Entity.Total = 0.5m;
+
+        }
+        else
+        {
+            Entity.Total = await GetTotalLeaveDurationIST(ClockTools.GetIST(Entity.Start), ClockTools.GetIST(Entity.End));
+        }
+        await base.Update(Entity);
+
+
     }
-    else
-    {
-        Entity.Total = await GetTotalLeaveDurationIST(
-            ClockTools.GetIST(Entity.Start),
-            ClockTools.GetIST(Entity.End)
-        );
-    }
-
-    // ✅ Preserve ApprovedBy
-    db.Entry(Entity).Property(x => x.ApprovedBy).IsModified = true;
-
-    // ✅ Preserve Modified date
-    db.Entry(Entity).Property(x => x.Modified).IsModified = true;
-
-    // ✅ Preserve StatusFlag
-    db.Entry(Entity).Property(x => x.StatusFlag).IsModified = true;
-
-    await base.Update(Entity);
-}
 
     public async Task ValidateApplication(Leave Entity, bool IsSelfApplied)
     {

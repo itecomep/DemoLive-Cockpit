@@ -238,6 +238,4 @@ export class TodoApiService extends McvBaseApiService
   getStageTree(): Observable<any[]> {
       return this.http.get<any[]>(this.apiRoute + '/StageTree');
   }
-
-  
 }

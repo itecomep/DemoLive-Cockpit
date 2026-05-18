@@ -23,6 +23,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatInputModule } from "@angular/material/input";
 import { FormControl } from '@angular/forms';
 import { Pipe, PipeTransform } from '@angular/core';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 declare const gapi: any;
 interface GmailLabel {
@@ -60,11 +61,13 @@ export class SafeHtmlPipe implements PipeTransform {
     MatProgressSpinnerModule,
     MatTooltipModule,
     MatInputModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatExpansionModule
   ],
   templateUrl: "./email-list.component.html",
   styleUrls: ["./email-list.component.scss"],
 })
+
 export class EmailListComponent implements OnInit {
   @Input() project!: Project;
   @Input() showAll: boolean = false;
@@ -95,6 +98,7 @@ export class EmailListComponent implements OnInit {
   draftId: string | null = null;
   labelSearchCtrl = new FormControl('');
   isGmailConnected: boolean = false;
+  selectedEmail: GmailEmail | null = null;
 
   constructor(
     private gmailService: GmailService,
@@ -127,6 +131,7 @@ export class EmailListComponent implements OnInit {
 
   loadEmails(page: number = 1, pageToken: string | null = null) {
     this.activeToolbarButton = "inbox";
+    this.selectedEmail = null;
     this.loading = true;
     this.currentPage = page;
 
@@ -157,12 +162,36 @@ export class EmailListComponent implements OnInit {
         this.totalEmails = res.total;
         this.totalPages = Math.ceil(this.totalEmails / this.pageSize);
 
-        this.emails = res.emails.map((email: any) => ({
+        const processedEmails = res.emails.map((email: any) => ({
           ...email,
-          safeBody: this.sanitizer.bypassSecurityTrustHtml(
-            this.sanitizeEmailHtml(email.body || ""),
-          ),
+          safeBody: this.sanitizer.bypassSecurityTrustHtml(email.body || ""),
         }));
+
+        const grouped = new Map<string, any>();
+        processedEmails.forEach((email: any) => {
+          const threadId = email.threadId;
+          if (!grouped.has(threadId)) {
+            grouped.set(threadId, {
+              ...email,
+              threadMessages: [email],
+            });
+          } else {
+            grouped.get(threadId).threadMessages.push(email);
+          }
+        });
+
+        this.emails = Array.from(grouped.values()).map((thread: any) => {
+          thread.threadMessages.sort(
+            (a: any, b: any) =>
+              new Date(b.date).getTime() - new Date(a.date).getTime()
+          );
+          const latest = thread.threadMessages[0];
+          return {
+            ...latest,
+            safeBody: latest.safeBody,
+            threadMessages: thread.threadMessages.slice(1),
+          };
+        });
       },
       error: (err) => {
         console.error(err);
@@ -209,10 +238,8 @@ export class EmailListComponent implements OnInit {
     this.checkGmailConnection();
     this.loadEmails();
     this.fetchLabels();
-    // this.loadProjectsAndCreateLabels();
-      this.labelSearchCtrl.valueChanges.subscribe(search => {
+    this.labelSearchCtrl.valueChanges.subscribe(search => {
       const searchValue = search?.toLowerCase() || '';
-
       this.filteredLabels = this.labels.filter(label =>
         label.name.toLowerCase().includes(searchValue)
       );
@@ -221,15 +248,14 @@ export class EmailListComponent implements OnInit {
 
   loadSentEmails(page: number = 1, pageToken: string | null = null) {
     this.activeToolbarButton = 'sent';
+    this.selectedEmail = null;
     this.loading = true;
     this.currentPage = page;
-
     const tokenToUse = pageToken ?? this.sentPageTokens[page - 1] ?? null;
 
     this.gmailService.getSentEmails(tokenToUse, this.pageSize).subscribe({
       next: (res: any) => {
         this.loading = false;
-
         if (!res?.emails?.length) {
           this.emails = [];
           this.totalEmails = 0;
@@ -244,12 +270,34 @@ export class EmailListComponent implements OnInit {
         this.totalEmails = res.total;
         this.totalPages = Math.ceil(this.totalEmails / this.pageSize);
 
-        this.emails = res.emails.map((email: any) => ({
+        const processedEmails = res.emails.map((email: any) => ({
           ...email,
-          safeBody: this.sanitizer.bypassSecurityTrustHtml(
-            this.sanitizeEmailHtml(email.body || '')
-          ),
+          safeBody: this.sanitizer.bypassSecurityTrustHtml(email.body || ""),
         }));
+        const grouped = new Map<string, any>();
+        processedEmails.forEach((email: any) => {
+          const threadId = email.threadId;
+          if (!grouped.has(threadId)) {
+            grouped.set(threadId, {
+              ...email,
+              threadMessages: [email],
+            });
+          } else {
+            grouped.get(threadId).threadMessages.push(email);
+          }
+        });
+
+        this.emails = Array.from(grouped.values()).map((thread: any) => {
+          thread.threadMessages.sort(
+            (a: any, b: any) =>
+              new Date(b.date).getTime() - new Date(a.date).getTime()
+          );
+          const latest = thread.threadMessages[0];
+          return {
+            ...latest,
+            threadMessages: thread.threadMessages.slice(1),
+          };
+        });
       },
       error: (err) => {
         console.error(err);
@@ -259,15 +307,15 @@ export class EmailListComponent implements OnInit {
     });
   }
 
-  reply(email: GmailEmail) {
+  onReply(email: GmailEmail) {
     this.openComposePanel(email, "reply");
   }
 
-  replyAll(email: GmailEmail) {
+  onReplyAll(email: GmailEmail) {
     this.openComposePanel(email, "replyAll");
   }
 
-  forward(email: GmailEmail) {
+  onForward(email: GmailEmail) {
     this.openComposePanel(email, "forward");
   }
 
@@ -279,7 +327,7 @@ export class EmailListComponent implements OnInit {
     const systemLabels = ["INBOX", "SENT", "DRAFT", "TRASH", "SPAM", "STARRED", "IMPORTANT", "CATEGORY_FORUMS", "CATEGORY_UPDATES", "CATEGORY_PERSONAL", "CATEGORY_PROMOTIONS", "CATEGORY_SOCIAL", "UNREAD"];
     setTimeout(() => {
       const projectLabel = email.labels?.find(l => !systemLabels.includes(l)) || null;
-      this.composeEmailState = { email: { ...email }, type, labelName: projectLabel };
+      this.composeEmailState = { email: { ...email, body: email.safeBody }, type, labelName: projectLabel };
       this.showCompose = true;
     });
   }
@@ -306,26 +354,6 @@ export class EmailListComponent implements OnInit {
   closeCompose() {
     this.showCompose = false;
   }
-  // getAttachmentPreviewUrl(email: GmailEmail, att: GmailAttachment) {
-  //   const userId = this.getUserId();
-  //   if (!userId) return "";
-  //   return `${environment.apiPath}/api/gmail/attachment/${email.id}/${
-  //     att.attachmentId
-  //   }?userId=${userId}&fileName=${encodeURIComponent(
-  //     att.fileName,
-  //   )}&mimeType=${encodeURIComponent(att.mimeType)}`;
-  // }
-
-  // previewAttachment(email: GmailEmail, att: GmailAttachment) {
-  //   const url = this.getAttachmentPreviewUrl(email, att);
-  //   console.log("Preview URL:", url);
-  //   const link = document.createElement('a');
-  //   link.href = url;
-  //   link.download = att.fileName;
-  //   document.body.appendChild(link);
-  //   link.click();
-  //   document.body.removeChild(link);
-  // }
 
   getAttachmentPreviewUrl(email: GmailEmail, att: GmailAttachment) {
     const userId = this.getUserId();
@@ -349,7 +377,6 @@ export class EmailListComponent implements OnInit {
     const link = document.createElement('a');
     link.href = url;
     link.download = att.fileName || 'download';
-    // link.target = '_blank';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -360,37 +387,108 @@ export class EmailListComponent implements OnInit {
       email.showReplies = false;
       return;
     }
-    if (!email.threadId) {
-      return;
-    }
+    if (!email.threadId) return;
     email.showReplies = true;
-    if (!email.threadMessages?.length) {
-      this.gmailService
-        .getThreadMessages(email.threadId)
-        .subscribe((messages) => {
-          const repliesOnly = messages
-            .filter((m) => m.id !== email.id)
-            .map((m) => ({
-              ...m,
-              safeBody: this.sanitizer.bypassSecurityTrustHtml(m.body || ""),
-            }));
+    this.gmailService
+      .getThreadMessages(email.threadId)
+      .subscribe((messages) => {
+        const allMessages = messages.map((m) => ({
+          ...m,
+          safeBody: this.sanitizer.bypassSecurityTrustHtml(m.body || ""),
+        }));
+        allMessages.sort(
+          (a: any, b: any) =>
+            new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
 
-          email.threadMessages = repliesOnly.length ? repliesOnly : [];
-          email.showReplies = repliesOnly.length > 0;
-        });
-    }
+        const latest = allMessages[0];
+        email.subject = latest.subject;
+        email.from = latest.from;
+        email.to = latest.to;
+        email.date = latest.date;
+        email.body = latest.body;
+        email.safeBody = latest.safeBody;
+        email.attachments = latest.attachments;
+        email.threadMessages = allMessages.slice(1);
+      });
   }
 
   toggleEmail(email: GmailEmail) {
-    if (!email.read) {
-      email.read = true;
-
-      this.gmailService.markAsRead(email.id).subscribe({
-        error: err => console.error("Failed to mark as read", err)
-      });
+    if (this.selectedEmail?.id === email.id) {
+      this.selectedEmail = null;
+      return;
     }
 
-    email.expanded = !email.expanded;
+    this.selectedEmail = {
+      ...email,
+      safeBody: this.sanitizer.bypassSecurityTrustHtml(email.body || "")
+    };
+
+    if (!email.read) {
+      email.read = true;
+      this.gmailService.markAsRead(email.id).subscribe();
+    }
+
+    this.gmailService.getFullEmail(email.id).subscribe(full => {
+      const oldDate = this.selectedEmail?.date;
+      this.selectedEmail = {
+        ...this.selectedEmail,
+        ...full,
+        date: oldDate,
+        to: full.to || this.selectedEmail?.to,
+        cc: full.cc || this.selectedEmail?.cc,
+        bcc: full.bcc || this.selectedEmail?.bcc,
+        safeBody: this.sanitizer.bypassSecurityTrustHtml(full.body || ""),
+        attachments: full.attachments || []
+      };
+    });
+
+    if (email.threadId) {
+      this.gmailService
+        .getThreadMessages(email.threadId)
+        .subscribe((messages) => {
+          const allMessages = messages.map((m) => ({
+            ...m,
+            safeBody: this.sanitizer.bypassSecurityTrustHtml(m.body || "")
+          }));
+          allMessages.sort(
+            (a: any, b: any) =>
+              new Date(b.date).getTime() -
+              new Date(a.date).getTime()
+          );
+          const currentMail =
+            allMessages.find((m: any) => m.id === email.id)
+            || allMessages[0];
+          const originalDate = email.date;
+          this.selectedEmail = {
+            ...email,
+            ...currentMail,
+            date: originalDate,
+            attachments:
+              currentMail.attachments?.length
+                ? currentMail.attachments
+                : [],
+            safeBody:
+              this.sanitizer.bypassSecurityTrustHtml(
+                currentMail.body || ""
+              ),
+            to: currentMail.to || email.to,
+            cc: currentMail.cc || email.cc,
+            bcc: currentMail.bcc || email.bcc,
+            threadMessages: allMessages
+              .filter((m: any) => m.id !== currentMail.id)
+              .map(m => ({
+                ...m,
+                attachments: m.attachments || [],
+                safeBody:
+                  this.sanitizer.bypassSecurityTrustHtml(
+                    m.body || ""
+                  )
+              })),
+            showReplies: true
+          };
+        });
+    }
   }
 
   async createGmailLabel(project: any) {
@@ -413,41 +511,50 @@ export class EmailListComponent implements OnInit {
   }
 
   loadProjectsAndCreateLabels() {
+    this.loading = true;
     const userData = JSON.parse(localStorage.getItem("currentUser") || "{}");
     const isFullAccess = userData.roles?.includes("MASTER") || false;
-
     this.projectApi.getProjectsForEmail(0, 10000, isFullAccess).subscribe({
       next: (res) => {
         if (!res?.list?.length) {
+          this.loading = false;
           return;
         }
 
         this.gmailService.getLabels().subscribe({
           next: (labelRes) => {
-
             const existingLabelNames = (labelRes.labels || [])
               .filter((l: any) => l.type === "user")
               .map((l: any) => l.name);
-
             const missingProjects = res.list.filter((project: any) => {
               const labelName = `${project.code} - ${project.title}`;
               return !existingLabelNames.includes(labelName);
             });
-
             if (!missingProjects.length) {
+              this.loading = false;
               return;
             }
             this.syncProjectLabels(missingProjects).subscribe({
               next: () => {
+                console.log("Missing labels created successfully ✅");
                 this.fetchLabels();
+                this.loading = false;
               },
-              error: (err) => console.error("Label sync failed", err),
+              error: (err) => {
+                console.error("Label sync failed", err);
+                this.loading = false;
+              },
             });
+          },
+          error: (err) => {
+            console.error("Label fetch failed", err);
+            this.loading = false;
           }
         });
       },
       error: (err) => {
         console.error("Error fetching projects:", err);
+        this.loading = false;
       },
     });
   }
@@ -532,7 +639,7 @@ export class EmailListComponent implements OnInit {
       next: (res) => {
         this.labels = res.labels.filter(
           (label: GmailLabel) =>
-            label.type === "user" || label.labelListVisibility === "labelShow",
+            label.type === "user" || label.labelListVisibility === "labelShow"
         );
         this.filteredLabels = [...this.labels];
       },
@@ -552,10 +659,31 @@ export class EmailListComponent implements OnInit {
     html = html.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "");
     html = html.replace(/ on\w+="[^"]*"/gi, "");
     html = html.replace(
-        /src="(https:\/\/lh3\.googleusercontent\.com[^"]+)"/g,
-        (match, url) => {
-          return `src="${environment.apiPath}/api/gmail/image-proxy?url=${encodeURIComponent(url)}"`;
+      /<img[^>]+src="(https:\/\/lh3\.googleusercontent\.com[^"]+)"[^>]*>/gi,
+      (match, url) => {
+        const proxyUrl = `${environment.apiPath}/api/gmail/image-proxy?url=${encodeURIComponent(url)}`;
+        return match.replace(url, proxyUrl);
+      }
+    );
+
+    html = html.replace(
+      /<a[^>]+href="([^"]+)"[^>]*>/gi,
+      (match, url) => {
+        if (url.includes("googleusercontent.com") || url.includes("attachment")) {
+          const proxyUrl = `${environment.apiPath}/api/gmail/proxy-download?url=${encodeURIComponent(url)}`;
+          return match.replace(url, proxyUrl);
         }
+        if (url.includes("sonoff.in") || url.includes("mail/view")) {
+          return match.replace(
+            "<a",
+            `<a target="_blank" rel="noopener noreferrer"`
+          );
+        }
+        return match.replace(
+          "<a",
+          `<a target="_blank" rel="noopener noreferrer"`
+        );
+      }
     );
 
     return html;
@@ -590,19 +718,14 @@ export class EmailListComponent implements OnInit {
       next: (res) => {
         this.emails = res.emails.map((email: any) => ({
           ...email,
-          safeBody: this.sanitizer.bypassSecurityTrustHtml(
-            this.sanitizeEmailHtml(email.body || "")
-          ),
+          safeBody: this.sanitizer.bypassSecurityTrustHtml(email.body || "")
         }));
-
         this.totalEmails = res.total;
         this.totalPages = Math.ceil(this.totalEmails / this.pageSize);
         this.nextPageToken = res.nextPageToken ?? null;
-
         if (this.currentPage === 1) {
           this.pageTokens[1] = pageToken ?? null;
         }
-
         this.loading = false;
       },
       error: (err) => {
@@ -629,41 +752,34 @@ export class EmailListComponent implements OnInit {
     this.utilityService.showConfirmationDialog(
       "Are you sure you want to disconnect Gmail?",
       () => {
-
         const userId = this.getUserId();
         if (!userId) return;
-
         this.gmailService.disconnect(userId.toString()).subscribe({
           next: () => {
-
             this.utilityService.showSwalToast(
               "Success",
               "Gmail disconnected successfully",
               "success"
             );
-
             this.loggedInEmail = null;
             this.isGmailConnected = false;
             this.emails = [];
           },
           error: (err) => console.error(err)
         });
-
       }
     );
   }
 
   loadDraftEmails(page: number = 1, pageToken: string | null = null) {
     this.activeToolbarButton = 'drafts';
+    this.selectedEmail = null;
     this.loading = true;
     this.currentPage = page;
-
     const tokenToUse = pageToken ?? this.pageTokens[page - 1] ?? null;
-
     this.gmailService.getDraftEmails(tokenToUse, this.pageSize).subscribe({
       next: (res: any) => {
         this.loading = false;
-
         if (!res?.emails?.length) {
           this.emails = [];
           this.totalEmails = 0;
@@ -673,15 +789,11 @@ export class EmailListComponent implements OnInit {
 
         this.pageTokens[page] = res.nextPageToken ?? null;
         this.nextPageToken = res.nextPageToken ?? null;
-
         this.totalEmails = res.total;
         this.totalPages = Math.ceil(this.totalEmails / this.pageSize);
-
         this.emails = res.emails.map((email: any) => ({
           ...email,
-          safeBody: this.sanitizer.bypassSecurityTrustHtml(
-            this.sanitizeEmailHtml(email.body || '')
-          ),
+          safeBody: this.sanitizer.bypassSecurityTrustHtml(email.body || "")
         }));
       },
       error: (err) => {
@@ -694,7 +806,6 @@ export class EmailListComponent implements OnInit {
 
   openDraft(email: GmailEmail) {
     this.showCompose = false;
-
     setTimeout(() => {
       this.composeEmailState = {
         type: 'draft',
@@ -716,7 +827,6 @@ export class EmailListComponent implements OnInit {
           "Draft deleted successfully",
           "success"
         );
-
         this.loadDraftEmails();
       },
       error: (err) => {
@@ -728,25 +838,24 @@ export class EmailListComponent implements OnInit {
   onIframeLoad(event: Event) {
     const iframe = event.target as HTMLIFrameElement;
     const doc = iframe.contentDocument || iframe.contentWindow?.document;
-
     if (!doc) return;
-
     iframe.style.height = doc.body.scrollHeight + "px";
-
     const links = doc.querySelectorAll("a");
-
     links.forEach((link: HTMLAnchorElement) => {
       link.addEventListener("click", (e: Event) => {
         const url = link.href;
-
         if (!url) return;
-
         e.preventDefault();
-
         const fileName =
           link.getAttribute("download") || url.split("/").pop() || "download";
 
-        this.forceDownload(url, fileName);
+        if (url.includes("sonoff.in")) {
+          window.open(url, "_blank");
+        } else if (url.includes("/api/gmail/proxy-download")) {
+          this.forceDownload(url, fileName);
+        } else {
+          window.open(url, "_blank");
+        }
       });
     });
   }
@@ -755,20 +864,37 @@ export class EmailListComponent implements OnInit {
     try {
       const response = await fetch(url);
       const blob = await response.blob();
-
       const blobUrl = window.URL.createObjectURL(blob);
-
       const a = document.createElement("a");
       a.href = blobUrl;
       a.download = fileName;
-
       document.body.appendChild(a);
       a.click();
       a.remove();
-
       window.URL.revokeObjectURL(blobUrl);
     } catch (err) {
       console.error("Download failed:", err);
+      window.open(url, "_blank");
+    }
+  }
+
+  getFileIcon(fileName: string): string {
+    if (!fileName) return 'attach_file';
+    const ext = fileName.split('.').pop()?.toLowerCase();
+    switch (ext) {
+      case 'pdf': return 'picture_as_pdf';
+      case 'doc':
+      case 'docx': return 'description';
+      case 'xls':
+      case 'xlsx': return 'grid_on';
+      case 'png':
+      case 'jpg':
+      case 'jpeg':
+      case 'gif': return 'image';
+      case 'zip':
+      case 'rar': return 'folder_zip';
+      case 'txt': return 'notes';
+      default: return 'attach_file';
     }
   }
 }

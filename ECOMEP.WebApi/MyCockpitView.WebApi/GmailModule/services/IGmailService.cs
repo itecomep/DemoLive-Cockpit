@@ -4,6 +4,7 @@ namespace MyCockpitView.WebApi.GmailModule.Services;
 
 public interface IGmailService
 {
+    Task<string> GetValidAccessTokenAsync(GmailToken token);
     Task<(List<GmailEmailDto> Emails, int Total, string? NextPageToken)> GetEmailsAsync(string accessToken, string? pageToken = null, int pageSize = 20);
     Task<(List<GmailEmailDto> Emails, int Total, string? NextPageToken)> GetSentEmailsAsync(string accessToken, string? pageToken = null, int pageSize = 20);
     Task <GmailMessageResponse> SendEmailAsync(
@@ -27,4 +28,5 @@ public interface IGmailService
     Task<(List<GmailEmailDto> Emails, int Total, string? NextPageToken)> GetDraftEmailsAsync(string accessToken, string? pageToken = null, int pageSize = 20);
     Task<object> CreateDraftAsync(string accessToken, GmailDraftDto dto);
     Task DeleteDraftAsync(string accessToken, string draftId);
+    Task<GmailEmailDto> GetFullEmailById(string accessToken, string messageId);
 }

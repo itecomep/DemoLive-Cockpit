@@ -859,7 +859,7 @@ export class CreateFolderDialogComponent {
     if (!this.selectedNode || !this.selectedNode.name) {
       this.utilityService.showSwalToast(
         "Folder Required",
-        "Please select a folder before uploading files.",
+        "Please select a Classification before uploading files.",
         "warning"
       );
       return;

@@ -4,6 +4,7 @@ import { CommonModule } from "@angular/common";
 import { HttpClient } from "@angular/common/http";
 import { FormsModule } from "@angular/forms";
 import { HrModuleService } from "../hr-module.service";
+import { environment } from "src/environments/environment";
 
 @Component({
   selector: "app-absents",
@@ -90,7 +91,7 @@ export class AbsentsComponent implements OnInit {
           });
         });
 
-        this.http.get<any[]>("http://localhost:5054/api/Attendance").subscribe({
+        this.http.get<any[]>(`${environment.apiPath}/api/Attendance`).subscribe({
           next: (data) => {
             this.attendanceData = data.map((x: any) => {
               let teamMemberName = x.employeeName;

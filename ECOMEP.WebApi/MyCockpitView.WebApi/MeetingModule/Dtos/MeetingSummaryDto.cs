@@ -1,4 +1,4 @@
-﻿namespace MyCockpitView.WebApi.MeetingModule.Dtos
+namespace MyCockpitView.WebApi.MeetingModule.Dtos
 {
     public class MeetingSummaryDto
     {

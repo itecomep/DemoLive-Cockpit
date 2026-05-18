@@ -11,6 +11,11 @@ import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 
 import { HeaderComponent } from "../mcv-header/components/header/header.component";
 import { AuthService } from "src/app/auth/services/auth.service";
+import { StageService } from "../stage-status/services/stage.service";
+import { ProjectStageMailViewComponent } from "../stage-status/project-stage-mail-view/project-stage-mail-view.component";
+import { ProjectApiService } from "../project/services/project-api.service";
+import { WorkOrderStageApiService } from "src/app/work-order/services/work-order-stage-api.service";
+
 
 @Component({
   selector: "app-project-target",
@@ -32,6 +37,8 @@ export class ProjectTargetComponent implements OnInit {
   expandedRows: { [key: number]: boolean } = {};
   expandedFieldRows: { [key: string]: boolean } = {};
   expandedFeedback: { [key: number]: boolean } = {};
+  stagePointsMap: any = {};
+  workOrderStages: any[] = [];
 
   isEdit = false;
   editId: number | null = null;
@@ -49,6 +56,7 @@ export class ProjectTargetComponent implements OnInit {
   stages: any[] = [];
   statuses: string[] = [];
   targets: any[] = [];
+  latestStageMailMap: any = {};
   editSelectedFiles: File[] = [];
   deletedAttachments: string[] = [];
 
@@ -72,6 +80,9 @@ export class ProjectTargetComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     private dialog: MatDialog,
+    private stageService: StageService,
+    private projectService: ProjectApiService,
+    private workOrderStageApiService: WorkOrderStageApiService,
   ) {}
 
   // ================= FEEDBACK =================
@@ -100,6 +111,8 @@ export class ProjectTargetComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadFormData();
+    this.loadStagePoints();
+    this.loadWorkOrderStages();
   }
 
   loadFormData() {
@@ -148,6 +161,7 @@ export class ProjectTargetComponent implements OnInit {
       this.targets = [...this.originalTargets];
 
       this.applyProjectNames();
+      this.loadLatestStageStatuses();
     });
   }
 
@@ -566,5 +580,114 @@ export class ProjectTargetComponent implements OnInit {
 
         window.URL.revokeObjectURL(blobUrl);
       });
+  }
+
+  loadLatestStageStatuses() {
+    const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
+    const isFullAccess = currentUser.roles?.includes("MASTER") || false;
+    this.projectService
+      .getProjectsForEmail(0, 10000, isFullAccess)
+      .subscribe({
+        next: (projectRes: any) => {
+          const projectIds = (projectRes?.list || []).map((p: any) => p.id);
+          if (!projectIds.length) {
+            this.latestStageMailMap = {};
+            this.attachLatestStatusToTargets();
+            return;
+          }
+
+          this.stageService.getUserProjectStageMails(projectIds)
+            .subscribe((res: any[]) => {
+              const grouped: any = {};
+              res.forEach((mail: any) => {
+                const key = `${mail.projectName}_${mail.stageName}`;
+                if (
+                  !grouped[key] ||
+                  new Date(mail.mailSentDate).getTime() >
+                  new Date(grouped[key].mailSentDate).getTime()
+                ) {
+                  grouped[key] = mail;
+                }
+              });
+              this.latestStageMailMap = grouped;
+              this.attachLatestStatusToTargets();
+            });
+        }
+      });
+  }
+
+  attachLatestStatusToTargets() {
+    this.targets = this.targets.map((t: any) => {
+      const key = `${t.projectCode} - ${t.projectName}_${t.stage}`;
+      return {
+        ...t,
+        latestMailStatus: this.latestStageMailMap[key] || null
+      };
+    });
+  }
+
+  openStageMail(item: any) {
+    if (!item) return;
+    this.dialog.open(ProjectStageMailViewComponent, {
+      width: "75vw",
+      height: "85vh",
+      maxWidth: "95vw",
+      data: item,
+    });
+  }
+
+  loadStagePoints() {
+
+    this.workOrderStageApiService.get().subscribe((res: any[]) => {
+
+      this.stagePointsMap = {};
+
+      res.forEach((x: any) => {
+
+        const key = `${x.projectID}_${x.title}`;
+
+        this.stagePointsMap[key] = x.points || 0;
+      });
+    });
+  }
+
+  getStagePoints(projectId: number, stage: string): number {
+
+    const key = `${projectId}_${stage}`;
+
+    return this.stagePointsMap[key] || 0;
+  }
+
+
+  loadWorkOrderStages() {
+
+    this.workOrderStageApiService.get().subscribe((res: any[]) => {
+
+      this.workOrderStages = res || [];
+    });
+  }
+
+  getPoints(projectId: number, stage: string): number {
+
+    const targetStage = (stage || "")
+      .trim()
+      .toLowerCase();
+
+    const row = this.workOrderStages.find((x: any) => {
+
+      const dbStage = (x.title || "")
+        .trim()
+        .toLowerCase();
+
+      return (
+        x.projectID === projectId &&
+        (
+          dbStage.includes(targetStage) ||
+          targetStage.includes(dbStage)
+        )
+      );
+    });
+
+    return row?.points || 0;
   }
 }

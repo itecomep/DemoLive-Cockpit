@@ -743,7 +743,7 @@ public class DailyStudioScheduleController : ControllerBase
         sb.AppendLine("");
         sb.AppendLine("                <td align=\"center\" >");
         sb.AppendLine("");
-        sb.AppendLine("                    Powered by <b>Newarch<sup>&reg;</sup> Infotech LLP</b>");
+        sb.AppendLine("                    Powered by <b>Microtree<sup>&reg;</sup> Infotech Private Limited</b>");
         sb.AppendLine("");
         sb.AppendLine("                </td>");
         sb.AppendLine("            </tr>");

@@ -387,7 +387,7 @@ export class ProjectApiService extends McvBaseApiService
     ]);
   }
 
-  get isPermissionPointsView(): boolean
+    get isPermissionPointsView(): boolean
   {
     return this.authService.isInAnyRole([
       this.permissions.POINTS,

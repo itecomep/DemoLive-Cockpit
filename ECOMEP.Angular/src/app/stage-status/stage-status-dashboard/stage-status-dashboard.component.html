@@ -1,0 +1,170 @@
+<div class="dashboard-container">
+  <div class="header-section">
+    <h2>Project Stage Mail Dashboard</h2>
+    <button mat-raised-button color="primary" (click)="openPopup()">
+      Create Project Stage
+    </button>
+  </div>
+
+  <div class="search-section">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search</mat-label>
+      <input
+        matInput
+        type="text"
+        [(ngModel)]="searchText"
+        (input)="onSearch()"
+        placeholder="Search anything...">
+    </mat-form-field>
+  </div>
+  <div class="table-wrapper" *ngIf="mails.length">
+    <table class="custom-table">
+      <thead>
+        <tr>
+          <th>Project</th>
+          <th>Stage</th>
+          <th>Status</th>
+          <th>To</th>
+          <th>CC</th>
+          <th>BCC</th>
+          <th>Subject</th>
+          <th>Date</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let group of filteredGroupedMails">
+          <tr class="mail-row" (click)="openMail(group.latest)" [class.active-row]="selectedMail === group.latest">
+            <td>
+              {{ group.projectName }}
+            </td>
+            <td>
+              {{ group.stageName }}
+            </td>
+            <td>
+              <div class="status-badges">
+                <span class="badge complete">
+                  Stage Complete —
+                  {{ group.latest.stageCompleteRevision }} 
+                  <span
+                    class="tick-mark"
+                    *ngIf="group.latest.stageCompleteRevision">
+                    ✓
+                  </span>
+                </span>
+                <span class="badge invoice">
+                  Generate Invoice —
+                  {{ group.latest.generateInvoiceRevision }}
+                  <span
+                    class="tick-mark"
+                    *ngIf="group.latest.generateInvoiceRevision">
+                    ✓
+                  </span>
+                </span>
+                <span class="badge rework">
+                  Rework —
+                  {{ group.latest.reworkRevision }}
+                  <span
+                    class="tick-mark"
+                    *ngIf="group.latest.reworkRevision">
+                    ✓
+                  </span>
+                </span>
+                <div>
+                  <button mat-button class="dark-btn" *ngIf="group.history.length" (click)="toggleRow(group, $event)">
+                    {{ group.expanded ? 'Less' : 'More' }}
+                  </button>
+                </div>
+              </div>
+            </td>
+            <td>
+              {{ group.latest.toMail?.replaceAll(',', ' | ') || '-' }}
+            </td>
+            <td>
+              {{ group.latest.ccMail?.replaceAll(',', ' | ') || '-' }}
+            </td>
+            <td>
+              {{ group.latest.bccMail?.replaceAll(',', ' | ') || '-' }}
+            </td>
+            <td>
+              {{ group.latest.subject }}
+            </td>
+            <td>
+              {{ group.latest.mailSentDate | date:'dd/MM/yyyy hh:mm a' }}
+            </td>
+            <td>
+               <button mat-raised-button color="accent" (click)="openProjectAssociation(group.latest, $event)">
+                Resend Mail
+              </button>
+            </td>
+          </tr>
+          <tr *ngFor="let oldMail of group.history" class="history-row" [hidden]="!group.expanded" (click)="openMail(oldMail)" [class.active-row]="selectedMail === oldMail">
+            <td>
+              ↳ {{ oldMail.projectName }}
+            </td>
+            <td>
+              {{ oldMail.stageName }}
+            </td>
+            <td>
+              <div class="status-badges">
+                <span class="badge complete">
+                  Stage Complete —
+                  {{ oldMail.stageCompleteRevision }} 
+                  <span
+                    class="tick-mark"
+                    *ngIf="oldMail.stageCompleteRevision">
+                    ✓
+                  </span>
+                </span>
+                <span class="badge invoice">
+                  Generate Invoice —
+                  {{ oldMail.generateInvoiceRevision }}
+                  <span
+                    class="tick-mark"
+                    *ngIf="oldMail.generateInvoiceRevision">
+                    ✓
+                  </span>
+                </span>
+                <span class="badge rework">
+                  Rework —
+                  {{ oldMail.reworkRevision }}
+                  <span
+                    class="tick-mark"
+                    *ngIf="oldMail.reworkRevision">
+                    ✓
+                  </span>
+                </span>
+              </div>
+            </td>
+            <td>
+              {{ oldMail.toMail?.replaceAll(',', ' | ') || '-' }}
+            </td>
+            <td>
+              {{ oldMail.ccMail?.replaceAll(',', ' | ') || '-' }}
+            </td>
+            <td>
+              {{ oldMail.bccMail?.replaceAll(',', ' | ') || '-' }}
+            </td>
+            <td>
+              {{ oldMail.subject }}
+            </td>
+            <td>
+              {{ oldMail.mailSentDate | date:'dd/MM/yyyy hh:mm a' }}
+            </td>
+            <td>
+              <button
+                mat-raised-button
+                color="accent"
+                (click)="openProjectAssociation(oldMail, $event)">
+                Resend Mail
+              </button>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+  <div class="empty-state" *ngIf="!isLoading && !mails.length">
+    No stage mails found
+  </div>
+</div>

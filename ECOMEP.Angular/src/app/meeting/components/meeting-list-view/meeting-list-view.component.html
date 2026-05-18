@@ -78,6 +78,15 @@
         </mat-select>
       </mat-form-field>
     </div>
+    <!-- <div *ngIf="typeOptions && typeOptions.length > 0">
+      <mat-form-field appearance="outline">
+        <mat-select [formControl]="typeFC" multiple placeholder="Type">
+          <mat-option *ngFor="let item of typeOptions" [value]="item">{{
+            item.title
+            }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div> -->
     <div *ngIf="typeOptions && typeOptions.length > 0">
       <mat-form-field appearance="outline">
         <mat-select [formControl]="typeFC" multiple placeholder="Type">
@@ -87,6 +96,9 @@
         </mat-select>
       </mat-form-field>
     </div>
+    <button mat-raised-button   class="green-btn" (click)="goToSiteVisit()" *ngIf="isPermissionSiteVisitList">
+      Site Visit
+    </button>
     <!-- <div *ngIf="companyAccountOptions && companyAccountOptions.length > 0">
        <mat-form-field appearance="outline">
         <mat-select [formControl]="companyAccountFC" multiple placeholder="Company">

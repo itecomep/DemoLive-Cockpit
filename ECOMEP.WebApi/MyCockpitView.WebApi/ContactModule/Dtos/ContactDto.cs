@@ -19,7 +19,6 @@ public class ContactListDto : BaseEntityDto
     public string? GSTIN { get; set; }
     public string? GSTStateCode { get; set; }
     public string? ARN { get; set; }
-    public string? Card_No { get; set; }
     public ICollection<string>? Urls { get; set; }
     public IEnumerable<ContactAppointmentDto> Appointments { get; set; } = new List<ContactAppointmentDto>();
 
@@ -28,6 +27,7 @@ public class ContactListDto : BaseEntityDto
     public string? DrivingLicenseNo { get; set; }
 
     public string? Username { get; set; }
+    public string? Card_No { get; set; }
 }
 public class ContactDto : ContactListDto
 {
@@ -52,7 +52,6 @@ public class ContactDto : ContactListDto
 
     public string? UDHYAM { get; set; }
     public string? AADHAAR { get; set; }
-    public string? Card_No { get; set; }
     public string? FamilyContactPhone { get; set; }
     public string? EmergencyContactPhone { get; set; }
     public string? BankAccountNo { get; set; }
@@ -65,6 +64,7 @@ public class ContactDto : ContactListDto
     public int? ParentID { get; set; }
     public virtual ContactListDto? Parent { get; set; }
     public virtual ICollection<ContactListDto> Children { get; set; } = new HashSet<ContactListDto>();
+    public string? Card_No { get; set; }
 }
 
 public class ContactDtoMapperProfile : Profile

@@ -56,7 +56,7 @@ namespace MyCockpitView.WebApi.WebPushSubscriptionModule
             await sharedService.PushNotification(username,
                     $"TEST NOTIFICATION",
                     $"Hello {username}. Welcome to MyCockpitView",
-                    "Powered By","Newarch Infotech LLP"
+                    "Powered By","Microtree Infotech Private Limited"
                 );
             return Ok( );
         }

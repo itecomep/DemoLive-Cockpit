@@ -1,43 +1,18 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
-
 import { Project } from "../../models/project.model";
 import { Contact, EmailOption } from "src/app/contact/models/contact";
-import {
-  Observable,
-  debounceTime,
-  distinctUntilChanged,
-  firstValueFrom,
-  map,
-  startWith,
-} from "rxjs";
+import {  Observable, debounceTime, distinctUntilChanged, firstValueFrom, map, startWith,} from "rxjs";
 import { ContactApiService } from "src/app/contact/services/contact-api.service";
-import {
-  ProjectInward,
-  ProjectInwardAttachment,
-} from "../../models/project-inward.model";
+import { ProjectInward, ProjectInwardAttachment,} from "../../models/project-inward.model";
 import { ProjectInwardApiService } from "../../services/project-inward-api.service";
 import { McvActivityListComponent } from "../../../mcv-activity/components/mcv-activity-list/mcv-activity-list.component";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatButtonModule } from "@angular/material/button";
-import {
-  NgFor,
-  NgIf,
-  DecimalPipe,
-  DatePipe,
-  AsyncPipe,
-  CommonModule,
-} from "@angular/common";
+import { NgFor, NgIf, DecimalPipe, DatePipe, AsyncPipe, CommonModule,} from "@angular/common";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { ProjectInwardDialogComponent } from "../project-inward-dialog/project-inward-dialog.component";
-import {
-  AbstractControl,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from "@angular/forms";
+import { AbstractControl, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators,} from "@angular/forms";
 import { UtilityService } from "src/app/shared/services/utility.service";
 import { McvFileUtilityService } from "src/app/mcv-file/services/mcv-file-utility.service";
 import { ProjectInwardAttachmentApiService } from "../../services/project-inward-attachment-api.service";
@@ -48,10 +23,7 @@ import { MatOptionModule } from "@angular/material/core";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
-import {
-  McvFileUploadComponent,
-  UploadResult,
-} from "src/app/mcv-file/components/mcv-file-upload/mcv-file-upload.component";
+import { McvFileUploadComponent, UploadResult,} from "src/app/mcv-file/components/mcv-file-upload/mcv-file-upload.component";
 import { McvFileComponent } from "src/app/mcv-file/components/mcv-file/mcv-file.component";
 import { AppSettingMasterApiService } from "src/app/shared/services/app-setting-master-api.service";
 import { AppConfig } from "src/app/app.config";
@@ -233,13 +205,11 @@ export class ProjectInwardComponent {
       }
       return acc;
     }, {});
-    // console.log(groupedData);
 
     return Object.keys(groupedData).map((key) => ({
       key,
       value: groupedData[key],
     }));
-    // console.log(this.filterAttachment);
   }
 
   async onCreate() {
@@ -384,51 +354,37 @@ export class ProjectInwardComponent {
 
   inward = new ProjectInward();
   async onDeleteAttachment(item: ProjectInwardAttachment, index: number) {
-    // if (!this.isCreateMode)
-    // {
-    //   await firstValueFrom(this.attachmentService.delete(item.id));
-    // }
     this.inward.attachments.splice(index, 1);
   }
 
   uploadQueue: UploadResult[] = [];
-
-  // FULLSCREEN VIEWER
   isPhotoViewerOpen = false;
-
   viewerPhotos: any[] = [];
-
   currentViewerIndex = 0;
 
-  // OPEN VIEWER
   openPhotoViewer(item: any, index: number) {
     this.viewerPhotos = item.attachments.filter((x: any) => x.thumbUrl);
-
     this.currentViewerIndex = index;
-
     this.isPhotoViewerOpen = true;
   }
 
-  // CLOSE VIEWER
   closePhotoViewer() {
     this.isPhotoViewerOpen = false;
   }
 
-  // NEXT
   nextViewerPhoto() {
     if (this.currentViewerIndex < this.viewerPhotos.length - 1) {
       this.currentViewerIndex++;
     }
   }
 
-  // PREVIOUS
   previousViewerPhoto() {
     if (this.currentViewerIndex > 0) {
       this.currentViewerIndex--;
     }
   }
   onUpload(uploads: UploadResult[]) {
-    //Creating a dummy object
+   
     uploads.forEach((x) => {
       let obj = new ProjectInwardAttachment();
       obj.filename = x.filename;
@@ -441,8 +397,7 @@ export class ProjectInwardComponent {
       obj.typeFlag = 0;
       obj.url = x.url;
       this.inward.attachments.push(obj);
-      this.uploadQueue.push(x);
-      // console.log(this.uploadQueue);
+      this.uploadQueue.push(x);     
     });
   }
 
@@ -459,8 +414,7 @@ export class ProjectInwardComponent {
       obj.container = this.blobConfig.container;
       obj.typeFlag = 0;
       obj.url = x.url;
-      obj.originalUrl = x.url;
-      // console.log(obj);
+      obj.originalUrl = x.url;     
       _createRequests.push(this.attachmentService.create(obj));
     });
     this.uploadQueue = [];
@@ -474,7 +428,7 @@ export class ProjectInwardComponent {
         }
       }
 
-      // ================= DMS METADATA =================
+   
 
       const currentUser = JSON.parse(
         localStorage.getItem("currentUser") || "{}",
@@ -526,28 +480,6 @@ export class ProjectInwardComponent {
             ),
         );
   }
-
-  // downloadCurrentImage() {
-  //   const currentFile = this.viewerPhotos[this.currentViewerIndex];
-
-  //   if (!currentFile) return;
-
-  //   const link = document.createElement("a");
-
-  //   link.href = currentFile.url || currentFile.thumbUrl;
-
-  //   link.download =
-  //     currentFile.filename || `attachment-${this.currentViewerIndex + 1}`;
-
-  //   link.target = "_blank";
-
-  //   document.body.appendChild(link);
-
-  //   link.click();
-
-  //   document.body.removeChild(link);
-  // }
-
   async downloadCurrentImage() {
     const currentFile = this.viewerPhotos[this.currentViewerIndex];
 
@@ -581,46 +513,46 @@ export class ProjectInwardComponent {
 
   async downloadAllAttachments(attachments: any[]) {
 
-  for (const file of attachments) {
+    for (const file of attachments) {
 
-    try {
+      try {
 
-      const response = await fetch(
-        file.url || file.thumbUrl
-      );
+        const response = await fetch(
+          file.url || file.thumbUrl
+        );
 
-      const blob = await response.blob();
+        const blob = await response.blob();
 
-      const blobUrl =
-        window.URL.createObjectURL(blob);
+        const blobUrl =
+          window.URL.createObjectURL(blob);
 
-      const link =
-        document.createElement("a");
+        const link =
+          document.createElement("a");
 
-      link.href = blobUrl;
+        link.href = blobUrl;
 
-      link.download =
-        file.filename || "attachment";
+        link.download =
+          file.filename || "attachment";
 
-      document.body.appendChild(link);
+        document.body.appendChild(link);
 
-      link.click();
+        link.click();
 
-      document.body.removeChild(link);
+        document.body.removeChild(link);
 
-      window.URL.revokeObjectURL(blobUrl);
+        window.URL.revokeObjectURL(blobUrl);
 
-      await new Promise(resolve =>
-        setTimeout(resolve, 300)
-      );
+        await new Promise(resolve =>
+          setTimeout(resolve, 300)
+        );
 
-    } catch (error) {
+      } catch (error) {
 
-      console.error(
-        "Download failed",
-        error
-      );
+        console.error(
+          "Download failed",
+          error
+        );
+      }
     }
   }
-}
 }

@@ -1,11 +1,17 @@
-<div class="dialog-header" *ngIf="isDialog">
+<div *ngIf="!isDialog && !showProjectSelector && isPermissionDMSView" class="gmail-top-actions">
+  <button mat-raised-button color="primary" (click)="showDMS = !showDMS">
+    {{ showDMS ? 'Back To Files' : 'Open DMS' }}
+  </button>
+</div>
+
+<div class="dialog-header" *ngIf="isDialog && !showDMS">
   <button mat-icon-button (click)="closeDialog()">
     <mat-icon>close</mat-icon>
   </button>
 </div>
 
-<div class="dms-folder-navigator">
-   <div class="left-panel" *ngIf="showProjectSelector">
+<div class="dms-folder-navigator" *ngIf="!showDMS">
+  <div class="left-panel" *ngIf="showProjectSelector">
     <mat-form-field appearance="outline" class="project-select" style="width: 100%;">
       <mat-label>Select Project</mat-label>
       <input type="text" matInput placeholder="Search projects" [(ngModel)]="selectedProject" [matAutocomplete]="auto" (ngModelChange)="filterProjects()" (focus)="showAllProjects()" />
@@ -123,34 +129,14 @@
               <mat-icon>delete</mat-icon><span>Delete</span>
             </button>
           </mat-menu>
-          <!-- <button mat-icon-button *ngIf="isMasterUser" (click)="$event.stopPropagation()" [matMenuTriggerFor]="fileContactsMenu" (click)="setSelectedItem(folder, 'folder')">
-            <mat-icon>filter_alt</mat-icon>
-          </button> -->
           <button mat-icon-button *ngIf="isMasterUser && !isDialog" (click)="openUserDialog(folder, 'folder'); $event.stopPropagation()">
             <mat-icon>filter_alt</mat-icon>
           </button>
         </div>
       </div>
-      <!-- <mat-menu #fileContactsMenu="matMenu" class="contact-menu">
-        <div class="menu-search" (click)="$event.stopPropagation()">
-          <mat-form-field appearance="outline" class="full-width small-field">
-            <input matInput placeholder="Search user" [(ngModel)]="contactsSearch" (input)="filterContacts()" (keydown)="$event.stopPropagation()" />
-          </mat-form-field>
-        </div>
-        <mat-divider></mat-divider>
-        <div class="menu-container">
-          <div class="menu-item" *ngFor="let contact of filteredContactOptions; trackBy: trackById">
-            <mat-checkbox [checked]="selectedContacts.includes(contact.id)" (change)="toggleSelection(contact)" (click)="$event.stopPropagation()">
-              {{ contact.name }}
-            </mat-checkbox>
-          </div>
-        </div>
-      </mat-menu> -->
-      <!-- <div class="tree-row file" *ngFor="let file of currentFiles"> -->
       <div class="tree-row file" *ngFor="let file of currentFiles" (click)="toggleFileSelection(file)" [class.selected]="isDialog && isFileSelected(file)">
         <div class="col-name">
-          <!-- <mat-icon>insert_drive_file</mat-icon> -->
-           <ng-container>
+          <ng-container>
             <mat-icon *ngIf="isImage(file.fileName)">image</mat-icon>
             <mat-icon  *ngIf="isPdf(file.fileName)">picture_as_pdf</mat-icon>
             <mat-icon *ngIf="isExcel(file.fileName)">table_chart</mat-icon>
@@ -160,13 +146,17 @@
               insert_drive_file
             </mat-icon>
           </ng-container>
-          <!-- <a [href]="file.blobUrl" target="_blank" class="name-text">{{ file.fileName }}</a> -->
-          <span  *ngIf="isDialog" class="name-text file-name" (click)="isDialog ? toggleFileSelection(file) : null">
+          <span  *ngIf="isDialog" class="name-text file-name" (click)="toggleFileSelection(file); $event.stopPropagation()">
             {{ file.fileName }}
           </span>
-          <a *ngIf="!isDialog" [href]="file.blobUrl" target="_blank" class="name-text">
+          <!-- <a *ngIf="!isDialog" [href]="file.blobUrl" target="_blank" class="name-text">
             {{ file.fileName }}
-          </a>
+          </a> -->
+          <span *ngIf="!isDialog"
+                class="name-text"
+                (click)="openViewer(file)">
+            {{ file.fileName }}
+          </span>
         </div>
         <div class="col-owner">{{ file.createdBy }}</div>
         <div class="col-size">{{ formatFileSize(file.fileSize) }}</div>
@@ -235,7 +225,12 @@
           </mat-icon>
         </div>
         <div class="doc-info">
-          <a [href]="file.blobUrl" target="_blank" class="file-name" [matTooltip]="file.fileName">{{ file.fileName }}</a>
+          <!-- <a [href]="file.blobUrl" target="_blank" class="file-name" [matTooltip]="file.fileName">{{ file.fileName }}</a> -->
+          <span class="file-name"
+            (click)="!isDialog ? openViewer(file) : null; $event.stopPropagation()"
+            [matTooltip]="file.fileName">
+            {{ file.fileName }}
+          </span>
           <span class="file-path" *ngIf="file.path" [matTooltip]="file.path" matTooltipPosition="above">
             <mat-icon>folder_open</mat-icon>
             <span class="path-text-clipped">{{ file.path }}</span>
@@ -252,13 +247,13 @@
             </span>
           </div>
         </div>
-        <div class="three-dot">
+        <div class="three-dot" (click)="$event.stopPropagation()">
           <button mat-icon-button [matMenuTriggerFor]="fileMenu"><mat-icon>more_vert</mat-icon></button>
           <mat-menu #fileMenu="matMenu">
             <button mat-menu-item (click)="downloadFile(file)">
               <mat-icon>download</mat-icon><span>Download</span>
             </button>
-             <button mat-menu-item (click)="deleteFile(file)" *ngIf="isPermissionFileDmsDelete">
+            <button mat-menu-item (click)="deleteFile(file)" *ngIf="isPermissionFileDmsDelete">
               <mat-icon>delete</mat-icon><span>Delete</span>
             </button>
           </mat-menu>
@@ -291,7 +286,7 @@
           {{ getFolderCreatedDate(folder) }}
         </div>
       </div>
-      <div class="folder-card file-card" *ngFor="let file of currentFiles" (click)="isDialog ? toggleFileSelection(file) : null" [class.selected]="isDialog && isFileSelected(file)">
+      <div class="folder-card file-card" *ngFor="let file of currentFiles" (click)="isDialog ? toggleFileSelection(file) : openViewer(file)" [class.selected]="isDialog && isFileSelected(file)">
         <div class="card-menu">
           <button mat-icon-button [matMenuTriggerFor]="fileMenu" (click)="$event.stopPropagation()">
             <mat-icon>more_vert</mat-icon>
@@ -303,14 +298,14 @@
             <span>Download</span>
           </button>
         </mat-menu>
-        <!-- <div class="card-icon file">
-          <mat-icon>description</mat-icon>
-        </div> -->
-        <div class="card-icon file">
+        <div class="card-icon file" (click)="!isDialog ? openViewer(file) : null; $event.stopPropagation()">
           <ng-container>
           <img *ngIf="isImage(file.fileName)" [src]="file.blobUrl" class="file-preview-img" />
-          <div class="pdf-wrapper" *ngIf="isPdf(file.fileName)">
+          <!-- <div class="pdf-wrapper" *ngIf="isPdf(file.fileName)">
             <embed [src]="file.safePdfUrl" type="application/pdf" class="file-preview-pdf">
+          </div> -->
+          <div class="pdf-wrapper" *ngIf="isPdf(file.fileName)">
+            <mat-icon class="pdf-icon">picture_as_pdf</mat-icon>
           </div>
           <mat-icon *ngIf="isExcel(file.fileName)">table_chart</mat-icon>
           <mat-icon *ngIf="isWord(file.fileName)">description</mat-icon>
@@ -341,7 +336,7 @@
     </div>
   </ng-container>
 </div>
-<div class="dialog-footer" *ngIf="isDialog">
+<div class="dialog-footer" *ngIf="isDialog && !showDMS" >
   <div class="selected-files" *ngIf="selectedFiles.length">
     <div class="selected-title">
       <mat-icon>attach_file</mat-icon>
@@ -364,4 +359,55 @@
   <button mat-flat-button color="primary" (click)="attachSelectedFiles()">
     Attach Selected
   </button>
+</div>
+
+<div *ngIf="showViewer && selectedFileUrl && !showDMS" class="viewer-overlay" [class.fixed-viewer]="useFixedViewer">
+  <div class="viewer-container">
+    <div class="mobile-header">
+      <span class="file-name">{{ selectedFileName }}</span>
+    </div>
+    <button
+      mat-icon-button
+      class="nav-btn left"
+      (click)="prevFile()"
+      *ngIf="currentViewerIndex > 0">
+
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    <button
+      mat-icon-button
+      class="nav-btn right"
+      (click)="nextFile()"
+      *ngIf="currentViewerIndex < currentFiles.length - 1">
+
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+    <button mat-icon-button class="download-btn" (click)="selectedFile && downloadFile(selectedFile)">
+      <mat-icon>download</mat-icon>
+    </button>
+    <button mat-icon-button class="close-btn" (click)="showViewer=false">
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <img *ngIf="isImage(selectedFileName)" [src]="selectedFileUrl" style="width:100%;height:100%;object-fit:contain" />
+    <iframe *ngIf="isPdf(selectedFileName)" [src]="safeViewerUrl" style="width:100%;height:100%;border:none"></iframe>
+    <iframe *ngIf="isText(selectedFileName)" [src]="safeViewerUrl" style="width:100%;height:100%;border:none"></iframe>
+
+    <div *ngIf="!isImage(selectedFileName) && !isPdf(selectedFileName) && !isText(selectedFileName)" class="no-preview">
+      <mat-icon style="font-size:48px;color:#999;width: auto;height: auto;">insert_drive_file</mat-icon>
+      <p>No preview available</p>
+      <button mat-raised-button color="primary"
+              (click)="selectedFile && downloadFile(selectedFile)">
+        Download File
+      </button>
+    </div>
+    <div class="bottom-viewer-count">
+      {{ currentViewerIndex + 1 }} / {{ currentFiles.length }}
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showDMS && !isDialog && !showProjectSelector" class="all-mail-wrapper">
+  <app-project-dms [project]="project" (update)="onDMSUpdate($event)"></app-project-dms>
 </div>

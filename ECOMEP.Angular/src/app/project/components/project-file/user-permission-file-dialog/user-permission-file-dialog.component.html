@@ -10,28 +10,118 @@
   </div>
 </h2>
 
-
 <div mat-dialog-content class="dialog-content">
   <mat-form-field appearance="outline" class="full-width search-box">
     <mat-icon matPrefix>search</mat-icon>
-    <input matInput placeholder="Search user" [(ngModel)]="contactsSearch" (ngModelChange)="filterContacts()" />
+    <input
+      matInput
+      placeholder="Search user"
+      [(ngModel)]="contactsSearch"
+      (ngModelChange)="filterContacts()"
+    />
   </mat-form-field>
-  <div class="user-list">
-    <div class="user-item" *ngFor="let contact of filteredContactOptions">
-      <mat-checkbox class="user-checkbox" [checked]="selectedContacts.includes(contact.id)" (change)="toggleSelection(contact)">
-        <div class="user-info">
-          <img class="avatar" [src]="contact.photoUrl || 'assets/default-user.png'" alt="user" />
-          <div class="user-text">
-            <div class="name">{{ contact.name }}</div>
-            <div class="email">{{ contact.email }}</div>
+  <div class="users-wrapper">
+    <div class="users-column">
+      <div class="column-title access">
+        <div class="title-section">
+          <div class="title-left-content">
+            <mat-icon>verified_user</mat-icon>
+            Users Having Project Access ({{ allowedUsers.length }})
           </div>
+          <mat-checkbox
+            [checked]="isAllAllowedSelected()"
+            (change)="toggleAllowedUsers($event.checked)"
+          >
+            Select All
+          </mat-checkbox>
         </div>
-      </mat-checkbox>
+      </div>
+      <div class="user-list">
+        <div
+          class="user-item"
+          *ngFor="let contact of allowedUsers"
+        >
+          <mat-checkbox
+            class="user-checkbox"
+            [checked]="selectedContacts.includes(contact.id)"
+            (change)="toggleSelection(contact.id)"
+          >
+            <div class="user-info">
+              <img
+                class="avatar"
+                [src]="contact.photoUrl || 'assets/default-user.png'"
+                alt="user"
+              />
+              <div class="user-text">
+                <div class="name">
+                  {{ contact.name }}
+                </div>
+                <div class="email">
+                  {{ contact.email }}
+                </div>
+              </div>
+            </div>
+          </mat-checkbox>
+        </div>
+      </div>
+    </div>
+    <div class="users-column">
+      <div class="column-title denied">
+        <div class="title-section">
+          <div class="title-left-content">
+            <mat-icon>block</mat-icon>
+            Users Without Access ({{ deniedUsers.length }})
+          </div>
+
+          <mat-checkbox
+            [checked]="isAllDeniedSelected()"
+            (change)="toggleDeniedUsers($event.checked)"
+          >
+            Select All
+          </mat-checkbox>
+        </div>
+      </div>
+      <div class="user-list">
+        <div
+          class="user-item"
+          *ngFor="let contact of deniedUsers"
+        >
+          <mat-checkbox
+            class="user-checkbox"
+            [checked]="selectedContacts.includes(contact.id)"
+            (change)="toggleSelection(contact.id)"
+          >
+            <div class="user-info">
+              <img
+                class="avatar"
+                [src]="contact.photoUrl || 'assets/default-user.png'"
+                alt="user"
+              />
+              <div class="user-text">
+                <div class="name">
+                  {{ contact.name }}
+                </div>
+                <div class="email">
+                  {{ contact.email }}
+                </div>
+              </div>
+            </div>
+          </mat-checkbox>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
 <div mat-dialog-actions align="end" class="dialog-actions">
-  <button mat-button (click)="close()">Cancel</button>
-  <button mat-flat-button color="primary" (click)="save()">Save</button>
+  <button mat-button (click)="close()">
+    Cancel
+  </button>
+  <button
+    mat-flat-button
+    color="primary"
+    (click)="save()"
+  >
+    Save
+  </button>
 </div>

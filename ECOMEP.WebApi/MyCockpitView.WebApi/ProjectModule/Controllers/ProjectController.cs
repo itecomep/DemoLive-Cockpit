@@ -725,7 +725,7 @@ public class ProjectController : ControllerBase
         sb.AppendLine("            </td>");
         sb.AppendLine("            <td style=\"text-align:right; font-size:11px;\">");
         sb.AppendLine("               <div>MyCocpitView&copy;</div>");
-        sb.AppendLine("               <small> Powered by Newarch&reg; Infotech LLP </small>");
+        sb.AppendLine("               <small> Powered by Microtree&reg; Infotech Private Limited </small>");
         sb.AppendLine("            </td>");
         sb.AppendLine("        </tr>");
         sb.AppendLine("    </table>");
@@ -917,7 +917,7 @@ public class ProjectController : ControllerBase
         sb.AppendLine("            </td>");
         sb.AppendLine("            <td style=\"text-align:right; font-size:11px;\">");
         sb.AppendLine("               <div>MyCocpitView&copy;</div>");
-        sb.AppendLine("               <small> Powered by Newarch&reg; Infotech LLP </small>");
+        sb.AppendLine("               <small> Powered by Microtree&reg; Infotech Private Limited </small>");
         sb.AppendLine("            </td>");
         sb.AppendLine("        </tr>");
         sb.AppendLine("    </table>");

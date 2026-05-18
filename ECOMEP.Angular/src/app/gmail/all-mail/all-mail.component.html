@@ -55,11 +55,7 @@
         <div *ngIf="msg.bcc"><strong>BCC:</strong> {{ msg.bcc }}</div>
       </div>
 
-      <!-- <div class="body" [innerHTML]="msg.safeBody"></div> -->
-      <iframe
-        class="email-frame"
-        [srcdoc]="msg.body">
-      </iframe>
+      <div class="body" [innerHTML]="msg.safeBody"></div>
       <div class="attachments" *ngIf="msg.attachments?.length">
           <div class="attachment-title">Attachments</div>
 

@@ -1,4 +1,4 @@
-﻿using MyCockpitView.WebApi.Entities;
+using MyCockpitView.WebApi.Entities;
 
 namespace MyCockpitView.WebApi.ProjectModule.Entities
 {

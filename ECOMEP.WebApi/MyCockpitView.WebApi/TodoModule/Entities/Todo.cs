@@ -40,9 +40,6 @@ public class Todo : BaseEntity
     public int? ProjectID { get; set; }
     public virtual Project? Project { get; set; }
 
-    [StringLength(255)]
-public string? Stage { get; set; }
-
     [StringLength(50)]
     public string? Priority { get; set; }
 }

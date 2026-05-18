@@ -100,8 +100,8 @@ export class MenuSidebarComponent {
     ).subscribe({
       next: (res) => {
         if (res.token) {
-          window.location.href = `http://localhost:5173/sso-login?token=${res.token}`, '_blank';
-          //  window.open(`https://task.pointcloudengg.com/sso-login?token=${res.token}`, "_blank");
+          // window.location.href = `http://localhost:5173/sso-login?token=${res.token}`, '_blank';
+           window.open(`https://task.pointcloudengg.com/sso-login?token=${res.token}`, "_blank");
         } else if (res.redirectUrl) {
           // window.location.href = res.redirectUrl;
            window.open(res.redirectUrl, "_blank");

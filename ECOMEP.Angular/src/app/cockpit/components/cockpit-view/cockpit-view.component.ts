@@ -27,6 +27,7 @@ import { AssetMaintenanceComponent } from "src/app/asset/components/asset-mainte
 import { AssetApiService } from 'src/app/asset/services/asset-api.service';
 import { EmailListComponent } from '../../../email-list/email-list.component';
 import { FileComponent } from 'src/app/file/file.component';
+import { StageStatusDashboardComponent } from 'src/app/stage-status/stage-status-dashboard/stage-status-dashboard.component';
 
 @Component({
   selector: 'app-cockpit-view',
@@ -51,7 +52,8 @@ import { FileComponent } from 'src/app/file/file.component';
     CockpitMyCalendarComponent,
     AssetMaintenanceComponent,
     EmailListComponent,
-    FileComponent
+    FileComponent,
+    StageStatusDashboardComponent
 ]
 })
 export class CockpitViewComponent implements OnInit, OnDestroy {
@@ -110,6 +112,10 @@ export class CockpitViewComponent implements OnInit, OnDestroy {
 
   get isPermissionAssetMaintenanceView(){
     return this.assetService.isPermissionMaintenanceView;
+  }
+
+  get isPermissionStageStatusView():boolean{
+    return this.authService.isInAnyRole([this.permissions.STAGE_STATUS_VIEW]);
   }
 
   constructor(

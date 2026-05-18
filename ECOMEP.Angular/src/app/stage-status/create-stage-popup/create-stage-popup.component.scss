@@ -1,0 +1,102 @@
+::ng-deep .stage-popup-dialog .mat-mdc-dialog-container {
+  padding: 0 !important;
+  border-radius: 16px !important;
+}
+
+::ng-deep .stage-popup-dialog .mdc-dialog__surface {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  max-height: 95vh !important;
+  border-radius: 16px !important;
+}
+
+::ng-deep .stage-popup-dialog .mat-mdc-dialog-content {
+  max-height: unset !important;
+  overflow: visible !important;
+}
+
+.stage-popup-container {
+  padding: 24px;
+  background: #f8fafc;
+}
+
+.popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 14px;
+}
+
+.popup-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.close-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.status-card {
+  background: white;
+  border-radius: 12px;
+  padding: 18px;
+  margin-top: 18px;
+  border: 1px solid #e2e8f0;
+}
+
+.status-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  color: #334155;
+}
+
+.checkbox-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+}
+
+.compose-wrapper-section {
+  margin-top: 24px;
+  background: white;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+
+
+.status-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.revision-badge {
+  background: #4c9740;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  margin-left: 10px;
+}

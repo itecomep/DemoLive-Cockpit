@@ -1,6 +1,6 @@
 {
   "name": "MyCockpitView",
-  "version": "1.8.5.2",
+  "version": "1.8.5.3",
   "scripts": {
     "ng": "ng",
     "start": "node --max_old_space_size=2048 node_modules/@angular/cli/bin/ng serve",
@@ -42,6 +42,7 @@
     "moment": "^2.29.4",
     "ng2-charts": "^5.0.4",
     "ngx-device-detector": "^6.0.2",
+    "ngx-doc-viewer": "^21.0.5",
     "ngx-mat-select-search": "^7.0.6",
     "ngx-material-timepicker": "^13.1.1",
     "rxjs": "~7.8.0",

@@ -97,6 +97,12 @@ public class Project : BaseEntity
     //public int? TeamID { get; set; }
 
     public virtual ICollection<ProjectTeam> Teams { get; set; } = new List<ProjectTeam>();
+
+    // [StringLength(255)]
+    // public string? OfficeLocation { get; set; }
+
+    // [StringLength(255)]
+    // public string? SiteLocation { get; set; }
 }
 
 

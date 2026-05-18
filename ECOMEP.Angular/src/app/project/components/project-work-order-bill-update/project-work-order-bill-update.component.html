@@ -90,10 +90,13 @@
 
           <div class="property">
             <div class="property-details">
-              <small class="property-label">Convert to Tax Invoice no.</small>
-              <div class="property-value">
-                <span>{{ draftBill.taxInvoiceNo }}</span>
-              </div>
+              <small class="property-label">Convert to Tax Invoice</small>
+              <mat-form-field appearance="outline" style="width: 100%;">
+                <mat-label>Tax Invoice No.</mat-label>
+                <input placeholder="Enter Tax Invoice No." aria-label="draftTaxInvoiceNo" matInput
+                  [formControl]="draftTaxInvoiceFC" />
+                <mat-error>{{getErrorMessage(draftTaxInvoiceFC)}}</mat-error>
+              </mat-form-field>
             </div>
             <div class="property-actions">
               <button mat-raised-button color="accent" (click)="onConvert()">Convert</button>

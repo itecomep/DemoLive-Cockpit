@@ -100,7 +100,7 @@
     <mat-tab *ngIf="isPermissionGmailView">
       <ng-template mat-tab-label>
         <mat-icon>mail</mat-icon>
-        <small>Gmail</small>
+        <small>M-Mail</small>
       </ng-template>
       <ng-template matTabContent>
         <app-email-list [showAll]="true" [connectGmailFn]="connectGmail.bind(this)"></app-email-list>
@@ -114,6 +114,16 @@
       </ng-template>
       <ng-template matTabContent>
         <app-file></app-file>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab *ngIf="isPermissionStageStatusView">
+      <ng-template mat-tab-label>
+        <mat-icon>check_circle</mat-icon>
+        <small>Stage Status</small>
+      </ng-template>
+      <ng-template matTabContent>
+        <app-stage-status-dashboard></app-stage-status-dashboard>
       </ng-template>
     </mat-tab>
 

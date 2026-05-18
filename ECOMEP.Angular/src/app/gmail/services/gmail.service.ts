@@ -6,11 +6,11 @@ import { environment } from "src/environments/environment";
 
 export interface GmailEmail {
   id: string;
-  threadId?: string; 
+  threadId?: string;
   rfcMessageId?: string;
   from: string;
   to?: string;
-  toList?: string[];  
+  toList?: string[];
   cc?: string;
   references?: string;
   ccList?: string[];
@@ -115,9 +115,8 @@ export class GmailService {
       return throwError(() => new Error("User not logged in"));
     }
 
-    return this.http.get<GmailEmail[]>(
-      `${this.api}/threads/${threadId}`,
-      { params: { userId: userId.toString() } }
+    return this.http.get<GmailEmail[]>(`${this.api}/threads/${threadId}`, {
+      params: { userId: userId.toString() } }
     );
   }
 
@@ -227,6 +226,15 @@ export class GmailService {
   deleteDraft(draftId: string, userId: string) {
     return this.http.delete(
       `${environment.apiPath}/api/gmail/draft/${draftId}?userId=${userId}`
+    );
+  }
+
+  getFullEmail(messageId: string) {
+    const userId = this.getUserId();
+
+    return this.http.get<any>(
+      `${this.api}/email/${messageId}`,
+      { params: { userId: userId?.toString() || "" } }
     );
   }
 }

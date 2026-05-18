@@ -78,6 +78,14 @@
               </span>
             </th>
 
+            <th>
+              Stage Completion
+            </th>
+
+            <th>
+              Points
+            </th>
+
             <th (click)="sortData('status')">
               Status
               <span *ngIf="sortColumn === 'status'">
@@ -122,6 +130,39 @@
                 </mat-form-field>
               </ng-template>
             </td>
+
+            <!-- STAGE MAIL STATUS -->
+            <td>
+              <div class="status-badges clickable-mail-status" *ngIf="t.latestMailStatus" (click)="openStageMail(t.latestMailStatus)">
+                <span class="badge complete">
+                  Stage Complete —
+                  {{ t.latestMailStatus.stageCompleteRevision }}
+                  <span class="tick-mark" *ngIf="t.latestMailStatus.stageCompleteRevision">
+                    ✓
+                  </span>
+                </span>
+                <span class="badge invoice">
+                  Generate Invoice —
+                  {{ t.latestMailStatus.generateInvoiceRevision }}
+                  <span class="tick-mark" *ngIf="t.latestMailStatus.generateInvoiceRevision">
+                    ✓
+                  </span>
+                </span>
+                <span class="badge rework">
+                  Rework —
+                  {{ t.latestMailStatus.reworkRevision }}
+                  <span class="tick-mark" *ngIf="t.latestMailStatus.reworkRevision">
+                    ✓
+                  </span>
+                </span>
+              </div>
+              <span *ngIf="!t.latestMailStatus">-</span>
+            </td>
+
+            <!-- POINTS -->
+           <td>
+            {{ getPoints(t.projectId, t.stage) }}
+          </td>
 
             <!-- STATUS -->
             <td>
@@ -179,7 +220,7 @@
                 </mat-form-field>
               </ng-template>
             </td>
-
+        
             <!-- TARGET DATE -->
             <td>
               <ng-container *ngIf="editId !== t.id; else editDate">

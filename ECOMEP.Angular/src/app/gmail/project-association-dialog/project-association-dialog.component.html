@@ -1,0 +1,93 @@
+<div class="dialog-header">
+  <h2 class="heading">Project Associations</h2>
+
+  <button mat-icon-button class="close-btn" mat-dialog-close>
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div class="toolbar-search email-search">
+  <mat-form-field appearance="outline" class="email-search-field">
+    <mat-label>Search</mat-label>
+    <input matInput placeholder="Search name or email..." [(ngModel)]="searchText" (ngModelChange)="filterAssociations()" />
+    <button matSuffix mat-icon-button color="primary" aria-label="Search">
+      <mat-icon>search</mat-icon>
+    </button>
+  </mat-form-field>
+</div>
+
+<mat-dialog-content class="association-popup">
+  <div class="custom-expansion">
+    <ul class="project-association-list">
+      <!-- <li *ngFor="let item of data?.associations" -->
+      <li *ngFor="let item of filteredAssociations"
+          [class.added]="data.parent.isContactAdded(item)">
+        <div class="d-flex justify-content-between">
+          <div class="association-contact d-flex">
+            <div class="flex-grow-0 flex-shrink-0">
+              <img [src]="item.contact?.photoUrl || (item.contact?.isCompany ? 'assets/images/company-icon.svg' : 'assets/images/person-icon.svg')" class="user-thumbnail mr-2" />
+            </div>
+            <div class="flex-grow-1">
+              <div>
+                <span class="font-focused">
+                  <!-- {{ item.contact?.fullName }} -->
+                    <span class="font-focused"
+                      [innerHTML]="highlight(item.contact?.fullName || '')">
+                    </span>
+                </span>
+              </div>
+              <span class="badge badge-warning mr-1" *ngFor="let cat of item.contact?.categories">
+                {{ cat }}
+              </span>
+              <span class="badge badge-gray mr-1" *ngFor="let tag of item.contact?.searchTags">
+                {{ tag }}
+              </span>
+            </div>
+          </div>
+          <div class="association-actions d-flex">
+            <button mat-button (click)="data.parent.addToRecipients(item, 'TO')" [class.active]="data.parent.getContactTypeFlag(item) === 'TO'">
+              To
+            </button>
+            <button mat-button (click)="data.parent.addToRecipients(item, 'CC')" [class.active]="data.parent.getContactTypeFlag(item) === 'CC'">
+              CC
+            </button>
+            <button mat-button
+              (click)="data.parent.addToRecipients(item, 'BCC')"
+              [class.active]="data.parent.getContactTypeFlag(item) === 'BCC'">
+              BCC
+            </button>
+          </div>
+        </div>
+        <hr class="mb-0" />
+        <div class="association-details">
+            <!-- <h6 class="font-focused">{{item.title}}</h6> -->
+            <h6 class="font-focused"
+                [innerHTML]="highlight(item.title || '')">
+            </h6>
+            <!-- <div class="detail-row" *ngIf="item.contact?.email">
+                <mat-icon>email</mat-icon>
+                <span>{{item.contact.email}}</span>
+            </div> -->
+            <div class="detail-row" *ngIf="item.contact?.email">
+              <mat-icon>email</mat-icon>
+              <span [innerHTML]="highlight(item.contact.email)"></span>
+            </div>
+            <div class="detail-row" *ngIf="item.contact?.phone">
+                <mat-icon>phone</mat-icon>
+                <span>{{item.contact.phone}}</span>
+            </div>
+            </div>
+      </li>
+    </ul>
+
+    <ul *ngIf="!data?.associations || data.associations.length === 0">
+      <li>
+        <h6>No Project Associations Found!!!</h6>
+      </li>
+    </ul>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close class="close">Close</button>
+</mat-dialog-actions>

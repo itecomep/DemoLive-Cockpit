@@ -84,8 +84,10 @@
 
                                 <mat-form-field appearance="outline" class="col-md-6 col-6">
                                     <mat-label>End Date</mat-label>
+                                    <!-- <input id="endDate" placeholder=" To" aria-label=" To" matInput
+                                        formControlName="endDate" [matDatepicker]="pickerTo"> -->
                                     <input id="endDate" placeholder=" To" aria-label=" To" matInput
-                                        formControlName="endDate" [matDatepicker]="pickerTo">
+                                        formControlName="endDate" [matDatepicker]="pickerTo" [min]="f['startDate'].value">
                                     <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
                                     <mat-datepicker [touchUi]="isMobileView" #pickerTo></mat-datepicker>
                                     <mat-error>{{getErrorMessage(f.endDate)}}</mat-error>

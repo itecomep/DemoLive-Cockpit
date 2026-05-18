@@ -137,11 +137,11 @@
       </ng-template>
     </mat-tab>
 
-    <mat-tab label="DMS" *ngIf="isPermissionDMSView">
+    <!-- <mat-tab label="DMS" *ngIf="isPermissionDMSView">
       <ng-template matTabContent>
         <app-project-dms [project]="currentEntity" (update)="onDMSUpdate($event)"></app-project-dms>
       </ng-template>
-    </mat-tab>
+    </mat-tab> -->
 
     <mat-tab label="Todo" *ngIf="isPermissionTodoView">
       <ng-template matTabContent>
@@ -155,7 +155,7 @@
       </ng-template>
     </mat-tab> 
 
-    <mat-tab label="Gmail">
+    <mat-tab label="M-Mail">
       <ng-template matTabContent>
         <app-project-gmail-dialog
           [emails]="gmailEmails"
@@ -171,11 +171,11 @@
       </ng-template>
     </mat-tab>
 
-    <mat-tab label="Gmail-All" *ngIf="isPermissionGmailView">
+    <!-- <mat-tab label="M-Mail-All" *ngIf="isPermissionGmailView">
       <ng-template matTabContent>
         <app-all-mail [labelName]="currentLabelName"></app-all-mail>
       </ng-template>
-    </mat-tab>
+    </mat-tab> -->
 
      <mat-tab label="Meeting" *ngIf="isPermissionMeetingsView">
       <ng-template matTabContent>
@@ -189,7 +189,7 @@
       </ng-template>
     </mat-tab>
 
-    <mat-tab label="Points" *ngIf="isPermissionPointsView">
+        <mat-tab label="Points" *ngIf="isPermissionPointsView">
       <ng-template matTabContent>
         <app-project-points
           [project]="currentEntity">

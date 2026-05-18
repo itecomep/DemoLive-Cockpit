@@ -142,25 +142,10 @@ getCategoryOnly(fullTitle: string): string {
   return 'General';
 }
 
-// getItemOnly(fullTitle: string): string {
-//   if (!fullTitle) return '';
-//   const parts = fullTitle.split(':');
-//   if (parts.length > 1) {
-//     return parts.slice(1).join(':').trim();
-//   }
-//   return fullTitle;
-// }
-
-
-
 getItemOnly(fullTitle: string): string {
   if (!fullTitle) return '';
-
-  // ✅ simply return full value (no cutting)
   return fullTitle.trim();
 }
-
-
 
 getCategoryTotalCount(category: string): number {
   return this.filteredAgenda.filter(item =>

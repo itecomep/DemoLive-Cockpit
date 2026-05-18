@@ -4,6 +4,7 @@ import { Observable } from "rxjs";
 
 // ✅ AUTH SERVICE
 import { AuthService } from "src/app/auth/services/auth.service";
+import { environment } from "src/environments/environment";
 
 // ================= INTERFACES =================
 
@@ -34,8 +35,7 @@ export interface WfhRequest {
   providedIn: "root",
 })
 export class WorkFromHomeService {
-  private readonly baseUrl = "http://localhost:5054/api/WorkFromHome";
-
+  private readonly baseUrl = `${environment.apiPath}/api/WorkFromHome`;
   private authService = inject(AuthService);
 
   constructor(private http: HttpClient) {}

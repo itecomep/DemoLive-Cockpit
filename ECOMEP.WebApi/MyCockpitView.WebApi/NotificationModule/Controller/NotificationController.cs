@@ -22,17 +22,35 @@ namespace MyCockpitView.WebApi.NotificationModule.Controller
             _currentUser = currentUser;
         }
 
+    //     [HttpGet]
+    //     public async Task<IActionResult> GetMyNotifications()
+    //     {
+    //         var username = _currentUser.GetCurrentUsername();
+
+    //         var notifications = await _db.Notifications
+    //  .Where(x => x.Username.ToLower() == username.ToLower())
+    //  .OrderByDescending(x => x.CreatedAt)
+    //  .Take(50)
+    //  .ToListAsync();
+
+    //         return Ok(notifications);
+    //     }
+
         [HttpGet]
         public async Task<IActionResult> GetMyNotifications()
         {
             var username = _currentUser.GetCurrentUsername();
+            if (string.IsNullOrEmpty(username))
+            {
+                return Unauthorized("Username not found");
+            }
 
             var notifications = await _db.Notifications
-     .Where(x => x.Username.ToLower() == username.ToLower())
-     .OrderByDescending(x => x.CreatedAt)
-     .Take(50)
-     .ToListAsync();
-
+                .Where(x => x.Username != null &&
+                            x.Username.ToLower() == username.ToLower())
+                .OrderByDescending(x => x.CreatedAt)
+                .Take(50)
+                .ToListAsync();
             return Ok(notifications);
         }
 

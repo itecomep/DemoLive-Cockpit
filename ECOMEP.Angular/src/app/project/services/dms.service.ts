@@ -53,6 +53,12 @@ export class DmsService {
     return this.http.get<any[]>(`${this.baseUrl}/folderTree/${projectId}?userId=${userId}&isMaster=${isMaster}`);
   }
 
+  getProjectAccessUsers(projectId: number): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.baseUrl}/${projectId}/AccessUsers`
+    );
+  }
+
   getClassifications() {
     return this.http.get<any[]>(`${this.baseUrl}/classifications`);
   }

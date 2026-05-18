@@ -313,7 +313,6 @@
   width: 30px;
 }
 
-/* Email list cards */
 .email-card {
   background: #fff;
   border-radius: 8px;
@@ -331,7 +330,6 @@
   border-left: 4px solid #1a73e8;
 }
 
-/* header content inside email card */
 .email-header {
   display: flex;
   align-items: center;
@@ -556,4 +554,18 @@
   .sender-avatar {
     margin-right: 8px !important;
   }
+}
+
+
+.reply {
+  background: #fff;
+  border-radius: 6px;
+  padding: 10px;
+  border: 1px solid #000;
+}
+
+.thread-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }

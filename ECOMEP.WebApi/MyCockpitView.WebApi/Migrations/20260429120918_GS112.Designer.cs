@@ -12,8 +12,8 @@ using MyCockpitView.WebApi;
 namespace MyCockpitView.WebApi.Migrations
 {
     [DbContext(typeof(EntitiesContext))]
-    [Migration("20260513111217_AddedProjectTargetAttachment")]
-    partial class AddedProjectTargetAttachment
+    [Migration("20260429120918_GS112")]
+    partial class GS112
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2549,10 +2549,6 @@ namespace MyCockpitView.WebApi.Migrations
 
                     b.Property<DateTime?>("Birth")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Card_No")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
@@ -7019,9 +7015,6 @@ namespace MyCockpitView.WebApi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("TeamLeaderId")
-                        .HasColumnType("int");
-
                     b.Property<int>("UserID")
                         .HasColumnType("int");
 
@@ -7294,9 +7287,6 @@ namespace MyCockpitView.WebApi.Migrations
 
                     b.Property<bool>("AllDay")
                         .HasColumnType("bit");
-
-                    b.Property<string>("ApprovedBy")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ContactID")
                         .HasColumnType("int");
@@ -9842,9 +9832,6 @@ namespace MyCockpitView.WebApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Attachment")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -11182,10 +11169,6 @@ namespace MyCockpitView.WebApi.Migrations
 
                     b.Property<int?>("ProjectID")
                         .HasColumnType("int");
-
-                    b.Property<string>("Stage")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");

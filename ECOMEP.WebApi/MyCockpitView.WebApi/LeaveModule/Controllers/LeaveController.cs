@@ -221,8 +221,8 @@ public class LeaveController : ControllerBase
         if (obj == null) throw new BadRequestException($"{nameof(Leave)} could not be created!");
 
         var _typeMaster = await db.TypeMasters.AsNoTracking()
-  .Where(x => x.Entity == nameof(Leave))
-    .FirstOrDefaultAsync(x => x.Value == obj.TypeFlag);
+        .Where(x => x.Entity == nameof(Leave))
+            .FirstOrDefaultAsync(x => x.Value == obj.TypeFlag);
 
 
         var username = _currentUserService.GetCurrentUsername();
@@ -258,9 +258,9 @@ public class LeaveController : ControllerBase
         responseDto.TypeValue = typeMasters.FirstOrDefault(x => x.Value == responseDto.TypeFlag)?.Title ?? "";
 
         var statusMasters = await db.StatusMasters
-  .AsNoTracking()
-  .Where(x => x.Entity == nameof(Leave))
-  .ToListAsync();
+        .AsNoTracking()
+        .Where(x => x.Entity == nameof(Leave))
+        .ToListAsync();
 
         responseDto.StatusValue = statusMasters.FirstOrDefault(x => x.Value == responseDto.TypeFlag)?.Title ?? "";
 

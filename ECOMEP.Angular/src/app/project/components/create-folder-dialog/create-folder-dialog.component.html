@@ -204,7 +204,7 @@
         </span>
       </ng-template>
 
-      <button mat-icon-button class="add-sub-btn" *ngIf="node.level >= 2" (click)="addFolder(node); $event.stopPropagation()" matTooltip="Add sub-folder">
+      <button mat-icon-button class="add-sub-btn" *ngIf="node.level >= 1" (click)="addFolder(node); $event.stopPropagation()" matTooltip="Add sub-folder">
         <mat-icon>add</mat-icon>
       </button>
       <button mat-icon-button class="delete-btn" (click)="removeFolder(node); $event.stopPropagation()" matTooltip="Remove folder" [disabled]="(node.children?.length || 0) > 0 || (node.files?.length || 0) > 0">

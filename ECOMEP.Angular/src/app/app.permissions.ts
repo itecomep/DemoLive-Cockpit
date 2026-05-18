@@ -199,29 +199,9 @@ export class AppPermissions
   public readonly CHECKLIST_EDIT = 'CHECKLIST_EDIT';
   public readonly GMAIL_DASHBOARD_VIEW = 'GMAIL_DASHBOARD_VIEW';
   public readonly FILE_DASHBOARD_VIEW = 'FILE_DASHBOARD_VIEW';
-
   public readonly HR_MODULE = 'HR_MODULE';
-
   public readonly HR_SELECT_USER = 'HR_SELECT_USER';
-
   public readonly PROJECT_TARGET_VIEW = 'PROJECT_TARGET_VIEW';
-
-  
-  public readonly POINTS = 'POINTS';
-
+  public readonly STAGE_STATUS_VIEW = 'STAGE_STATUS_VIEW';
+   public readonly POINTS = 'POINTS';
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

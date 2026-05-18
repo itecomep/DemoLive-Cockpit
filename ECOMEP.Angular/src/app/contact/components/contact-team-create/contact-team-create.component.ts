@@ -237,7 +237,6 @@ export class ContactTeamCreateComponent implements OnInit {
       gstin: new FormControl<any>(null),
       hsn: new FormControl<any>(null),
       arn: new FormControl<any>(null),
-      card_No: new FormControl<any>(null),
       aadhaar: new FormControl<any>(null),
       udhyam: new FormControl<any>(null),
       description: new FormControl<any>(null),

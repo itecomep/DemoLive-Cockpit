@@ -7,6 +7,7 @@ import { ViewChild, TemplateRef } from '@angular/core';
 import { ContactApiService } from 'src/app/contact/services/contact-api.service';
 import { HrModuleService } from '../hr-module.service';
 import { MatIconModule } from '@angular/material/icon';
+import { environment } from 'src/environments/environment';
 
 interface Meeting {
   attendeeName: string;
@@ -98,7 +99,7 @@ export class MeetingsComponent implements OnInit {
 
 
 loadMeetings(): void {
-  this.http.get<Meeting[]>('http://localhost:5054/Meeting/summary')
+  this.http.get<Meeting[]>(`${environment.apiPath}/Meeting/summary`)
     .subscribe({
       next: (data) => {
 

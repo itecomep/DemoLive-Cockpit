@@ -1,0 +1,112 @@
+<div class="stage-popup-container">
+  <div class="popup-header">
+    <h2>Create Project Stage</h2>
+    <button
+      mat-icon-button
+      class="close-btn"
+      (click)="close()">
+      ✕
+    </button>
+  </div>
+
+  <div class="form-section">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Select Project</mat-label>
+      <mat-select
+        [(ngModel)]="selectedProject"
+        (selectionChange)="onProjectChange()">
+        <mat-option>
+          <ngx-mat-select-search
+            [(ngModel)]="projectSearch"
+            (ngModelChange)="filterProjects()"
+            placeholderLabel="Search Project">
+          </ngx-mat-select-search>
+        </mat-option>
+        <mat-option
+          *ngFor="let project of filteredProjects"
+          [value]="project">
+          {{ project.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Select Stage</mat-label>
+      <mat-select
+        [(ngModel)]="selectedStage"
+        (selectionChange)="onStageChange()">
+        <mat-option>
+          <ngx-mat-select-search
+            [(ngModel)]="stageSearch"
+            (ngModelChange)="filterStages()"
+            placeholderLabel="Search Stage">
+          </ngx-mat-select-search>
+        </mat-option>
+        <mat-option
+          *ngFor="let stage of filteredStages"
+          [value]="stage">
+          {{ stage.title }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="status-card">
+    <div class="status-title">
+      Status Options
+    </div>
+
+    <div class="checkbox-section">
+      <div class="status-item">
+        <mat-checkbox
+          [(ngModel)]="isStageComplete"
+          (change)="onStatusChange()">
+          Stage Complete
+        </mat-checkbox>
+        <span
+          class="revision-badge"
+          *ngIf="isStageComplete">
+          {{ latestStageCompleteRevision || '-' }}
+        </span>
+      </div>
+      <div class="status-item">
+        <mat-checkbox
+          [(ngModel)]="isGenerateInvoice"
+          (change)="onStatusChange()">
+          Generate Invoice
+        </mat-checkbox>
+        <span
+          class="revision-badge"
+          *ngIf="isGenerateInvoice">
+          {{ latestGenerateInvoiceRevision || '-' }}
+        </span>
+      </div>
+      <div class="status-item">
+        <mat-checkbox
+          [(ngModel)]="isRework"
+          (change)="onStatusChange()">
+          Rework
+        </mat-checkbox>
+        <span
+          class="revision-badge"
+          *ngIf="isRework">
+          {{ latestReworkRevision || '-' }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="showCompose" class="compose-wrapper-section">
+    <app-compose-email
+      [embeddedMode]="true"
+      [state]="{
+        type: 'new',
+        selectedProject: selectedProject,
+        selectedStage: selectedStage,
+        stageComplete: isStageComplete,
+        generateInvoice: isGenerateInvoice,
+        rework: isRework
+      }"
+      (mailSent)="onMailSent()">
+    </app-compose-email>
+  </div>
+</div>

@@ -396,7 +396,7 @@ public class LoginSessionService : BaseEntityService<LoginSession>, ILoginSessio
             sb.AppendLine("        </p>");
             sb.AppendLine("        <p style=\"max-width: 400px;margin: 0 auto;margin-top: 30px;text-align: center;color: #434343;\">");
             sb.AppendLine("          <small");
-            sb.AppendLine("            >Powered by <b>Newarch<sup>&reg;</sup> Infotech LLP</b></small");
+            sb.AppendLine("            >Powered by <b>Microtree<sup>&reg;</sup> Infotech Private Limited</b></small");
             sb.AppendLine("          >");
             sb.AppendLine("        </p>");
             sb.AppendLine("      </footer>");

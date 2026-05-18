@@ -7,6 +7,7 @@ import { HolidayMasterService } from "../../leave/services/holiday-master-api.se
 import { Holiday } from "../../leave/models/holiday.model";
 import { forkJoin } from "rxjs";
 import { MeetingSummary } from "../hr-module.service";
+import { environment } from "src/environments/environment";
 
 @Component({
   selector: "app-attendance",
@@ -92,7 +93,7 @@ export class AttendanceComponent implements OnInit {
     forkJoin({
       teams: this.service.getContactTeams(),
       meetings: this.service.getMeetings(),
-      attendance: this.http.get<any[]>("http://localhost:5054/api/Attendance"),
+      attendance: this.http.get<any[]>(`${environment.apiPath}/api/Attendance`),
     }).subscribe({
       next: ({ teams, meetings, attendance }) => {
         this.meetings = meetings;

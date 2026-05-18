@@ -35,6 +35,7 @@
       .login-title {
         padding: 1rem 0;
         font-weight: 500;
+        font-family: Arial, sans-serif;
       }
 
       form {
@@ -68,9 +69,4 @@
     -o-object-fit: contain;
     object-fit: contain;
   }
-
-  .login-title {
-  font-family: Arial, sans-serif;
-}
-
 }

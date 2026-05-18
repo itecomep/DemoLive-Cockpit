@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-// using MyCockpitView.WebApi.Infrastructure;
 using MyCockpitView.WebApi.GmailModule.Entities;
 using System.Text.Json;
 using MyCockpitView.WebApi.GmailModule.Services;
@@ -203,9 +202,6 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
             if (token == null)
                 return Ok(new { message = "Gmail not connected|First Connect The Gmail" });
 
-            // if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(-1))
-            //     token = await RefreshAccessTokenAsync(token);
-
             if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(1))
             {
                 token = await RefreshAccessTokenAsync(token);
@@ -230,9 +226,6 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
             var token = await _dbContext.GmailTokens.FirstOrDefaultAsync(x => x.UserId == userId);
             if (token == null)
                 return Ok(new { message = "Gmail not connected|First Connect The Gmail" });
-
-            // if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(-1))
-            //     token = await RefreshAccessTokenAsync(token);
 
             if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(1))
             {
@@ -260,9 +253,6 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
             if (token == null)
                 return Ok(new { message = "Gmail not connected|First Connect The Gmail" });
 
-            // if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(-1))
-            //     token = await RefreshAccessTokenAsync(token);
-
             if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(1))
             {
                 token = await RefreshAccessTokenAsync(token);
@@ -288,9 +278,6 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
 
             if (token == null)
                 return BadRequest("Gmail not connected|First Connect The Gmail");
-
-            // if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(-1))
-            //     token = await RefreshAccessTokenAsync(token);
 
             if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(1))
             {
@@ -346,9 +333,6 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
 
             var token = await _dbContext.GmailTokens.FirstOrDefaultAsync(u => u.UserId == dto.userId);
             if (token == null) return BadRequest(new { message = "Gmail not connected" });
-
-            // if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(-1))
-            //     token = await RefreshAccessTokenAsync(token);
 
             if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(1))
             {
@@ -423,64 +407,6 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
 
             return Ok(new { email = token.GmailAddress });
         }
-
-        // [HttpGet("attachment/{messageId}/{attachmentId}")]
-        // public async Task<IActionResult> GetAttachment(string messageId, string attachmentId, [FromQuery] string userId, [FromQuery] string fileName, [FromQuery] string mimeType, [FromQuery] bool download = false)
-        // {
-        //     if (string.IsNullOrEmpty(userId))
-        //         return BadRequest("UserId is required");
-
-        //     var token = await _dbContext.GmailTokens.FirstOrDefaultAsync(x => x.UserId == userId);
-        //     if (token == null)
-        //         return BadRequest("Gmail not connected");
-
-        //     if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(1))
-        //     {
-        //         token = await RefreshAccessTokenAsync(token);
-        //     }
-
-        //     using var client = new HttpClient();
-        //     client.DefaultRequestHeaders.Authorization =
-        //         new AuthenticationHeaderValue("Bearer", token.AccessToken);
-
-        //     var response = await client.GetAsync(
-        //         $"https://gmail.googleapis.com/gmail/v1/users/me/messages/{messageId}/attachments/{attachmentId}");
-
-        //     if (!response.IsSuccessStatusCode)
-        //         return StatusCode((int)response.StatusCode, await response.Content.ReadAsStringAsync());
-
-        //     var json = await response.Content.ReadAsStringAsync();
-        //     var doc = JsonDocument.Parse(json);
-
-        //     var data = doc.RootElement.GetProperty("data").GetString();
-        //     if (string.IsNullOrEmpty(data))
-        //         return NotFound();
-
-        //     string base64 = data.Replace('-', '+').Replace('_', '/');
-
-        //     switch (base64.Length % 4)
-        //     {
-        //         case 2: base64 += "=="; break;
-        //         case 3: base64 += "="; break;
-        //     }
-
-        //     var bytes = Convert.FromBase64String(base64);
-
-        //     var decodedFileName = string.IsNullOrEmpty(fileName)
-        //         ? "download"
-        //         : Uri.UnescapeDataString(fileName);
-
-        //     var contentType = string.IsNullOrEmpty(mimeType)
-        //         ? "application/octet-stream"
-        //         : mimeType;
-
-        //     Response.Headers["Content-Disposition"] =
-        //         $"{(download ? "attachment" : "inline")}; filename=\"{decodedFileName}\"";
-
-        //     Response.Headers["Content-Length"] = bytes.Length.ToString();
-
-        //     return File(bytes, contentType);
-        // }
 
         [HttpGet("attachment")]
         public async Task<IActionResult> GetAttachment([FromQuery] string messageId, [FromQuery] string attachmentId, [FromQuery] int userId, [FromQuery] string? fileName, [FromQuery] string? mimeType, [FromQuery] bool download = false)
@@ -571,9 +497,6 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
             if (token == null)
                 return BadRequest("Gmail not connected");
 
-            // if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(-1))
-            //     token = await RefreshAccessTokenAsync(token);
-
             if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(1))
             {
                 token = await RefreshAccessTokenAsync(token);
@@ -646,9 +569,6 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
             if (token == null)
                 return Ok(new { message = "Gmail not connected, no labels processed" });
 
-            // if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(-1))
-            //     token = await RefreshAccessTokenAsync(token);
-
             if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(1))
             {
                 token = await RefreshAccessTokenAsync(token);
@@ -682,9 +602,6 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
             if (token == null)
                 // return BadRequest("Gmail not connected");
                 return Ok(new { message = "Gmail not connected, no labels processed" });
-
-            // if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(-1))
-            //     token = await RefreshAccessTokenAsync(token);
 
             if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(1))
             {
@@ -741,9 +658,6 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
             if (token == null)
                 return Ok(new { message = "Gmail not connected, no labels created" });
 
-            // if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(1))
-            //     token = await RefreshAccessTokenAsync(token);
-
             if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(1))
             {
                 token = await RefreshAccessTokenAsync(token);
@@ -763,7 +677,6 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
             {
                 try
                 {
-                    // Get full message
                     var msgJson = await client.GetStringAsync($"https://gmail.googleapis.com/gmail/v1/users/me/messages/{messageId}");
                     var root = JsonDocument.Parse(msgJson).RootElement;
 
@@ -789,8 +702,6 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
 
                     var fromHeader = GetHeaderValue("From") ?? "";
                     bool isSentOrForwarded = fromHeader.Contains(userEmail, StringComparison.OrdinalIgnoreCase);
-
-                    // Apply label
                     var addLabels = new List<string> { dto.LabelId };
                     if (isSentOrForwarded)
                         addLabels.Add("INBOX");
@@ -799,7 +710,6 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
                     var modifyContent = new StringContent(JsonSerializer.Serialize(modifyBody), Encoding.UTF8, "application/json");
                     await client.PostAsync($"https://gmail.googleapis.com/gmail/v1/users/me/messages/{messageId}/modify", modifyContent);
 
-                    // Save email if not already
                     if (!await _gmailDbContext.GmailEmails.AnyAsync(e => e.MessageId == messageId && e.UserId == dto.UserId))
                     {
                         var email = new GmailEmail
@@ -822,7 +732,6 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
                         _gmailDbContext.GmailEmails.Add(email);
                         await _gmailDbContext.SaveChangesAsync();
 
-                        // Save attachments safely
                         if (payload.TryGetProperty("parts", out var parts))
                         {
                             foreach (var part in parts.EnumerateArray())
@@ -885,7 +794,6 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
                 }
                 catch (Exception ex)
                 {
-                    // log the error, continue processing other emails
                     Console.WriteLine($"Error processing email {messageId}: {ex.Message}");
                 }
             }
@@ -910,6 +818,248 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
             return string.IsNullOrWhiteSpace(sb.ToString()) ? "file" : sb.ToString();
         }
 
+        // [HttpPost("sync-label-emails")]
+        // public async Task<IActionResult> SyncLabelEmails([FromBody] LabelSyncDto dto)
+        // {
+        //     if (string.IsNullOrEmpty(dto.UserId) || string.IsNullOrEmpty(dto.LabelName))
+        //         return BadRequest("UserId or LabelName missing");
+
+        //     var token = await _dbContext.GmailTokens
+        //         .FirstOrDefaultAsync(x => x.UserId == dto.UserId);
+
+        //     if (token == null)
+        //         return Ok(new { message = "Gmail not connected" });
+
+        //     if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(1))
+        //     {
+        //         token = await RefreshAccessTokenAsync(token);
+        //     }
+
+        //     using var client = _httpClientFactory.CreateClient();
+        //     client.DefaultRequestHeaders.Authorization =
+        //         new AuthenticationHeaderValue("Bearer", token.AccessToken);
+
+        //     var setting = await _dbContext.AppSettingMasters
+        //         .FirstOrDefaultAsync(x => x.PresetKey == "AZURE_STORAGE_KEY");
+
+        //     if (setting == null || string.IsNullOrEmpty(setting.PresetValue))
+        //         throw new Exception("Azure Blob connection string not found");
+
+        //     string azureKey = setting.PresetValue;
+
+        //     string ExtractPrefix(string s)
+        //     {
+        //         if (string.IsNullOrWhiteSpace(s)) return "";
+        //         var match = Regex.Match(s.Trim(), @"^\d+\s*(\([A-Za-z]+\))?");
+        //         return match.Success
+        //             ? match.Value.Replace(" ", "").ToUpper()
+        //             : "";
+        //     }
+
+        //     var labelsJson = await client.GetStringAsync(
+        //         "https://gmail.googleapis.com/gmail/v1/users/me/labels");
+
+        //     using var labelsDoc = JsonDocument.Parse(labelsJson);
+
+        //     string? labelId = null;
+        //     string? actualLabelName = null;
+
+        //     var searchPrefix = ExtractPrefix(dto.LabelName);
+
+        //     if (labelsDoc.RootElement.TryGetProperty("labels", out var labels))
+        //     {
+        //         foreach (var l in labels.EnumerateArray())
+        //         {
+        //             var name = l.GetProperty("name").GetString() ?? "";
+        //             var labelPrefix = ExtractPrefix(name);
+
+        //             if (labelPrefix == searchPrefix)
+        //             {
+        //                 labelId = l.GetProperty("id").GetString()?.Trim();
+        //                 actualLabelName = name;
+        //                 break;
+        //             }
+        //         }
+        //     }
+
+        //     if (string.IsNullOrEmpty(labelId))
+        //         return Ok(new { message = $"No Gmail label found for prefix '{searchPrefix}'" });
+
+        //     var lastSync = await _gmailDbContext.GmailEmails
+        //         .Where(e => e.UserId == dto.UserId && e.LabelName == actualLabelName)
+        //         .OrderByDescending(e => e.Date)
+        //         .Select(e => (DateTime?)e.Date)
+        //         .FirstOrDefaultAsync();
+
+        //     string? nextPageToken = null;
+        //     string userEmail = await GetUserEmail(dto.UserId);
+
+        //     do
+        //     {
+        //         var url = $"https://gmail.googleapis.com/gmail/v1/users/me/messages?labelIds={labelId}&maxResults=100";
+
+        //         if (lastSync.HasValue)
+        //             url += $"&q=after:{lastSync.Value:yyyy/MM/dd}";
+
+        //         if (!string.IsNullOrEmpty(nextPageToken))
+        //             url += $"&pageToken={nextPageToken}";
+
+        //         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
+
+        //         var listJson = await client.GetStringAsync(url);
+        //         using var listDoc = JsonDocument.Parse(listJson);
+
+        //         if (!listDoc.RootElement.TryGetProperty("messages", out var messages))
+        //             break;
+
+        //         foreach (var msg in messages.EnumerateArray())
+        //         {
+        //             if (!msg.TryGetProperty("threadId", out var threadProp))
+        //                 continue;
+
+        //             var threadId = threadProp.GetString()?.Trim();
+        //             if (string.IsNullOrEmpty(threadId)) continue;
+
+        //             var threadJson = await client.GetStringAsync(
+        //                 $"https://gmail.googleapis.com/gmail/v1/users/me/threads/{threadId}");
+
+        //             using var threadDoc = JsonDocument.Parse(threadJson);
+
+        //             if (!threadDoc.RootElement.TryGetProperty("messages", out var threadMessages))
+        //                 continue;
+
+        //             foreach (var tmsg in threadMessages.EnumerateArray())
+        //             {
+        //                 if (!tmsg.TryGetProperty("id", out var idProp))
+        //                     continue;
+
+        //                 var messageId = idProp.GetString()?.Trim();
+        //                 if (string.IsNullOrEmpty(messageId)) continue;
+
+        //                 var existingEmail = await _gmailDbContext.GmailEmails
+        //                     .FirstOrDefaultAsync(e =>
+        //                         e.MessageId == messageId &&
+        //                         e.UserId == dto.UserId);
+
+        //                 if (existingEmail != null)
+        //                 {
+        //                     existingEmail.LabelId = labelId;
+        //                     existingEmail.LabelName = actualLabelName!;
+        //                     await _gmailDbContext.SaveChangesAsync();
+        //                     continue;
+        //                 }
+
+        //                 if (!tmsg.TryGetProperty("payload", out var payload) ||
+        //                     !payload.TryGetProperty("headers", out var headers))
+        //                     continue;
+
+        //                 string GetHeader(string name)
+        //                 {
+        //                     foreach (var h in headers.EnumerateArray())
+        //                     {
+        //                         if (h.GetProperty("name").GetString() == name)
+        //                             return h.GetProperty("value").GetString() ?? "";
+        //                     }
+        //                     return "";
+        //                 }
+
+        //                 string from = GetHeader("From").Trim();
+        //                 string to = GetHeader("To").Trim();
+        //                 string cc = GetHeader("Cc").Trim();
+
+        //                 var email = new GmailEmail
+        //                 {
+        //                     UserId = dto.UserId,
+        //                     MessageId = messageId,
+        //                     ThreadId = threadId,
+        //                     LabelId = labelId,
+        //                     LabelName = actualLabelName!,
+        //                     Subject = GetHeader("Subject").Trim(),
+        //                     From = from,
+        //                     To = to,
+        //                     Cc = cc,
+        //                     Date = DateTime.TryParse(GetHeader("Date"), out var d)
+        //                         ? d
+        //                         : DateTime.UtcNow,
+        //                     Snippet = tmsg.TryGetProperty("snippet", out var snip)
+        //                         ? snip.GetString() ?? ""
+        //                         : "",
+        //                     Body = await BuildEmailHtml(payload, client, messageId),
+        //                     CreatedAt = DateTime.UtcNow
+        //                 };
+
+        //                 _gmailDbContext.GmailEmails.Add(email);
+        //                 await _gmailDbContext.SaveChangesAsync();
+
+        //                 if (payload.TryGetProperty("parts", out var parts))
+        //                 {
+        //                     foreach (var part in parts.EnumerateArray())
+        //                     {
+        //                         if (!part.TryGetProperty("filename", out var fnProp))
+        //                             continue;
+
+        //                         var filename = fnProp.GetString();
+        //                         if (string.IsNullOrWhiteSpace(filename)) continue;
+
+        //                         if (!part.TryGetProperty("body", out var body) ||
+        //                             !body.TryGetProperty("attachmentId", out var attProp))
+        //                             continue;
+
+        //                         var attachmentId = attProp.GetString();
+        //                         if (string.IsNullOrEmpty(attachmentId)) continue;
+
+        //                         var attachJson = await client.GetStringAsync(
+        //                             $"https://gmail.googleapis.com/gmail/v1/users/me/messages/{messageId}/attachments/{attachmentId}");
+
+        //                         using var attachDoc = JsonDocument.Parse(attachJson);
+
+        //                         if (!attachDoc.RootElement.TryGetProperty("data", out var dataProp))
+        //                             continue;
+
+        //                         var bytes = Convert.FromBase64String(
+        //                             dataProp.GetString()!
+        //                                 .Replace('-', '+')
+        //                                 .Replace('_', '/'));
+
+        //                         using var ms = new MemoryStream(bytes);
+
+        //                         string folder = from.ToLower().Contains(userEmail.ToLower())
+        //                             ? "to-send"
+        //                             : "inbox";
+
+        //                         string blobPath =
+        //                             $"{SanitizeForAzure(actualLabelName!)}/{folder}/gmail/{DateTime.UtcNow:yyyy-MM-dd}/{SanitizeForAzure(filename)}";
+
+        //                         var blobUrl = await _blobService.UploadAsync(
+        //                             azureKey, "project", blobPath, ms);
+
+        //                         _gmailDbContext.GmailAttachments.Add(new GmailAttachment
+        //                         {
+        //                             GmailEmailId = email.Id,
+        //                             FileName = filename,
+        //                             MimeType = part.TryGetProperty("mimeType", out var mt)
+        //                                 ? mt.GetString()!
+        //                                 : "application/octet-stream",
+        //                             BlobUrl = blobUrl,
+        //                             CreatedAt = DateTime.UtcNow
+        //                         });
+        //                     }
+        //                 }
+        //             }
+        //         }
+
+        //         nextPageToken = listDoc.RootElement
+        //             .TryGetProperty("nextPageToken", out var next)
+        //                 ? next.GetString()
+        //                 : null;
+
+        //     } while (!string.IsNullOrEmpty(nextPageToken));
+
+        //     await _gmailDbContext.SaveChangesAsync();
+
+        //     return Ok(new { message = "Bulk label sync completed successfully" });
+        // }
+
         [HttpPost("sync-label-emails")]
         public async Task<IActionResult> SyncLabelEmails([FromBody] LabelSyncDto dto)
         {
@@ -922,15 +1072,13 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
             if (token == null)
                 return Ok(new { message = "Gmail not connected" });
 
-            // if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(-1))
-            //     token = await RefreshAccessTokenAsync(token);
-
             if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(1))
             {
                 token = await RefreshAccessTokenAsync(token);
             }
 
             using var client = _httpClientFactory.CreateClient();
+
             client.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", token.AccessToken);
 
@@ -945,7 +1093,9 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
             string ExtractPrefix(string s)
             {
                 if (string.IsNullOrWhiteSpace(s)) return "";
+
                 var match = Regex.Match(s.Trim(), @"^\d+\s*(\([A-Za-z]+\))?");
+
                 return match.Success
                     ? match.Value.Replace(" ", "").ToUpper()
                     : "";
@@ -986,12 +1136,23 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
                 .Select(e => (DateTime?)e.Date)
                 .FirstOrDefaultAsync();
 
+            var existingIds = (await _gmailDbContext.GmailEmails
+            .Where(x => x.UserId == dto.UserId)
+            .Select(x => x.MessageId)
+            .ToListAsync())
+            .ToHashSet();
+
             string? nextPageToken = null;
+
+            var emailsToSave = new List<GmailEmail>();
+            var attachmentsToSave = new List<GmailAttachment>();
+
             string userEmail = await GetUserEmail(dto.UserId);
 
             do
             {
-                var url = $"https://gmail.googleapis.com/gmail/v1/users/me/messages?labelIds={labelId}&maxResults=100";
+                var url =
+                    $"https://gmail.googleapis.com/gmail/v1/users/me/messages?labelIds={labelId}&maxResults=100";
 
                 if (lastSync.HasValue)
                     url += $"&q=after:{lastSync.Value:yyyy/MM/dd}";
@@ -999,149 +1160,168 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
                 if (!string.IsNullOrEmpty(nextPageToken))
                     url += $"&pageToken={nextPageToken}";
 
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
-
                 var listJson = await client.GetStringAsync(url);
+
                 using var listDoc = JsonDocument.Parse(listJson);
 
                 if (!listDoc.RootElement.TryGetProperty("messages", out var messages))
                     break;
 
-                foreach (var msg in messages.EnumerateArray())
+                int maxParallel = 5;
+
+                using var semaphore = new SemaphoreSlim(maxParallel);
+
+                var tasks = messages.EnumerateArray().Select(async msg =>
                 {
-                    if (!msg.TryGetProperty("threadId", out var threadProp))
-                        continue;
+                    await semaphore.WaitAsync();
 
-                    var threadId = threadProp.GetString()?.Trim();
-                    if (string.IsNullOrEmpty(threadId)) continue;
-
-                    var threadJson = await client.GetStringAsync(
-                        $"https://gmail.googleapis.com/gmail/v1/users/me/threads/{threadId}");
-
-                    using var threadDoc = JsonDocument.Parse(threadJson);
-
-                    if (!threadDoc.RootElement.TryGetProperty("messages", out var threadMessages))
-                        continue;
-
-                    foreach (var tmsg in threadMessages.EnumerateArray())
+                    try
                     {
-                        if (!tmsg.TryGetProperty("id", out var idProp))
-                            continue;
+                        if (!msg.TryGetProperty("threadId", out var threadProp))
+                            return;
 
-                        var messageId = idProp.GetString()?.Trim();
-                        if (string.IsNullOrEmpty(messageId)) continue;
+                        var threadId = threadProp.GetString()?.Trim();
 
-                        var existingEmail = await _gmailDbContext.GmailEmails
-                            .FirstOrDefaultAsync(e =>
-                                e.MessageId == messageId &&
-                                e.UserId == dto.UserId);
+                        if (string.IsNullOrEmpty(threadId))
+                            return;
 
-                        if (existingEmail != null)
+                        var threadJson = await client.GetStringAsync(
+                            $"https://gmail.googleapis.com/gmail/v1/users/me/threads/{threadId}");
+
+                        using var threadDoc = JsonDocument.Parse(threadJson);
+
+                        if (!threadDoc.RootElement.TryGetProperty("messages", out var threadMessages))
+                            return;
+
+                        foreach (var tmsg in threadMessages.EnumerateArray())
                         {
-                            existingEmail.LabelId = labelId;
-                            existingEmail.LabelName = actualLabelName!;
-                            await _gmailDbContext.SaveChangesAsync();
-                            continue;
-                        }
+                            if (!tmsg.TryGetProperty("id", out var idProp))
+                                continue;
 
-                        if (!tmsg.TryGetProperty("payload", out var payload) ||
-                            !payload.TryGetProperty("headers", out var headers))
-                            continue;
+                            var messageId = idProp.GetString()?.Trim();
 
-                        string GetHeader(string name)
-                        {
-                            foreach (var h in headers.EnumerateArray())
+                            if (string.IsNullOrEmpty(messageId))
+                                continue;
+
+                            if (existingIds.Contains(messageId))
+                                continue;
+
+                            if (!tmsg.TryGetProperty("payload", out var payload) ||
+                                !payload.TryGetProperty("headers", out var headers))
+                                continue;
+
+                            string GetHeader(string name)
                             {
-                                if (h.GetProperty("name").GetString() == name)
-                                    return h.GetProperty("value").GetString() ?? "";
-                            }
-                            return "";
-                        }
-
-                        string from = GetHeader("From").Trim();
-                        string to = GetHeader("To").Trim();
-                        string cc = GetHeader("Cc").Trim();
-
-                        var email = new GmailEmail
-                        {
-                            UserId = dto.UserId,
-                            MessageId = messageId,
-                            ThreadId = threadId,
-                            LabelId = labelId,
-                            LabelName = actualLabelName!,
-                            Subject = GetHeader("Subject").Trim(),
-                            From = from,
-                            To = to,
-                            Cc = cc,
-                            Date = DateTime.TryParse(GetHeader("Date"), out var d)
-                                ? d
-                                : DateTime.UtcNow,
-                            Snippet = tmsg.TryGetProperty("snippet", out var snip)
-                                ? snip.GetString() ?? ""
-                                : "",
-                            Body = await BuildEmailHtml(payload, client, messageId),
-                            CreatedAt = DateTime.UtcNow
-                        };
-
-                        _gmailDbContext.GmailEmails.Add(email);
-                        await _gmailDbContext.SaveChangesAsync();
-
-                        if (payload.TryGetProperty("parts", out var parts))
-                        {
-                            foreach (var part in parts.EnumerateArray())
-                            {
-                                if (!part.TryGetProperty("filename", out var fnProp))
-                                    continue;
-
-                                var filename = fnProp.GetString();
-                                if (string.IsNullOrWhiteSpace(filename)) continue;
-
-                                if (!part.TryGetProperty("body", out var body) ||
-                                    !body.TryGetProperty("attachmentId", out var attProp))
-                                    continue;
-
-                                var attachmentId = attProp.GetString();
-                                if (string.IsNullOrEmpty(attachmentId)) continue;
-
-                                var attachJson = await client.GetStringAsync(
-                                    $"https://gmail.googleapis.com/gmail/v1/users/me/messages/{messageId}/attachments/{attachmentId}");
-
-                                using var attachDoc = JsonDocument.Parse(attachJson);
-
-                                if (!attachDoc.RootElement.TryGetProperty("data", out var dataProp))
-                                    continue;
-
-                                var bytes = Convert.FromBase64String(
-                                    dataProp.GetString()!
-                                        .Replace('-', '+')
-                                        .Replace('_', '/'));
-
-                                using var ms = new MemoryStream(bytes);
-
-                                string folder = from.ToLower().Contains(userEmail.ToLower())
-                                    ? "to-send"
-                                    : "inbox";
-
-                                string blobPath =
-                                    $"{SanitizeForAzure(actualLabelName!)}/{folder}/gmail/{DateTime.UtcNow:yyyy-MM-dd}/{SanitizeForAzure(filename)}";
-
-                                var blobUrl = await _blobService.UploadAsync(
-                                    azureKey, "project", blobPath, ms);
-
-                                _gmailDbContext.GmailAttachments.Add(new GmailAttachment
+                                foreach (var h in headers.EnumerateArray())
                                 {
-                                    GmailEmailId = email.Id,
-                                    FileName = filename,
-                                    MimeType = part.TryGetProperty("mimeType", out var mt)
-                                        ? mt.GetString()!
-                                        : "application/octet-stream",
-                                    BlobUrl = blobUrl,
-                                    CreatedAt = DateTime.UtcNow
-                                });
+                                    if (h.GetProperty("name").GetString() == name)
+                                        return h.GetProperty("value").GetString() ?? "";
+                                }
+
+                                return "";
+                            }
+
+                            string from = GetHeader("From").Trim();
+
+                            var email = new GmailEmail
+                            {
+                                UserId = dto.UserId,
+                                MessageId = messageId,
+                                ThreadId = threadId,
+                                LabelId = labelId,
+                                LabelName = actualLabelName!,
+                                Subject = GetHeader("Subject").Trim(),
+                                From = from,
+                                To = GetHeader("To").Trim(),
+                                Cc = GetHeader("Cc").Trim(),
+                                Date = DateTime.TryParse(GetHeader("Date"), out var d)
+                                    ? d
+                                    : DateTime.UtcNow,
+                                Snippet = tmsg.TryGetProperty("snippet", out var snip)
+                                    ? snip.GetString() ?? ""
+                                    : "",
+                                Body = await BuildEmailHtml(payload, client, messageId),
+                                CreatedAt = DateTime.UtcNow
+                            };
+
+                            lock (emailsToSave)
+                            {
+                                emailsToSave.Add(email);
+                            }
+
+                            if (payload.TryGetProperty("parts", out var parts))
+                            {
+                                foreach (var part in parts.EnumerateArray())
+                                {
+                                    if (!part.TryGetProperty("filename", out var fnProp))
+                                        continue;
+
+                                    var filename = fnProp.GetString();
+
+                                    if (string.IsNullOrWhiteSpace(filename))
+                                        continue;
+
+                                    if (!part.TryGetProperty("body", out var body) ||
+                                        !body.TryGetProperty("attachmentId", out var attProp))
+                                        continue;
+
+                                    var attachmentId = attProp.GetString();
+
+                                    if (string.IsNullOrEmpty(attachmentId))
+                                        continue;
+
+                                    var attachJson = await client.GetStringAsync(
+                                        $"https://gmail.googleapis.com/gmail/v1/users/me/messages/{messageId}/attachments/{attachmentId}");
+
+                                    using var attachDoc = JsonDocument.Parse(attachJson);
+
+                                    if (!attachDoc.RootElement.TryGetProperty("data", out var dataProp))
+                                        continue;
+
+                                    var bytes = Convert.FromBase64String(
+                                        dataProp.GetString()!
+                                            .Replace('-', '+')
+                                            .Replace('_', '/'));
+
+                                    using var ms = new MemoryStream(bytes);
+
+                                    string folder = from.ToLower().Contains(userEmail.ToLower())
+                                        ? "to-send"
+                                        : "inbox";
+
+                                    string blobPath =
+                                        $"{SanitizeForAzure(actualLabelName!)}/{folder}/gmail/{DateTime.UtcNow:yyyy-MM-dd}/{SanitizeForAzure(filename)}";
+
+                                    var blobUrl = await _blobService.UploadAsync(
+                                        azureKey,
+                                        "project",
+                                        blobPath,
+                                        ms);
+
+                                    lock (attachmentsToSave)
+                                    {
+                                        attachmentsToSave.Add(new GmailAttachment
+                                        {
+                                            GmailEmail = email,
+                                            FileName = filename,
+                                            MimeType = part.TryGetProperty("mimeType", out var mt)
+                                                ? mt.GetString()!
+                                                : "application/octet-stream",
+                                            BlobUrl = blobUrl,
+                                            CreatedAt = DateTime.UtcNow
+                                        });
+                                    }
+                                }
                             }
                         }
                     }
-                }
+                    finally
+                    {
+                        semaphore.Release();
+                    }
+                });
+
+                await Task.WhenAll(tasks);
 
                 nextPageToken = listDoc.RootElement
                     .TryGetProperty("nextPageToken", out var next)
@@ -1150,17 +1330,28 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
 
             } while (!string.IsNullOrEmpty(nextPageToken));
 
+            if (emailsToSave.Any())
+            {
+                _gmailDbContext.GmailEmails.AddRange(emailsToSave);
+            }
+
+            if (attachmentsToSave.Any())
+            {
+                _gmailDbContext.GmailAttachments.AddRange(attachmentsToSave);
+            }
+
             await _gmailDbContext.SaveChangesAsync();
 
-            return Ok(new { message = "Bulk label sync completed successfully" });
+            return Ok(new
+            {
+                message = "Bulk label sync completed successfully",
+                syncedEmails = emailsToSave.Count
+            });
         }
         private async Task<string> GetUserEmail(string userId)
         {
             var token = await _dbContext.GmailTokens.FirstOrDefaultAsync(x => x.UserId == userId);
             if (token == null) return "";
-
-            // if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(-1))
-            //     token = await RefreshAccessTokenAsync(token);
 
             if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(1))
             {
@@ -1191,9 +1382,6 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
             var token = await _dbContext.GmailTokens.FirstOrDefaultAsync(x => x.UserId == userId);
             if (token == null)
                 return Ok(new { emails = new List<GmailEmailDto>(), total = 0, nextPageToken = (string?)null, label = (string?)null });
-
-            // if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(-1))
-            //     token = await RefreshAccessTokenAsync(token);
 
             if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(1))
             {
@@ -1614,9 +1802,6 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
             if (token == null)
                 return BadRequest("Gmail not connected");
 
-            // if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(-1))
-            //     token = await RefreshAccessTokenAsync(token);
-
             if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(1))
             {
                 token = await RefreshAccessTokenAsync(token);
@@ -1647,32 +1832,31 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
         
         [HttpGet("search")]
         public async Task<IActionResult> SearchEmails(
-            [FromQuery] string userId, 
+            [FromQuery] string userId,
             [FromQuery] string query,
             [FromQuery] string? pageToken = null,
             [FromQuery] int pageSize = 20)
         {
-            if (string.IsNullOrEmpty(userId)) return BadRequest("UserId missing");
-            if (string.IsNullOrEmpty(query)) return Ok(new { emails = new List<object>(), total = 0, nextPageToken = (string?)null });
+            if (string.IsNullOrEmpty(userId))
+                return BadRequest("UserId missing");
 
-            var token = await _dbContext.GmailTokens.FirstOrDefaultAsync(x => x.UserId == userId);
-            if (token == null) return Ok(new { message = "Gmail not connected" });
+            var token = await _dbContext.GmailTokens
+                .FirstOrDefaultAsync(x => x.UserId == userId);
 
-            // if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(-1))
-            //     token = await RefreshAccessTokenAsync(token);
+            if (token == null)
+                return Ok(new { message = "Gmail not connected" });
 
             if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(1))
-            {
                 token = await RefreshAccessTokenAsync(token);
-            }
 
-            var (emails, total, nextPageToken) = await _gmailService.SearchEmailsAsync(token.AccessToken, query, pageToken, pageSize);
+            var (emails, total, nextPage) =
+                await _gmailService.SearchEmailsAsync(token.AccessToken, query, pageToken, pageSize);
 
             return Ok(new
             {
                 emails,
                 total,
-                nextPageToken
+                nextPageToken = nextPage
             });
         }
 
@@ -1739,7 +1923,6 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
         [HttpGet("image-proxy")]
         public async Task<IActionResult> ProxyImage(string url)
         {
-            // using var client = new HttpClient();
             var client = _httpClientFactory.CreateClient();
 
             var response = await client.GetAsync(url);
@@ -1750,6 +1933,23 @@ namespace MyCockpitView.WebApi.GmailModule.Controllers
             var contentType = response.Content.Headers.ContentType?.MediaType ?? "image/jpeg";
 
             return File(bytes, contentType);
+        }
+
+        [HttpGet("email/{messageId}")]
+        public async Task<IActionResult> GetFullEmail(string messageId, [FromQuery] string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+                return BadRequest("UserId missing");
+
+            var token = await _dbContext.GmailTokens.FirstOrDefaultAsync(x => x.UserId == userId);
+            if (token == null)
+                return BadRequest("Gmail not connected");
+            if (token.ExpiryTime <= DateTime.UtcNow.AddMinutes(1))
+            {
+                token = await RefreshAccessTokenAsync(token);
+            }
+            var email = await _gmailService.GetFullEmailById(token.AccessToken, messageId);
+            return Ok(email);
         }
     }
 }

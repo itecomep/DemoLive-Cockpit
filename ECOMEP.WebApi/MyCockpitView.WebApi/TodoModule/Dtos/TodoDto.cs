@@ -42,7 +42,6 @@ public class TodoDto : TodoListDto
 
     public virtual ICollection<TodoAgendaDto> Agendas { get; set; }= new List<TodoAgendaDto>();
     public int? ProjectID { get; set; }
-    public string? Stage { get; set; }
 
     public decimal MHrAssigned { get; set; }
     public decimal MHrConsumed { get; set; }

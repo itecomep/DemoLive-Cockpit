@@ -87,7 +87,7 @@ public class WorkOrderStageController : ControllerBase
 
         await CalculatePoints(entity);
 
-        var id = await service.Create(entity); 
+        var id = await service.Create(entity);
 
         var results = mapper.Map<WorkOrderStageDto>(await service.Get().SingleOrDefaultAsync(x => x.ID == id));
 
@@ -129,8 +129,6 @@ public class WorkOrderStageController : ControllerBase
             db.WorkOrderStages.Add(newStageVersion);
             await db.SaveChangesAsync();
         }
-
-        //await service.Update(mapper.Map<WorkOrderStage>(Dto));
 
         var entity = mapper.Map<WorkOrderStage>(Dto);
 
@@ -206,5 +204,6 @@ public class WorkOrderStageController : ControllerBase
 
         return Ok("Points Updated");
     }
+
 
 }

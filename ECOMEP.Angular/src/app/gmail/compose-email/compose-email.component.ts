@@ -2,13 +2,13 @@ import { Component, OnInit, Output, EventEmitter, Input, ViewChild, ElementRef, 
 import { GmailService, GmailEmail } from "../../gmail/services/gmail.service";
 import { HttpClient } from "@angular/common/http";
 import { FormControl } from "@angular/forms";
-import { startWith, map } from "rxjs/operators";
 import { environment } from "src/environments/environment";
 import { UtilityService } from "src/app/shared/services/utility.service";
 import { ProjectApiService } from "../../project/services/project-api.service";
 import { MatDialog } from '@angular/material/dialog';
 import { ProjectFileComponent } from "src/app/project/components/project-file/project-file.component";
 import { firstValueFrom } from "rxjs";
+import { ProjectAssociationDialogComponent } from "../project-association-dialog/project-association-dialog.component";
 
 interface ContactEmail {
   email: string;
@@ -36,13 +36,15 @@ export class ComposeEmailComponent implements OnInit {
   @ViewChild("editorElement") editorElement!: ElementRef<HTMLDivElement>;
   @ViewChild("textPalette") textPaletteRef!: ElementRef;
   @ViewChild("bgPalette") bgPaletteRef!: ElementRef;
+  @ViewChild('composeContainer') composeContainer!: ElementRef;
+  @Input() embeddedMode = false;
+  @Output() mailSent = new EventEmitter<void>();
 
   newBody: string = "";
   to: string = "";
   cc: string = "";
   bcc: string = "";
   subject: string = "";
-  // attachments: { file: File; previewUrl?: string }[] = [];
   showCcBcc: boolean = false;
   threadId?: string;
   replyMessageId?: string;
@@ -66,7 +68,7 @@ export class ComposeEmailComponent implements OnInit {
   dmsPreviewFiles: { name: string; url: string }[] = [];
   dmsAttachments: { name: string; size?: string; icon: string; url: string }[] = [];
   attachments: { file: File; size: string; icon: string; url?: string }[] = [];
-  projectControl = new FormControl('');
+  projectControl = new FormControl("");
   filteredProjects: Project[] = [];
   selectedMailType: 'project' | 'other' = 'project';
   associations: any[] = [];
@@ -74,10 +76,12 @@ export class ComposeEmailComponent implements OnInit {
   noToEmailFound = false;
   noCcEmailFound = false;
   noBccEmailFound = false;
+
   toObjects: any[] = [];
   ccObjects: any[] = [];
   bccObjects: any[] = [];
-
+  private associationDialogRef: any;
+  inlineImages: any[] = [];
 
   activeStyles: {
     bold: boolean;
@@ -109,7 +113,8 @@ export class ComposeEmailComponent implements OnInit {
     private projectService: ProjectApiService,
     private dialog: MatDialog
   ) {}
-  colorPalette: string[] = ["#ffffff", "#f5f5f5", "#e0e0e0", "#bdbdbd", "#9e9e9e", "#616161", "#212121", "#000000", "#fdecea", "#f28b82", "#ea4335", "#d93025", "#b31412", "#ffe0b2", "#ffb74d", "#ff6d01", "#e8710a", "#c25e00", "#fff7d6", "#fde293", "#fbbc05", "#f29900", "#ea8600", "#e6f4ea", "#81c995", "#34a853", "#1e8e3e", "#137333", "#e0f7fa", "#4dd0e1", "#46bdc6", "#0097a7", "#006064", "#e8f0fe", "#8ab4f8", "#4285f4", "#1a73e8", "#174ea6", "#f3e8fd", "#c58af9", "#9b51e0", "#7e57c2", "#5e35b1", "#fde7f3", "#ff8bcf", "#ff4081", "#e91e63", "#ad1457", "#efebe9", "#bcaaa4", "#795548", "#5d4037", "#3e2723"];
+  colorPalette: string[] = ["#ffffff", "#f5f5f5", "#e0e0e0", "#bdbdbd", "#9e9e9e", "#616161", "#212121", "#000000", "#fdecea", "#f28b82", "#ea4335", "#d93025", "#b31412", "#ffe0b2", "#ffb74d", "#ff6d01", "#e8710a", "#c25e00", "#fff7d6", "#fde293", "#fbbc05", "#f29900", "#ea8600", "#e6f4ea", "#81c995", "#34a853", "#1e8e3e", "#137333", "#e0f7fa", "#4dd0e1", "#46bdc6", "#0097a7", "#006064", "#e8f0fe", "#8ab4f8", "#4285f4", "#1a73e8", "#174ea6", "#f3e8fd", "#c58af9", "#9b51e0", "#7e57c2", "#5e35b1", "#fde7f3", "#ff8bcf", "#ff4081", "#e91e63", "#ad1457", "#efebe9", "#bcaaa4", "#795548", "#5d4037", "#3e2723",
+  ];
 
   fontFamilies = [
     { label: "Default", value: "" },
@@ -138,7 +143,6 @@ export class ComposeEmailComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((selectedFiles: any[]) => {
       if (!selectedFiles?.length) return;
-
       selectedFiles.forEach(f => {
         if (!this.dmsAttachments.some(a => a.url === f.blobUrl)) {
           this.dmsAttachments.push({
@@ -160,9 +164,7 @@ export class ComposeEmailComponent implements OnInit {
     this.gmailService.getLoggedInEmail().subscribe(async ({ email }) => {
       const state = this.state || {};
       const myEmail = email || "";
-
       let signature = await this.fetchSignature(myEmail);
-
       if (state.email) {
         const emailData: GmailEmail = state.email;
         this.threadId = emailData.threadId;
@@ -179,31 +181,25 @@ export class ComposeEmailComponent implements OnInit {
             }
           }
           this.to = this.computeTo(state.type, emailData, myEmail);
-          this.cc =
-            state.type === "replyAll" ? this.computeCc(emailData, myEmail) : "";
-          this.bcc =
-            state.type === "replyAll"
-              ? this.computeBcc(emailData, myEmail)
-              : "";
-          this.subject = emailData.subject.startsWith("Re:")
-            ? emailData.subject
-            : "Re: " + emailData.subject;
-
+          this.cc = state.type === "replyAll" ? this.computeCc(emailData, myEmail) : "";
+          this.bcc = state.type === "replyAll" ? this.computeBcc(emailData, myEmail) : "";
+          this.subject = this.normalizeSubject(emailData.subject, 'reply');
+          this.syncRecipients();
           this.newBody = `
             <p><br></p>
             ${signature ? `<div>${signature}</div><br>` : ""}
-            ${this.buildOriginalHtml(emailData)}`;
+            ${this.buildOriginalHtml(emailData)}
+          `;
         }
 
         if (state.type === "draft") {
           const draftEmail: GmailEmail = state.email;
-
           this.to = draftEmail.to || draftEmail.toList?.join(", ") || "";
           this.cc = draftEmail.cc || draftEmail.ccList?.join(", ") || "";
           this.bcc = draftEmail.bcc || draftEmail.bccList?.join(", ") || "";
           this.subject = draftEmail.subject || "";
-          this.newBody = draftEmail.body || "";
-
+          // this.newBody = draftEmail.body || "";
+          this.newBody = this.unwrapSafeHtml(draftEmail.body);
           if (draftEmail.attachments?.length) {
             this.attachments = draftEmail.attachments.map((att) => ({
               file: new File([], att.fileName, { type: att.mimeType }),
@@ -214,21 +210,22 @@ export class ComposeEmailComponent implements OnInit {
 
           this.threadId = draftEmail.threadId;
           this.replyMessageId = draftEmail.rfcMessageId;
+          this.syncRecipients();
         }
 
         if (state.type === "forward") {
           this.to = "";
           this.cc = "";
           this.bcc = "";
-          this.subject = emailData.subject.startsWith("Fwd:")
-            ? emailData.subject
-            : "Fwd: " + emailData.subject;
-
+          this.subject = this.normalizeSubject(emailData.subject, 'forward');
           this.newBody = `
             <br>
             ${signature ? `<div>${signature}</div>` : ""}
             ${this.buildOriginalHtml(emailData)}
           `;
+          this.toObjects = [];
+          this.ccObjects = [];
+          this.bccObjects = [];
         }
       }
 
@@ -238,26 +235,49 @@ export class ComposeEmailComponent implements OnInit {
         this.bcc = "";
         this.subject = "";
         this.newBody = `<div><br></div>${signature ? `<div>${signature}</div>` : ""}`;
+        this.toObjects = [];
+        this.ccObjects = [];
+        this.bccObjects = [];
       }
 
       this.syncEditorContent();
     });
 
-    this.projectControl.valueChanges.subscribe(value => {
-      const search = typeof value === 'string' ? value.toLowerCase() : '';
-      this.filteredProjects = this.projects.filter(p =>
+    this.projectControl.valueChanges.subscribe((value) => {
+      const search = typeof value === "string" ? value.toLowerCase() : "";
+      this.filteredProjects = this.projects.filter((p) =>
         p.name.toLowerCase().includes(search)
       );
     });
-
     this.loadContacts();
     this.setupAutocomplete();
     this.loadProjects();
     document.addEventListener("click", this.onClickOutside.bind(this));
   }
 
+  private normalizeSubject(subject: string, type: 'reply' | 'forward'): string {
+    if (!subject) return '';
+    let clean = subject.replace(/^(re|fw|fwd):\s*/gi, '').trim();
+    if (type === 'reply') {
+      return `Re: ${clean}`;
+    }
+    if (type === 'forward') {
+      return `Fwd: ${clean}`;
+    }
+    return clean;
+  }
+
+  private syncRecipients() {
+    this.toObjects = this.to.split(',').map(v => this.parseEmailWithName(v));
+    this.ccObjects = this.cc.split(',').map(v => this.parseEmailWithName(v));
+    this.bccObjects = this.bcc.split(',').map(v => this.parseEmailWithName(v));
+  }
+
   ngOnDestroy() {
     document.removeEventListener("click", this.onClickOutside.bind(this));
+    if (this.associationDialogRef) {
+      this.associationDialogRef.close();
+    }
   }
 
   private savedSelection: Range | null = null;
@@ -269,7 +289,7 @@ export class ComposeEmailComponent implements OnInit {
   }
 
   private getUserId(): number | null {
-    const data = localStorage.getItem('currentUser');
+    const data = localStorage.getItem("currentUser");
     if (!data) return null;
 
     try {
@@ -290,7 +310,8 @@ export class ComposeEmailComponent implements OnInit {
   private syncEditorContent() {
     setTimeout(() => {
       if (this.editorElement) {
-        this.editorElement.nativeElement.innerHTML = this.newBody;
+        // this.editorElement.nativeElement.innerHTML = this.newBody;
+        this.editorElement.nativeElement.innerHTML = this.unwrapSafeHtml(this.newBody);
         this.updateToolbarState();
       }
     }, 0);
@@ -323,7 +344,9 @@ export class ComposeEmailComponent implements OnInit {
     const computedFont =
       computedFontFamily?.replace(/["']/g, "") ||
       "Arial, Helvetica, sans-serif";
-    const matchedFont = this.fontFamilies.find((f) => f.value.split(",")[0] === computedFont) || this.fontFamilies[0];
+    const matchedFont =
+      this.fontFamilies.find((f) => f.value.split(",")[0] === computedFont) ||
+      this.fontFamilies[0];
 
     const sizeMap: Record<string, FontSizeType> = {
       "12px": "small",
@@ -462,17 +485,14 @@ export class ComposeEmailComponent implements OnInit {
       large: "18px",
       huge: "24px",
     };
-
     return sizeMap[size] ?? "14px";
   }
 
   normalizeFontSizes() {
     const fonts = this.editorElement.nativeElement.querySelectorAll("font");
-
     fonts.forEach((font) => {
       const size = font.getAttribute("size") || "3";
       const face = font.getAttribute("face");
-
       const span = document.createElement("span");
       span.style.fontSize = this.mapFontSizeToPx(size);
 
@@ -553,6 +573,8 @@ export class ComposeEmailComponent implements OnInit {
     editor.querySelectorAll("font").forEach(f => {
       const span = document.createElement("span");
       span.innerHTML = f.innerHTML;
+      const color = f.getAttribute("color");
+      if (color) span.style.color = color;
       f.replaceWith(span);
     });
 
@@ -580,6 +602,7 @@ export class ComposeEmailComponent implements OnInit {
 
     if (target.getAttribute('data-remove') === 'true') {
       const url = target.getAttribute('data-url');
+
       const itemDiv = target.closest('div');
       const sectionDiv = target.closest('div[style*="border:1px solid"]');
       itemDiv?.remove();
@@ -607,10 +630,10 @@ export class ComposeEmailComponent implements OnInit {
     if (email.attachments?.length) {
       const formatted = new Date(email.date).toLocaleString();
       attachmentsHtml = `
-        <div style="border:1px solid #dadce0; background:#f6f8fa; padding:12px; border-radius:6px; margin-top:15px; margin-bottom:15px; font-family:Arial, sans-serif;">
+        <div style="width:50%; margin:15px auto; border:1px solid #000080; background:#000080; padding:12px; border-radius:6px; margin-bottom:15px; font-family:Arial, sans-serif;color:white;">
           <div style="display:flex; justify-content:space-between; align-items:center; font-weight:600; margin-bottom:10px;">
             <span>Attachments (${email.attachments.length}) :</span>
-            <span style="font-size:12px;color:#666;">
+            <span style="font-size:12px;color:#ddd;">
               ${formatted}
             </span>
           </div>
@@ -629,9 +652,9 @@ export class ComposeEmailComponent implements OnInit {
 
             return `
               <div style="display:flex; align-items:center; gap:8px; padding:6px 0;">
-                <span style="font-size:16px;">📎</span>
-                <a href="${url}"
-                  style="text-decoration:none; color:#1a73e8; font-weight:500;">
+                <span style="font-size:16px; filter: brightness(0) invert(1);">📎</span>
+                <a href="${url}" data-attachment="true"
+                  style="text-decoration:none; color:white; font-weight:500;">
                   ${a.fileName}
                 </a>
               </div>
@@ -644,10 +667,10 @@ export class ComposeEmailComponent implements OnInit {
     return `
       <blockquote style="border-left:4px solid #dadce0;margin:12px 0;padding-left:12px;color:#555;">
         <p style="font-size:12px;color:#666;">
-          On ${email.date}, <strong>${email.from}</strong> wrote:
+          On ${new Date(email.date).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}, <strong>${email.from}</strong> wrote:
         </p>
         ${attachmentsHtml}
-        ${email.body}
+        ${this.unwrapSafeHtml(email.body)}
       </blockquote>
     `;
   }
@@ -716,7 +739,6 @@ export class ComposeEmailComponent implements OnInit {
     );
     const textButton = document.querySelector(".color-btn:not(.highlight)");
     const bgButton = document.querySelector(".color-btn.highlight");
-
     const clickedInsideTextPalette = textPalette?.contains(target);
     const clickedInsideBgPalette = bgPalette?.contains(target);
     const clickedOnTextButton = textButton?.contains(target);
@@ -751,14 +773,13 @@ export class ComposeEmailComponent implements OnInit {
     });
   }
 
-   private checkEmailExists(value: string, type: 'to' | 'cc' | 'bcc') {
+  private checkEmailExists(value: string, type: 'to' | 'cc' | 'bcc') {
     if (!value) {
       this.setFlag(type, false);
       return;
     }
 
     const f = value.toLowerCase();
-
     const exists = this.allEmails.some(c =>
       c.email.toLowerCase() === f
     );
@@ -766,9 +787,7 @@ export class ComposeEmailComponent implements OnInit {
     const filtered = this.allEmails.filter(c =>
       c.email.toLowerCase().includes(f)
     );
-
     const notFound = filtered.length === 0 && !exists;
-
     this.setFlag(type, notFound);
   }
 
@@ -790,7 +809,8 @@ export class ComposeEmailComponent implements OnInit {
           email.from,
           ...(email.toList?.length ? email.toList : this.parseEmails(email.to)),
         ];
-    return [...new Set(toList)]
+    // return [...new Set(toList)]
+     return toList
       .filter((e) => e && !e.toLowerCase().includes(my))
       .join(", ");
   }
@@ -816,22 +836,24 @@ export class ComposeEmailComponent implements OnInit {
   }
 
   private parseEmails(value?: string): string[] {
-    return (
-      value
-        ?.split(",")
-        .map((v) => v.trim())
-        .filter(Boolean) || []
-    );
+    if (!value) return [];
+
+    return value
+      .split(",")
+      .map(v => v.trim())
+      .map(v => {
+        const match = v.match(/<(.+?)>/);
+        return match ? match[1] : v;
+      })
+      .filter(Boolean);
   }
 
-   onFileSelected(event: any) {
+  onFileSelected(event: any) {
     if (!event.target.files) return;
 
     const files: FileList = event.target.files;
-
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-
       if (this.attachments.some((a) => a.file.name === file.name)) {
         continue;
       }
@@ -845,6 +867,7 @@ export class ComposeEmailComponent implements OnInit {
 
     event.target.value = "";
   }
+  
   formatFileSize(bytes: number): string {
     if (bytes < 1024) return bytes + " B";
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
@@ -898,16 +921,7 @@ export class ComposeEmailComponent implements OnInit {
     try {
 
       const temp = document.createElement('div');
-      temp.innerHTML = this.newBody;
-
-      const oldAttachments: any[] = [];
-      temp.querySelectorAll('a[download]').forEach((a: any) => {
-        oldAttachments.push({
-          fileName: a.getAttribute('download'),
-          url: a.getAttribute('href')
-        });
-      });
-
+      temp.innerHTML = this.unwrapSafeHtml(this.newBody);
 
       const uploadedFiles = this.attachments.length
         ? await this.gmailService.uploadMultiple(
@@ -916,9 +930,7 @@ export class ComposeEmailComponent implements OnInit {
         : [];
 
       let attachmentSection = "";
-
       const allAttachments = [
-        ...oldAttachments,
         ...uploadedFiles.map((f: any) => ({
           fileName: f.fileName,
           url: f.url
@@ -946,10 +958,10 @@ export class ComposeEmailComponent implements OnInit {
 
 
         attachmentSection = `
-        <div style="border:1px solid #dadce0; background:#f6f8fa; padding:12px; border-radius:6px; margin-top:15px; margin-bottom:15px; font-family:Arial, sans-serif;">
-          <div style="font-weight:600; margin-bottom:10px; justify-content:space-between; align-items:center;">
-            <span>Attachments (${uniqueAttachments.length}) :</span>&nbsp;
-            <span style="font-size:12px;color:#666;">
+        <div style="width:50%; margin:15px auto; border:1px solid #000080; background:#000080; padding:12px; border-radius:6px; font-family:Arial, sans-serif; color:white;">
+          <div style="display:flex; font-weight:600; margin-bottom:10px; justify-content:space-between; align-items:center;">
+            <span style="font-size: 20px;">Attachments (${uniqueAttachments.length}) :</span>&nbsp;
+            <span style="font-size:14px;color:#ddd;">
               ${formatted}
             </span>
           </div>
@@ -958,9 +970,9 @@ export class ComposeEmailComponent implements OnInit {
             .map(
               (f) => `
               <div style="align-items:center; gap:8px; padding:6px 0;">
-                <span style="font-size:16px">📎</span>
-                <a href="${f.url}" download="${f.fileName}"
-                  style="text-decoration:none; color:#1a73e8; font-weight:500;">
+                <span style="font-size:16px; filter: brightness(0) invert(1);">📎</span>
+                <a href="${f.url}" download="${f.fileName}" data-attachment="true"
+                  style="text-decoration:none; color:white; font-weight:500;">
                   ${f.fileName}
                 </a>
               </div>
@@ -986,7 +998,7 @@ export class ComposeEmailComponent implements OnInit {
 
       const formatEmails = (list: any[]) =>
         list.map(x => x.fullName ? `${x.fullName} <${x.email}>` : x.email).join(',');
-      
+
       const payload = {
         userId: userId.toString(),
         draftId: this.state?.email?.draftId || null,
@@ -994,11 +1006,9 @@ export class ComposeEmailComponent implements OnInit {
         cc: formatEmails(this.ccObjects),
         bcc: formatEmails(this.bccObjects),
         subject: this.combinedSubject,
-        // body:  attachmentSection + this.newBody,
         body: attachmentSection + cleanBody,
         threadId: this.threadId || null,
         replyMessageId: this.replyMessageId || null,
-        // attachments: [],
         attachments: uploadedFiles.map((f: any) => ({
           fileName: f.fileName,
           url: f.url
@@ -1022,9 +1032,48 @@ export class ComposeEmailComponent implements OnInit {
               "Mail sent successfully",
               "success",
             );
+            this.mailSent.emit();
             this.closeCompose();
 
             const sentMessageId = res.messageId;
+
+            if (this.state?.selectedProject &&
+                this.state?.selectedStage) {
+              const userId = this.getUserId();
+              const savePayload = {
+                userId: userId,
+                projectId:this.state.selectedProject.id,
+                projectName:this.state.selectedProject.name,
+                stageId:this.state.selectedStage.id,
+                stageName:this.state.selectedStage.title,
+                stageComplete:this.state.stageComplete || false,
+                generateInvoice:this.state.generateInvoice || false,
+                rework:this.state.rework || false,
+                toMail: payload.to,
+                ccMail: payload.cc,
+                bccMail: payload.bcc,
+                subject: payload.subject,
+                body: attachmentSection + cleanBody,
+                gmailMessageId: res.messageId,
+                gmailThreadId: res.threadId
+              };
+              this.http.post(
+                `${environment.apiPath}/api/project-stages/save-project-stage-mail`,
+                savePayload
+              ).subscribe({
+                next: () => {
+                  console.log(
+                    'Project stage mail saved'
+                  );
+                },
+                error: (err) => {
+                  console.error(
+                    'Save failed',
+                    err
+                  );
+                }
+              });
+            }
 
             const hasLabel = !!this.state?.labelName;
             const hasProject = !!this.selectedProjectId;
@@ -1132,6 +1181,10 @@ export class ComposeEmailComponent implements OnInit {
   }
 
   closeCompose() {
+    if (this.associationDialogRef) {
+      this.associationDialogRef.close();
+      this.associationDialogRef = null;
+    }
     this.close.emit();
   }
 
@@ -1140,7 +1193,6 @@ export class ComposeEmailComponent implements OnInit {
       this.toObjects.push(contact);
     }
 
-    // still keep string for UI
     this.to = this.toObjects.map(e => e.email).join(", ");
     this.toControl.setValue("");
   }
@@ -1164,19 +1216,18 @@ export class ComposeEmailComponent implements OnInit {
   }
 
   removeTo(index: number) {
-    const l = this.toList;
-    l.splice(index, 1);
-    this.to = l.join(", ");
+    this.toObjects.splice(index, 1);
+    this.to = this.toObjects.map(e => e.email).join(', ');
   }
+
   removeCc(index: number) {
-    const l = this.ccList;
-    l.splice(index, 1);
-    this.cc = l.join(", ");
+    this.ccObjects.splice(index, 1);
+    this.cc = this.ccObjects.map(e => e.email).join(', ');
   }
+
   removeBcc(index: number) {
-    const l = this.bccList;
-    l.splice(index, 1);
-    this.bcc = l.join(", ");
+    this.bccObjects.splice(index, 1);
+    this.bcc = this.bccObjects.map(e => e.email).join(', ');
   }
 
   get toList(): string[] {
@@ -1190,12 +1241,12 @@ export class ComposeEmailComponent implements OnInit {
   }
 
   get combinedSubject(): string {
-    const projectName = this.projectControl.value || '';
-    const subjectText = this.subject || '';
-    if (this.state?.type === 'new') {
-        return projectName ? `${subjectText} | ${projectName}` : subjectText;
-      }
-      return subjectText;
+    const projectName = this.projectControl.value || "";
+    const subjectText = this.subject || "";
+    if (this.state?.type === "new") {
+      return projectName ? `${subjectText} | ${projectName}` : subjectText;
+    }
+    return subjectText;
   }
 
   loadContacts() {
@@ -1231,14 +1282,22 @@ export class ComposeEmailComponent implements OnInit {
     if (this.isMaximized) {
       this.isMinimized = false;
     }
-  }
 
+    setTimeout(() => {
+      this.updateDialogPosition();
+    }, 100);
+  }
+  
   toggleMinimize() {
     this.isMinimized = !this.isMinimized;
 
     if (this.isMinimized) {
       this.isMaximized = false;
     }
+
+    setTimeout(() => {
+      this.updateDialogPosition();
+    }, 100);
   }
 
   loadProjects() {
@@ -1285,22 +1344,87 @@ export class ComposeEmailComponent implements OnInit {
     } else {
       this.selectedProjectId = project.id;
       this.projectControl.setValue(project.name, { emitEvent: false });
-      this.loadProjectAssociations(project.id);
+      this.openAssociationsPopup(project.id);
     }
+  }
+
+  clearAllRecipients() {
+    this.toObjects = [];
+    this.ccObjects = [];
+    this.bccObjects = [];
+    this.to = '';
+    this.cc = '';
+    this.bcc = '';
+  }
+
+  async openAssociationsPopup(projectId: number) {
+    const project = await firstValueFrom(this.projectService.getById(projectId));
+    const associations = project.associations || [];
+    const rect = this.composeContainer.nativeElement.getBoundingClientRect();
+    let left = rect.right + 10;
+    const dialogWidth = 400;
+
+    if (left + dialogWidth > window.innerWidth) {
+      left = rect.left - dialogWidth - 10;
+    }
+    if (this.associationDialogRef) {
+      const instance = this.associationDialogRef.componentInstance;
+      instance.data.associations = associations;
+      instance.filteredAssociations = associations;
+      instance.searchText = '';
+      instance.cdr.detectChanges();
+      return;
+    }
+
+    this.associationDialogRef = this.dialog.open(ProjectAssociationDialogComponent, {
+      width: '400px',
+      position: {
+        // top: rect.top + 'px',
+        top: this.embeddedMode
+        ? (rect.top - 120) + 'px'
+        : rect.top + 'px',
+        left: left + 'px'
+      },
+      panelClass: 'side-dialog',
+      hasBackdrop: false,
+      data: { associations, parent: this }
+    });
+
+    this.associationDialogRef.afterClosed().subscribe(() => {
+      this.associationDialogRef = null;
+    });
+  }
+
+  updateDialogPosition() {
+    if (!this.associationDialogRef) return;
+    const rect = this.composeContainer.nativeElement.getBoundingClientRect();
+    let left = rect.right + 10;
+    const dialogWidth = 400;
+    if (left + dialogWidth > window.innerWidth) {
+      left = rect.left - dialogWidth - 10;
+    }
+    this.associationDialogRef.updatePosition({
+      // top: rect.top + 'px',
+      top: this.embeddedMode
+      ? (rect.top - 120) + 'px'
+      : rect.top + 'px',
+      left: left + 'px'
+    });
+    this.associationDialogRef.updateSize('400px', rect.height + 'px');
   }
 
   onDragOver(event: DragEvent) {
     event.preventDefault();
     event.stopPropagation();
-    const dropZone = (event.currentTarget as HTMLElement);
-    dropZone.classList.add('drag-over');
+    const dropZone = event.currentTarget as HTMLElement;
+    dropZone.classList.add("drag-over");
   }
 
   onDragLeave(event: DragEvent) {
     event.preventDefault();
     event.stopPropagation();
-    const dropZone = (event.currentTarget as HTMLElement);
-    dropZone.classList.remove('drag-over');
+    const dropZone = event.currentTarget as HTMLElement;
+    dropZone.classList.remove("drag-over");
   }
 
   onDrop(event: DragEvent) {
@@ -1328,15 +1452,21 @@ export class ComposeEmailComponent implements OnInit {
   async saveDraft() {
     try {
       const temp = document.createElement('div');
-      temp.innerHTML = this.newBody;
+      // temp.innerHTML = this.newBody;
+      temp.innerHTML = this.unwrapSafeHtml(this.newBody);
       const oldAttachments: any[] = [];
       temp.querySelectorAll('a[download]').forEach((a: any) => {
+        const fileName = a.getAttribute('download');
+        const url = a.getAttribute('href');
+
+        if (!fileName || !url) return;
+
         oldAttachments.push({
           fileName: a.getAttribute('download'),
           url: a.getAttribute('href')
         });
       });
-
+      
       const uploadedFiles = this.attachments.length
         ? await this.gmailService.uploadMultiple(
             this.attachments.map((a) => a.file),
@@ -1373,22 +1503,22 @@ export class ComposeEmailComponent implements OnInit {
         }).replace(",", "").replace(/ /g, " - ");
 
         attachmentSection = `
-          <div style="border:1px solid #dadce0; background:#f6f8fa; padding:12px; border-radius:6px; margin-bottom:15px; font-family:Arial, sans-serif;">
-            <div style="font-weight:600; margin-bottom:10px;">
-              <span>Attachments (${uniqueAttachments.length}) :</span>&nbsp;
-              <span style="font-size:12px;color:#666;">
+          <div style="border:1px solid #000080; background:#000080; padding:12px; border-radius:6px; margin-bottom:15px; font-family:Arial, sans-serif; color:white;">
+            <div style="display:flex; justify-content:space-between; align-items:center; font-weight:600; margin-bottom:10px;">
+              <span style="font-size: 20px;">Attachments (${uniqueAttachments.length}) :</span>&nbsp;
+              <span style="font-size:14px;color:#ddd;">
                 ${formatted}
               </span>
             </div>
 
-           ${uniqueAttachments
+            ${uniqueAttachments
             .map(
               (f) => `
               <div style="display:flex; align-items:center; justify-content:space-between; padding:6px 0;">
                 
                 <div>
-                  <span style="font-size:16px">📎</span>
-                  <a href="${f.url}" download="${f.fileName}" style="text-decoration:none; color:#1a73e8; font-weight:500;">
+                  <span style="font-size:16px; filter: brightness(0) invert(1);">📎</span>
+                  <a href="${f.url}" download="${f.fileName}" data-attachment="true" style="text-decoration:none; color:white; font-weight:500;">
                     ${f.fileName}
                   </a>
                 </div>
@@ -1464,20 +1594,12 @@ export class ComposeEmailComponent implements OnInit {
     temp.innerHTML = html;
     const sections = temp.querySelectorAll('div');
     sections.forEach((div: any) => {
-      if (div.innerText?.includes('Attachments (')) {
+      const isAttachmentBox = div.innerText?.includes('Attachments (');
+      const isInsideBlockquote = div.closest('blockquote');
+      if (isAttachmentBox && !isInsideBlockquote) {
         div.remove();
       }
     });
-
-    temp.querySelectorAll('a[download]').forEach((a: any) => {
-      const parent = a.parentElement;
-      if (parent && parent.innerText.includes('📎')) {
-        parent.remove();
-      } else {
-        a.remove();
-      }
-    });
-
     return temp.innerHTML;
   }
 
@@ -1508,9 +1630,13 @@ export class ComposeEmailComponent implements OnInit {
 
   onPaste(event: ClipboardEvent) {
     event.preventDefault();
-    const text = event.clipboardData?.getData("text/html") || event.clipboardData?.getData("text/plain") || "";
-    const cleaned = this.cleanHtml(text);
-    document.execCommand("insertHTML", false, cleaned);
+    const text = event.clipboardData?.getData('text/plain') || '';
+    const formattedText = text
+      .replace(/\n{2,}/g, '</p><p>')
+      .replace(/\n/g, '<br>');
+
+    const html = `<p>${formattedText}</p>`;
+    document.execCommand('insertHTML', false, html);
   }
 
   cleanHtml(html: string): string {
@@ -1541,21 +1667,26 @@ export class ComposeEmailComponent implements OnInit {
     return div.innerHTML;
   }
 
-    private async loadProjectAssociations(projectId: number) {
+  private async loadProjectAssociations(projectId: number) {
     const project = await firstValueFrom(this.projectService.getById(projectId));
     this.associations = project.associations || [];
   }
 
   isContactAdded(item: any): boolean {
     const email = item?.contact?.email;
-    return this.to.includes(email) || this.cc.includes(email) || this.bcc.includes(email);
+
+    return (
+      this.toObjects.some(e => e.email === email) ||
+      this.ccObjects.some(e => e.email === email) ||
+      this.bccObjects.some(e => e.email === email)
+    );
   }
 
   getContactTypeFlag(item: any): string | null {
     const email = item?.contact?.email;
-    if (this.to.includes(email)) return 'TO';
-    if (this.cc.includes(email)) return 'CC';
-    if (this.bcc.includes(email)) return 'BCC';
+    if (this.toObjects.some(e => e.email === email)) return 'TO';
+    if (this.ccObjects.some(e => e.email === email)) return 'CC';
+    if (this.bccObjects.some(e => e.email === email)) return 'BCC';
     return null;
   }
 
@@ -1570,18 +1701,9 @@ export class ComposeEmailComponent implements OnInit {
     this.toObjects = this.toObjects.filter(e => e.email !== email);
     this.ccObjects = this.ccObjects.filter(e => e.email !== email);
     this.bccObjects = this.bccObjects.filter(e => e.email !== email);
-
-    const alreadySelected =
-      (type === 'TO' && this.to.includes(email)) ||
-      (type === 'CC' && this.cc.includes(email)) ||
-      (type === 'BCC' && this.bcc.includes(email));
-
-    if (!alreadySelected) {
-      if (type === 'TO') this.toObjects.push(obj);
-      if (type === 'CC') this.ccObjects.push(obj);
-      if (type === 'BCC') this.bccObjects.push(obj);
-    }
-
+    if (type === 'TO') this.toObjects.push(obj);
+    if (type === 'CC') this.ccObjects.push(obj);
+    if (type === 'BCC') this.bccObjects.push(obj);
     this.to = this.toObjects.map(e => e.email).join(', ');
     this.cc = this.ccObjects.map(e => e.email).join(', ');
     this.bcc = this.bccObjects.map(e => e.email).join(', ');
@@ -1589,5 +1711,24 @@ export class ComposeEmailComponent implements OnInit {
     if (type === 'CC' || type === 'BCC') {
       this.showCcBcc = true;
     }
+  }
+
+  private unwrapSafeHtml(value: any): string {
+    if (!value) return '';
+    if (value.changingThisBreaksApplicationSecurity) {
+      return value.changingThisBreaksApplicationSecurity;
+    }
+    return value.toString ? value.toString() : value;
+  }
+
+  private parseEmailWithName(value: string): { email: string; fullName?: string } {
+    const match = value.match(/(.*)<(.+?)>/);
+    if (match) {
+      return {
+        fullName: match[1].trim(),
+        email: match[2].trim()
+      };
+    }
+    return { email: value.trim() };
   }
 }

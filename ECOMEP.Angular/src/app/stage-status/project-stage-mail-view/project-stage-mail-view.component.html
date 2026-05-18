@@ -1,0 +1,53 @@
+<div class="mail-popup">
+  <div class="popup-header">
+    <div class="header-content">
+      <h2>{{ data.subject }}</h2>
+      <div class="mail-meta">
+        <div class="meta-chip">
+          <span class="label">Project:</span>
+          <span>{{ data.projectName }}</span>
+        </div>
+        <div class="meta-chip">
+          <span class="label">Stage:</span>
+          <span>{{ data.stageName }}</span>
+        </div>
+        <div class="meta-chip status-chip">
+          <span class="label">Status:</span>
+          <div class="status-badges">
+            <span class="badge complete">
+              Stage Complete — {{ data.stageCompleteRevision }}
+            </span>
+            <span class="badge invoice">
+              Generate Invoice — {{ data.generateInvoiceRevision }}
+            </span>
+            <span class="badge rework">
+              Rework — {{ data.reworkRevision }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button mat-icon-button class="close-btn" mat-dialog-close>✕</button>
+  </div>
+  <div class="mail-address-section">
+    <div class="mail-to">
+      <span class="to-label">To:</span>
+      <span class="to-value">
+        {{ data.toMail?.split(",").join(" | ") || "-" }}
+      </span>
+    </div>
+    <div class="mail-to" *ngIf="data.ccMail">
+      <span class="to-label">CC:</span>
+      <span class="to-value">
+        {{ data.ccMail?.split(",").join(" | ") }}
+      </span>
+    </div>
+    <div class="mail-to" *ngIf="data.bccMail">
+      <span class="to-label">BCC:</span>
+      <span class="to-value">
+        {{ data.bccMail?.split(",").join(" | ") }}
+      </span>
+    </div>
+  </div>
+  <div class="mail-body" [innerHTML]="safeBody"></div>
+</div>

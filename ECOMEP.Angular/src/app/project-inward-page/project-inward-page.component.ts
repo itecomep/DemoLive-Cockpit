@@ -276,7 +276,8 @@ export class ProjectInwardPageComponent implements OnInit {
 
     // ✅ FORM VALUES
     this.inward.title = this.f["title"].value;
-    this.inward.projectInput = this.f["projectInput"].value;
+    // this.inward.projectInput = this.f["projectInput"].value;
+    (this.inward as any).projectInput = this.f["projectInput"].value;
     this.inward.message = this.f["message"].value;
     this.inward.receivedDate = this.f["receivedDate"].value;
     this.inward.category = this.f["category"].value;

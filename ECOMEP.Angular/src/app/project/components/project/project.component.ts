@@ -44,7 +44,6 @@ import { AllMailComponent } from '../../.././gmail/all-mail/all-mail.component';
 import { GmailService } from "../../../gmail/services/gmail.service";
 import { ProjectPointsComponent } from '../project-points/project-points.component';
 
-
 @Component({
   selector: 'app-project',
   templateUrl: './project.component.html',

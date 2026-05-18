@@ -1,4 +1,4 @@
-﻿namespace MyCockpitView.WebApi.LeaveModule.Dtos
+namespace MyCockpitView.WebApi.LeaveModule.Dtos
 {
     public class LeaveListDto
     {

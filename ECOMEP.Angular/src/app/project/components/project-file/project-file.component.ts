@@ -2,7 +2,7 @@ import { Component, Input, OnInit, OnChanges, SimpleChanges, Inject, Optional } 
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from "@angular/material/dialog";
 import { CreateFolderDialogComponent } from "../create-folder-dialog/create-folder-dialog.component";
 import { DmsService } from "../../services/dms.service";
-import { Project } from "../../models/project.model";
+import { Project, ProjectAttachment } from "../../models/project.model";
 import { MatIconModule } from "@angular/material/icon";
 import { CommonModule } from "@angular/common";
 import { MatButtonModule } from "@angular/material/button";
@@ -29,6 +29,8 @@ import { firstValueFrom } from 'rxjs';
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatDividerModule } from "@angular/material/divider";
 import { UserPermissionFileDialogComponent } from "./user-permission-file-dialog/user-permission-file-dialog.component";
+import { NgxDocViewerModule } from 'ngx-doc-viewer';
+import { ProjectDmsComponent } from "../project-dms/project-dms.component";
 
 interface FolderNode {
   id?: number;
@@ -75,13 +77,19 @@ type SortDirection = "asc" | "desc";
     MatSlideToggleModule,
     MatMenuModule,
     MatCheckboxModule,
-    MatDividerModule
+    MatDividerModule,
+    NgxDocViewerModule,
+    ProjectDmsComponent
   ],
 })
 export class ProjectFileComponent implements OnInit, OnChanges {
+  currentEntity: Project = new Project();
+  get isPermissionDMSView(){return this.entityApiService.isPermissionDMSView}
+
   @Input() project!: Project;
   @Input() showProjectSelector: boolean = false;
   @Input() projects: any[] = [];
+  @Input() useFixedViewer: boolean = false;
   isSearching: boolean = false;
   rootFolders: FolderNode[] = [];
   currentFolders: FolderNode[] = [];
@@ -111,6 +119,14 @@ export class ProjectFileComponent implements OnInit, OnChanges {
   contactsSearch: string = '';
   selectedItem: any = null;
   selectedItemType: 'file' | 'folder' = 'file';
+
+  selectedFileUrl: string = '';
+  showViewer: boolean = false;
+  safeViewerUrl: any = null;
+  selectedFileName: string = '';
+  selectedFile: FileNode | null = null;
+  currentViewerIndex: number = 0;
+  showDMS = false;
 
   sortOptions = [
     { label: "Name", field: "name" },
@@ -252,10 +268,8 @@ export class ProjectFileComponent implements OnInit, OnChanges {
         files: []
       }
     ];
-    // const userId = this.getCurrentUserId();
-
+    
     const userData = JSON.parse(localStorage.getItem("currentUser") || "{}");
-
     const userId = userData?.contact?.id?.toString() || '';
     const isMaster = userData.roles?.includes("MASTER") || false;
     
@@ -334,6 +348,15 @@ export class ProjectFileComponent implements OnInit, OnChanges {
   }
 
   attachSelectedFiles() {
+    if (!this.selectedFiles || this.selectedFiles.length === 0) {
+      this.utilityService.showSwalToast(
+        "Warning",
+        "Please select at least one file",
+        "warning"
+      );
+      return;
+    }
+
     const files = this.selectedFiles.map((f) => ({
       name: f.fileName,
       size: f.fileSize,
@@ -373,9 +396,7 @@ export class ProjectFileComponent implements OnInit, OnChanges {
   }
 
   loadFolders() {
-    // if (!this.project?.id) return;
     if (!this.project?.id) return;
-    // const userId = this.getCurrentUserId();
     const userData = JSON.parse(localStorage.getItem("currentUser") || "{}");
     const userId = userData?.contact?.id?.toString() || '';
     const isMaster = userData.roles?.includes("MASTER") || false;
@@ -385,7 +406,7 @@ export class ProjectFileComponent implements OnInit, OnChanges {
 
         this.allFilesBackup = this.getAllFiles(this.rootFolders);
         this.breadcrumb = [];
-
+        
         if (this.viewMode === "folder") {
           this.currentFolders = this.rootFolders;
           this.currentFiles = [];
@@ -398,7 +419,6 @@ export class ProjectFileComponent implements OnInit, OnChanges {
           this.currentFolders = [];
           this.currentFiles = this.allFilesBackup;
         }
-
       },
       error: (err) => {
         console.error("Failed to load folders:", err);
@@ -408,7 +428,6 @@ export class ProjectFileComponent implements OnInit, OnChanges {
 
   formatFileSize(bytes: number): string {
     if (!bytes) return "--";
-
     const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
     return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + " " + sizes[i];
@@ -427,14 +446,11 @@ export class ProjectFileComponent implements OnInit, OnChanges {
 
   getAllFiles(folders: FolderNode[], currentPath: string = ""): FileNode[] {
     let files: FileNode[] = [];
-
     for (let f of folders) {
       let folderPath = currentPath ? `${currentPath} / ${f.name}` : f.name;
-
       if (f.files) {
         const filesWithPaths = f.files.map((file) => {
           let path = folderPath;
-
           if (
             file.classification &&
             path.startsWith(file.classification + " / ")
@@ -442,28 +458,23 @@ export class ProjectFileComponent implements OnInit, OnChanges {
             path = path.substring(file.classification.length + 3);
             path = `${file.classification} / ${path}`;
           }
-
           return {
             ...file,
             path: path,
           };
         });
-
         files.push(...filesWithPaths);
       }
-
       if (f.children) {
         files.push(...this.getAllFiles(f.children, folderPath));
       }
     }
-
     return files;
   }
 
   formatLongPath(path: string): string {
     const parts = path.split(" / ");
     if (parts.length <= 3) return path;
-
     return `${parts[0]} / ... / ${parts[parts.length - 2]} / ${parts[parts.length - 1]}`;
   }
 
@@ -542,7 +553,11 @@ export class ProjectFileComponent implements OnInit, OnChanges {
 
     dialogRef.afterClosed().subscribe((res) => {
       if (res && Array.isArray(res)) {
-        this.loadFoldersAndSelect(res);
+        if (this.data?.isOtherMode) {
+          this.loadOthersFolder();
+        } else {
+          this.loadFoldersAndSelect(res);
+        }
       }
     });
   }
@@ -557,8 +572,13 @@ export class ProjectFileComponent implements OnInit, OnChanges {
       next: (res: FolderNode[]) => {
         this.rootFolders = res || [];
         this.allFilesBackup = this.getAllFiles(this.rootFolders);
-        this.currentFolders = this.rootFolders;
-        this.currentFiles = [];
+        if (this.data?.isOtherMode) {
+          this.currentFolders = [];
+          this.currentFiles = this.allFilesBackup;
+        } else {
+          this.currentFolders = this.rootFolders;
+          this.currentFiles = [];
+        }
         this.autoSelectAfterUpload(uploadedFiles);
       }
     });
@@ -603,12 +623,13 @@ export class ProjectFileComponent implements OnInit, OnChanges {
     event.stopPropagation();
     if (this.isDialog) {
       this.toggleFileSelection(file);
+    } else {
+      this.openViewer(file); // ✅ THIS IS KEY
     }
   }
-  
+
   getFolderSize(folder: FolderNode): string {
     const totalBytes = this.calculateFolderSize(folder);
-
     const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = totalBytes
       ? Math.floor(Math.log(totalBytes) / Math.log(1024))
@@ -620,17 +641,14 @@ export class ProjectFileComponent implements OnInit, OnChanges {
 
   private calculateFolderSize(folder: FolderNode): number {
     let total = 0;
-
     if (folder.files) {
       total += folder.files.reduce((sum, f) => sum + (f.fileSize || 0), 0);
     }
-
     if (folder.children) {
       for (const child of folder.children) {
         total += this.calculateFolderSize(child);
       }
     }
-
     return total;
   }
 
@@ -641,24 +659,20 @@ export class ProjectFileComponent implements OnInit, OnChanges {
 
   getFolderCreatedDate(folder: FolderNode): string {
     let allFiles: FileNode[] = [];
-
     const collectFiles = (f: FolderNode) => {
       if (f.files) allFiles.push(...f.files);
       if (f.children) f.children.forEach((c) => collectFiles(c));
     };
 
     collectFiles(folder);
-
     if (!allFiles.length) return "--";
-
     const earliest = allFiles.reduce((prev, curr) =>
       new Date(prev.created) < new Date(curr.created) ? prev : curr,
     );
-
     return this.formatDate(earliest.created);
   }
 
- applyFilters() {
+  applyFilters() {
     if (!this.searchText?.trim() && !this.fromDate && !this.toDate) {
       return;
     }
@@ -784,14 +798,12 @@ export class ProjectFileComponent implements OnInit, OnChanges {
   async downloadFolder(folder: FolderNode) {
     const zip = new JSZip();
     await this.addFolderToZip(zip, folder);
-
-    zip.generateAsync({ type: "blob" }).then((content:any) => {
+    zip.generateAsync({ type: "blob" }).then((content) => {
       saveAs(content, `${folder.name}.zip`);
     });
   }
 
   editFolderName(folder: FolderNode) {
-
     const dialogRef = this.dialog.open(RenameFolderDialogComponent, {
       width: '350px',
       disableClose: true,
@@ -799,9 +811,7 @@ export class ProjectFileComponent implements OnInit, OnChanges {
     });
 
     dialogRef.afterClosed().subscribe((newName: string) => {
-
       if (!newName || newName.trim() === folder.name) return;
-
       if (!folder.id) {
         alert("Folder ID not found");
         return;
@@ -810,12 +820,10 @@ export class ProjectFileComponent implements OnInit, OnChanges {
       this.dmsService.renameFolder(this.project.id, folder.id, newName.trim())
         .subscribe({
           next: () => {
-
             const oldPath = this.getFolderPath(folder);
             folder.name = newName.trim();
             const newPath = this.getFolderPath(folder);
             this.updateChildPaths(folder, oldPath, newPath);
-
             this.utilityService.showSwalToast(
               "Success",
               "Folder renamed successfully",
@@ -1010,43 +1018,86 @@ selectProject(project: any) {
 
   openUserDialog(item: any, type: 'file' | 'folder') {
     this.setSelectedItem(item, type);
-
-    const dialogRef = this.dialog.open(UserPermissionFileDialogComponent, {
-      width: '100%',
-      maxWidth: '90vw',
-      height: '100%',         // 🔥 bigger height
-      maxHeight: '90vh',       // 🔥 responsive height
-      panelClass: 'user-dialog',
-      data: {
-        contactOptions: this.contactOptions,
-        selectedContacts: [...this.selectedContacts],
-        item: item,
-        type: type
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (!result) return;
-      this.selectedContacts = result;
-      const deniedUsers = this.contactOptions
-        .filter(c => !this.selectedContacts.includes(c.id))
-        .map(c => c.id.toString());
-
-      if (type === 'folder') {
-        this.dmsService.updateFolderPermission({
-          folderId: item.id,
-          deniedUsers
-        }).subscribe(() => {
-          this.loadFolders();
+    this.dmsService.getProjectAccessUsers(this.project.id)
+      .subscribe((res: any[]) => {
+        const projectAccessUserIds = res.flatMap(
+          (team: any) => team.userIds || []
+        );
+        const uniqueUserIds = [...new Set(projectAccessUserIds)];
+        const dialogRef = this.dialog.open(UserPermissionFileDialogComponent, {
+          width: '100%',
+          maxWidth: '90vw',
+          height: '100%',
+          maxHeight: '90vh',
+          panelClass: 'user-dialog',
+          data: {
+            contactOptions: this.contactOptions,
+            selectedContacts: [...this.selectedContacts],
+            item: item,
+            type: type,
+            projectAccessUserIds: uniqueUserIds,
+            project: this.project
+          }
         });
-      } else {
-        this.dmsService.updateFilePermission({
-          fileId: item.id,
-          deniedUsers
-        }).subscribe(() => {
-          this.loadFolders();
+
+        dialogRef.afterClosed().subscribe((result) => {
+          if (!result) return;
+          this.selectedContacts = result;
+          const deniedUsers = this.contactOptions
+            .filter(c => !this.selectedContacts.includes(c.id))
+            .map(c => c.id.toString());
+
+          if (type === 'folder') {
+            this.dmsService.updateFolderPermission({
+              folderId: item.id,
+              deniedUsers
+            }).subscribe(() => {
+              this.loadFolders();
+            });
+          } else {
+            this.dmsService.updateFilePermission({
+              fileId: item.id,
+              deniedUsers
+            }).subscribe(() => {
+              this.loadFolders();
+            });
+          }
         });
-      }
-    });
+      });
+  }
+  
+  openViewer(file: FileNode) {
+    this.currentViewerIndex = this.currentFiles.findIndex(
+      f => f.id === file.id
+    );
+
+    this.selectedFile = file;
+    this.selectedFileUrl = file.blobUrl;
+    this.selectedFileName = file.fileName;
+    this.safeViewerUrl =
+    this.sanitizer.bypassSecurityTrustResourceUrl(file.blobUrl);
+    this.showViewer = true;
+  }
+
+  prevFile() {
+    if (this.currentViewerIndex > 0) {
+      this.currentViewerIndex--;
+      this.openViewer(this.currentFiles[this.currentViewerIndex]);
+    }
+  }
+
+  nextFile() {
+    if (this.currentViewerIndex < this.currentFiles.length - 1) {
+      this.currentViewerIndex++;
+      this.openViewer(this.currentFiles[this.currentViewerIndex]);
+    }
+  }
+
+  isText(fileName: string): boolean {
+    return /\.(txt|json|xml|log)$/i.test(fileName);
+  }
+
+  onDMSUpdate(event: ProjectAttachment[]) {
+    this.currentEntity.attachments = event;
   }
 }

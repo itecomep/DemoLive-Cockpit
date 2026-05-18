@@ -5,7 +5,8 @@ public class GmailAttachmentDto
     public string AttachmentId { get; set; } = "";
     public long Size { get; set; }
     public string? ContentId { get; set; }
-    public bool IsInline => !string.IsNullOrEmpty(ContentId);
+    // public bool IsInline => !string.IsNullOrEmpty(ContentId);
+    public bool IsInline { get; set; }
     public string Url { get; set; } 
     public string MessageId { get; set; } = "";
 
