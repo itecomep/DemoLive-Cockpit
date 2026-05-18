@@ -969,3 +969,48 @@ td:nth-child(7) {
   transform: scale(1.01);
   opacity: 0.9;
 }
+
+
+
+
+.month-row td {
+  background: #f3f6ff;
+  padding: 14px;
+}
+
+.month-row h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e3a8a;
+}
+
+.total-row td {
+  background: #ecfdf5;
+  font-size: 16px;
+  padding: 12px;
+  border-top: 2px solid #10b981;
+}
+
+
+
+
+.month-header-row td {
+  background: #eef4ff;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1d4ed8;
+  padding: 14px;
+}
+
+.month-total-row td {
+  background: #ecfdf5;
+
+  font-weight: 700;
+  color: #047857;
+
+  padding: 14px 12px;
+
+  border-top: 2px solid #10b981;
+  border-bottom: 2px solid #10b981;
+}

@@ -108,8 +108,23 @@
         </thead>
 
         <tbody>
-          <tr *ngFor="let t of targets; let i = index">
-            <td>{{ i + 1 }}</td>
+          <ng-container *ngFor="let group of groupedTargets">
+            
+       <!-- MONTH TOTAL -->
+          <tr class="month-total-row">
+            <td colspan="5">
+              Total Points of {{ group.month }}
+            </td>
+
+            <td>
+              {{ group.totalPoints }}
+            </td>
+
+            <td colspan="5"></td>
+          </tr>
+
+        <tr *ngFor="let t of group.items; let i = index">
+                  <td>{{ i + 1 }}</td>
             <td class="id-badge">#{{ t.projectCode || "-" }}</td>
 
             <td>{{ t.projectName }}</td>
@@ -420,6 +435,8 @@
               </ng-template>
             </td>
           </tr>
+          
+        </ng-container>
 
           <tr *ngIf="targets.length === 0">
             <td colspan="7" class="no-data">No history records found</td>

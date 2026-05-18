@@ -160,6 +160,8 @@ export class ProjectTargetComponent implements OnInit {
 
       this.targets = [...this.originalTargets];
 
+      this.groupTargetsByMonth();
+
       this.applyProjectNames();
       this.loadLatestStageStatuses();
     });
@@ -464,6 +466,7 @@ export class ProjectTargetComponent implements OnInit {
     });
 
     this.applyProjectNames();
+    this.groupTargetsByMonth();
   }
 
   onEditFilesSelected(event: any) {
@@ -689,5 +692,57 @@ export class ProjectTargetComponent implements OnInit {
     });
 
     return row?.points || 0;
+  }
+
+  groupedTargets: any[] = [];
+
+  groupTargetsByMonth() {
+
+    const groups: any = {};
+
+    this.targets.forEach((t: any) => {
+
+      if (!t.targetDate) return;
+
+      const d = new Date(t.targetDate);
+
+      const monthKey =
+        d.toLocaleString('default', { month: 'long' }) +
+        ' ' +
+        d.getFullYear();
+
+      if (!groups[monthKey]) {
+        groups[monthKey] = [];
+      }
+
+      groups[monthKey].push(t);
+    });
+
+    this.groupedTargets = Object.keys(groups)
+
+    .sort((a: any, b: any) => {
+
+      const dateA = new Date(a);
+      const dateB = new Date(b);
+
+      return dateB.getTime() - dateA.getTime();
+    })
+
+    .map((month) => {
+
+      const items = groups[month];
+
+      const totalPoints = items.reduce(
+        (sum: number, x: any) =>
+          sum + this.getPoints(x.projectId, x.stage),
+        0
+      );
+
+      return {
+        month,
+        items,
+        totalPoints
+      };
+    });
   }
 }
