@@ -1,13 +1,12 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { MatTabsModule } from '@angular/material/tabs';
-
 import { HeaderComponent } from '../../mcv-header/components/header/header.component';
-
 import { WfhRequestsComponent } from '../wfh-requests/wfh-requests.component';
 import { MyAttendanceComponent } from '../my-attendance/my-attendance.component';
 import { HolidayListComponent } from '../holiday-list/holiday-list.component';
+import { MyInfoComponent } from '../my-info/my-info.component';
+import { DocumentsComponent } from '../documents/documents.component';
 
 @Component({
   selector: 'app-employee',
@@ -18,7 +17,9 @@ import { HolidayListComponent } from '../holiday-list/holiday-list.component';
     HeaderComponent,
     WfhRequestsComponent,
     MyAttendanceComponent,
-    HolidayListComponent
+    HolidayListComponent,
+    MyInfoComponent,
+    DocumentsComponent
   ],
   templateUrl: './employee.component.html',
   styleUrls: ['./employee.component.scss']

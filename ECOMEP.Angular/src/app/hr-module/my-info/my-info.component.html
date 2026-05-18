@@ -1,0 +1,248 @@
+<div class="my-info-page" *ngIf="currentUser">
+  <!-- PROFILE -->
+
+  <div class="profile-card">
+<div class="profile-avatar">
+
+    <img
+        *ngIf="currentUser.photoUrl"
+        [src]="currentUser.photoUrl"
+        alt="Profile Image">
+
+    <div
+        class="avatar-text"
+        *ngIf="!currentUser.photoUrl">
+
+        {{currentUser.firstName?.charAt(0)}}
+        {{currentUser.lastName?.charAt(0)}}
+
+    </div>
+
+</div>
+    <div class="profile-content">
+      <h2>
+        {{ currentUser.title }}
+        {{ currentUser.firstName }}
+        {{ currentUser.middleName }}
+        {{ currentUser.lastName }}
+      </h2>
+
+      <!-- <p>{{ currentUser.title || "Employee" }}</p> -->
+
+      <div class="top-info">
+        <div class="top-item">
+          <mat-icon>badge</mat-icon>
+          <span>{{ currentUser.card_No }}</span>
+        </div>
+
+        <div class="top-item">
+          <mat-icon>email</mat-icon>
+          <span>{{ currentUser.emails?.[0]?.email }}</span>
+        </div>
+
+        <div class="top-item" *ngFor="let phone of currentUser.phones">
+          <mat-icon>phone</mat-icon>
+
+          <div class="contact-details">
+            <small>
+              {{ phone.title }}
+              {{ phone.isPrimary ? "(Primary)" : "" }}
+            </small>
+
+            <span>{{ phone.phone }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRID -->
+
+  <div class="info-grid">
+    <!-- PERSONAL -->
+
+    <div class="info-box">
+      <h3>Personal Information</h3>
+
+      <div class="info-row">
+        <span>Gender</span>
+        <strong>{{ currentUser.gender }}</strong>
+      </div>
+
+      <div class="info-row">
+        <span>Birth Date</span>
+        <strong>{{ currentUser.birth | date: "dd MMM yyyy" }}</strong>
+      </div>
+
+      <div class="info-row">
+        <span>Marital Status</span>
+        <strong>{{ currentUser.maritalStatus }}</strong>
+      </div>
+
+      <div class="info-row">
+        <span>Aadhaar</span>
+        <strong>{{ currentUser.aadhaar }}</strong>
+      </div>
+
+      <div class="info-row">
+        <span>PAN</span>
+        <strong>{{ currentUser.pan }}</strong>
+      </div>
+    </div>
+
+    <!-- BANK -->
+
+    <div class="info-box">
+      <h3>Bank Information</h3>
+
+      <div class="info-row">
+        <span>Bank Name</span>
+        <strong>{{ currentUser.bankName }}</strong>
+      </div>
+
+      <div class="info-row">
+        <span>IFSC</span>
+        <strong>{{ currentUser.ifscCode }}</strong>
+      </div>
+
+      <div class="info-row">
+        <span>Account No</span>
+        <strong>{{ currentUser.bankAccountNo }}</strong>
+      </div>
+    </div>
+
+    <!-- ADDRESS -->
+
+    <div class="info-box">
+      <h3>Address</h3>
+
+      <p>{{ currentUser.addresses?.[0]?.street }}</p>
+
+      <p>{{ currentUser.addresses?.[0]?.area }}</p>
+
+      <p>
+        {{ currentUser.addresses?.[0]?.city }},
+        {{ currentUser.addresses?.[0]?.state }}
+      </p>
+
+      <p>
+        {{ currentUser.addresses?.[0]?.country }}
+        -
+        {{ currentUser.addresses?.[0]?.pinCode }}
+      </p>
+    </div>
+
+    <!-- EMERGENCY -->
+
+    <div class="info-box">
+      <h3>Emergency Contact</h3>
+
+      <div class="info-row">
+        <span>Name</span>
+        <strong>{{ currentUser.emergencyContactName }}</strong>
+      </div>
+
+      <div class="info-row">
+        <span>Relation</span>
+        <strong>{{ currentUser.emergencyContactRelation }}</strong>
+      </div>
+
+      <div class="info-row">
+        <span>Phone</span>
+        <strong>{{ currentUser.emergencyContactPhone }}</strong>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+<!-- APPOINTMENT INFORMATION -->
+
+<div
+  class="appointment-section"
+  *ngIf="currentUser.appointments?.length">
+
+  <div class="appointment-card">
+
+    <h3>
+      <mat-icon>work</mat-icon>
+      Appointment Information
+    </h3>
+
+    <div class="appointment-grid">
+
+      <div class="appointment-item">
+        <label>Designation</label>
+
+        <span>
+          {{currentUser.appointments?.[0]?.designation || '-'}}
+        </span>
+      </div>
+
+      <div class="appointment-item">
+        <label>Employee Code</label>
+
+        <span>
+          {{currentUser.appointments?.[0]?.employeeCode || '-'}}
+        </span>
+      </div>
+
+      <div class="appointment-item">
+        <label>Joining Date</label>
+
+        <span>
+          {{currentUser.appointments?.[0]?.joiningDate | date:'dd MMM yyyy'}}
+        </span>
+      </div>
+
+      <div class="appointment-item">
+        <label>Location</label>
+
+        <span>
+          {{currentUser.appointments?.[0]?.location || '-'}}
+        </span>
+      </div>
+
+      <div class="appointment-item">
+        <label>Status</label>
+
+        <span>
+          {{currentUser.appointments?.[0]?.statusFlag || '-'}}
+        </span>
+      </div>
+
+      <div class="appointment-item">
+        <label>Reporting To</label>
+
+        <span>
+          {{currentUser.appointments?.[0]?.managerContact?.name || '-'}}
+        </span>
+      </div>
+
+      <div class="appointment-item full-width">
+        <label>Company</label>
+
+        <span>
+          {{currentUser.appointments?.[0]?.company?.title || '-'}}
+        </span>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+
+
+</div>
