@@ -1,37 +1,37 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore;
-using MyCockpitView.CoreModule;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-
-using MyCockpitView.WebApi.ContactModule.Entities;
-using MyCockpitView.WebApi.CompanyModule;
-using MyCockpitView.WebApi.AuthModule.Entities;
-using MyCockpitView.WebApi.AppSettingMasterModule;
-using MyCockpitView.WebApi.StatusMasterModule;
-using MyCockpitView.WebApi.TypeMasterModule;
-using MyCockpitView.WebApi.TodoModule.Entities;
-using MyCockpitView.WebApi.WFTaskModule.Entities;
-using MyCockpitView.WebApi.Entities;
-using MyCockpitView.WebApi.ImageLibraryModule.Entities;
-using MyCockpitView.WebApi.MeetingModule.Entities;
-using MyCockpitView.WebApi.SiteVisitModule.Entities;
-using MyCockpitView.WebApi.RequestTicketModule.Entities;
-using Microsoft.AspNetCore.Identity;
-using MyCockpitView.WebApi.WebPushSubscriptionModule;
-using MyCockpitView.WebApi.ProjectModule.Entities;
-using MyCockpitView.WebApi.PackageModule.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage;
+using MyCockpitView.CoreModule;
 using MyCockpitView.WebApi.ActivityModule.Entities;
-using MyCockpitView.WebApi.Services;
-using MyCockpitView.WebApi.LeaveModule.Entities;
-using MyCockpitView.WebApi.WorkOrderModule.Entities;
+using MyCockpitView.WebApi.AppSettingMasterModule;
 using MyCockpitView.WebApi.AssetModule.Entities;
-using MyCockpitView.WebApi.Services;
-using MyCockpitView.WebApi.LeaveModule.Entities;
+using MyCockpitView.WebApi.AuthModule.Entities;
+using MyCockpitView.WebApi.CompanyModule;
+using MyCockpitView.WebApi.ContactModule.Entities;
+using MyCockpitView.WebApi.Entities;
 using MyCockpitView.WebApi.GmailModule.Configurations;
-using MyCockpitView.WebApi.NotificationModule.Entities;
 using MyCockpitView.WebApi.HrModule.Entities;
+using MyCockpitView.WebApi.ImageLibraryModule.Entities;
+using MyCockpitView.WebApi.LeaveModule.Entities;
+using MyCockpitView.WebApi.LeaveModule.Entities;
+using MyCockpitView.WebApi.MeetingModule.Entities;
+using MyCockpitView.WebApi.NotificationModule.Entities;
+using MyCockpitView.WebApi.PackageModule.Entities;
+using MyCockpitView.WebApi.ProjectModule.Entities;
 using MyCockpitView.WebApi.ProjectStageModule.Entities;
+using MyCockpitView.WebApi.RequestTicketModule.Entities;
+using MyCockpitView.WebApi.Services;
+using MyCockpitView.WebApi.Services;
+using MyCockpitView.WebApi.SiteVisitModule.Entities;
+using MyCockpitView.WebApi.StatusMasterModule;
+using MyCockpitView.WebApi.TargetPointModule.Entities;
+using MyCockpitView.WebApi.TodoModule.Entities;
+using MyCockpitView.WebApi.TypeMasterModule;
+using MyCockpitView.WebApi.WebPushSubscriptionModule;
+using MyCockpitView.WebApi.WFTaskModule.Entities;
+using MyCockpitView.WebApi.WorkOrderModule.Entities;
 
 namespace MyCockpitView.WebApi;
 
@@ -248,6 +248,22 @@ public class EntitiesContext : IdentityDbContext<User, Role, Guid, IdentityUserC
             .HasOne(d => d.Folder)
             .WithMany(f => f.DeniedUsers)
             .HasForeignKey(d => d.FolderId);
+
+        modelBuilder.Entity<TeamTargetPoint>()
+            .HasOne(x => x.ContactTeam)
+            .WithMany()
+            .HasForeignKey(x => x.ContactTeamID)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<TeamTargetPoint>()
+            .HasQueryFilter(x => !x.IsDeleted);
+
+        modelBuilder.Entity<TeamTargetPoint>()
+            .HasIndex(x => x.ContactTeamID);
+
+        modelBuilder.Entity<TeamTargetPoint>()
+            .Property(x => x.UID)
+            .HasDefaultValueSql("NEWID()");
     }
 
     public DbSet<User> Users { get; set; }
@@ -401,6 +417,7 @@ public class EntitiesContext : IdentityDbContext<User, Role, Guid, IdentityUserC
     public DbSet<ProjectTarget> ProjectTargets { get; set; }
     public DbSet<ProjectTargetHistory> ProjectTargetHistories { get; set; }
     public DbSet<ProjectStageMail> ProjectStageMails { get; set; }
+    public DbSet<TeamTargetPoint> TeamTargetPoints { get; set; }
     // END
 
     private IDbContextTransaction _transaction;

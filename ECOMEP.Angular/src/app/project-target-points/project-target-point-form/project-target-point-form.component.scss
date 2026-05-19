@@ -1,0 +1,222 @@
+.target-point-form-page {
+  padding: 30px 20px 60px;
+
+  background: #f4f5f7;
+
+  min-height: calc(100vh - 60px);
+
+  overflow-y: auto;
+}
+
+/* CENTER WRAPPER */
+
+.form-wrapper {
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+/* BACK BUTTON */
+
+.back-btn {
+  border: none;
+
+  background: #eef2f7;
+
+  color: #374151;
+
+  padding: 10px 18px;
+
+  border-radius: 10px;
+
+  font-weight: 600;
+
+  margin-bottom: 18px;
+
+  transition: 0.2s ease;
+}
+
+.back-btn:hover {
+  background: #dbe4ee;
+}
+
+/* CARD */
+
+.form-card {
+  background: white;
+
+  border-radius: 14px;
+
+  padding: 32px;
+
+  box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+}
+
+/* HEADING */
+
+.heading-section {
+  margin-bottom: 30px;
+}
+
+.heading-section h2 {
+  margin: 0;
+
+  font-size: 32px;
+
+  font-weight: 700;
+
+  color: #111827;
+}
+
+.heading-section p {
+  margin-top: 8px;
+
+  color: #6b7280;
+
+  font-size: 15px;
+}
+
+/* FORM */
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  color: #374151;
+}
+
+/* FIELD */
+
+.modern-field {
+  width: 100%;
+
+  height: 54px;
+
+  border: 1px solid #dbe1ea;
+
+  border-radius: 12px;
+
+  padding: 0 16px;
+
+  font-size: 15px;
+
+  background: white;
+
+  outline: none;
+
+  transition: all 0.25s ease;
+
+  box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+}
+
+.modern-field:focus {
+  border-color: #18a558;
+
+  box-shadow:
+    0 0 0 4px rgba(24, 165, 88, 0.15),
+    0 3px 10px rgba(0,0,0,0.05);
+}
+
+/* BUTTONS */
+
+.button-section {
+  margin-top: 35px;
+}
+
+.save-btn {
+  border: none;
+
+  background: #18a558;
+
+  color: white;
+
+  height: 52px;
+
+  padding: 0 28px;
+
+  border-radius: 12px;
+
+  font-size: 15px;
+
+  font-weight: 600;
+
+  transition: all 0.25s ease;
+
+  box-shadow: 0 3px 10px rgba(24,165,88,0.25);
+}
+
+.save-btn:hover {
+  background: #148347;
+
+  transform: translateY(-1px);
+}
+
+/* MOBILE */
+
+@media (max-width: 768px) {
+
+  .target-point-form-page {
+    padding: 16px;
+  }
+
+  .form-card {
+    padding: 22px;
+  }
+
+  .heading-section h2 {
+    font-size: 24px;
+  }
+
+  .modern-field {
+    height: 50px;
+  }
+
+  .save-btn {
+    width: 100%;
+  }
+
+}
+
+
+
+
+
+
+
+.page-top {
+  width: 100%;
+
+  display: flex;
+
+  justify-content: flex-start;
+
+  padding: 0 0 18px 6px;
+}
+
+.back-btn {
+  border: none;
+
+  background: transparent;
+
+  color: #374151;
+
+  font-size: 15px;
+
+  font-weight: 600;
+
+  transition: 0.2s ease;
+
+  padding: 0;
+}
+
+.back-btn:hover {
+  color: #18a558;
+}

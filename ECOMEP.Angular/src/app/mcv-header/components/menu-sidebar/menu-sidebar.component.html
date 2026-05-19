@@ -120,5 +120,15 @@
         <h5>Site Photos</h5>
       </a>
     </li>
+
+    <li *ngIf="isPermissionProjectTarget">
+      <a [routerLink]="['/target-points']"
+        routerLinkActive="active"
+        (click)="closeMenuDelayed()">
+
+        <h5>Target Points</h5>
+
+      </a>
+    </li>
   </ul>
 </nav>

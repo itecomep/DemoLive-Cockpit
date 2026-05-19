@@ -1,0 +1,150 @@
+<app-header title="Target Points"></app-header>
+
+<div class="target-points-page mt-5">
+  <!-- TOP BAR -->
+
+  <div class="top-bar">
+    <button
+      class="btn btn-success create-btn"
+      routerLink="/project-target-point-form"
+    >
+      + Create Target Point
+    </button>
+
+    <!-- SINGLE TABLE -->
+
+    <div class="table-card">
+      <div class="table-responsive">
+        <table class="table custom-table">
+          <!-- SINGLE HEADER -->
+
+          <thead>
+            <tr>
+              <th>Sr No</th>
+
+              <th>Team Name</th>
+
+              <th>Points</th>
+
+              <th>Created Date</th>
+
+              <th width="220">Action</th>
+            </tr>
+          </thead>
+
+          <!-- BODY -->
+
+          <tbody *ngFor="let group of groupedTargetPoints">
+            <!-- MONTH ROW -->
+
+            <tr class="month-row">
+              <td colspan="5">
+                <div class="month-total-row">
+                  <div class="month-title">
+                    Total Points of {{ group.month }}
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- DATA ROWS -->
+
+            <tr *ngFor="let item of group.items; let i = index">
+              <!-- SR NO -->
+
+              <td>
+                {{ i + 1 }}
+              </td>
+
+              <!-- TEAM -->
+
+              <td>
+                <!-- NORMAL TEXT -->
+
+                <span *ngIf="editId !== item.id">
+                  {{ item.teamName }}
+                </span>
+
+                <!-- MODERN EDIT UI -->
+
+                <div *ngIf="editId === item.id" class="edit-team-wrapper">
+                  <select
+                    class="modern-select"
+                    [(ngModel)]="item.contactTeamID"
+                  >
+                    <option *ngFor="let team of teams" [ngValue]="team.id">
+                      {{ team.title }}
+                    </option>
+                  </select>
+                </div>
+              </td>
+
+              <!-- POINTS -->
+
+              <td>
+                <span *ngIf="editId !== item.id">
+                  {{ item.points }}
+                </span>
+
+                <input
+                  *ngIf="editId === item.id"
+                  type="number"
+                  class="modern-input"
+                  [(ngModel)]="item.points"
+                />
+              </td>
+
+              <!-- DATE -->
+
+              <td>
+                {{ item.created | date: "dd MMM yyyy" }}
+              </td>
+
+              <!-- ACTION -->
+
+              <td>
+                <div class="action-buttons">
+                  <!-- EDIT -->
+
+                  <button
+                    *ngIf="editId !== item.id"
+                    class="btn edit-btn"
+                    (click)="editId = item.id"
+                  >
+                    Edit
+                  </button>
+
+                  <!-- SAVE -->
+
+                  <button
+                    *ngIf="editId === item.id"
+                    class="btn save-btn"
+                    (click)="update(item)"
+                  >
+                    Save
+                  </button>
+
+                  <!-- CANCEL -->
+
+                  <button
+                    *ngIf="editId === item.id"
+                    class="btn cancel-btn"
+                    (click)="cancelEdit()"
+                  >
+                    Cancel
+                  </button>
+
+                  <!-- DELETE -->
+
+                  <button class="btn delete-btn" (click)="delete(item.id)">
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

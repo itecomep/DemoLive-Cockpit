@@ -1,0 +1,50 @@
+<app-header title="Add Team Target Point"></app-header>
+
+<div class="target-point-form-page mt-5">
+  <div class="page-top">
+    <button class="back-btn" routerLink="/project-target-points">← Back</button>
+  </div>
+
+  <div class="form-wrapper">
+    <!-- CARD -->
+
+    <div class="form-card">
+      <!-- HEADING -->
+
+      <div class="heading-section"></div>
+
+      <!-- TEAM -->
+
+      <div class="form-group">
+        <label> Team </label>
+
+        <select class="modern-field" [(ngModel)]="formData.contactTeamID">
+          <option [ngValue]="null">Select Team</option>
+
+          <option *ngFor="let item of teams" [value]="item.id">
+            {{ item.title }}
+          </option>
+        </select>
+      </div>
+
+      <!-- POINTS -->
+
+      <div class="form-group">
+        <label> Points </label>
+
+        <input
+          type="number"
+          class="modern-field"
+          placeholder="Enter Points"
+          [(ngModel)]="formData.points"
+        />
+      </div>
+
+      <!-- SAVE -->
+
+      <div class="button-section">
+        <button class="save-btn" (click)="save()">Save Target Point</button>
+      </div>
+    </div>
+  </div>
+</div>
