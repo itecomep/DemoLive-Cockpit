@@ -325,3 +325,68 @@ body {
   display: flex;
   align-items: center;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+.top-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filters-wrapper {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filter-input {
+  height: 42px;
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+  padding: 0 14px;
+  min-width: 180px;
+  font-size: 14px;
+  outline: none;
+}
+
+.filter-input:focus {
+  border-color: #198754;
+}
+
+.reset-btn {
+  background: #f1f1f1;
+  border: none;
+  height: 42px;
+  padding: 0 18px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

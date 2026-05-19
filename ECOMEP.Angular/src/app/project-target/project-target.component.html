@@ -7,6 +7,25 @@
         + Create Stage Target
       </button>
 
+      <div *ngIf="isAdmin">
+        <mat-form-field appearance="outline">
+
+          <mat-label>Team</mat-label>
+
+          <mat-select [formControl]="teamFC" multiple>
+
+            <mat-option
+              *ngFor="let item of teamOptions"
+              [value]="item"
+            >
+              {{ item.title }}
+            </mat-option>
+
+          </mat-select>
+
+        </mat-form-field>
+     </div>
+     
       <input
         type="text"
         placeholder="Search Project..."

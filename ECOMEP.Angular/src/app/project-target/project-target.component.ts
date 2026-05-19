@@ -15,6 +15,8 @@ import { StageService } from "../stage-status/services/stage.service";
 import { ProjectStageMailViewComponent } from "../stage-status/project-stage-mail-view/project-stage-mail-view.component";
 import { ProjectApiService } from "../project/services/project-api.service";
 import { WorkOrderStageApiService } from "src/app/work-order/services/work-order-stage-api.service";
+import { ContactTeamApiService } from "../contact/services/contact-team-api.service";
+import { FormControl, ReactiveFormsModule } from "@angular/forms";
 
 
 @Component({
@@ -28,6 +30,7 @@ import { WorkOrderStageApiService } from "src/app/work-order/services/work-order
     MatInputModule,
     MatDialogModule,
     HeaderComponent,
+    ReactiveFormsModule,
   ],
   templateUrl: "./project-target.component.html",
   styleUrls: ["./project-target.component.scss"],
@@ -75,6 +78,10 @@ export class ProjectTargetComponent implements OnInit {
     feedback: "",
   };
 
+  teamFC = new FormControl();
+
+  teamOptions: any[] = [];
+
   constructor(
     private service: ProjectTargetService,
     private router: Router,
@@ -83,6 +90,7 @@ export class ProjectTargetComponent implements OnInit {
     private stageService: StageService,
     private projectService: ProjectApiService,
     private workOrderStageApiService: WorkOrderStageApiService,
+    private contactTeamService: ContactTeamApiService,
   ) {}
 
   // ================= FEEDBACK =================
@@ -113,23 +121,24 @@ export class ProjectTargetComponent implements OnInit {
     this.loadFormData();
     this.loadStagePoints();
     this.loadWorkOrderStages();
+    this.loadTeams();
   }
 
   loadFormData() {
     this.service.getFormData().subscribe((res) => {
       const allProjects = res.projects || [];
 
-      if (!this.authService.currentUserStore?.roles.includes("MASTER")) {
-        const userTeamIds =
-          this.authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
+      // if (!this.authService.currentUserStore?.roles.includes("MASTER")) {
+      //   const userTeamIds =
+      //     this.authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
 
-        this.projects = allProjects.filter((p: any) =>
-          p.teamIds?.some((id: number) => userTeamIds.includes(id)),
-        );
-      } else {
-        this.projects = allProjects;
-      }
-
+      //   this.projects = allProjects.filter((p: any) =>
+      //     p.teamIds?.some((id: number) => userTeamIds.includes(id)),
+      //   );
+      // } else {
+      //   this.projects = allProjects;
+      // }
+this.projects = allProjects;
       this.stages = res.stages || [];
       this.statuses = res.statuses || [];
 
@@ -141,14 +150,40 @@ export class ProjectTargetComponent implements OnInit {
     this.service.getAll().subscribe((res: any[]) => {
       let data = res || [];
 
-      if (!this.authService.currentUserStore?.roles.includes("MASTER")) {
-        const userTeamIds =
-          this.authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
+          // TEAM FILTERING
 
-        data = data.filter((t: any) =>
-          t.teamIds?.some((id: number) => userTeamIds.includes(id)),
-        );
-      }
+let selectedTeamIds: number[] = [];
+
+if (this.isAdmin) {
+
+  const selectedTeams = this.teamFC.value || [];
+
+  selectedTeamIds = selectedTeams.map((x: any) => x.id);
+
+} else {
+
+  selectedTeamIds =
+    this.authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
+}
+
+// APPLY FILTER
+if (selectedTeamIds.length > 0) {
+
+  data = data.filter((t: any) =>
+    t.teamIds?.some((id: number) =>
+      selectedTeamIds.includes(id)
+    )
+  );
+}
+
+      // if (!this.authService.currentUserStore?.roles.includes("MASTER")) {
+      //   const userTeamIds =
+      //     this.authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
+
+      //   data = data.filter((t: any) =>
+      //     t.teamIds?.some((id: number) => userTeamIds.includes(id)),
+      //   );
+      // }
 
       this.originalTargets = data.map((t) => ({
         ...t,
@@ -165,6 +200,8 @@ export class ProjectTargetComponent implements OnInit {
       this.applyProjectNames();
       this.loadLatestStageStatuses();
     });
+
+
   }
 
   openForm() {
@@ -745,4 +782,32 @@ export class ProjectTargetComponent implements OnInit {
       };
     });
   }
+
+  loadTeams() {
+
+    this.contactTeamService.get().subscribe((res: any[]) => {
+
+      this.teamOptions = res || [];
+
+      // NON ADMIN AUTO SELECT
+      if (!this.isAdmin) {
+
+        const userTeams =
+          this.authService.currentUserStore?.teams || [];
+
+        this.teamFC.setValue(userTeams, { emitEvent: false });
+      }
+    });
+
+    // TEAM CHANGE
+    this.teamFC.valueChanges.subscribe(() => {
+
+      this.loadTargets();
+    });
+  }
+
+get isAdmin(): boolean {
+
+  return this.authService.currentUserStore?.roles?.includes("MASTER") || false;
+}
 }

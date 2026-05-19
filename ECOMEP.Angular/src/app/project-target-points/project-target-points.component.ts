@@ -26,6 +26,14 @@ export class ProjectTargetPointsComponent implements OnInit {
 
   editId: number = 0;
 
+  searchText: string = "";
+
+fromDate: string = "";
+
+toDate: string = "";
+
+filteredData: any[] = [];
+
   constructor(
     private api: TeamTargetPointApiService,
     private http: HttpClient,
@@ -51,48 +59,90 @@ export class ProjectTargetPointsComponent implements OnInit {
       });
   }
 
-  loadData() {
-    this.isLoading = true;
+loadData() {
+  this.isLoading = true;
 
-    this.api.getAll().subscribe({
-      next: (res) => {
-        this.targetPoints = res;
+  this.api.getAll().subscribe({
+    next: (res) => {
 
-        this.groupByMonth();
+      this.targetPoints = res;
 
-        this.isLoading = false;
-      },
+      this.filteredData = [...res];
 
-      error: (err) => {
-        console.log(err);
+      this.groupByMonth();
 
-        this.isLoading = false;
-      },
+      this.isLoading = false;
+    },
+
+    error: (err) => {
+      console.log(err);
+
+      this.isLoading = false;
+    },
+  });
+}
+
+// groupByMonth() {
+
+//   const grouped: any = {};
+
+//   this.filteredData.forEach((item) => {
+
+//     const month = new Date(item.created).toLocaleString("default", {
+//       month: "long",
+//       year: "numeric",
+//     });
+
+//     if (!grouped[month]) {
+//       grouped[month] = [];
+//     }
+
+//     grouped[month].push(item);
+
+//   });
+
+//   this.groupedTargetPoints = Object.keys(grouped).map((month) => ({
+//     month: month,
+//     items: grouped[month],
+//   }));
+
+// }
+
+groupByMonth() {
+
+  const grouped: any = {};
+
+  this.filteredData.forEach((item) => {
+
+    const month = new Date(item.created).toLocaleString("default", {
+      month: "long",
+      year: "numeric",
     });
-  }
 
-  groupByMonth() {
-    const grouped: any = {};
+    if (!grouped[month]) {
+      grouped[month] = {
+        items: [],
+        totalPoints: 0
+      };
+    }
 
-    this.targetPoints.forEach((item) => {
-      const month = new Date(item.created).toLocaleString("default", {
-        month: "long",
-        year: "numeric",
-      });
+    grouped[month].items.push(item);
 
-      if (!grouped[month]) {
-        grouped[month] = [];
-      }
+    grouped[month].totalPoints += item.points;
 
-      grouped[month].push(item);
-    });
+  });
 
-    this.groupedTargetPoints = Object.keys(grouped).map((month) => ({
-      month: month,
+  this.groupedTargetPoints = Object.keys(grouped).map((month) => ({
 
-      items: grouped[month],
-    }));
-  }
+    month: month,
+
+    items: grouped[month].items,
+
+    totalPoints: grouped[month].totalPoints
+
+  }));
+
+}
 
   update(item: any) {
     const payload = {
@@ -139,4 +189,51 @@ export class ProjectTargetPointsComponent implements OnInit {
       },
     });
   }
+
+applyFilters() {
+
+  this.filteredData = this.targetPoints.filter((item) => {
+
+    // TEAM SEARCH
+
+    const matchesSearch =
+      !this.searchText ||
+      item.teamName
+        ?.toLowerCase()
+        .includes(this.searchText.toLowerCase());
+
+    // DATE FILTER
+
+    const itemDate = new Date(item.created);
+
+    const from =
+      !this.fromDate ||
+      itemDate >= new Date(this.fromDate);
+
+    const to =
+      !this.toDate ||
+      itemDate <= new Date(this.toDate + 'T23:59:59');
+
+    return matchesSearch && from && to;
+
+  });
+
+  this.groupByMonth();
+
+}
+
+resetFilters() {
+
+  this.searchText = "";
+
+  this.fromDate = "";
+
+  this.toDate = "";
+
+  this.filteredData = [...this.targetPoints];
+
+  this.groupByMonth();
+
+}
+
 }

@@ -1,56 +1,111 @@
 <app-header title="Target Points"></app-header>
 
 <div class="target-points-page mt-5">
-  <!-- TOP BAR -->
+
+  <!-- TOP ACTION + FILTERS -->
 
   <div class="top-bar">
-    <button
-      class="btn btn-success create-btn"
-      routerLink="/project-target-point-form"
-    >
-      + Create Target Point
-    </button>
 
-    <!-- SINGLE TABLE -->
+    <div class="top-controls">
+
+      <!-- CREATE BUTTON -->
+
+      <button
+        class="btn btn-success create-btn"
+        routerLink="/project-target-point-form"
+      >
+        + Create Target Point
+      </button>
+
+      <!-- FILTERS -->
+
+      <div class="filters-wrapper">
+
+        <!-- SEARCH TEAM -->
+
+        <input
+          type="text"
+          class="filter-input"
+          placeholder="Search Team Name..."
+          [(ngModel)]="searchText"
+          (input)="applyFilters()"
+        />
+
+        <!-- FROM DATE -->
+
+        <input
+          type="date"
+          class="filter-input"
+          [(ngModel)]="fromDate"
+          (change)="applyFilters()"
+        />
+
+        <!-- TO DATE -->
+
+        <input
+          type="date"
+          class="filter-input"
+          [(ngModel)]="toDate"
+          (change)="applyFilters()"
+        />
+
+        <!-- RESET -->
+
+        <button
+          class="btn reset-btn"
+          (click)="resetFilters()"
+        >
+          Reset
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- TABLE -->
 
     <div class="table-card">
+
       <div class="table-responsive">
+
         <table class="table custom-table">
-          <!-- SINGLE HEADER -->
 
           <thead>
             <tr>
               <th>Sr No</th>
-
               <th>Team Name</th>
-
               <th>Points</th>
-
               <th>Created Date</th>
-
               <th width="220">Action</th>
             </tr>
           </thead>
 
-          <!-- BODY -->
-
           <tbody *ngFor="let group of groupedTargetPoints">
+
             <!-- MONTH ROW -->
 
             <tr class="month-row">
-              <td colspan="5">
-                <div class="month-total-row">
-                  <div class="month-title">
-                    Total Points of {{ group.month }}
-                  </div>
-                </div>
-              </td>
-            </tr>
+  <td colspan="5">
+
+    <div class="month-total-row">
+
+      <div class="month-title">
+        {{ group.month }}
+      </div>
+
+      <div class="month-points">
+        Total Points :
+        <span>{{ group.totalPoints }}</span>
+      </div>
+
+    </div>
+
+  </td>
+</tr>
 
             <!-- DATA ROWS -->
 
             <tr *ngFor="let item of group.items; let i = index">
-              <!-- SR NO -->
 
               <td>
                 {{ i + 1 }}
@@ -59,15 +114,13 @@
               <!-- TEAM -->
 
               <td>
-                <!-- NORMAL TEXT -->
 
                 <span *ngIf="editId !== item.id">
                   {{ item.teamName }}
                 </span>
 
-                <!-- MODERN EDIT UI -->
-
                 <div *ngIf="editId === item.id" class="edit-team-wrapper">
+
                   <select
                     class="modern-select"
                     [(ngModel)]="item.contactTeamID"
@@ -76,12 +129,15 @@
                       {{ team.title }}
                     </option>
                   </select>
+
                 </div>
+
               </td>
 
               <!-- POINTS -->
 
               <td>
+
                 <span *ngIf="editId !== item.id">
                   {{ item.points }}
                 </span>
@@ -92,6 +148,7 @@
                   class="modern-input"
                   [(ngModel)]="item.points"
                 />
+
               </td>
 
               <!-- DATE -->
@@ -103,8 +160,8 @@
               <!-- ACTION -->
 
               <td>
+
                 <div class="action-buttons">
-                  <!-- EDIT -->
 
                   <button
                     *ngIf="editId !== item.id"
@@ -114,8 +171,6 @@
                     Edit
                   </button>
 
-                  <!-- SAVE -->
-
                   <button
                     *ngIf="editId === item.id"
                     class="btn save-btn"
@@ -123,8 +178,6 @@
                   >
                     Save
                   </button>
-
-                  <!-- CANCEL -->
 
                   <button
                     *ngIf="editId === item.id"
@@ -134,17 +187,27 @@
                     Cancel
                   </button>
 
-                  <!-- DELETE -->
-
-                  <button class="btn delete-btn" (click)="delete(item.id)">
+                  <button
+                    class="btn delete-btn"
+                    (click)="delete(item.id)"
+                  >
                     Delete
                   </button>
+
                 </div>
+
               </td>
+
             </tr>
+
           </tbody>
+
         </table>
+
       </div>
+
     </div>
+
   </div>
+
 </div>
