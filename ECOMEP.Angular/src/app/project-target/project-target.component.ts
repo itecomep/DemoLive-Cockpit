@@ -810,70 +810,7 @@ getTeamTargetPoint(row: any): number {
 
   groupedTargets: any[] = [];
 
-//   groupTargetsByMonth() {
 
-//     const groups: any = {};
-
-//     this.targets.forEach((t: any) => {
-
-//       if (!t.targetDate) return;
-
-//       const d = new Date(t.targetDate);
-
-//       const monthKey =
-//         d.toLocaleString('default', { month: 'long' }) +
-//         ' ' +
-//         d.getFullYear();
-
-//       if (!groups[monthKey]) {
-//         groups[monthKey] = [];
-//       }
-
-//       groups[monthKey].push(t);
-//     });
-
-//     this.groupedTargets = Object.keys(groups)
-
-//     .sort((a: any, b: any) => {
-
-//       const dateA = new Date(a);
-//       const dateB = new Date(b);
-
-//       return dateB.getTime() - dateA.getTime();
-//     })
-
-//     .map((month) => {
-
-//       const items = groups[month];
-
-//       const totalPoints = items.reduce(
-//         (sum: number, x: any) =>
-//           sum + this.getPoints(x.projectId, x.stage),
-//         0
-//       );
-
-
-
-// const totalTargetPoints = items.reduce(
-//   (sum: number, x: any) =>
-//     sum + this.getTeamTargetPoint(x),
-//   0
-// );
-
-// const remainingPoints =
-//   totalTargetPoints - totalPoints;
-
-      
-
-// return {
-//   month,
-//   items,
-//   totalPoints,
-//   totalTargetPoints,
-//   remainingPoints
-// };
-//     });
-//   }
 
 groupTargetsByMonth() {
 
