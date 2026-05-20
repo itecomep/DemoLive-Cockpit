@@ -139,4 +139,11 @@ get isPermissionProjectTarget(): boolean {
     this.permissions.MASTER
   ]);
 }
+
+get isPermissionTargetPoints(): boolean {
+  return this.authService.isInAnyRole([
+    this.permissions.TARGET_POINTS,
+    this.permissions.MASTER
+  ]);
+}
 }

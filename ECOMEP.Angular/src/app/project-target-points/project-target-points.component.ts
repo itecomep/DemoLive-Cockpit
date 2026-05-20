@@ -2,7 +2,6 @@ import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterModule } from "@angular/router";
 import { FormsModule } from "@angular/forms";
-import { HttpClient } from "@angular/common/http";
 
 import { HeaderComponent } from "../mcv-header/components/header/header.component";
 
@@ -51,10 +50,7 @@ export class ProjectTargetPointsComponent implements OnInit {
 
   filteredData: any[] = [];
 
-  constructor(
-    private api: TeamTargetPointApiService,
-    private http: HttpClient,
-  ) {}
+  constructor(private api: TeamTargetPointApiService) {}
 
   ngOnInit(): void {
     this.getTeams();
@@ -63,34 +59,27 @@ export class ProjectTargetPointsComponent implements OnInit {
   }
 
   generateRecords() {
-    this.http
-      .post(
-        "http://localhost:5054/api/TeamTargetPoint/GenerateMonthlyRecords",
-        {},
-      )
-      .subscribe({
-        next: () => {
-          this.loadData();
-        },
+    this.api.generateRecords().subscribe({
+      next: () => {
+        this.loadData();
+      },
 
-        error: (err) => {
-          console.log(err);
-        },
-      });
+      error: (err) => {
+        console.log(err);
+      },
+    });
   }
 
   getTeams() {
-    this.http
-      .get<any[]>("http://localhost:5054/api/TeamTargetPoint/GetAllTeams")
-      .subscribe({
-        next: (res) => {
-          this.teams = res;
-        },
+    this.api.getTeams().subscribe({
+      next: (res) => {
+        this.teams = res;
+      },
 
-        error: (err) => {
-          console.log(err);
-        },
-      });
+      error: (err) => {
+        console.log(err);
+      },
+    });
   }
 
   loadData() {

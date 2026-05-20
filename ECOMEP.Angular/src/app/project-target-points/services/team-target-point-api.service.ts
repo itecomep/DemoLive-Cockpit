@@ -28,4 +28,12 @@ export class TeamTargetPointApiService {
   delete(id: number) {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+
+  generateRecords() {
+    return this.http.post(`${this.apiUrl}/GenerateMonthlyRecords`, {});
+  }
+
+  getTeams() {
+    return this.http.get<any[]>(`${this.apiUrl}/GetAllTeams`);
+  }
 }
