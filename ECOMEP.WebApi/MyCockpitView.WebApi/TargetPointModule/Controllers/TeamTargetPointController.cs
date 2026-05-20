@@ -43,10 +43,52 @@ public class TeamTargetPointController : ControllerBase
         return Ok(result);
     }
 
+
+    // =====================================
+    // AUTO GENERATE MONTH RECORDS
+    // =====================================
+    [HttpPost("GenerateMonthlyRecords")]
+    public async Task<IActionResult> GenerateMonthlyRecords()
+    {
+        var teams = await service
+            .GetAllTeams()
+            .ToListAsync();
+
+        var currentMonth = DateTime.UtcNow.Month;
+
+        var currentYear = DateTime.UtcNow.Year;
+
+        foreach (var team in teams)
+        {
+            var alreadyExists = await service
+                .GetEntity()
+                .AnyAsync(x =>
+                    !x.IsDeleted &&
+                    x.ContactTeamID == team.ID &&
+                    x.Created.Month == currentMonth &&
+                    x.Created.Year == currentYear
+                );
+
+            if (!alreadyExists)
+            {
+                var entity = new TeamTargetPoint
+                {
+                    ContactTeamID = team.ID,
+                    Points = 0,
+                    Created = DateTime.UtcNow
+                };
+
+                await service.Create(entity);
+            }
+        }
+
+        return Ok();
+    }
+
     // =====================================
     // GET ALL TEAM TARGET POINTS
     // =====================================
-   
+
     [HttpGet]
     public async Task<IActionResult> Get()
     {
@@ -97,12 +139,12 @@ public class TeamTargetPointController : ControllerBase
                 x.Created.Year == currentYear
             );
 
-        if (alreadyExists)
-        {
-            return BadRequest(
-                "This team target point already exists for current month."
-            );
-        }
+        //if (alreadyExists)
+        //{
+        //    return BadRequest(
+        //        "This team target point already exists for current month."
+        //    );
+        //}
 
         var entity = new TeamTargetPoint
         {

@@ -1014,3 +1014,244 @@ td:nth-child(7) {
   border-top: 2px solid #10b981;
   border-bottom: 2px solid #10b981;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.remaining-label {
+
+  font-size: 16px;
+
+  font-weight: 700;
+
+  margin-right: 6px;
+}
+
+.month-right span {
+
+  font-size: 16px;
+
+  font-weight: 700;
+}
+
+.negative-value {
+
+  font-size: 16px;
+
+  color: #dc2626 !important;
+
+  font-weight: 700;
+}
+
+
+
+.reset-btn {
+
+  height: 40px;
+
+  padding: 0 18px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background: #16a34a;
+
+  color: white;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  margin-left: 10px;
+
+  transition: 0.2s;
+}
+
+.reset-btn:hover {
+
+  opacity: 0.9;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// .month-left {
+
+//   display: flex;
+//   align-items: center;
+//   gap: 16px;
+// }
+
+.month-title {
+
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.month-stage-points {
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.target-points-cell {
+
+  text-align: center;
+  white-space: nowrap;
+}
+
+.target-label {
+
+  font-size: 16px;
+
+  font-weight: 700;
+
+  margin-right: 6px;
+}
+
+.remaining-cell {
+
+  text-align: right;
+  padding-right: 25px !important;
+}
+
+.remaining-label {
+
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+.negative-value {
+
+  color: #dc2626 !important;
+  font-weight: 700;
+}
+
+
+
+
+
+// .month-summary-row {
+
+//   display: flex;
+//   align-items: center;
+//   justify-content: space-between;
+
+//   width: 100%;
+// }
+
+// .month-left,
+// .month-center,
+// .month-right {
+
+//   display: flex;
+//   align-items: center;
+//   gap: 8px;
+// }
+
+.month-summary-row {
+
+  display: grid;
+
+  grid-template-columns:
+    1.8fr   /* left text */
+    160px   /* stage points */
+    220px   /* target points */
+    1fr;    /* remaining */
+
+  align-items: center;
+
+  width: 100%;
+}
+
+.month-left {
+
+  font-size: 16px;
+
+  font-weight: 700;
+}
+
+.month-center {
+
+  text-align: center;
+
+  font-weight: 700;
+}
+
+.month-right {
+
+  text-align: right;
+
+  font-weight: 700;
+}
+
+
+
+
+
+.month-title {
+
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.month-stage-points {
+
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.target-label,
+.remaining-label {
+
+  font-weight: 700;
+}
+
+.month-right {
+
+  margin-left: auto;
+}
+
+.negative-value {
+
+  color: #dc2626 !important;
+  font-weight: 700;
+}
+
+
+
+
+
+.summary-inline-value {
+
+  font-size: 16px;
+
+  font-weight: 700;
+
+  margin-left: 6px;
+}

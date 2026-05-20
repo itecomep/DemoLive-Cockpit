@@ -65,25 +65,4 @@ export class ProjectTargetPointFormComponent implements OnInit {
       },
     });
   }
-
-  // save() {
-
-  //   this.api.create(this.formData).subscribe({
-
-  //     next: () => {
-
-  //       alert("Saved Successfully");
-
-  //       this.formData = {
-  //         contactTeamID: null,
-  //         points: null,
-  //       };
-  //     },
-
-  //     error: (err) => {
-
-  //       console.log(err);
-  //     },
-  //   });
-  // }
 }

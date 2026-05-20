@@ -1,26 +1,22 @@
 <app-header title="Target Points"></app-header>
 
 <div class="target-points-page mt-5">
-
   <!-- TOP ACTION + FILTERS -->
 
   <div class="top-bar">
-
     <div class="top-controls">
-
       <!-- CREATE BUTTON -->
 
-      <button
+      <!-- <button
         class="btn btn-success create-btn"
         routerLink="/project-target-point-form"
       >
         + Create Target Point
-      </button>
+      </button> -->
 
       <!-- FILTERS -->
 
       <div class="filters-wrapper">
-
         <!-- SEARCH TEAM -->
 
         <input
@@ -31,45 +27,45 @@
           (input)="applyFilters()"
         />
 
-        <!-- FROM DATE -->
+        <!-- MONTH -->
 
-        <input
-          type="date"
+        <select
           class="filter-input"
-          [(ngModel)]="fromDate"
+          [(ngModel)]="selectedMonth"
           (change)="applyFilters()"
-        />
+        >
+          <option value="">All Months</option>
 
-        <!-- TO DATE -->
+          <option *ngFor="let month of months" [value]="month">
+            {{ month }}
+          </option>
+        </select>
 
-        <input
-          type="date"
+        <!-- YEAR -->
+
+        <select
           class="filter-input"
-          [(ngModel)]="toDate"
+          [(ngModel)]="selectedYear"
           (change)="applyFilters()"
-        />
+        >
+          <option value="">All Years</option>
+
+          <option *ngFor="let year of years" [value]="year">
+            {{ year }}
+          </option>
+        </select>
 
         <!-- RESET -->
 
-        <button
-          class="btn reset-btn"
-          (click)="resetFilters()"
-        >
-          Reset
-        </button>
-
+        <button class="btn reset-btn" (click)="resetFilters()">Reset</button>
       </div>
-
     </div>
 
     <!-- TABLE -->
 
     <div class="table-card">
-
       <div class="table-responsive">
-
         <table class="table custom-table">
-
           <thead>
             <tr>
               <th>Sr No</th>
@@ -81,32 +77,26 @@
           </thead>
 
           <tbody *ngFor="let group of groupedTargetPoints">
-
             <!-- MONTH ROW -->
 
             <tr class="month-row">
-  <td colspan="5">
+              <td colspan="5">
+                <div class="month-total-row">
+                  <div class="month-title">
+                    {{ group.month }}
+                  </div>
 
-    <div class="month-total-row">
-
-      <div class="month-title">
-        {{ group.month }}
-      </div>
-
-      <div class="month-points">
-        Total Points :
-        <span>{{ group.totalPoints }}</span>
-      </div>
-
-    </div>
-
-  </td>
-</tr>
+                  <div class="month-points">
+                    Total Points :
+                    <span>{{ group.totalPoints }}</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
 
             <!-- DATA ROWS -->
 
             <tr *ngFor="let item of group.items; let i = index">
-
               <td>
                 {{ i + 1 }}
               </td>
@@ -114,30 +104,18 @@
               <!-- TEAM -->
 
               <td>
-
                 <span *ngIf="editId !== item.id">
                   {{ item.teamName }}
                 </span>
 
-                <div *ngIf="editId === item.id" class="edit-team-wrapper">
-
-                  <select
-                    class="modern-select"
-                    [(ngModel)]="item.contactTeamID"
-                  >
-                    <option *ngFor="let team of teams" [ngValue]="team.id">
-                      {{ team.title }}
-                    </option>
-                  </select>
-
-                </div>
-
+                <span>
+                  {{ item.teamName }}
+                </span>
               </td>
 
               <!-- POINTS -->
 
               <td>
-
                 <span *ngIf="editId !== item.id">
                   {{ item.points }}
                 </span>
@@ -148,7 +126,6 @@
                   class="modern-input"
                   [(ngModel)]="item.points"
                 />
-
               </td>
 
               <!-- DATE -->
@@ -160,9 +137,7 @@
               <!-- ACTION -->
 
               <td>
-
                 <div class="action-buttons">
-
                   <button
                     *ngIf="editId !== item.id"
                     class="btn edit-btn"
@@ -187,27 +162,15 @@
                     Cancel
                   </button>
 
-                  <button
-                    class="btn delete-btn"
-                    (click)="delete(item.id)"
-                  >
+                  <!-- <button class="btn delete-btn" (click)="delete(item.id)">
                     Delete
-                  </button>
-
+                  </button> -->
                 </div>
-
               </td>
-
             </tr>
-
           </tbody>
-
         </table>
-
       </div>
-
     </div>
-
   </div>
-
 </div>

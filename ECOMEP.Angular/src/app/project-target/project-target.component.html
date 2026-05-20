@@ -24,7 +24,17 @@
           </mat-select>
 
         </mat-form-field>
+
+
      </div>
+
+     <button
+  class="reset-btn"
+  (click)="resetTeamFilter()"
+  *ngIf="teamFC.value?.length"
+>
+  Reset Team
+</button>
      
       <input
         type="text"
@@ -102,7 +112,7 @@
             </th>
 
             <th>
-              Points
+              Stage Points
             </th>
 
             <th (click)="sortData('status')">
@@ -129,18 +139,61 @@
         <tbody>
           <ng-container *ngFor="let group of groupedTargets">
             
-       <!-- MONTH TOTAL -->
-          <tr class="month-total-row">
-            <td colspan="5">
-              Total Points of {{ group.month }}
-            </td>
+              <!-- MONTH TOTAL -->
+<tr class="month-total-row">
 
-            <td>
-              {{ group.totalPoints }}
-            </td>
+  <td colspan="11">
 
-            <td colspan="5"></td>
-          </tr>
+    <div class="month-summary-row">
+
+      <!-- LEFT -->
+<!-- LEFT -->
+<div class="month-left">
+
+  Total Points of {{ group.month }}
+
+</div>
+
+<!-- STAGE POINT -->
+<div class="month-stage-points">
+
+  {{ group.totalPoints }}
+
+</div>
+
+<!-- CENTER -->
+<div class="month-center">
+
+  <span class="target-label">
+    Target Points:
+  </span>
+
+  <span class="summary-inline-value">
+    {{ group.totalTargetPoints }}
+  </span>
+
+</div>
+
+      <!-- RIGHT -->
+      <div class="month-right">
+
+        <span class="remaining-label">
+          Remaining:
+        </span>
+
+        <span
+          [class.negative-value]="group.remainingPoints < 0"
+        >
+          {{ group.remainingPoints }}
+        </span>
+
+      </div>
+
+    </div>
+
+  </td>
+
+</tr>
 
         <tr *ngFor="let t of group.items; let i = index">
                   <td>{{ i + 1 }}</td>
@@ -197,6 +250,7 @@
            <td>
             {{ getPoints(t.projectId, t.stage) }}
           </td>
+
 
             <!-- STATUS -->
             <td>

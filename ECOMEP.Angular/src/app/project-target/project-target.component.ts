@@ -17,6 +17,7 @@ import { ProjectApiService } from "../project/services/project-api.service";
 import { WorkOrderStageApiService } from "src/app/work-order/services/work-order-stage-api.service";
 import { ContactTeamApiService } from "../contact/services/contact-team-api.service";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
+import { TeamTargetPointApiService } from "../project-target-points/services/team-target-point-api.service";
 
 
 @Component({
@@ -81,6 +82,8 @@ export class ProjectTargetComponent implements OnInit {
   teamFC = new FormControl();
 
   teamOptions: any[] = [];
+  teamTargetPoints: any[] = [];
+  selectedTeamIds: number[] = [];
 
   constructor(
     private service: ProjectTargetService,
@@ -91,6 +94,7 @@ export class ProjectTargetComponent implements OnInit {
     private projectService: ProjectApiService,
     private workOrderStageApiService: WorkOrderStageApiService,
     private contactTeamService: ContactTeamApiService,
+    private teamTargetPointService: TeamTargetPointApiService,
   ) {}
 
   // ================= FEEDBACK =================
@@ -122,6 +126,7 @@ export class ProjectTargetComponent implements OnInit {
     this.loadStagePoints();
     this.loadWorkOrderStages();
     this.loadTeams();
+    this.loadTeamTargetPoints();
   }
 
   loadFormData() {
@@ -152,36 +157,27 @@ this.projects = allProjects;
 
           // TEAM FILTERING
 
-let selectedTeamIds: number[] = [];
+      // this.selectedTeamIds = [];
 
-if (this.isAdmin) {
+      // if (this.isAdmin) {
 
-  const selectedTeams = this.teamFC.value || [];
+      //   const selectedTeams = this.teamFC.value || [];
 
-  selectedTeamIds = selectedTeams.map((x: any) => x.id);
+      //   this.selectedTeamIds = selectedTeams.map((x: any) => x.id);
 
-} else {
+      // } else {
 
-  selectedTeamIds =
-    this.authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
-}
-
-// APPLY FILTER
-if (selectedTeamIds.length > 0) {
-
-  data = data.filter((t: any) =>
-    t.teamIds?.some((id: number) =>
-      selectedTeamIds.includes(id)
-    )
-  );
-}
-
-      // if (!this.authService.currentUserStore?.roles.includes("MASTER")) {
-      //   const userTeamIds =
+      //   this.selectedTeamIds =
       //     this.authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
+      // }
+
+      // // APPLY FILTER
+      // if (this.selectedTeamIds.length > 0) {
 
       //   data = data.filter((t: any) =>
-      //     t.teamIds?.some((id: number) => userTeamIds.includes(id)),
+      //     t.teamIds?.some((id: number) =>
+      //       this.selectedTeamIds.includes(id)
+      //     )
       //   );
       // }
 
@@ -194,6 +190,7 @@ if (selectedTeamIds.length > 0) {
       }));
 
       this.targets = [...this.originalTargets];
+      this.applyAllFilters(); return;
 
       this.groupTargetsByMonth();
 
@@ -456,6 +453,29 @@ if (selectedTeamIds.length > 0) {
     const from = this.fromDate ? parseDate(this.fromDate) : null;
     const to = this.toDate ? parseDate(this.toDate) : null;
 
+
+    
+// TEAM FILTER
+
+this.selectedTeamIds = [];
+
+if (this.isAdmin) {
+
+const selectedTeams = this.teamFC.value || [];
+
+this.selectedTeamIds =
+selectedTeams.map((x: any) => x.id);
+
+}
+else {
+
+this.selectedTeamIds =
+this.authService.currentUserStore?.teams?.map((t: any) => t.id) || [];
+}
+
+
+
+
     this.targets = this.originalTargets.filter((t: any) => {
       // 🔍 SEARCH
       const project = this.getProjectName(t.projectId).toLowerCase();
@@ -463,6 +483,22 @@ if (selectedTeamIds.length > 0) {
 
       const matchesSearch =
         !text || project.includes(text) || code.includes(text);
+
+
+
+// TEAM MATCH
+
+let matchesTeam = true;
+
+if (this.selectedTeamIds.length > 0) {
+
+matchesTeam = t.teamIds?.some((id: number) =>
+this.selectedTeamIds.includes(id)
+);
+}
+
+
+
 
       // 📅 TAB FILTER
       let matchesTab = true;
@@ -499,7 +535,13 @@ if (selectedTeamIds.length > 0) {
         matchesDateRange = time >= from && time <= to;
       }
 
-      return matchesSearch && matchesTab && matchesDateRange;
+return (
+  matchesSearch &&
+  matchesTeam &&
+  matchesTab &&
+  matchesDateRange
+);
+
     });
 
     this.applyProjectNames();
@@ -731,31 +773,131 @@ if (selectedTeamIds.length > 0) {
     return row?.points || 0;
   }
 
+
+getTeamTargetPoint(row: any): number {
+
+  if (!row?.targetDate) {
+    return 0;
+  }
+
+  // project teams
+  const teamIds = row.teamIds || [];
+
+  if (!teamIds.length) {
+    return 0;
+  }
+
+  const targetDate = new Date(row.targetDate);
+
+  const month = targetDate.getMonth();
+
+  const year = targetDate.getFullYear();
+
+  // find matching target point
+  const matched = this.teamTargetPoints.find((x: any) => {
+
+    const created = new Date(x.created);
+
+    return (
+      teamIds.includes(x.contactTeamID) &&
+      created.getMonth() === month &&
+      created.getFullYear() === year
+    );
+  });
+
+  return matched?.points || 0;
+}  
+
   groupedTargets: any[] = [];
 
-  groupTargetsByMonth() {
+//   groupTargetsByMonth() {
 
-    const groups: any = {};
+//     const groups: any = {};
 
-    this.targets.forEach((t: any) => {
+//     this.targets.forEach((t: any) => {
 
-      if (!t.targetDate) return;
+//       if (!t.targetDate) return;
 
-      const d = new Date(t.targetDate);
+//       const d = new Date(t.targetDate);
 
-      const monthKey =
-        d.toLocaleString('default', { month: 'long' }) +
-        ' ' +
-        d.getFullYear();
+//       const monthKey =
+//         d.toLocaleString('default', { month: 'long' }) +
+//         ' ' +
+//         d.getFullYear();
 
-      if (!groups[monthKey]) {
-        groups[monthKey] = [];
-      }
+//       if (!groups[monthKey]) {
+//         groups[monthKey] = [];
+//       }
 
-      groups[monthKey].push(t);
-    });
+//       groups[monthKey].push(t);
+//     });
 
-    this.groupedTargets = Object.keys(groups)
+//     this.groupedTargets = Object.keys(groups)
+
+//     .sort((a: any, b: any) => {
+
+//       const dateA = new Date(a);
+//       const dateB = new Date(b);
+
+//       return dateB.getTime() - dateA.getTime();
+//     })
+
+//     .map((month) => {
+
+//       const items = groups[month];
+
+//       const totalPoints = items.reduce(
+//         (sum: number, x: any) =>
+//           sum + this.getPoints(x.projectId, x.stage),
+//         0
+//       );
+
+
+
+// const totalTargetPoints = items.reduce(
+//   (sum: number, x: any) =>
+//     sum + this.getTeamTargetPoint(x),
+//   0
+// );
+
+// const remainingPoints =
+//   totalTargetPoints - totalPoints;
+
+      
+
+// return {
+//   month,
+//   items,
+//   totalPoints,
+//   totalTargetPoints,
+//   remainingPoints
+// };
+//     });
+//   }
+
+groupTargetsByMonth() {
+
+  const groups: any = {};
+
+  this.targets.forEach((t: any) => {
+
+    if (!t.targetDate) return;
+
+    const d = new Date(t.targetDate);
+
+    const monthKey =
+      d.toLocaleString('default', { month: 'long' }) +
+      ' ' +
+      d.getFullYear();
+
+    if (!groups[monthKey]) {
+      groups[monthKey] = [];
+    }
+
+    groups[monthKey].push(t);
+  });
+
+  this.groupedTargets = Object.keys(groups)
 
     .sort((a: any, b: any) => {
 
@@ -769,19 +911,89 @@ if (selectedTeamIds.length > 0) {
 
       const items = groups[month];
 
+      // TOTAL STAGE POINTS
       const totalPoints = items.reduce(
         (sum: number, x: any) =>
           sum + this.getPoints(x.projectId, x.stage),
         0
       );
 
+      // UNIQUE TEAM IDS
+      const uniqueTeamIds = new Set<number>();
+
+items.forEach((x: any) => {
+
+  // const filteredTeamIds = (x.teamIds || []).filter((id: number) =>
+  //   this.selectedTeamIds.includes(id)
+  // );
+
+  // filteredTeamIds.forEach((id: number) => {
+  //   uniqueTeamIds.add(id);
+  // });
+
+ 
+// IF NO FILTER SELECTED => TAKE ALL TEAMS
+if (this.selectedTeamIds.length === 0) {
+
+  (x.teamIds || []).forEach((id: number) => {
+    uniqueTeamIds.add(id);
+  });
+
+}
+else {
+
+  const filteredTeamIds = (x.teamIds || []).filter((id: number) =>
+    this.selectedTeamIds.includes(id)
+  );
+
+  filteredTeamIds.forEach((id: number) => {
+    uniqueTeamIds.add(id);
+  });
+
+}  
+
+
+});
+
+      // MONTH + YEAR
+      const firstDate = new Date(items[0].targetDate);
+
+      const monthNumber = firstDate.getMonth();
+
+      const yearNumber = firstDate.getFullYear();
+
+      // TOTAL TARGET POINTS
+      let totalTargetPoints = 0;
+
+      uniqueTeamIds.forEach((teamId: number) => {
+
+        const matched = this.teamTargetPoints.find((p: any) => {
+
+          const created = new Date(p.created);
+
+          return (
+            p.contactTeamID === teamId &&
+            created.getMonth() === monthNumber &&
+            created.getFullYear() === yearNumber
+          );
+        });
+
+        totalTargetPoints += matched?.points || 0;
+      });
+
+      // REMAINING
+      const remainingPoints =
+        totalTargetPoints - totalPoints;
+
       return {
         month,
         items,
-        totalPoints
+        totalPoints,
+        totalTargetPoints,
+        remainingPoints
       };
     });
-  }
+}
 
   loadTeams() {
 
@@ -810,4 +1022,20 @@ get isAdmin(): boolean {
 
   return this.authService.currentUserStore?.roles?.includes("MASTER") || false;
 }
+
+loadTeamTargetPoints() {
+
+  this.teamTargetPointService.getAll().subscribe((res: any[]) => {
+
+    this.teamTargetPoints = res || [];
+  });
+}
+
+resetTeamFilter() {
+
+  this.teamFC.setValue([]);
+
+  this.applyAllFilters();
+}
+
 }

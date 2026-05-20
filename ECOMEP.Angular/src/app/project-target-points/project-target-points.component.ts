@@ -28,11 +28,28 @@ export class ProjectTargetPointsComponent implements OnInit {
 
   searchText: string = "";
 
-fromDate: string = "";
+  selectedMonth: string = "";
 
-toDate: string = "";
+  selectedYear: string = "";
 
-filteredData: any[] = [];
+  months: string[] = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  years: number[] = [];
+
+  filteredData: any[] = [];
 
   constructor(
     private api: TeamTargetPointApiService,
@@ -40,9 +57,26 @@ filteredData: any[] = [];
   ) {}
 
   ngOnInit(): void {
-    this.loadData();
-
     this.getTeams();
+
+    this.generateRecords();
+  }
+
+  generateRecords() {
+    this.http
+      .post(
+        "http://localhost:5054/api/TeamTargetPoint/GenerateMonthlyRecords",
+        {},
+      )
+      .subscribe({
+        next: () => {
+          this.loadData();
+        },
+
+        error: (err) => {
+          console.log(err);
+        },
+      });
   }
 
   getTeams() {
@@ -59,90 +93,63 @@ filteredData: any[] = [];
       });
   }
 
-loadData() {
-  this.isLoading = true;
+  loadData() {
+    this.isLoading = true;
 
-  this.api.getAll().subscribe({
-    next: (res) => {
+    this.api.getAll().subscribe({
+      next: (res) => {
+        this.targetPoints = res;
 
-      this.targetPoints = res;
+        this.filteredData = [...res];
 
-      this.filteredData = [...res];
+        this.selectedMonth = "";
 
-      this.groupByMonth();
+        this.selectedYear = "";
 
-      this.isLoading = false;
-    },
+        this.groupByMonth();
+        this.loadYears();
 
-    error: (err) => {
-      console.log(err);
+        this.isLoading = false;
+      },
 
-      this.isLoading = false;
-    },
-  });
-}
+      error: (err) => {
+        console.log(err);
 
-// groupByMonth() {
+        this.isLoading = false;
+      },
+    });
+  }
+  groupByMonth() {
+    const grouped: any = {};
 
-//   const grouped: any = {};
+    this.filteredData.forEach((item) => {
+      const date = new Date(item.created);
 
-//   this.filteredData.forEach((item) => {
+      const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
 
-//     const month = new Date(item.created).toLocaleString("default", {
-//       month: "long",
-//       year: "numeric",
-//     });
+      const monthLabel = date.toLocaleString("default", {
+        month: "long",
+        year: "numeric",
+      });
 
-//     if (!grouped[month]) {
-//       grouped[month] = [];
-//     }
+      if (!grouped[monthKey]) {
+        grouped[monthKey] = {
+          month: monthLabel,
+          items: [],
+          totalPoints: 0,
+          sortDate: date,
+        };
+      }
 
-//     grouped[month].push(item);
+      grouped[monthKey].items.push(item);
 
-//   });
-
-//   this.groupedTargetPoints = Object.keys(grouped).map((month) => ({
-//     month: month,
-//     items: grouped[month],
-//   }));
-
-// }
-
-groupByMonth() {
-
-  const grouped: any = {};
-
-  this.filteredData.forEach((item) => {
-
-    const month = new Date(item.created).toLocaleString("default", {
-      month: "long",
-      year: "numeric",
+      grouped[monthKey].totalPoints += item.points;
     });
 
-    if (!grouped[month]) {
-      grouped[month] = {
-        items: [],
-        totalPoints: 0
-      };
-    }
-
-    grouped[month].items.push(item);
-
-    grouped[month].totalPoints += item.points;
-
-  });
-
-  this.groupedTargetPoints = Object.keys(grouped).map((month) => ({
-
-    month: month,
-
-    items: grouped[month].items,
-
-    totalPoints: grouped[month].totalPoints
-
-  }));
-
-}
+    this.groupedTargetPoints = Object.values(grouped).sort(
+      (a: any, b: any) => b.sortDate.getTime() - a.sortDate.getTime(),
+    );
+  }
 
   update(item: any) {
     const payload = {
@@ -190,50 +197,51 @@ groupByMonth() {
     });
   }
 
-applyFilters() {
+  applyFilters() {
+    this.filteredData = this.targetPoints.filter((item) => {
+      // SEARCH
 
-  this.filteredData = this.targetPoints.filter((item) => {
+      const matchesSearch =
+        !this.searchText ||
+        item.teamName?.toLowerCase().includes(this.searchText.toLowerCase());
 
-    // TEAM SEARCH
+      // MONTH FILTER
 
-    const matchesSearch =
-      !this.searchText ||
-      item.teamName
-        ?.toLowerCase()
-        .includes(this.searchText.toLowerCase());
+      const itemMonth = new Date(item.created).toLocaleString("default", {
+        month: "long",
+      });
 
-    // DATE FILTER
+      const matchesMonth =
+        !this.selectedMonth || itemMonth === this.selectedMonth;
 
-    const itemDate = new Date(item.created);
+      // YEAR FILTER
 
-    const from =
-      !this.fromDate ||
-      itemDate >= new Date(this.fromDate);
+      const itemYear = new Date(item.created).getFullYear().toString();
 
-    const to =
-      !this.toDate ||
-      itemDate <= new Date(this.toDate + 'T23:59:59');
+      const matchesYear = !this.selectedYear || itemYear === this.selectedYear;
 
-    return matchesSearch && from && to;
+      return matchesSearch && matchesMonth && matchesYear;
+    });
 
-  });
+    this.groupByMonth();
+  }
 
-  this.groupByMonth();
+  resetFilters() {
+    this.searchText = "";
 
-}
+    this.selectedMonth = "";
 
-resetFilters() {
+    this.selectedYear = "";
 
-  this.searchText = "";
+    this.filteredData = [...this.targetPoints];
 
-  this.fromDate = "";
+    this.groupByMonth();
+  }
+  loadYears() {
+    const uniqueYears = this.targetPoints.map((x) =>
+      new Date(x.created).getFullYear(),
+    );
 
-  this.toDate = "";
-
-  this.filteredData = [...this.targetPoints];
-
-  this.groupByMonth();
-
-}
-
+    this.years = [...new Set(uniqueYears)];
+  }
 }
