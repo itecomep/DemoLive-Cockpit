@@ -39,9 +39,8 @@ export interface MeetingSummary {
   providedIn: "root",
 })
 export class HrModuleService {
-  // ✅ COMMON BASE URL
-  private baseApi = `${environment.apiPath}`;
 
+  private baseApi = `${environment.apiPath}`;
   private baseUrl = `${this.baseApi}/api/WorkFromHome`;
   private baseleaveUrl = `${this.baseApi}/Leave`;
   private meetingUrl = `${this.baseApi}/Meeting`;
@@ -69,11 +68,6 @@ export class HrModuleService {
   updateRequest(id: number, data: any): Observable<any> {
     return this.http.put(`${this.baseUrl}/update/${id}`, data);
   }
-
-
-
-
-  
 
   deleteRequest(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/delete/${id}`);

@@ -263,7 +263,7 @@ public class EntitiesContext : IdentityDbContext<User, Role, Guid, IdentityUserC
 
         modelBuilder.Entity<TeamTargetPoint>()
             .Property(x => x.UID)
-            .HasDefaultValueSql("NEWID()");
+            .HasDefaultValueSql("NEWID()");       
     }
 
     public DbSet<User> Users { get; set; }
@@ -418,6 +418,7 @@ public class EntitiesContext : IdentityDbContext<User, Role, Guid, IdentityUserC
     public DbSet<ProjectTargetHistory> ProjectTargetHistories { get; set; }
     public DbSet<ProjectStageMail> ProjectStageMails { get; set; }
     public DbSet<TeamTargetPoint> TeamTargetPoints { get; set; }
+    public DbSet<Department> Departments { get; set; }
     // END
 
     private IDbContextTransaction _transaction;

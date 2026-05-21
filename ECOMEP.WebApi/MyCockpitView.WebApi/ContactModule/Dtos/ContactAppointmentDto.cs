@@ -2,6 +2,7 @@
 using MyCockpitView.CoreModule;
 using MyCockpitView.WebApi.CompanyModule;
 using MyCockpitView.WebApi.ContactModule.Entities;
+using MyCockpitView.WebApi.HrModule.Entities;
 
 namespace MyCockpitView.WebApi.ContactModule.Dtos
 {
@@ -23,6 +24,10 @@ namespace MyCockpitView.WebApi.ContactModule.Dtos
         public int? ManagerContactID { get; set; }
         public virtual ICollection<ContactAppointmentAttachmentDto> Attachments { get; set; } = new HashSet<ContactAppointmentAttachmentDto>();
         public ContactDto? ManagerContact  { get; set; }
+
+        public int? DepartmentID { get; set; }
+
+        public Department? Department { get; set; }
     }
 
     public class AppointmentMapperProfile : Profile

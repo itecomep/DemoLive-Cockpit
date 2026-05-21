@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyCockpitView.WebApi;
 
@@ -11,9 +12,11 @@ using MyCockpitView.WebApi;
 namespace MyCockpitView.WebApi.Migrations
 {
     [DbContext(typeof(EntitiesContext))]
-    partial class EntitiesContextModelSnapshot : ModelSnapshot
+    [Migration("20260521094734_GS117")]
+    partial class GS117
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2791,9 +2794,6 @@ namespace MyCockpitView.WebApi.Migrations
                     b.Property<int?>("CreatedByContactID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DepartmentID")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -2886,8 +2886,6 @@ namespace MyCockpitView.WebApi.Migrations
                     b.HasIndex("Created");
 
                     b.HasIndex("CreatedByContactID");
-
-                    b.HasIndex("DepartmentID");
 
                     b.HasIndex("IsDeleted");
 
@@ -14013,11 +14011,6 @@ namespace MyCockpitView.WebApi.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("MyCockpitView.WebApi.HrModule.Entities.Department", "Department")
-                        .WithMany()
-                        .HasForeignKey("DepartmentID")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("MyCockpitView.WebApi.ContactModule.Entities.Contact", "ManagerContact")
                         .WithMany()
                         .HasForeignKey("ManagerContactID")
@@ -14026,8 +14019,6 @@ namespace MyCockpitView.WebApi.Migrations
                     b.Navigation("Company");
 
                     b.Navigation("Contact");
-
-                    b.Navigation("Department");
 
                     b.Navigation("ManagerContact");
                 });

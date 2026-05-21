@@ -54,6 +54,7 @@ public class ContactAppointmentController : ControllerBase
 
         var query = service.Get(Filters != null ? DataTools.GetObjectFromJsonString<APIFilter>(Filters).Filters : null, Search, Sort)
             .Include(x => x.Company)
+            .Include(x => x.Department)
             .Include(x=>x.ManagerContact)
             .Include(x=>x.Attachments)
             ;

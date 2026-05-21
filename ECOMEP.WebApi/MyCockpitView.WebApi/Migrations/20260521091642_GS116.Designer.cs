@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyCockpitView.WebApi;
 
@@ -11,9 +12,11 @@ using MyCockpitView.WebApi;
 namespace MyCockpitView.WebApi.Migrations
 {
     [DbContext(typeof(EntitiesContext))]
-    partial class EntitiesContextModelSnapshot : ModelSnapshot
+    [Migration("20260521091642_GS116")]
+    partial class GS116
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2791,9 +2794,6 @@ namespace MyCockpitView.WebApi.Migrations
                     b.Property<int?>("CreatedByContactID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DepartmentID")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -2886,8 +2886,6 @@ namespace MyCockpitView.WebApi.Migrations
                     b.HasIndex("Created");
 
                     b.HasIndex("CreatedByContactID");
-
-                    b.HasIndex("DepartmentID");
 
                     b.HasIndex("IsDeleted");
 
@@ -6992,14 +6990,76 @@ namespace MyCockpitView.WebApi.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("ID");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("CreatedByContactID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsReadOnly")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsVersion")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("Modified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ModifiedByContactID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderFlag")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ParentVersionID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SearchTags")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("StatusFlag")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
                     b.Property<string>("Title")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("TypeFlag")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<Guid>("UID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("_searchTags")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("Title");
 
                     b.ToTable("Departments");
                 });
@@ -14013,11 +14073,6 @@ namespace MyCockpitView.WebApi.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("MyCockpitView.WebApi.HrModule.Entities.Department", "Department")
-                        .WithMany()
-                        .HasForeignKey("DepartmentID")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("MyCockpitView.WebApi.ContactModule.Entities.Contact", "ManagerContact")
                         .WithMany()
                         .HasForeignKey("ManagerContactID")
@@ -14026,8 +14081,6 @@ namespace MyCockpitView.WebApi.Migrations
                     b.Navigation("Company");
 
                     b.Navigation("Contact");
-
-                    b.Navigation("Department");
 
                     b.Navigation("ManagerContact");
                 });

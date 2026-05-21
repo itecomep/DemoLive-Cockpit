@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MyCockpitView.WebApi.CompanyModule;
 using MyCockpitView.CoreModule;
+using MyCockpitView.WebApi.HrModule.Entities;
 
 
 namespace MyCockpitView.WebApi.ContactModule.Entities;
@@ -39,6 +40,10 @@ public class ContactAppointment : BaseEntity
     public virtual Contact? ManagerContact { get; set; }
 
     public virtual ICollection<ContactAppointmentAttachment> Attachments { get; set; } = new HashSet<ContactAppointmentAttachment>();
+
+    public int? DepartmentID { get; set; }
+
+    public virtual Department? Department { get; set; }
 
 
 }
@@ -115,5 +120,12 @@ public class ContactAppointmentConfiguration : IEntityTypeConfiguration<ContactA
         builder.HasIndex(e => e.JoiningDate);
 
         builder.HasIndex(e => e.ResignationDate);
+
+        builder
+    .HasOne(x => x.Department)
+    .WithMany()
+    .HasForeignKey(x => x.DepartmentID)
+    .IsRequired(false)
+    .OnDelete(DeleteBehavior.SetNull);
     }
 }

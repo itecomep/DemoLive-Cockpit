@@ -19,6 +19,8 @@ export class ContactAppointment extends BaseEntity
   managerContactID?: number;
   managerContact?: Contact;
   location?:string;
+  departmentID?: number;
+  department?: any;
   attachments: ContactAppointmentAttachment[] = [];
   constructor(init?: Partial<ContactAppointment>)
   {

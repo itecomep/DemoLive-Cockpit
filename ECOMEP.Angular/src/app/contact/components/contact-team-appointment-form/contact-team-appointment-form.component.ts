@@ -36,6 +36,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { ContactTeam, ContactTeamMember } from '../../models/contact-team.model';
 import { ContactTeamMemberApiService } from '../../services/contact-team-member-api.service';
+import { DepartmentApiService } from '../../services/department-api.service';
 
 @Component({
     selector: 'app-contact-team-appointment-form',
@@ -57,6 +58,7 @@ export class ContactTeamAppointmentFormComponent implements OnInit
   currentEntity = new ContactAppointment();
   clientContactFC: FormControl = new FormControl<any>('');
   filteredManagerContacts$!: Observable<Contact[]>;
+  departmentOptions: any[] = [];
 
   TEAM_APPOINTMENT_STATUS_LEFT_WIHOUT_INFORMING = this.config.TEAM_APPOINTMENT_STATUS_LEFT_WIHOUT_INFORMING;
 
@@ -118,7 +120,8 @@ export class ContactTeamAppointmentFormComponent implements OnInit
     private contactAppointmentAttachmentService: ContactAppointmentAttachmentApiService,
     private mcvFileUtilityService: McvFileUtilityService,
     private config: AppConfig,
-    private contactTeamMemberService: ContactTeamMemberApiService
+    private contactTeamMemberService: ContactTeamMemberApiService,
+    private departmentService: DepartmentApiService,
   ) { }
 
 
@@ -129,7 +132,7 @@ export class ContactTeamAppointmentFormComponent implements OnInit
     {
       this.buildForm();
     }
-    
+    this.getDepartmentOptions();
     this.bindForm();
     this.getStatusOptions();
     this.getTypeOptions();
@@ -166,6 +169,7 @@ export class ContactTeamAppointmentFormComponent implements OnInit
       location: new FormControl<any>(this.currentEntity.location),
       employeeCode: new FormControl<any>(this.currentEntity.employeeCode),
       description: new FormControl<any>(this.currentEntity.description),
+      departmentID: new FormControl<any>(this.currentEntity.departmentID),
     });
 
     this.filteredManagerContacts$ = this.clientContactFC.valueChanges.pipe(
@@ -408,5 +412,11 @@ export class ContactTeamAppointmentFormComponent implements OnInit
       }
     });
     this.teamFC.reset();
+  }
+
+  async getDepartmentOptions()
+  {
+    this.departmentOptions =
+      await firstValueFrom(this.departmentService.get());
   }
 }

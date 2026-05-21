@@ -47,6 +47,26 @@
         </mat-form-field>
         <!--Company ends-->
 
+        <mat-form-field appearance="outline" class="col-md-6">
+            <mat-label>Department</mat-label>
+
+            <mat-select formControlName="departmentID">
+
+                <mat-option
+                    *ngFor="let department of departmentOptions"
+                    [value]="department.id">
+
+                    {{ department.title }}
+
+                </mat-option>
+
+            </mat-select>
+
+            <mat-error>
+                {{ getErrorMessage(f.departmentID) }}
+            </mat-error>
+        </mat-form-field>
+
         <!-- Designation-->
         <mat-form-field appearance="outline" class="col-md-6">
             <mat-label>Designation</mat-label>
@@ -87,7 +107,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="col-md-12">
-            <mat-label>Reporting To</mat-label>
+            <mat-label>Reporting To2</mat-label>
             <mat-select formControlName="managerContact" placeholder="Search Contact" #singleSelect>
                 <mat-option>
                     <ngx-mat-select-search [formControl]="clientContactFC" placeholderLabel="Search here"

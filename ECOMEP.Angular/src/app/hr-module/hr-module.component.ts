@@ -11,6 +11,7 @@ import { AbsentsComponent } from "./absents/absents.component";
 import { LeavesComponent } from "./leaves/leaves.component";
 
 import { HeaderComponent } from "../mcv-header/components/header/header.component";
+import { DashboardComponent } from "./dashboard/dashboard.component";
 
 @Component({
   selector: "app-hr-module",
@@ -25,6 +26,7 @@ import { HeaderComponent } from "../mcv-header/components/header/header.componen
     AbsentsComponent,
     LeavesComponent,
     HeaderComponent,
+    DashboardComponent,
   ],
   templateUrl: "./hr-module.component.html",
   styleUrls: ["./hr-module.component.scss"],

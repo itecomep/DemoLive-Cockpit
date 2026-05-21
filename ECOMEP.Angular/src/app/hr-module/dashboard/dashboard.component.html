@@ -1,0 +1,130 @@
+<div class="dashboard-wrapper">
+  <div class="dashboard-top">
+    <div>
+      <h1>HR Dashboard</h1>
+    </div>
+
+    <button class="refresh-btn" (click)="loadDashboard()">Refresh Data</button>
+  </div>
+
+  <div class="stats-grid">
+    <!-- PRESENT TODAY -->
+    <div class="stat-card green" (click)="openEmployeePopup('present')">
+      <div class="card-top">
+        <span class="title"> Present Today </span>
+
+        <span class="icon"> ✓ </span>
+      </div>
+
+      <h2>
+        {{ presentToday }}
+      </h2>
+
+      <div class="details">Goregaon Branch</div>
+    </div>
+
+    <!-- ABSENT TODAY -->
+    <div class="stat-card red" (click)="openEmployeePopup('absent')">
+      <div class="card-top">
+        <span class="title"> Absent Today </span>
+
+        <span class="icon"> ✕ </span>
+      </div>
+
+      <h2>
+        {{ absentToday }}
+      </h2>
+
+      <div class="details">No Punch In / Out</div>
+    </div>
+
+    <!-- ON LEAVE -->
+    <div class="stat-card orange" (click)="openEmployeePopup('leave')">
+      <div class="card-top">
+        <span class="title"> On Leave </span>
+
+        <span class="icon"> ☕ </span>
+      </div>
+
+      <h2>
+        {{ leaveToday }}
+      </h2>
+
+      <div class="details">Approved Leaves For Today</div>
+    </div>
+
+    <!-- LATE TODAY -->
+    <div class="stat-card blue" (click)="openEmployeePopup('late')">
+      <div class="card-top">
+        <span class="title"> Late Today </span>
+
+        <span class="icon"> ⏰ </span>
+      </div>
+
+      <h2>
+        {{ lateToday }}
+      </h2>
+
+      <div class="details">After 10:30 AM</div>
+    </div>
+
+    <!-- MEETINGS -->
+    <div class="stat-card purple" (click)="openEmployeePopup('meeting')">
+      <div class="card-top">
+        <span class="title"> Meetings Today </span>
+
+        <span class="icon"> 📅 </span>
+      </div>
+
+      <h2>
+        {{ meetingsToday }}
+      </h2>
+
+      <div class="details">Today's Meetings</div>
+    </div>
+
+    <!-- DEPARTMENT CARD -->
+
+    <div class="stat-card department-card dark">
+      <div class="card-top">
+        <span class="title"> Department </span>
+
+        <span class="icon"> 🏢 </span>
+      </div>
+
+      <div class="department-list">
+        <div class="department-item" *ngFor="let dept of departmentStats">
+          <span>
+            {{ dept.department }}
+          </span>
+
+          <strong> : {{ dept.count }} </strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP -->
+
+<div class="employee-popup-overlay" *ngIf="showEmployeePopup">
+  <div class="employee-popup">
+    <div class="popup-header">
+      <h3>
+        {{ popupTitle }}
+      </h3>
+
+      <button class="close-btn" (click)="closePopup()">✕</button>
+    </div>
+
+    <div class="popup-body">
+      <div class="employee-item" *ngFor="let emp of popupEmployees">
+        {{ emp }}
+      </div>
+
+      <div class="no-data" *ngIf="popupEmployees.length === 0">
+        No Employees Found
+      </div>
+    </div>
+  </div>
+</div>
